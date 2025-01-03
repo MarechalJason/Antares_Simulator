@@ -39,7 +39,7 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
                 namer.STStockLevelReserveParticipationDown(builder.data.nombreDeContraintes,
-                    "ShortTermStorage");
+                    data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
@@ -77,7 +77,7 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
                 namer.STStockLevelReserveParticipationUp(builder.data.nombreDeContraintes,
-                    "ShortTermStorage");
+                    data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }

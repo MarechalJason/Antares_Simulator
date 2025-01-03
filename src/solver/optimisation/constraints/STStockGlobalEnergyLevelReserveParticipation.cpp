@@ -54,7 +54,7 @@ void STStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
                 namer.STGlobalEnergyStockLevelReserveParticipationDown(builder.data.nombreDeContraintes,
-                    "ShortTermStorage");
+                    data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
@@ -97,7 +97,7 @@ void STStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
                 namer.STGlobalEnergyStockLevelReserveParticipationUp(builder.data.nombreDeContraintes,
-                    "ShortTermStorage");
+                    data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
