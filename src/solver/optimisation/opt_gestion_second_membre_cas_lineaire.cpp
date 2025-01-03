@@ -383,9 +383,12 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaire(PROBLEME_HEBDO* problemeHeb
         OPT_InitialiserLeSecondMembreDuProblemeLineaireCoutsDeDemarrage(problemeHebdo, 
 									PremierPdtDeLIntervalle, 
 									DernierPdtDeLIntervalle);
-        OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(problemeHebdo, 
-								PremierPdtDeLIntervalle, 
-								DernierPdtDeLIntervalle);
+        if (problemeHebdo->allReserves)
+        {
+            OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(problemeHebdo,
+                                                                    PremierPdtDeLIntervalle,
+                                                                    DernierPdtDeLIntervalle);
+        }
     }
 
     return;

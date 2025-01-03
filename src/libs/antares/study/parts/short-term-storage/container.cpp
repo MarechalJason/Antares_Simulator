@@ -137,7 +137,7 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
                   }
               }
           }
-          auto reserve = area.allCapacityReservations.getReserveByName(section.name);
+          auto reserve = area.allCapacityReservations().getReserveByName(section.name);
           auto cluster = getClusterByName(tmpClusterName);
           if (reserve && cluster)
           {
@@ -197,12 +197,12 @@ std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipa
 {
     int globalReserveParticipationIdx = 0;
 
-    for (auto const& [reserveUpName, _] : area->allCapacityReservations.areaCapacityReservationsUp)
+    for (auto const& [reserveUpName, _] : area->allCapacityReservations().areaCapacityReservationsUp)
     {
         for (auto& cluster : storagesByIndex)
         {
-            if (cluster.clusterReservesParticipations.find(reserveUpName)
-                != cluster.clusterReservesParticipations.end())
+            if (cluster.clusterReservesParticipations().find(reserveUpName)
+                != cluster.clusterReservesParticipations().end())
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -214,12 +214,12 @@ std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipa
     }
 
     for (auto const& [reserveDownName, _] :
-         area->allCapacityReservations.areaCapacityReservationsDown)
+         area->allCapacityReservations().areaCapacityReservationsDown)
     {
         for (auto& cluster : storagesByIndex)
         {
-            if (cluster.clusterReservesParticipations.find(reserveDownName)
-                != cluster.clusterReservesParticipations.end())
+            if (cluster.clusterReservesParticipations().find(reserveDownName)
+                != cluster.clusterReservesParticipations().end())
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -238,7 +238,7 @@ std::pair<Data::ShortTermStorage::Group, Data::ReserveName>
   STStorageInput::reserveParticipationGroupAt(const Area* area, unsigned int index) const
 {
     int column = 0;
-    for (const auto& [reserveName, _]: area->allCapacityReservations.areaCapacityReservationsUp)
+    for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
         for (int indexGroup = 0; indexGroup < Data::ShortTermStorage::groupMax; indexGroup++)
         {
@@ -247,7 +247,7 @@ std::pair<Data::ShortTermStorage::Group, Data::ReserveName>
             column++;
         }
     }
-    for (const auto& [reserveName, _]: area->allCapacityReservations.areaCapacityReservationsDown)
+    for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
     {
         for (int indexGroup = 0; indexGroup < Data::ShortTermStorage::groupMax; indexGroup++)
         {

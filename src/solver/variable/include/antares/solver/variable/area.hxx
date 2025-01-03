@@ -376,7 +376,11 @@ void Areas<NextT>::hourForEachArea(State& state, uint numSpace)
           // Initializing the state for the current area
           state.initFromAreaIndex(area.index, numSpace);
 
-          state.initReserveParticipationIndexMaps();
+          if (state.study.parameters.compatibility.reserves
+              == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+          {
+              state.initReserveParticipationIndexMaps();
+          }
 
           for (const auto& cluster : area.thermal.list.each_enabled())
           {
@@ -394,7 +398,11 @@ void Areas<NextT>::hourForEachArea(State& state, uint numSpace)
           state.initFromHydroStorage();
 
           // Calculation of reserve participation costs
-          state.calculateReserveParticipationCosts();
+          if (state.study.parameters.compatibility.reserves
+              == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+          {
+              state.calculateReserveParticipationCosts();
+          }
 
           // Variables
           auto& variablesForArea = pAreas[area.index];

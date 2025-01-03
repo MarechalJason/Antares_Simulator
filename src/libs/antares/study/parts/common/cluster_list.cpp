@@ -55,7 +55,7 @@ std::pair<Data::ClusterName, Data::ReserveName>
 {
     int globalReserveParticipationIdx = 0;
 
-    for (auto const& [reserveUpName, _] : area->allCapacityReservations.areaCapacityReservationsUp)
+    for (auto const& [reserveUpName, _] : area->allCapacityReservations().areaCapacityReservationsUp)
     {
         for (auto& cluster : allClusters_)
         {
@@ -71,7 +71,7 @@ std::pair<Data::ClusterName, Data::ReserveName>
     }
 
     for (auto const& [reserveDownName, _] :
-         area->allCapacityReservations.areaCapacityReservationsDown)
+         area->allCapacityReservations().areaCapacityReservationsDown)
     {
         for (auto& cluster : allClusters_)
         {
@@ -95,7 +95,7 @@ std::pair<Data::ThermalCluster::ThermalDispatchableGroup, Data::ReserveName>
   ClusterList<ClusterT>::reserveParticipationGroupAt(const Area* area, unsigned int index) const
 {
     int column = 0;
-    for (auto [reserveName, _] : area->allCapacityReservations.areaCapacityReservationsUp)
+    for (auto [reserveName, _] : area->allCapacityReservations().areaCapacityReservationsUp)
     {
         for (int indexGroup = 0; indexGroup < Data::ThermalCluster::groupMax; indexGroup++)
         {
@@ -104,7 +104,7 @@ std::pair<Data::ThermalCluster::ThermalDispatchableGroup, Data::ReserveName>
             column++;
         }
     }
-    for (auto [reserveName, _] : area->allCapacityReservations.areaCapacityReservationsDown)
+    for (auto [reserveName, _] : area->allCapacityReservations().areaCapacityReservationsDown)
     {
         for (int indexGroup = 0; indexGroup < Data::ThermalCluster::groupMax; indexGroup++)
         {
@@ -122,7 +122,7 @@ std::pair<Data::ThermalCluster::UnsuppliedSpilled, Data::ReserveName>
 ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area, unsigned int index) const
 {
     int column = 0;
-    for (auto [reserveName, _] : area->allCapacityReservations.areaCapacityReservationsUp)
+    for (auto [reserveName, _] : area->allCapacityReservations().areaCapacityReservationsUp)
     {
         for (int indexUnsuppliedSpilled = 0; indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax; indexUnsuppliedSpilled++)
         {
@@ -131,7 +131,7 @@ ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area,
             column++;
         }
     }
-    for (auto [reserveName, _] : area->allCapacityReservations.areaCapacityReservationsDown)
+    for (auto [reserveName, _] : area->allCapacityReservations().areaCapacityReservationsDown)
     {
         for (int indexUnsuppliedSpilled = 0; indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax; indexUnsuppliedSpilled++)
         {
@@ -433,7 +433,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
                   }
               }
           }
-          auto reserve = area.allCapacityReservations.getReserveByName(section.name);
+          auto reserve = area.allCapacityReservations().getReserveByName(section.name);
           auto cluster = area.thermal.list.getClusterByName(tmpClusterName);
           if (reserve && cluster)
           {

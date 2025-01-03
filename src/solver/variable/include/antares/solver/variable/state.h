@@ -267,7 +267,7 @@ public:
       reserveParticipationPerLTStorageClusterForYear{HOURS_PER_YEAR};
 
     //! Reserve Participation cost for the whole year
-    double reserveParticipationCostForYear[HOURS_PER_YEAR];
+    ReserveOpt<std::vector<double>> reserveParticipationCostForYear;
 
     //! Number of unit dispatched for all clusters for the whole year for ucHeruistic (fast) or
     //! ucMILP (accurate)
@@ -280,13 +280,13 @@ public:
     //! Minimum power of the cluster for the whole year
     double thermalClusterPMinOfTheClusterForYear[HOURS_PER_YEAR];
     //! Reserves participation cost of the thermal cluster for the whole year
-    double thermalClusterReserveParticipationCostForYear[HOURS_PER_YEAR];
+    ReserveOpt<std::vector<double>> thermalClusterReserveParticipationCostForYear;
 
     //! Reserves participation cost of the Short Term Storage cluster for the whole year
-    double STStorageClusterReserveParticipationCostForYear[HOURS_PER_YEAR];
+    ReserveOpt<std::vector<double>> STStorageClusterReserveParticipationCostForYear;
 
     //! Reserves participation cost of the Long Term Storage  for the whole year
-    double LTStorageClusterReserveParticipationCostForYear[HOURS_PER_YEAR];
+    ReserveOpt<std::vector<double>> LTStorageClusterReserveParticipationCostForYear;
 
     double renewableClusterProduction;
 

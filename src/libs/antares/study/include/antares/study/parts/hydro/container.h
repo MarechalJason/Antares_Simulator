@@ -23,6 +23,8 @@
 
 #include <optional>
 
+#include <antares/study/area/ReserveOpt.h>
+
 #include "../../fwd.h"
 #include "allocation.h"
 #include "prepro.h"
@@ -245,7 +247,8 @@ public:
     std::unordered_map<uint, AreaDependantHydroManagementData> managementData;
     
     std::vector<std::optional<double>> deltaBetweenFinalAndInitialLevels;
-    std::unordered_map<std::string, LTStorageClusterReserveParticipation> reservesParticipations;
+    ReserveOpt<std::map<std::string, LTStorageClusterReserveParticipation>>
+      reservesParticipations;
 
 private:
     static bool checkReservoirLevels(const Study& study);

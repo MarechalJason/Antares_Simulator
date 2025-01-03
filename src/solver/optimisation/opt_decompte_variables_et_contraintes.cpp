@@ -283,7 +283,10 @@ int OPT_DecompteDesVariablesEtDesContraintesDuProblemeAOptimiser(PROBLEME_HEBDO*
     if (problemeHebdo->OptimisationNotFastMode)
     {
         OPT_DecompteDesVariablesEtDesContraintesCoutsDeDemarrage(problemeHebdo);
-        OPT_DecompteDesVariablesEtDesContraintesReserves(problemeHebdo);
+        if (problemeHebdo->allReserves)
+        {
+            OPT_DecompteDesVariablesEtDesContraintesReserves(problemeHebdo);
+        }
     }
 
     return mxPaliers;

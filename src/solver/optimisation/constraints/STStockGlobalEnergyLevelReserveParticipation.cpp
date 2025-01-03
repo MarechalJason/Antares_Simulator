@@ -45,9 +45,9 @@ void STStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 builder.lessThan();
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesSTGlobalStockEnergyLevelReserveParticipationDown
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .STStorageGlobalStockEnergyLevelParticipationDown[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
@@ -88,9 +88,9 @@ void STStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 builder.lessThan();
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesSTGlobalStockEnergyLevelReserveParticipationUp
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .STStorageGlobalStockEnergyLevelParticipationUp[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;

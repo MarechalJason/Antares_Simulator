@@ -65,8 +65,8 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
             {
                 builder.ShortTermStorageInjection(globalClusterIdx, 1).lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .NumeroDeContrainteDesContraintesSTStorageClusterPumpingCapacityThreasholds
-                    [globalClusterIdx]
+                  .reservesIndices()
+                  .STStorageClusterPumpingCapacityThreasholds[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;

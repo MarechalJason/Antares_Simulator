@@ -92,17 +92,22 @@ static void StudyRuntimeInfosInitializeAllAreas(Study& study, StudyRuntimeInfos&
         // statistics
         r.thermalPlantTotalCount += area.thermal.list.enabledAndNotMustRunCount();
         r.thermalPlantTotalCountMustRun += area.thermal.list.enabledAndMustRunCount();
-        r.reserveParticipationCount += area.thermal.list.reserveParticipationsCount();
-        r.reserveParticipationCount += area.shortTermStorage.reserveParticipationsCount();
-        r.reserveParticipationCount += area.hydro.reserveParticipationsCount();
-        r.capacityReservationCount
-          += area.allCapacityReservations.areaCapacityReservationsUp.size();
-        r.capacityReservationUpCount
-          += area.allCapacityReservations.areaCapacityReservationsUp.size();
-        r.capacityReservationCount
-          += area.allCapacityReservations.areaCapacityReservationsDown.size();
-        r.capacityReservationUpCount
-          += area.allCapacityReservations.areaCapacityReservationsUp.size();
+
+        if (study.parameters.compatibility.reserves
+            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+        {
+            r.reserveParticipationCount += area.thermal.list.reserveParticipationsCount();
+            r.reserveParticipationCount += area.shortTermStorage.reserveParticipationsCount();
+            r.reserveParticipationCount += area.hydro.reserveParticipationsCount();
+            r.capacityReservationCount += area.allCapacityReservations()
+                                            .areaCapacityReservationsUp.size();
+            r.capacityReservationUpCount += area.allCapacityReservations()
+                                              .areaCapacityReservationsUp.size();
+            r.capacityReservationCount += area.allCapacityReservations()
+                                            .areaCapacityReservationsDown.size();
+            r.capacityReservationUpCount += area.allCapacityReservations()
+                                              .areaCapacityReservationsUp.size();
+        }
 
         r.shortTermStorageCount += area.shortTermStorage.count();
         r.longTermStorageCount += area.hydro.count();

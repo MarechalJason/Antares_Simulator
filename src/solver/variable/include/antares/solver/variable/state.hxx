@@ -33,24 +33,22 @@ inline void State::startANewYear()
 
     memset(thermalClusterProductionForYear, 0, sizeof(thermalClusterProductionForYear));
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
-    memset(reserveParticipationCostForYear, 0, sizeof(reserveParticipationCostForYear));
-    memset(thermalClusterNonProportionalCostForYear,
-           0,
-           sizeof(thermalClusterNonProportionalCostForYear));
+    if (study.parameters.compatibility.reserves
+        == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+    {
+        reserveParticipationCostForYear.init();
+        reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        thermalClusterReserveParticipationCostForYear.init();
+        thermalClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        STStorageClusterReserveParticipationCostForYear.init();
+        STStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        LTStorageClusterReserveParticipationCostForYear.init();
+        LTStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+    }
     memset(thermalClusterPMinOfTheClusterForYear, 0, sizeof(thermalClusterPMinOfTheClusterForYear));
     memset(thermalClusterDispatchedUnitsCountForYear,
            0,
            sizeof(thermalClusterDispatchedUnitsCountForYear));
-
-    memset(thermalClusterReserveParticipationCostForYear,
-            0,
-            sizeof(thermalClusterNonProportionalCostForYear));
-    memset(STStorageClusterReserveParticipationCostForYear,
-            0,
-            sizeof(STStorageClusterReserveParticipationCostForYear));
-    memset(LTStorageClusterReserveParticipationCostForYear,
-            0,
-            sizeof(LTStorageClusterReserveParticipationCostForYear));
 
     // Re-initializing annual costs (to be printed in output into separate files)
     annualSystemCost = 0.;
@@ -65,13 +63,18 @@ inline void State::yearEndResetThermal()
 {
     memset(thermalClusterProductionForYear, 0, sizeof(thermalClusterProductionForYear));
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
-    memset(reserveParticipationCostForYear, 0, sizeof(reserveParticipationCostForYear));
-    memset(STStorageClusterReserveParticipationCostForYear,
-           0,
-           sizeof(STStorageClusterReserveParticipationCostForYear));
-    memset(LTStorageClusterReserveParticipationCostForYear,
-           0,
-           sizeof(LTStorageClusterReserveParticipationCostForYear));
+    if (study.parameters.compatibility.reserves
+        == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+    {
+        reserveParticipationCostForYear.init();
+        reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        thermalClusterReserveParticipationCostForYear.init();
+        thermalClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        STStorageClusterReserveParticipationCostForYear.init();
+        STStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        LTStorageClusterReserveParticipationCostForYear.init();
+        LTStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+    }
     memset(thermalClusterNonProportionalCostForYear,
            0,
            sizeof(thermalClusterNonProportionalCostForYear));
@@ -79,7 +82,6 @@ inline void State::yearEndResetThermal()
     memset(thermalClusterDispatchedUnitsCountForYear,
            0,
            sizeof(thermalClusterDispatchedUnitsCountForYear));
-    memset(thermalClusterReserveParticipationCostForYear,0,sizeof(thermalClusterReserveParticipationCostForYear));
 }
 
 inline void State::initFromAreaIndex(const unsigned int areaIndex, uint numSpace)
@@ -88,16 +90,18 @@ inline void State::initFromAreaIndex(const unsigned int areaIndex, uint numSpace
     scratchpad = &area->scratchpad[numSpace];
     thermalCluster = nullptr;
 
-    if (unitCommitmentMode != Data::UnitCommitmentMode::ucHeuristicFast)
+    if (unitCommitmentMode != Data::UnitCommitmentMode::ucHeuristicFast
+        && study.parameters.compatibility.reserves
+             == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
     {
-        memset(LTStorageClusterReserveParticipationCostForYear, 0, sizeof(LTStorageClusterReserveParticipationCostForYear));
-        memset(reserveParticipationCostForYear, 0, sizeof(reserveParticipationCostForYear));
-        for (int h=0 ; h< HOURS_PER_YEAR; h++)
-        {
-            reserveParticipationPerLTStorageClusterForYear[hourInTheYear].clear();
-            reserveParticipationPerSTStorageClusterForYear[hourInTheYear].clear();
-            reserveParticipationPerThermalClusterForYear[hourInTheYear].clear();
-        }
+        reserveParticipationCostForYear.init();
+        reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        thermalClusterReserveParticipationCostForYear.init();
+        thermalClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        STStorageClusterReserveParticipationCostForYear.init();
+        STStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+        LTStorageClusterReserveParticipationCostForYear.init();
+        LTStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
     }
     switch (simulationMode)
     {

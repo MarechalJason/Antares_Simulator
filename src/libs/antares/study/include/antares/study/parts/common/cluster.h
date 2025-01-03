@@ -21,8 +21,8 @@
 #ifndef __LIBS_ANTARES_STUDY_PARTS_COMMON_H__
 #define __LIBS_ANTARES_STUDY_PARTS_COMMON_H__
 
-#include <set>
 #include <map>
+#include <set>
 #include <vector>
 
 #include <yuni/yuni.h>
@@ -30,11 +30,10 @@
 
 #include <antares/array/matrix.h>
 #include <antares/series/series.h>
-#include "../../fwd.h"
-
+#include <antares/study/area/ReserveOpt.h>
 #include <antares/study/area/capacityReservation.h>
 
-
+#include "../../fwd.h"
 
 namespace Antares
 {
@@ -171,7 +170,8 @@ protected:
     Data::ClusterName pID;
     Data::ClusterName pGroup;
     //! reserve
-    std::map<Data::ReserveName, ThermalClusterReserveParticipation> clusterReservesParticipations;
+    ReserveOpt<std::map<Data::ReserveName, ThermalClusterReserveParticipation>>
+      clusterReservesParticipations;
 
 private:
     virtual unsigned int precision() const = 0;

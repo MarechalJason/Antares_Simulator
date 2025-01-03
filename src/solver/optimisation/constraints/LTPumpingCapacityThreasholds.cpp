@@ -71,9 +71,9 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 }
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesLTStorageClusterPumpingCapacityThreasholds
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .LTStorageClusterPumpingCapacityThreasholds[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);

@@ -125,35 +125,36 @@ void STStorageCluster::addReserveParticipation(
   Data::ReserveName name,
   STStorageClusterReserveParticipation& reserveParticipation)
 {
-    clusterReservesParticipations.emplace(name, reserveParticipation);
+    clusterReservesParticipations.init();
+    clusterReservesParticipations().emplace(name, reserveParticipation);
 }
 
 float STStorageCluster::reserveMaxTurbining(Data::ReserveName name)
 {
-    if (clusterReservesParticipations.contains(name))
-        return clusterReservesParticipations.at(name).maxTurbining;
+    if (clusterReservesParticipations().contains(name))
+        return clusterReservesParticipations().at(name).maxTurbining;
     else
         throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
 }
 
 float STStorageCluster::reserveMaxPumping(Data::ReserveName name)
 {
-    if (clusterReservesParticipations.contains(name))
-        return clusterReservesParticipations.at(name).maxPumping;
+    if (clusterReservesParticipations().contains(name))
+        return clusterReservesParticipations().at(name).maxPumping;
     else
         throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
 }
 
 float STStorageCluster::reserveCost(Data::ReserveName name)
 {
-    if (clusterReservesParticipations.contains(name))
-        return clusterReservesParticipations.at(name).participationCost;
+    if (clusterReservesParticipations().contains(name))
+        return clusterReservesParticipations().at(name).participationCost;
     else
         throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
 }
 
 uint STStorageCluster::reserveParticipationsCount(){
-    return clusterReservesParticipations.size();
+    return clusterReservesParticipations ? clusterReservesParticipations().size() : 0;
 }
 
 } // namespace Antares::Data::ShortTermStorage

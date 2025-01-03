@@ -38,9 +38,9 @@ void LTTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 }
                 builder.greaterThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesLTStorageClusterTurbiningCapacityThreasholdsMin
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .LTStorageClusterTurbiningCapacityThreasholdsMin[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
@@ -75,9 +75,9 @@ void LTTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 }
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesLTStorageClusterTurbiningCapacityThreasholdsMax
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .LTStorageClusterTurbiningCapacityThreasholdsMax[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);

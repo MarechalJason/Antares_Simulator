@@ -24,8 +24,9 @@ void STPumpingMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool 
             reserveParticipation.globalIndexClusterParticipation, 1.0)
           .lessThan();
         data.CorrespondanceCntNativesCntOptim[pdt]
-          .NumeroDeContrainteDesContraintesSTStorageClusterMaxInjectionParticipation
-            [reserveParticipation.globalIndexClusterParticipation]
+          .reservesIndices()
+          .STStorageClusterMaxPumpingParticipation[reserveParticipation
+                                                     .globalIndexClusterParticipation]
           = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);

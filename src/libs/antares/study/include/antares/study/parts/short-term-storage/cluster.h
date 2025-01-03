@@ -25,10 +25,11 @@
 #include <string>
 
 #include <antares/inifile/inifile.h>
+#include <antares/study/area/ReserveOpt.h>
+#include <antares/study/area/capacityReservation.h>
 
 #include "properties.h"
 #include "series.h"
-#include <antares/study/area/capacityReservation.h>
 
 namespace Antares::Data::ShortTermStorage
 {
@@ -68,6 +69,7 @@ public:
     mutable Properties properties;
 
     //! reserve
-    std::unordered_map<Data::ReserveName, STStorageClusterReserveParticipation> clusterReservesParticipations;
+    ReserveOpt<std::map<Data::ReserveName, STStorageClusterReserveParticipation>>
+      clusterReservesParticipations;
 };
 } // namespace Antares::Data::ShortTermStorage

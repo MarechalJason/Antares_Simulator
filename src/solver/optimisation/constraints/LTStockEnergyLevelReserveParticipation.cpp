@@ -60,8 +60,9 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
                 builder.lessThan();
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .NumeroDeContrainteDesContraintesLTStockEnergyLevelReserveParticipation
-                    [reserveParticipation.globalIndexClusterParticipation]
+                  .reservesIndices()
+                  .LTStorageEnergyLevelParticipation[reserveParticipation
+                                                       .globalIndexClusterParticipation]
                   = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);

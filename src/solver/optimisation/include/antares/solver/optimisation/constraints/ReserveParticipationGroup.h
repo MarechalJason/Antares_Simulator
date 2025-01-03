@@ -20,17 +20,17 @@
  */
 
 #pragma once
-#include "AbstractStartUpCostsGroup.h"
+#include "ConstraintGroup.h"
 
 /**
  * @brief Group of reserve constraints
  *
  */
 
-class ReserveParticipationGroup : public AbstractStartUpCostsGroup
+class ReserveParticipationGroup : public ConstraintGroup
 {
 public:
-    using AbstractStartUpCostsGroup::AbstractStartUpCostsGroup;
+    using ConstraintGroup::ConstraintGroup;
     ReserveParticipationGroup(PROBLEME_HEBDO* problemeHebdo,
                               bool simulation,
                               ConstraintBuilder& builder);

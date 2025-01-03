@@ -35,9 +35,9 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
             {
                 builder.ShortTermStorageWithdrawal(globalClusterIdx, 1).greaterThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesSTStorageClusterTurbiningCapacityThreasholdsMin
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .STStorageClusterTurbiningCapacityThreasholdsMin[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
@@ -70,8 +70,8 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
             {
                 builder.ShortTermStorageWithdrawal(globalClusterIdx, 1).lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .NumeroDeContrainteDesContraintesSTStorageClusterTurbiningCapacityThreasholdsMax
-                    [globalClusterIdx]
+                  .reservesIndices()
+                  .STStorageClusterTurbiningCapacityThreasholdsMax[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;

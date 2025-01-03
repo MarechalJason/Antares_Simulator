@@ -103,7 +103,7 @@ unsigned int ThermalClusterList::capacityReservationsCount() const
     std::set<const CapacityReservation*> uniqueReservations;
     for (auto& cluster : allClusters_)
     {
-        for (const auto& [_, reserveParticipation] : cluster->clusterReservesParticipations)
+        for (const auto& [_, reserveParticipation] : cluster->clusterReservesParticipations())
         {
             const CapacityReservation* reservationPtr = &(reserveParticipation.capacityReservation.get());
             uniqueReservations.insert(reservationPtr);

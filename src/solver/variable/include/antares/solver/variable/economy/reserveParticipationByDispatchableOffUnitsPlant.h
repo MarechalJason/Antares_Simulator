@@ -106,8 +106,11 @@ public:
         pNbYearsParallel = study->maxNbYearsInParallel;
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
-        // Get the number of Onthermal reserveParticipations
-        pSize = area->thermal.list.reserveParticipationsCount();
+        // Get the number of thermal reserveParticipations
+        pSize = study->parameters.compatibility.reserves
+                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+                  ? area->thermal.list.reserveParticipationsCount()
+                  : 0;
 
         if (pSize)
         {
@@ -222,18 +225,22 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         // Get end year calculations
-        for (auto& [clusterName, _]:
-             state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear])
+        if (state.study.parameters.compatibility.reserves
+            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
         {
-            for (const auto& [reserveName, reserveParticipation]:
-                 state
-                   .reserveParticipationPerThermalClusterForYear[state.hourInTheYear][clusterName])
+            for (auto& [clusterName, _]:
+                 state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear])
             {
-                pValuesForTheCurrentYear[numSpace]
-                                        [state.area->reserveParticipationThermalClustersIndexMap
-                                           .get(std::make_pair(reserveName, clusterName))]
-                                          .hour[state.hourInTheYear]
-                  = reserveParticipation.offUnitsParticipation;
+                for (const auto& [reserveName, reserveParticipation]:
+                     state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
+                                                                       [clusterName])
+                {
+                    pValuesForTheCurrentYear
+                      [numSpace][state.area->reserveParticipationIndexMaps().thermalClusters.get(
+                                   std::make_pair(reserveName, clusterName))]
+                        .hour[state.hourInTheYear]
+                      = reserveParticipation.offUnitsParticipation;
+                }
             }
         }
         // Next variable
@@ -263,15 +270,17 @@ public:
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
             {
-                if (results.data.area->reserveParticipationThermalClustersIndexMap.size() == 0) //Bimap is empty
+                if (results.data.area->reserveParticipationIndexMaps().thermalClusters.size()
+                    == 0) // Bimap is empty
                 {
                     logs.warning() << "Problem during the results export, the thermal bimap is empty for area " << results.data.area->name;
                     break;
                 }
                 else
                 {
-                    auto [reserveName, clusterName]
-                      = results.data.area->reserveParticipationThermalClustersIndexMap.get(i);
+                    auto [reserveName, clusterName] = results.data.area
+                                                        ->reserveParticipationIndexMaps()
+                                                        .thermalClusters.get(i);
                     results.variableCaption = reserveName + "_" + clusterName
                                               + "_off"; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();

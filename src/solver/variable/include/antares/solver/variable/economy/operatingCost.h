@@ -245,7 +245,9 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
-          += state.reserveParticipationCostForYear[state.hourInTheYear];
+          += state.reserveParticipationCostForYear
+               ? state.reserveParticipationCostForYear()[state.hourInTheYear]
+               : 0;
         // Next variable
         NextType::hourForEachArea(state, numSpace);
     }

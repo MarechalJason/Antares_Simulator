@@ -22,8 +22,9 @@ void LTTurbiningMaxReserve::add(int pays, int reserve, int cluster, int pdt, boo
             reserveParticipation.globalIndexClusterParticipation, 1.0)
           .lessThan();
         data.CorrespondanceCntNativesCntOptim[pdt]
-          .NumeroDeContrainteDesContraintesLTStorageClusterMaxWithdrawParticipation
-            [reserveParticipation.globalIndexClusterParticipation]
+          .reservesIndices()
+          .LTStorageClusterMaxTurbiningParticipation[reserveParticipation
+                                                       .globalIndexClusterParticipation]
           = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);

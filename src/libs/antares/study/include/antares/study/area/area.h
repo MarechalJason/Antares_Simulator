@@ -31,6 +31,8 @@
 #include <yuni/core/string.h>
 
 #include <antares/array/matrix.h>
+#include <antares/study/area/ReserveOpt.h>
+#include <antares/study/area/capacityReservation.h>
 #include <antares/study/parameters/adq-patch-params.h>
 #include "antares/study/filter.h"
 #include "antares/study/parts/parts.h"
@@ -38,7 +40,6 @@
 #include "constants.h"
 #include "links.h"
 #include "ui.h"
-#include <antares/study/area/capacityReservation.h>
 
 template<typename T>
 class BiMap
@@ -343,13 +344,16 @@ public:
     //@}
 
     /// \name AllCapacityReservations structure to keep track of the added capacity reservations
-    AllCapacityReservations allCapacityReservations;
+    ReserveOpt<AllCapacityReservations> allCapacityReservations;
 
-    BiMap<std::pair<Data::ReserveName, Data::ClusterName>>
-      reserveParticipationThermalClustersIndexMap;
-    BiMap<std::pair<Data::ReserveName, Data::ClusterName>>
-      reserveParticipationSTStorageClustersIndexMap;
-    BiMap<Data::ReserveName> reserveParticipationLTStorageIndexMap;
+    struct ReserveIndexMap
+    {
+        BiMap<std::pair<Data::ReserveName, Data::ClusterName>> thermalClusters;
+        BiMap<std::pair<Data::ReserveName, Data::ClusterName>> STStorageClusters;
+        BiMap<Data::ReserveName> LTStorage;
+    };
+
+    ReserveOpt<ReserveIndexMap> reserveParticipationIndexMaps;
 
     //! \name Output filtering
     //@{

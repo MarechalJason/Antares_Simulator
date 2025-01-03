@@ -258,8 +258,12 @@ public:
                * (state.hourlyResults->HydroUsage[state.hourInTheWeek].TurbinageHoraire
                   - area->hydro.pumpingEfficiency
                       * state.hourlyResults->HydroUsage[state.hourInTheWeek].PompageHoraire)
-             + state.STStorageClusterReserveParticipationCostForYear[state.hourInTheYear]
-             + state.LTStorageClusterReserveParticipationCostForYear[state.hourInTheYear];
+             + (state.STStorageClusterReserveParticipationCostForYear
+                  ? state.STStorageClusterReserveParticipationCostForYear()[state.hourInTheYear]
+                  : 0)
+             + (state.LTStorageClusterReserveParticipationCostForYear
+                  ? state.LTStorageClusterReserveParticipationCostForYear()[state.hourInTheYear]
+                  : 0);
 
         // Thermal costs
         for (auto& cluster: area->thermal.list.all())

@@ -521,7 +521,12 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaire(PROBLEME_HEBDO* prob
     {
         OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(
           problemeHebdo, PremierPdtDeLIntervalle, DernierPdtDeLIntervalle);
-        OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
-          problemeHebdo, PremierPdtDeLIntervalle, DernierPdtDeLIntervalle);
+        if (problemeHebdo->allReserves)
+        {
+            OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
+              problemeHebdo,
+              PremierPdtDeLIntervalle,
+              DernierPdtDeLIntervalle);
+        }
     }
 }

@@ -104,15 +104,12 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the area
-        pSize = 0;
-        for (auto res : area->allCapacityReservations.areaCapacityReservationsUp)
-        {
-            pSize += 2;
-        }
-        for (auto res : area->allCapacityReservations.areaCapacityReservationsDown)
-        {
-            pSize += 2;
-        }
+        pSize = study->parameters.compatibility.reserves
+                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+                  ? area->allCapacityReservations().areaCapacityReservationsUp.size() * 2
+                      + area->allCapacityReservations().areaCapacityReservationsDown.size() * 2
+                  : 0;
+
         if (pSize)
         {
             AncestorType::pResults.resize(pSize);
@@ -233,24 +230,28 @@ public:
         auto& area = state.area;
         int column = 0;
 
-        auto reserves = state.problemeHebdo->allReserves[area->index];
-        for (const auto& reserveUp : reserves.areaCapacityReservationsUp)
+        if (state.study.parameters.compatibility.reserves
+            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
         {
-            pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-              += state.hourlyResults->Reserves[state.hourInTheWeek]
-                   .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex];
-            pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-              += state.hourlyResults->Reserves[state.hourInTheWeek]
-                   .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex];
-        }
-        for (const auto& reserveDown : reserves.areaCapacityReservationsDown)
-        {
-            pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-              += state.hourlyResults->Reserves[state.hourInTheWeek]
-                   .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex];
-            pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-              += state.hourlyResults->Reserves[state.hourInTheWeek]
-                   .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex];
+            auto reserves = state.problemeHebdo->allReserves()[area->index];
+            for (const auto& reserveUp: reserves.areaCapacityReservationsUp)
+            {
+                pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
+                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                       .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex];
+                pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
+                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                       .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex];
+            }
+            for (const auto& reserveDown: reserves.areaCapacityReservationsDown)
+            {
+                pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
+                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                       .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex];
+                pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
+                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                       .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex];
+            }
         }
 
         // Next variable
@@ -272,14 +273,15 @@ public:
         // Initializing external pointer on current variable non applicable status
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
-        if (AncestorType::isPrinted[0])
+        if (AncestorType::isPrinted[0] && results.data.area->allCapacityReservations)
         {
             assert(NULL != results.data.area);
             const auto& thermal = results.data.area->thermal;
             results.variableUnit = VCardType::Unit();
             // Write the data for the current year
             int column = 0;
-            for (const auto& reserveUp : results.data.area->allCapacityReservations.areaCapacityReservationsUp)
+            for (const auto& reserveUp:
+                 results.data.area->allCapacityReservations().areaCapacityReservationsUp)
             {
                     // Write the data for the current year
                     Yuni::String caption = reserveUp.first;
@@ -293,7 +295,8 @@ public:
                     pValuesForTheCurrentYear[numSpace][column++].template buildAnnualSurveyReport<VCardType>(
                         results, fileLevel, precision);
             }
-            for (const auto& reserveDown : results.data.area->allCapacityReservations.areaCapacityReservationsDown)
+            for (const auto& reserveDown:
+                 results.data.area->allCapacityReservations().areaCapacityReservationsDown)
             {
                     // Write the data for the current year
                     Yuni::String caption = reserveDown.first;

@@ -49,8 +49,8 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 builder.lessThan();
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .NumeroDeContrainteDesContraintesLTGlobalStockEnergyLevelReserveParticipationDown
-                    [globalClusterIdx]
+                  .reservesIndices()
+                  .LTStorageGlobalStockEnergyReserveParticipationDown[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -98,8 +98,8 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 builder.lessThan();
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .NumeroDeContrainteDesContraintesLTGlobalStockEnergyLevelReserveParticipationUp
-                    [globalClusterIdx]
+                  .reservesIndices()
+                  .LTStorageGlobalStockEnergyLevelParticipationUp[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);

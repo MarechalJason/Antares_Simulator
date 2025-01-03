@@ -407,6 +407,13 @@ public:
             Hourly
         };
         HydroPmax hydroPmax = HydroPmax::Daily;
+
+        enum class Reserves
+        {
+            Enabled,
+            Disabled
+        };
+        Reserves reserves = Reserves::Disabled;
     };
 
     Compatibility compatibility;
@@ -532,6 +539,9 @@ bool StringToSimulationMode(SimulationMode& mode, Yuni::CString<20, false> text)
 
 const char* CompatibilityHydroPmaxToCString(Parameters::Compatibility::HydroPmax);
 bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax&, const std::string& text);
+
+const char* CompatibilityReservesToCString(Parameters::Compatibility::Reserves);
+bool StringToCompatibilityReserves(Parameters::Compatibility::Reserves&, const std::string& text);
 
 } // namespace Antares::Data
 

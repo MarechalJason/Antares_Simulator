@@ -263,35 +263,44 @@ public:
                 - state.area->hydro.pumpingEfficiency
                     * state.hourlyResults->HydroUsage[state.hourInTheWeek].PompageHoraire));
 
-        auto reserves = state.problemeHebdo->allReserves[area->index];
-        for (const auto& reserveUp : reserves.areaCapacityReservationsUp)
+        if (state.study.parameters.compatibility.reserves
+            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
         {
-            costForSpilledOrUnsuppliedEnergy
-              += state.hourlyResults->Reserves[state.hourInTheWeek]
-                     .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex]
-                   * reserveUp.failureCost
-                 + state.hourlyResults->Reserves[state.hourInTheWeek]
-                       .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex]
-                     * reserveUp.spillageCost;
+            const auto& reserves = state.problemeHebdo->allReserves()[area->index];
+            for (const auto& reserveUp: reserves.areaCapacityReservationsUp)
+            {
+                costForSpilledOrUnsuppliedEnergy
+                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                         .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex]
+                       * reserveUp.failureCost
+                     + state.hourlyResults->Reserves()[state.hourInTheWeek]
+                           .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex]
+                         * reserveUp.spillageCost;
+            }
+            for (const auto& reserveDown: reserves.areaCapacityReservationsDown)
+            {
+                costForSpilledOrUnsuppliedEnergy
+                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                         .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex]
+                       * reserveDown.failureCost
+                     + state.hourlyResults->Reserves()[state.hourInTheWeek]
+                           .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex]
+                         * reserveDown.spillageCost;
+            }
         }
-        for (const auto& reserveDown : reserves.areaCapacityReservationsDown)
-        {
-            costForSpilledOrUnsuppliedEnergy
-              += state.hourlyResults->Reserves[state.hourInTheWeek]
-                     .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex]
-                   * reserveDown.failureCost
-                 + state.hourlyResults->Reserves[state.hourInTheWeek]
-                       .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex]
-                     * reserveDown.spillageCost;
-        }
-        
+
         pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
           += costForSpilledOrUnsuppliedEnergy
-             + state.reserveParticipationCostForYear[state.hourInTheYear];
+             + (state.reserveParticipationCostForYear
+                  ? state.reserveParticipationCostForYear()[state.hourInTheYear]
+                  : 0);
 
         // Incrementing annual system cost (to be printed in output into a separate file)
         state.annualSystemCost += costForSpilledOrUnsuppliedEnergy
-                                  + state.reserveParticipationCostForYear[state.hourInTheYear];
+                                  + (state.reserveParticipationCostForYear
+                                       ? state
+                                           .reserveParticipationCostForYear()[state.hourInTheYear]
+                                       : 0);
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);

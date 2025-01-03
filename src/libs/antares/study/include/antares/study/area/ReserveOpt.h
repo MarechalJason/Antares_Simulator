@@ -18,30 +18,32 @@
 ** You should have received a copy of the Mozilla Public Licence 2.0
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
-#include "antares/solver/optimisation/ProblemMatrixEssential.h"
+#ifndef __ANTARES_LIBS_STUDY_RESERVE_OPT_H__
+#define __ANTARES_LIBS_STUDY_RESERVE_OPT_H__
 
-#include "antares/solver/optimisation/constraints/ReserveParticipationGroup.h"
-
-ProblemMatrixEssential::ProblemMatrixEssential(PROBLEME_HEBDO* problemeHebdo):
-    problemeHebdo_(problemeHebdo)
+template<typename T>
+class ReserveOpt: public std::optional<T>
 {
-}
+public:
+    using std::optional<T>::optional;
 
-void ProblemMatrixEssential::Run()
-{
-    for (auto& group: constraintgroups_)
+    T& operator()() &
     {
-        if (dynamic_cast<ReserveParticipationGroup*>(group) && !problemeHebdo_->allReserves)
-        {
-            continue;
-        }
-        group->BuildConstraints();
+        return this->value();
     }
-}
 
-void ProblemMatrixEssential::InitializeProblemAResoudreCounters()
-{
-    auto& ProblemeAResoudre = problemeHebdo_->ProblemeAResoudre;
-    ProblemeAResoudre->NombreDeContraintes = 0;
-    ProblemeAResoudre->NombreDeTermesDansLaMatriceDesContraintes = 0;
-}
+    const T& operator()() const&
+    {
+        return this->value();
+    }
+
+    void init()
+    {
+        if (!this->has_value())
+        {
+            this->emplace(T());
+        }
+    }
+};
+
+#endif // __ANTARES_LIBS_STUDY_RESERVE_OPT_H__

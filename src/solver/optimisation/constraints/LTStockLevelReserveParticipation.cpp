@@ -31,9 +31,9 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 builder.HydroLevel(globalClusterIdx, 1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesLTStockLevelReserveParticipationDown
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .LTStorageLevelParticipationDown[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
@@ -69,9 +69,9 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 builder.HydroLevel(globalClusterIdx, -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesLTStockLevelReserveParticipationUp
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .LTStorageLevelParticipationUp[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);

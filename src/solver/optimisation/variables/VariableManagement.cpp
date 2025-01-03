@@ -51,7 +51,8 @@ int& VariableManager::RunningThermalClusterReserveParticipation(unsigned int ind
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .runningThermalClusterReserveParticipationIndex[index];
+      .reservesIndices()
+      .runningThermalClusterParticipation[index];
 }
 
 int& VariableManager::OffThermalClusterReserveParticipation(unsigned int index,
@@ -62,7 +63,8 @@ int& VariableManager::OffThermalClusterReserveParticipation(unsigned int index,
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .offThermalClusterReserveParticipationIndex[index];
+      .reservesIndices()
+      .offThermalClusterParticipation[index];
 }
 
 int& VariableManager::ThermalClusterReserveParticipation(unsigned int index,
@@ -72,7 +74,9 @@ int& VariableManager::ThermalClusterReserveParticipation(unsigned int index,
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
-    return CorrespondanceVarNativesVarOptim_[pdt].thermalClusterReserveParticipationIndex[index];
+    return CorrespondanceVarNativesVarOptim_[pdt]
+      .reservesIndices()
+      .thermalClusterParticipation[index];
 }
 
 int& VariableManager::STStorageClusterReserveUpParticipation(unsigned int index,
@@ -82,7 +86,9 @@ int& VariableManager::STStorageClusterReserveUpParticipation(unsigned int index,
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
-    return CorrespondanceVarNativesVarOptim_[pdt].STStorageClusterReserveUpParticipationIndex[index];
+    return CorrespondanceVarNativesVarOptim_[pdt]
+      .reservesIndices()
+      .STStorageClusterParticipationUp[index];
 }
 
 int& VariableManager::STStorageClusterReserveDownParticipation(unsigned int index,
@@ -92,7 +98,9 @@ int& VariableManager::STStorageClusterReserveDownParticipation(unsigned int inde
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
-    return CorrespondanceVarNativesVarOptim_[pdt].STStorageClusterReserveDownParticipationIndex[index];
+    return CorrespondanceVarNativesVarOptim_[pdt]
+      .reservesIndices()
+      .STStorageClusterParticipationDown[index];
 }
 
 int& VariableManager::STStorageTurbiningClusterReserveParticipation(unsigned int index,
@@ -103,7 +111,8 @@ int& VariableManager::STStorageTurbiningClusterReserveParticipation(unsigned int
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .STStorageTurbiningClusterReserveParticipationIndex[index];
+      .reservesIndices()
+      .STStorageTurbiningClusterParticipation[index];
 }
 
 int& VariableManager::STStoragePumpingClusterReserveParticipation(unsigned int index,
@@ -114,7 +123,8 @@ int& VariableManager::STStoragePumpingClusterReserveParticipation(unsigned int i
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .STStoragePumpingClusterReserveParticipationIndex[index];
+      .reservesIndices()
+      .STStoragePumpingClusterParticipation[index];
 }
 
 int& VariableManager::LTStorageClusterReserveUpParticipation(unsigned int index,
@@ -124,7 +134,8 @@ int& VariableManager::LTStorageClusterReserveUpParticipation(unsigned int index,
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .LTStorageClusterReserveUpParticipationIndex[index];
+      .reservesIndices()
+      .LTStorageClusterParticipationUp[index];
 }
 
 int& VariableManager::LTStorageClusterReserveDownParticipation(unsigned int index,
@@ -134,7 +145,8 @@ int& VariableManager::LTStorageClusterReserveDownParticipation(unsigned int inde
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .LTStorageClusterReserveDownParticipationIndex[index];
+      .reservesIndices()
+      .LTStorageClusterParticipationDown[index];
 }
 
 int& VariableManager::LTStorageTurbiningClusterReserveParticipation(unsigned int index,
@@ -144,7 +156,8 @@ int& VariableManager::LTStorageTurbiningClusterReserveParticipation(unsigned int
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .LTStorageTurbiningClusterReserveParticipationIndex[index];
+      .reservesIndices()
+      .LTStorageTurbiningClusterParticipation[index];
 }
 
 int& VariableManager::LTStoragePumpingClusterReserveParticipation(unsigned int index,
@@ -154,7 +167,8 @@ int& VariableManager::LTStoragePumpingClusterReserveParticipation(unsigned int i
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .LTStoragePumpingClusterReserveParticipationIndex[index];
+      .reservesIndices()
+      .LTStoragePumpingClusterParticipation[index];
 }
 
 int& VariableManager::InternalUnsatisfiedReserve(unsigned int index,
@@ -164,7 +178,7 @@ int& VariableManager::InternalUnsatisfiedReserve(unsigned int index,
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
-    return CorrespondanceVarNativesVarOptim_[pdt].internalUnsatisfiedReserveIndex[index];
+    return CorrespondanceVarNativesVarOptim_[pdt].reservesIndices().internalUnsatisfied[index];
 }
 
 int& VariableManager::InternalExcessReserve(unsigned int index,
@@ -174,7 +188,7 @@ int& VariableManager::InternalExcessReserve(unsigned int index,
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
-    return CorrespondanceVarNativesVarOptim_[pdt].internalExcessReserveIndex[index];
+    return CorrespondanceVarNativesVarOptim_[pdt].reservesIndices().internalExcess[index];
 }
 
 int& VariableManager::NumberOfDispatchableUnits(unsigned int index,
@@ -193,7 +207,8 @@ int& VariableManager::NumberOfOffUnitsParticipatingToReserve(unsigned int index,
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
-      .nbOffGroupUnitsParticipatingToReservesInThermalClusterIndex[index];
+      .reservesIndices()
+      .nbOffGroupUnitsInThermalClusterParticipating[index];
 }
 
 int& VariableManager::NumberStoppingDispatchableUnits(unsigned int index,

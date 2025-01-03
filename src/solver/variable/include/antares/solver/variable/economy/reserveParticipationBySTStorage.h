@@ -106,7 +106,10 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the number of STStorage reserveParticipations
-        pSize = area->shortTermStorage.reserveParticipationsCount();
+        pSize = study->parameters.compatibility.reserves
+                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+                  ? area->shortTermStorage.reserveParticipationsCount()
+                  : 0;
         if (pSize)
         {
             AncestorType::pResults.resize(pSize);
@@ -219,16 +222,22 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        for (auto&  [clusterName, _] : state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear])
+        if (state.study.parameters.compatibility.reserves
+            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
         {
-            for (const auto& [reserveName, reserveParticipation]:
-                 state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear][clusterName])
+            for (auto& [clusterName, _]:
+                 state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear])
             {
-                pValuesForTheCurrentYear[numSpace]
-                                        [state.area->reserveParticipationSTStorageClustersIndexMap
-                                           .get(std::make_pair(reserveName, clusterName))]
-                                          .hour[state.hourInTheYear]
-                  = reserveParticipation;
+                for (const auto& [reserveName, reserveParticipation]:
+                     state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
+                                                                         [clusterName])
+                {
+                    pValuesForTheCurrentYear
+                      [numSpace][state.area->reserveParticipationIndexMaps().STStorageClusters.get(
+                                   std::make_pair(reserveName, clusterName))]
+                        .hour[state.hourInTheYear]
+                      = reserveParticipation;
+                }
             }
         }
 
@@ -258,15 +267,17 @@ public:
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
             {
-                if (results.data.area->reserveParticipationSTStorageClustersIndexMap.size() == 0) //Bimap in empty
+                if (results.data.area->reserveParticipationIndexMaps().STStorageClusters.size()
+                    == 0) // Bimap in empty
                 {
                     logs.warning() << "Problem during the results export, the STS bimap is empty for area " << results.data.area->name;
                     break;
                 }
                 else
                 {
-                    auto [clusterName, reserveName]
-                        = results.data.area->reserveParticipationSTStorageClustersIndexMap.get(i);
+                    auto [clusterName, reserveName] = results.data.area
+                                                        ->reserveParticipationIndexMaps()
+                                                        .STStorageClusters.get(i);
                     // Write the data for the current year
                     results.variableCaption = clusterName + "_" + reserveName; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();

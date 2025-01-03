@@ -106,10 +106,13 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the number of potential group reserve participation
-        pSize = area->allCapacityReservations.areaCapacityReservationsUp.size()
-                  * Antares::Data::ShortTermStorage::groupMax
-                + area->allCapacityReservations.areaCapacityReservationsDown.size()
-                    * Antares::Data::ShortTermStorage::groupMax;
+        pSize = study->parameters.compatibility.reserves
+                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+                  ? area->allCapacityReservations().areaCapacityReservationsUp.size()
+                        * Antares::Data::ShortTermStorage::groupMax
+                      + area->allCapacityReservations().areaCapacityReservationsDown.size()
+                          * Antares::Data::ShortTermStorage::groupMax
+                  : 0;
 
         if (pSize)
         {
@@ -228,33 +231,39 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        auto& area = state.area;
-        int column = 0;
-        for (const auto& [reserveName, _]: area->allCapacityReservations.areaCapacityReservationsUp)
+        if (state.study.parameters.compatibility.reserves
+            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
         {
-            for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
-                 indexGroup++)
+            auto& area = state.area;
+            int column = 0;
+            for (const auto& [reserveName, _]:
+                 area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                  += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                       .shortTermStorageGroupsReserveParticipation[static_cast<Antares::Data::ShortTermStorage::Group>(
-                         indexGroup)][reserveName];
-                column++;
+                for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
+                     indexGroup++)
+                {
+                    pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
+                      += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                           .shortTermStorageGroupsReserveParticipation[static_cast<
+                             Antares::Data::ShortTermStorage::Group>(indexGroup)][reserveName];
+                    column++;
+                }
+            }
+            for (const auto& [reserveName, _]:
+                 area->allCapacityReservations().areaCapacityReservationsDown)
+            {
+                for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
+                     indexGroup++)
+                {
+                    pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
+                      += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                           .shortTermStorageGroupsReserveParticipation[static_cast<
+                             Antares::Data::ShortTermStorage::Group>(indexGroup)][reserveName];
+                    column++;
+                }
             }
         }
-        for (const auto& [reserveName, _]:
-             area->allCapacityReservations.areaCapacityReservationsDown)
-        {
-            for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
-                 indexGroup++)
-            {
-                pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                  += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                       .shortTermStorageGroupsReserveParticipation[static_cast<Antares::Data::ShortTermStorage::Group>(
-                         indexGroup)][reserveName];
-                column++;
-            }
-        }
+
         // Next variable
         NextType::hourForEachArea(state, numSpace);
     }
@@ -274,14 +283,14 @@ public:
         // Initializing external pointer on current variable non applicable status
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
-        if (AncestorType::isPrinted[0])
+        if (AncestorType::isPrinted[0] && results.data.area->allCapacityReservations)
         {
             assert(NULL != results.data.area);
 
             // Write the data for the current year
             int column = 0;
             for (const auto& [resName, _]:
-                 results.data.area->allCapacityReservations.areaCapacityReservationsUp)
+                 results.data.area->allCapacityReservations().areaCapacityReservationsUp)
             {
                 for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
                      indexGroup++)
@@ -299,7 +308,7 @@ public:
                 }
             }
             for (const auto& [resName, _]:
-                 results.data.area->allCapacityReservations.areaCapacityReservationsDown)
+                 results.data.area->allCapacityReservations().areaCapacityReservationsDown)
             {
                 for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
                      indexGroup++)

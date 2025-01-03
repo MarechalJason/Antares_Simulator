@@ -68,7 +68,10 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the number of LTStorage reserveParticipations
-        pSize = area->hydro.reserveParticipationsCount();
+        pSize = study->parameters.compatibility.reserves
+                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+                  ? area->hydro.reserveParticipationsCount()
+                  : 0;
         if (pSize)
         {
             AncestorType::pResults.resize(pSize);
@@ -166,15 +169,17 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (state.reserveParticipationPerLTStorageClusterForYear[state.hourInTheYear].size())
+        if (state.study.parameters.compatibility.reserves
+              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+            && state.reserveParticipationPerLTStorageClusterForYear[state.hourInTheYear].size())
         {
             for (const auto& [reserveName, reserveParticipation] :
                 state.reserveParticipationPerLTStorageClusterForYear[state.hourInTheYear]["LongTermStorage"])
             {
-                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationLTStorageIndexMap
-                    .get(reserveName)]
-                    .hour[state.hourInTheYear]
-                    = reserveParticipation;
+                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps()
+                                                     .LTStorage.get(reserveName)]
+                  .hour[state.hourInTheYear]
+                  = reserveParticipation;
             }
         }
 
@@ -199,14 +204,16 @@ void localBuildAnnualSurveyReport(SurveyResults& results,
             assert(NULL != results.data.area);
             for (uint i = 0; i < pSize; ++i)
             {
-                if (results.data.area->reserveParticipationLTStorageIndexMap.size() == 0) //Bimap in empty
+                if (results.data.area->reserveParticipationIndexMaps().LTStorage.size()
+                    == 0) // Bimap in empty
                 {
                     logs.warning() << "Problem during the results export, the LTS bimap is empty for area " << results.data.area->name;
                     break;
                 }
                 else
                 {
-                    auto reserveName = results.data.area->reserveParticipationLTStorageIndexMap.get(i);
+                    auto reserveName = results.data.area->reserveParticipationIndexMaps()
+                                         .LTStorage.get(i);
                     results.variableCaption = "LongTermStorage_" + reserveName; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
                     pValuesForTheCurrentYear[numSpace][0].template buildAnnualSurveyReport<VCardType>(

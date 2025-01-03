@@ -31,9 +31,9 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 builder.ShortTermStorageLevel(globalClusterIdx, 1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesSTStockLevelReserveParticipationDown
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .STStorageLevelParticipationDown[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
@@ -69,9 +69,9 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 builder.ShortTermStorageLevel(globalClusterIdx, -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                    .NumeroDeContrainteDesContraintesSTStockLevelReserveParticipationUp
-                    [globalClusterIdx]
-                    = builder.data.nombreDeContraintes;
+                  .reservesIndices()
+                  .STStorageLevelParticipationUp[globalClusterIdx]
+                  = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
