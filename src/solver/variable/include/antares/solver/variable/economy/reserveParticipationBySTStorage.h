@@ -267,13 +267,9 @@ public:
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
             {
-                if (results.data.area->reserveParticipationIndexMaps().STStorageClusters.size()
-                    == 0) // Bimap in empty
-                {
-                    logs.warning() << "Problem during the results export, the STS bimap is empty for area " << results.data.area->name;
-                    break;
-                }
-                else
+                if (results.data.area->reserveParticipationIndexMaps
+                    && results.data.area->reserveParticipationIndexMaps()
+                         .STStorageClusters.size()) // Bimap is not empty
                 {
                     auto [clusterName, reserveName] = results.data.area
                                                         ->reserveParticipationIndexMaps()

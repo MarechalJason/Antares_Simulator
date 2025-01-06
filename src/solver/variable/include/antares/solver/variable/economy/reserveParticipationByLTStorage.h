@@ -204,13 +204,9 @@ void localBuildAnnualSurveyReport(SurveyResults& results,
             assert(NULL != results.data.area);
             for (uint i = 0; i < pSize; ++i)
             {
-                if (results.data.area->reserveParticipationIndexMaps().LTStorage.size()
-                    == 0) // Bimap in empty
-                {
-                    logs.warning() << "Problem during the results export, the LTS bimap is empty for area " << results.data.area->name;
-                    break;
-                }
-                else
+                if (results.data.area->reserveParticipationIndexMaps
+                    && results.data.area->reserveParticipationIndexMaps()
+                         .LTStorage.size()) // Bimap is not empty
                 {
                     auto reserveName = results.data.area->reserveParticipationIndexMaps()
                                          .LTStorage.get(i);

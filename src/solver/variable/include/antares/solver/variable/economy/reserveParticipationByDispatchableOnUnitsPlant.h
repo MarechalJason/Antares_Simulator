@@ -271,13 +271,9 @@ public:
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
             {
-                if (results.data.area->reserveParticipationIndexMaps().thermalClusters.size()
-                    == 0) // Bimap is empty
-                {
-                    logs.warning() << "Problem during the results export, the thermal bimap is empty for area " << results.data.area->name;
-                    break;
-                }
-                else
+                if (results.data.area->reserveParticipationIndexMaps
+                    && results.data.area->reserveParticipationIndexMaps()
+                         .thermalClusters.size()) // Bimap is not empty
                 {
                     auto [reserveName, clusterName] = results.data.area
                                                         ->reserveParticipationIndexMaps()
