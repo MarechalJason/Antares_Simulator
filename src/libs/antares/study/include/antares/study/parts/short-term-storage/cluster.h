@@ -28,6 +28,7 @@
 #include <antares/study/area/ReserveOpt.h>
 #include <antares/study/area/capacityReservation.h>
 
+#include "AdditionalConstraint.h"
 #include "properties.h"
 #include "series.h"
 
@@ -40,12 +41,15 @@ public:
     static const char* GroupName(enum Group grp);
 
     bool enabled() const;
+
     bool validate() const;
 
     bool loadFromSection(const IniFile::Section& section);
+
     bool loadSeries(const std::filesystem::path& folder) const;
 
     void saveProperties(IniFile& ini) const;
+
     bool saveSeries(const std::string& path) const;
 
     void addReserveParticipation(Data::ReserveName name,
@@ -67,6 +71,7 @@ public:
 
     std::shared_ptr<Series> series = std::make_shared<Series>();
     mutable Properties properties;
+    std::vector<AdditionalConstraint> additional_constraints;
 
     //! reserve
     ReserveOpt<std::map<Data::ReserveName, STStorageClusterReserveParticipation>>

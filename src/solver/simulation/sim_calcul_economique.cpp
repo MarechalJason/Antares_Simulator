@@ -114,6 +114,7 @@ static void importShortTermStorages(
   PROBLEME_HEBDO& problem)
 {
     int clusterGlobalIndex = 0;
+    int clusterCumulativeConstraintGlobalIndex = 0;
     int globalReserveIndex = 0;
     int globalSTStorageClusterParticipationIndex = 0;
     for (uint areaIndex = 0; areaIndex != areas.size(); areaIndex++)
@@ -140,6 +141,13 @@ static void importShortTermStorages(
             toInsert.penalizeVariationInjection = st.properties.penalizeVariationInjection;
             toInsert.penalizeVariationWithdrawal = st.properties.penalizeVariationWithdrawal;
             toInsert.name = st.properties.name;
+            toInsert.additional_constraints = st.additional_constraints;
+            for (auto& constraint: toInsert.additional_constraints)
+            {
+                constraint.globalIndex = clusterCumulativeConstraintGlobalIndex;
+                ++clusterCumulativeConstraintGlobalIndex;
+            }            
+            
             toInsert.clusterGlobalIndex = clusterGlobalIndex;
 
             toInsert.series = st.series;

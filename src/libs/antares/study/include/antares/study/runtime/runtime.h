@@ -113,6 +113,7 @@ public:
     uint capacityReservationUpCount = 0; //! Total number of capacity reservations
 
     uint shortTermStorageCount = 0;
+    uint shortTermStorageCumulativeConstraintCount = 0;
     uint longTermStorageCount = 0;
 
     //! Override enable/disable TS generation per cluster

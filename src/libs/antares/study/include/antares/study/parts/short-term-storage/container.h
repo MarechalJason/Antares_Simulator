@@ -21,9 +21,9 @@
 
 #pragma once
 #include <filesystem>
-#include <map>
 #include <string>
 
+#include "AdditionalConstraint.h"
 #include "cluster.h"
 
 namespace Antares::Data::ShortTermStorage
@@ -32,8 +32,10 @@ class STStorageInput
 {
 public:
     bool validate() const;
+
     /// 1. Read list.ini
     bool createSTStorageClustersFromIniFile(const std::filesystem::path& path);
+
     /// 2. Read ALL series
     bool loadSeriesFromFolder(const std::filesystem::path& folder) const;
 
@@ -41,6 +43,9 @@ public:
 
     /// Number of enabled ST storages, ignoring disabled ST storages
     std::size_t count() const;
+
+    bool LoadConstraintsFromIniFile(const std::filesystem::path& filePath);
+
     /// erase disabled cluster from the vector
     uint removeDisabledClusters();
 
@@ -55,6 +60,7 @@ public:
       unsigned int index) const;
 
     bool saveToFolder(const std::string& folder) const;
+
     bool saveDataSeriesToFolder(const std::string& folder) const;
 
     std::optional<std::reference_wrapper<STStorageCluster>> getClusterByName(
@@ -66,5 +72,8 @@ public:
     uint reserveParticipationsCount();
 
     std::vector<STStorageCluster> storagesByIndex;
+
+    /// Number cumulative - constraint
+    std::size_t cumulativeConstraintCount() const;
 };
 } // namespace Antares::Data::ShortTermStorage

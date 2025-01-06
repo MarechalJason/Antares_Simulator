@@ -126,6 +126,11 @@ toc_depth: 2
 * Update ortools to 9.11-rte1.1
 * Various improvement to code quality
 
+#### For developers
+
+* Update ortools to 9.11-rte1.1
+* Various improvement to code quality
+
 ## Branch 9.1.x
 
 ### 9.1.0 (06/2024)

@@ -145,12 +145,12 @@ int OPT_DecompteDesVariablesEtDesContraintesDuProblemeAOptimiser(PROBLEME_HEBDO*
             ProblemeAResoudre->NombreDeContraintes += 2; /* 2 constraints bounding the overall
                                                             energy generated over the period (10a in
                                                             the reference document) */
-            ProblemeAResoudre
-              ->NombreDeContraintes++; /* 1 constraint setting the level variation over the period
-                                    (10b in the reference document) */
-            ProblemeAResoudre
-              ->NombreDeContraintes++; /* 1 constraint bounding the overall energy pumped over the
-                                    period (10c in the reference document) */
+            ProblemeAResoudre->NombreDeContraintes++;
+            /* 1 constraint setting the level variation over the period
+                                               (10b in the reference document) */
+            ProblemeAResoudre->NombreDeContraintes++;
+            /* 1 constraint bounding the overall energy pumped over the
+                                               period (10c in the reference document) */
         }
 
         if (!Pump && TurbEntreBornes && !MonitorHourlyLev)
@@ -193,16 +193,16 @@ int OPT_DecompteDesVariablesEtDesContraintesDuProblemeAOptimiser(PROBLEME_HEBDO*
             ProblemeAResoudre->NombreDeContraintes += 2; /* 2 constraints bounding the overall
                                                             energy generated over the period (10a in
                                                             the reference document) */
-            ProblemeAResoudre
-              ->NombreDeContraintes++; /* 1 constraint setting the level variation over the period
-                                    (10b in the reference document) */
-            ProblemeAResoudre
-              ->NombreDeContraintes++; /* 1 constraint bounding the overall energy pumped over the
-                                    period (10c in the reference document) */
-            ProblemeAResoudre->NombreDeContraintes
-              += nombreDePasDeTempsPourUneOptimisation; /* T constraints expressing the level hourly
-                                                     variations (14a in the reference
-                                                     document) */
+            ProblemeAResoudre->NombreDeContraintes++;
+            /* 1 constraint setting the level variation over the period
+                                               (10b in the reference document) */
+            ProblemeAResoudre->NombreDeContraintes++;
+            /* 1 constraint bounding the overall energy pumped over the
+                                               period (10c in the reference document) */
+            ProblemeAResoudre->NombreDeContraintes += nombreDePasDeTempsPourUneOptimisation;
+            /* T constraints expressing the level hourly
+                                                                variations (14a in the reference
+                                                                document) */
         }
         if (!Pump && !TurbEntreBornes && MonitorHourlyLev)
         {
@@ -245,6 +245,10 @@ int OPT_DecompteDesVariablesEtDesContraintesDuProblemeAOptimiser(PROBLEME_HEBDO*
                     ProblemeAResoudre->NombreDeVariables += nombreDePasDeTempsPourUneOptimisation;
                     ProblemeAResoudre->NombreDeContraintes
                       += 2 * nombreDePasDeTempsPourUneOptimisation;
+                }
+                if (!storage.additional_constraints.empty())
+                {
+                    ProblemeAResoudre->NombreDeContraintes += storage.additional_constraints.size();
                 }
             }
         }

@@ -55,8 +55,7 @@ const char* STStorageCluster::GroupName(enum Group grp)
     default :
         throw std::out_of_range("groupMax shouln't be printed");
     }
-} // namespace Antares::Data::ShortTermStorage
-
+}
 bool STStorageCluster::loadFromSection(const IniFile::Section& section)
 {
     if (!section.firstProperty)
@@ -156,5 +155,4 @@ float STStorageCluster::reserveCost(Data::ReserveName name)
 uint STStorageCluster::reserveParticipationsCount(){
     return clusterReservesParticipations ? clusterReservesParticipations().size() : 0;
 }
-
 } // namespace Antares::Data::ShortTermStorage
