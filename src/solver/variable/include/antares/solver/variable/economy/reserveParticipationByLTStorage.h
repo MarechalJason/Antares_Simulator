@@ -207,10 +207,11 @@ void localBuildAnnualSurveyReport(SurveyResults& results,
                 else
                 {
                     auto reserveName = results.data.area->reserveParticipationLTStorageIndexMap.get(i);
-                    results.variableCaption = "LongTermStorage_" + reserveName; // VCardType::Caption();
+                    results.variableCaption = reserveName
+                                              + "_LongTermStorage"; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
-                    pValuesForTheCurrentYear[numSpace][0].template buildAnnualSurveyReport<VCardType>(
-                        results, fileLevel, precision);
+                    pValuesForTheCurrentYear[numSpace][i]
+                      .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
                 }
             }
         }
