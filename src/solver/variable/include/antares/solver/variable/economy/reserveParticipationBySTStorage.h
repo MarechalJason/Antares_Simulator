@@ -271,11 +271,11 @@ public:
                     && results.data.area->reserveParticipationIndexMaps()
                          .STStorageClusters.size()) // Bimap is not empty
                 {
-                    auto [clusterName, reserveName] = results.data.area
+                    auto [reserveName, clusterName] = results.data.area
                                                         ->reserveParticipationIndexMaps()
                                                         .STStorageClusters.get(i);
                     // Write the data for the current year
-                    results.variableCaption = clusterName + "_" + reserveName; // VCardType::Caption();
+                    results.variableCaption = reserveName + "_" + clusterName; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
                     pValuesForTheCurrentYear[numSpace][i].template buildAnnualSurveyReport<VCardType>(
                         results, fileLevel, precision);
