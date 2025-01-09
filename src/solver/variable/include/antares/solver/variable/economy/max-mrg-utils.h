@@ -11,7 +11,7 @@ struct MaxMRGinput
 {
     double* spillage = nullptr;
     double* dens = nullptr;
-    double* hydroGeneration = nullptr;
+    std::vector<double> hydroGeneration;
     Antares::Data::TimeSeries* maxHourlyGenPower = nullptr;
     double* dtgMargin = nullptr;
     unsigned int hourInYear = 0;
