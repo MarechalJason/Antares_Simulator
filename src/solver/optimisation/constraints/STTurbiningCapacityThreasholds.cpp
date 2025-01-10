@@ -21,7 +21,7 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
             for (const auto& capacityReservation :
                  data.areaReserves[pays].areaCapacityReservationsDown)
             {
-                if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
+                if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
                     auto& reserveParticipation = capacityReservation
                                                    .AllSTStorageReservesParticipation.at(cluster);
@@ -56,7 +56,7 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
             for (const auto& capacityReservation :
                  data.areaReserves[pays].areaCapacityReservationsUp)
             {
-                if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
+                if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
                     auto& reserveParticipation = capacityReservation
                                                    .AllSTStorageReservesParticipation.at(cluster);

@@ -97,43 +97,10 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
         }
 
-        // Common setter for the thermal clusters
-        void setThermalReserveParticipationRightSides(
-          const RESERVE_PARTICIPATION_THERMAL& reserveParticipation)
-        {
-            const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
-                                                             ->CorrespondanceCntNativesCntOptim
-                                                               [pdtJour];
-            int cnt = CorrespondanceCntNativesCntOptim
-                        .NumeroDeContrainteDesContraintesDePuissanceMinDuPalier[reserveParticipation
-                                                                                  .clusterIdInArea];
-            if (cnt >= 0)
-            {
-                SecondMembre[cnt] = problemeHebdo->PaliersThermiquesDuPays[pays]
-                                      .PuissanceDisponibleEtCout[reserveParticipation
-                                                                   .clusterIdInArea]
-                                      .PuissanceMinDuPalierThermiqueRef[pdtJour];
-                AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
-            }
-
-            cnt = CorrespondanceCntNativesCntOptim
-                    .NumeroDeContrainteDesContraintesDePuissanceMaxDuPalier[reserveParticipation
-                                                                              .clusterIdInArea];
-            if (cnt >= 0)
-            {
-                SecondMembre[cnt] = problemeHebdo->PaliersThermiquesDuPays[pays]
-                                      .PuissanceDisponibleEtCout[reserveParticipation
-                                                                   .clusterIdInArea]
-                                      .PuissanceDisponibleDuPalierThermiqueRef[pdtJour];
-                AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
-            }
-        }
-
         // Set the rigth sides of equations for a Thermal cluster participation to a reserve up
         void setThermalReserveUpParticipationRightSides(
           const RESERVE_PARTICIPATION_THERMAL& reserveParticipation)
         {
-            setThermalReserveParticipationRightSides(reserveParticipation);
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
@@ -150,27 +117,49 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
         }
 
-        // Set the rigth sides of equations for a Thermal cluster participation to a reserve down
-        void setThermalReserveDownParticipationRightSides(
-          const RESERVE_PARTICIPATION_THERMAL& reserveParticipation)
-        {
-            setThermalReserveParticipationRightSides(reserveParticipation);
-        }
-
-        // Common setter for the ShortTerm Storage clusters
-        void setSTStorageReserveParticipationRightSides(
-          const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation,
-          const AREA_RESERVES_VECTOR& reserves,
-          const CAPACITY_RESERVATION& reserve)
+        // Set the rigth sides of equations for a Thermal cluster
+        void setThermalClusterRightSides(const int areaClusterId)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
-            int cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                        .STStorageClusterTurbiningCapacityThreasholdsMax[reserveParticipation
-                                                                           .clusterId];
+            int globalClusterIdx = problemeHebdo->PaliersThermiquesDuPays[pays]
+                                     .NumeroDuPalierDansLEnsembleDesPaliersThermiques
+                                       [areaClusterId];
 
-            auto& cluster = problemeHebdo->ShortTermStorage[pays][reserveParticipation.clusterId];
+            int cnt = CorrespondanceCntNativesCntOptim
+                        .NumeroDeContrainteDesContraintesDePuissanceMinDuPalier[globalClusterIdx];
+            if (cnt >= 0)
+            {
+                SecondMembre[cnt] = problemeHebdo->PaliersThermiquesDuPays[pays]
+                                      .PuissanceDisponibleEtCout[areaClusterId]
+                                      .PuissanceMinDuPalierThermiqueRef[pdtJour];
+                AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
+            }
+
+            cnt = CorrespondanceCntNativesCntOptim
+                    .NumeroDeContrainteDesContraintesDePuissanceMaxDuPalier[globalClusterIdx];
+            if (cnt >= 0)
+            {
+                SecondMembre[cnt] = problemeHebdo->PaliersThermiquesDuPays[pays]
+                                      .PuissanceDisponibleEtCout[areaClusterId]
+                                      .PuissanceDisponibleDuPalierThermiqueRef[pdtJour];
+                AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
+            }
+        }
+
+        // Common setter for the ShortTerm Storage clusters
+        void setSTStorageClusterRightSides(const ::ShortTermStorage::PROPERTIES& cluster,
+                                           const AREA_RESERVES_VECTOR& reserves)
+        {
+            const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
+                                                             ->CorrespondanceCntNativesCntOptim
+                                                               [pdtJour];
+            int cnt
+              = CorrespondanceCntNativesCntOptim.reservesIndices()
+                  .NumeroDeContrainteDesContraintesSTStorageClusterTurbiningCapacityThreasholdsMax
+                    [cluster.clusterGlobalIndex];
+
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = cluster.series.get()->maxWithdrawalModulation[pdtGlobal]
@@ -179,8 +168,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageClusterTurbiningCapacityThreasholdsMin[reserveParticipation
-                                                                       .clusterId];
+                    .NumeroDeContrainteDesContraintesSTStorageClusterTurbiningCapacityThreasholdsMin
+                      [reserveParticipation.clusterId];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = cluster.series.get()->lowerRuleCurve[pdtGlobal]
@@ -189,7 +178,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageClusterPumpingCapacityThreasholds[reserveParticipation.clusterId];
+                    .NumeroDeContrainteDesContraintesSTStorageClusterPumpingCapacityThreasholds
+                      [reserveParticipation.clusterId];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = cluster.series.get()->maxInjectionModulation[pdtGlobal]
@@ -202,7 +192,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                * cluster.series->lowerRuleCurve[pdtGlobal];
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageLevelParticipationDown[reserveParticipation.clusterId];
+                    .NumeroDeContrainteDesContraintesSTStockLevelReserveParticipationDown
+                      [reserveParticipation.clusterId];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = level_max;
@@ -210,16 +201,18 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageLevelParticipationUp[reserveParticipation.clusterId];
+                    .NumeroDeContrainteDesContraintesSTStockLevelReserveParticipationUp
+                      [reserveParticipation.clusterId];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = -level_min;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
 
-            cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageGlobalStockEnergyLevelParticipationDown[reserveParticipation
-                                                                        .clusterId];
+            cnt
+              = CorrespondanceCntNativesCntOptim.reservesIndices()
+                  .NumeroDeContrainteDesContraintesSTGlobalStockEnergyLevelReserveParticipationDown
+                    [reserveParticipation.clusterId];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = reserves.maxGlobalActivationDurationDown
@@ -228,7 +221,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageGlobalStockEnergyLevelParticipationUp[reserveParticipation.clusterId];
+                    .NumeroDeContrainteDesContraintesSTGlobalStockEnergyLevelReserveParticipationUp
+                      [reserveParticipation.clusterId];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = -reserves.maxGlobalActivationDurationUp
@@ -240,10 +234,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         // Set the rigth sides of equations for a ShortTerm cluster participation to a reserve up
         void setSTStorageReserveUpParticipationRightSides(
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation,
-          const AREA_RESERVES_VECTOR& reserves,
           const CAPACITY_RESERVATION& reserve)
         {
-            setSTStorageReserveParticipationRightSides(reserveParticipation, reserves, reserve);
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
@@ -282,10 +274,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         // Set the rigth sides of equations for a ShortTerm cluster participation to a reserve down
         void setSTStorageReserveDownParticipationRightSides(
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation,
-          const AREA_RESERVES_VECTOR& reserves,
           const CAPACITY_RESERVATION& reserve)
         {
-            setSTStorageReserveParticipationRightSides(reserveParticipation, reserves, reserve);
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
@@ -321,10 +311,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         }
 
         // Common setter for the LongTerm Storage clusters
-        void setLTStorageReserveParticipationRightSides(
-          const RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation,
-          const AREA_RESERVES_VECTOR& reserves,
-          const CAPACITY_RESERVATION& reserve)
+        void setLTStorageClusterRightSides(const AREA_RESERVES_VECTOR& reserves)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -396,10 +383,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         // Set the rigth sides of equations for a LongTerm cluster participation to a reserve up
         void setLTStorageReserveUpParticipationRightSides(
           const RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation,
-          const AREA_RESERVES_VECTOR& reserves,
           const CAPACITY_RESERVATION& reserve)
         {
-            setLTStorageReserveParticipationRightSides(reserveParticipation, reserves, reserve);
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
@@ -436,10 +421,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         // Set the rigth sides of equations for a LongTerm cluster participation to a reserve down
         void setLTStorageReserveDownParticipationRightSides(
           const RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation,
-          const AREA_RESERVES_VECTOR& reserves,
           const CAPACITY_RESERVATION& reserve)
         {
-            setLTStorageReserveParticipationRightSides(reserveParticipation, reserves, reserve);
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
@@ -480,7 +463,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
     {
         int pdtGlobal = problemeHebdo->weekInTheYear * problemeHebdo->NombreDePasDeTempsDUneJournee
                           * problemeHebdo->NombreDeJours
-                        + pdtJour;
+                        + pdtHebdo;
 
         reserveVariablesRightSidesSetter.setPdtJour(pdtJour);
         reserveVariablesRightSidesSetter.setPdtHebdo(pdtHebdo);
@@ -510,7 +493,6 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                 {
                     reserveVariablesRightSidesSetter.setSTStorageReserveUpParticipationRightSides(
                       clusterReserveParticipation,
-                      areaReserves,
                       areaReserveUp);
                 }
 
@@ -520,7 +502,6 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                 {
                     reserveVariablesRightSidesSetter.setLTStorageReserveUpParticipationRightSides(
                       clusterReserveParticipation,
-                      areaReserves,
                       areaReserveUp);
                 }
             }
@@ -528,21 +509,12 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             {
                 reserveVariablesRightSidesSetter.setReserveRightSides(areaReserveDown);
 
-                // Thermal Cluster
-                for (const auto& [clusterId, clusterReserveParticipation]:
-                     areaReserveDown.AllThermalReservesParticipation)
-                {
-                    reserveVariablesRightSidesSetter.setThermalReserveDownParticipationRightSides(
-                      clusterReserveParticipation);
-                }
-
                 // Short Term Storage Cluster
                 for (const auto& [clusterId, clusterReserveParticipation]:
                      areaReserveDown.AllSTStorageReservesParticipation)
                 {
                     reserveVariablesRightSidesSetter.setSTStorageReserveDownParticipationRightSides(
                       clusterReserveParticipation,
-                      areaReserves,
                       areaReserveDown);
                 }
 
@@ -552,9 +524,40 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                 {
                     reserveVariablesRightSidesSetter.setLTStorageReserveDownParticipationRightSides(
                       clusterReserveParticipation,
-                      areaReserves,
                       areaReserveDown);
                 }
+            }
+
+            // Thermal Clusters
+            for (int cluster = 0;
+                 cluster < problemeHebdo->PaliersThermiquesDuPays[pays].NombreDePaliersThermiques;
+                 cluster++)
+            {
+                reserveVariablesRightSidesSetter.setThermalClusterRightSides(cluster);
+            }
+
+            // Short Term Storage clusters
+            for (const auto& cluster: problemeHebdo->ShortTermStorage[pays])
+            {
+                reserveVariablesRightSidesSetter.setSTStorageClusterRightSides(cluster,
+                                                                               areaReserves);
+            }
+
+            // Long Term Storage cluster
+            // Checks if LTStorage cluster is participating to reserves
+            auto isClusterParticipatingToReserves = [](std::vector<CAPACITY_RESERVATION>& reserves)
+            {
+                auto hasReserveParticipations = [](CAPACITY_RESERVATION& res)
+                { return res.AllLTStorageReservesParticipation.size() > 0; };
+                return std::any_of(reserves.begin(), reserves.end(), hasReserveParticipations);
+            };
+
+            if (isClusterParticipatingToReserves(
+                  problemeHebdo->allReserves[pays].areaCapacityReservationsDown)
+                || isClusterParticipatingToReserves(
+                  problemeHebdo->allReserves[pays].areaCapacityReservationsUp))
+            {
+                reserveVariablesRightSidesSetter.setLTStorageClusterRightSides(areaReserves);
             }
         }
     }

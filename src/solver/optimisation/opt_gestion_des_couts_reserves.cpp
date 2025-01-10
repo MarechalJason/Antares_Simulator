@@ -141,7 +141,6 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
         for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
         {
             auto areaReserves = problemeHebdo->allReserves()[pays];
-            int var;
 
             for (auto& areaReserveUp: areaReserves.areaCapacityReservationsUp)
             {
