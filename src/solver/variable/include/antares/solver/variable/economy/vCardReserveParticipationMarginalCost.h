@@ -63,7 +63,7 @@ struct VCardReserveParticipationMarginalCost
       ResultsType;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardReserveParticipationUnsuppliedSpilled VCardForSpatialAggregate;
+    typedef VCardReserveParticipationMarginalCost VCardForSpatialAggregate;
 
     enum
     {
