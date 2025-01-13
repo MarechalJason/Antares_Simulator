@@ -32,8 +32,8 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(PROB
                                                                             const int,
                                                                             const int);
 void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(PROBLEME_HEBDO*,
-                                                                            const int,
-                                                                            const int);
+                                                                              const int,
+                                                                              const int);
 
 void OPT_MaxDesPmaxHydrauliques(PROBLEME_HEBDO* problemeHebdo)
 {
@@ -520,7 +520,9 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaire(PROBLEME_HEBDO* prob
     if (problemeHebdo->OptimisationNotFastMode)
     {
         OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(
-          problemeHebdo, PremierPdtDeLIntervalle, DernierPdtDeLIntervalle);
+          problemeHebdo,
+          PremierPdtDeLIntervalle,
+          DernierPdtDeLIntervalle);
         if (problemeHebdo->allReserves)
         {
             OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(

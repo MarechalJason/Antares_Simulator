@@ -71,7 +71,6 @@ double computeMarketBidCost(double fuelCost,
                             double co2cost,
                             double variableomcost);
 
-
 /*!
 ** \brief A single thermal cluster
 */
@@ -115,7 +114,6 @@ public:
         //! The highest value
         UnsuppliedSpilledMax
     };
-    
 
     Pollutant emissions;
 

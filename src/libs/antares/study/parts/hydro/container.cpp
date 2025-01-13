@@ -22,9 +22,9 @@
 #include "antares/study/parts/hydro/container.h"
 
 #include <antares/inifile/inifile.h>
+#include <antares/study/area/capacityReservation.h>
 #include "antares/study/parts/hydro/hydromaxtimeseriesreader.h"
 #include "antares/study/study.h"
-#include <antares/study/area/capacityReservation.h>
 
 namespace fs = std::filesystem;
 
@@ -104,7 +104,7 @@ template<class T>
 static bool loadProperties(Study& study,
                            IniFile::Property* property,
                            const fs::path& filename,
-                           T PartHydro::*ptr)
+                           T PartHydro::* ptr)
 {
     if (!property)
     {
@@ -775,11 +775,17 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
                 CString<30, false> key = property.key;
                 key.toLower();
                 if (key == "max-turbining")
+                {
                     property.value.to<float>(maxTurbining);
+                }
                 else if (key == "max-pumping")
+                {
                     property.value.to<float>(maxPumping);
+                }
                 else if (key == "participation-cost")
+                {
                     property.value.to<float>(participationCost);
+                }
 
                 logs.info() << "  Property: " << key << " = " << property.value;
             });
@@ -787,8 +793,10 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
           auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
           if (reserve)
           {
-              LTStorageClusterReserveParticipation participation(
-                *reserve, maxTurbining, maxPumping, participationCost);
+              LTStorageClusterReserveParticipation participation(*reserve,
+                                                                 maxTurbining,
+                                                                 maxPumping,
+                                                                 participationCost);
               addReserveParticipation(reserveName, participation);
               logs.info() << "Added reserve participation for " << reserveName;
           }
@@ -814,7 +822,8 @@ void PartHydro::addReserveParticipation(const std::string& reserveName,
     reservesParticipations().emplace(reserveName, participation);
 }
 
-std::optional<Data::ReserveName> PartHydro::reserveParticipationAt(const Area* area, unsigned int index) const
+std::optional<Data::ReserveName> PartHydro::reserveParticipationAt(const Area* area,
+                                                                   unsigned int index) const
 {
     int globalReserveParticipationIdx = 0;
 
@@ -849,25 +858,40 @@ std::optional<Data::ReserveName> PartHydro::reserveParticipationAt(const Area* a
 float PartHydro::reserveMaxTurbining(Data::ReserveName name)
 {
     if (reservesParticipations().contains(name))
+    {
         return reservesParticipations().at(name).maxTurbining;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
 float PartHydro::reserveMaxPumping(Data::ReserveName name)
 {
     if (reservesParticipations().contains(name))
+    {
         return reservesParticipations().at(name).maxPumping;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
 float PartHydro::reserveCost(Data::ReserveName name)
 {
     if (reservesParticipations().contains(name))
+    {
         return reservesParticipations().at(name).participationCost;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
 uint PartHydro::count() const

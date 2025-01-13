@@ -21,19 +21,31 @@
 #ifndef __ANTARES_LIBS_STUDY_NEW_RESERVES_H__
 #define __ANTARES_LIBS_STUDY_NEW_RESERVES_H__
 
+#include <optional>
+#include <vector>
+
 #include <yuni/yuni.h>
 #include <yuni/core/noncopyable.h>
 #include <yuni/core/string.h>
-#include <vector>
-#include <optional>
-#include <antares/series/series.h>
+
 #include <antares/array/matrix.h>
+#include <antares/series/series.h>
 #include <antares/study/fwd.h>
 
-/// @brief Represents an area capacity reservation using it's name, it's failure cost and it's spillage cost
+/// @brief Represents an area capacity reservation using it's name, it's failure cost and it's
+/// spillage cost
 struct CapacityReservation
 {
-    CapacityReservation() : failureCost(0), spillageCost(0), need(timeseriesNumbers), maxActivationRatio(0.), maxEnergyActivationRatio(1.), maxActivationHours(1.) {}
+    CapacityReservation():
+        failureCost(0),
+        spillageCost(0),
+        need(timeseriesNumbers),
+        maxActivationRatio(0.),
+        maxEnergyActivationRatio(1.),
+        maxActivationHours(1.)
+    {
+    }
+
     float failureCost;
     float spillageCost;
     float maxActivationRatio;
@@ -61,14 +73,16 @@ struct AllCapacityReservations
     /// @return true if the capacity reservation already existed
     bool contains(Data::ReserveName name)
     {
-        return areaCapacityReservationsUp.contains(name) || areaCapacityReservationsDown.contains(name);
+        return areaCapacityReservationsUp.contains(name)
+               || areaCapacityReservationsDown.contains(name);
     }
 
     /// @brief Get a capacity reservation from both the up and down reserves using its name
     /// @param name
-    /// @return an optional of the capacity reservation reference if the reserve was found, and a nullopt
-    /// otherwise
-    std::optional<std::reference_wrapper<CapacityReservation>> getReserveByName(Yuni::ShortString256 name)
+    /// @return an optional of the capacity reservation reference if the reserve was found, and a
+    /// nullopt otherwise
+    std::optional<std::reference_wrapper<CapacityReservation>> getReserveByName(
+      Yuni::ShortString256 name)
     {
         if (areaCapacityReservationsUp.contains(name))
         {
@@ -83,7 +97,8 @@ struct AllCapacityReservations
 
     /// @brief Get the number of capacityReservations in the area
     /// @return the number of capacityReservations in the area
-    size_t size(){
+    size_t size()
+    {
         return areaCapacityReservationsUp.size() + areaCapacityReservationsDown.size();
     }
 
@@ -112,12 +127,12 @@ struct ThermalClusterReserveParticipation
                                        float power,
                                        float cost,
                                        float powerOff,
-                                       float costOff) :
-     capacityReservation(reserve),
-     maxPower(power),
-     participationCost(cost),
-     maxPowerOff(powerOff),
-     participationCostOff(costOff)
+                                       float costOff):
+        capacityReservation(reserve),
+        maxPower(power),
+        participationCost(cost),
+        maxPowerOff(powerOff),
+        participationCostOff(costOff)
     {
     }
 
@@ -148,11 +163,11 @@ struct STStorageClusterReserveParticipation
     STStorageClusterReserveParticipation(std::reference_wrapper<CapacityReservation> reserve,
                                          float turbining,
                                          float pumping,
-                                         float cost) :
-     capacityReservation(reserve),
-     maxTurbining(turbining),
-     maxPumping(pumping),
-     participationCost(cost)
+                                         float cost):
+        capacityReservation(reserve),
+        maxTurbining(turbining),
+        maxPumping(pumping),
+        participationCost(cost)
     {
     }
 
@@ -183,11 +198,11 @@ struct LTStorageClusterReserveParticipation
     LTStorageClusterReserveParticipation(std::reference_wrapper<CapacityReservation> reserve,
                                          float turbining,
                                          float pumping,
-                                         float cost) :
-     capacityReservation(reserve),
-     maxTurbining(turbining),
-     maxPumping(pumping),
-     participationCost(cost)
+                                         float cost):
+        capacityReservation(reserve),
+        maxTurbining(turbining),
+        maxPumping(pumping),
+        participationCost(cost)
     {
     }
 

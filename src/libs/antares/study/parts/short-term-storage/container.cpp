@@ -24,11 +24,10 @@
 #include <algorithm>
 #include <numeric>
 #include <string>
-#include <numeric>
 
+#include <antares/utils/utils.h>
 #include "antares/study/parts/short-term-storage/container.h"
 #include "antares/study/study.h"
-#include <antares/utils/utils.h>
 
 #define SEP Yuni::IO::Separator
 
@@ -174,7 +173,9 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
 {
     IniFile ini;
     if (!ini.open(file, false))
+    {
         return false;
+    }
     ini.each(
       [&](const IniFile::Section& section)
       {
@@ -220,18 +221,24 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
           auto cluster = getClusterByName(tmpClusterName);
           if (reserve && cluster)
           {
-              STStorageClusterReserveParticipation tmpReserveParticipation{
-                reserve.value(), tmpMaxTurbining, tmpMaxPumping, tmpParticipationCost};
+              STStorageClusterReserveParticipation tmpReserveParticipation{reserve.value(),
+                                                                           tmpMaxTurbining,
+                                                                           tmpMaxPumping,
+                                                                           tmpParticipationCost};
               cluster.value().get().addReserveParticipation(section.name, tmpReserveParticipation);
           }
           else
           {
               if (!reserve)
+              {
                   logs.warning() << area.name << ": does not contains this reserve "
                                  << section.name;
+              }
               if (!cluster)
+              {
                   logs.warning() << area.name << ": does not contains this cluster "
                                  << tmpClusterName;
+              }
           }
       });
     return true;
@@ -285,9 +292,9 @@ std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipa
 {
     int globalReserveParticipationIdx = 0;
 
-    for (auto const& [reserveUpName, _] : area->allCapacityReservations().areaCapacityReservationsUp)
+    for (const auto& [reserveUpName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        for (auto& cluster : storagesByIndex)
+        for (auto& cluster: storagesByIndex)
         {
             if (cluster.clusterReservesParticipations().find(reserveUpName)
                 != cluster.clusterReservesParticipations().end())
@@ -301,10 +308,10 @@ std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipa
         }
     }
 
-    for (auto const& [reserveDownName, _] :
+    for (const auto& [reserveDownName, _]:
          area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        for (auto& cluster : storagesByIndex)
+        for (auto& cluster: storagesByIndex)
         {
             if (cluster.clusterReservesParticipations().find(reserveDownName)
                 != cluster.clusterReservesParticipations().end())
@@ -323,7 +330,7 @@ std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipa
 }
 
 std::pair<Data::ShortTermStorage::Group, Data::ReserveName>
-  STStorageInput::reserveParticipationGroupAt(const Area* area, unsigned int index) const
+STStorageInput::reserveParticipationGroupAt(const Area* area, unsigned int index) const
 {
     int column = 0;
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
@@ -331,7 +338,9 @@ std::pair<Data::ShortTermStorage::Group, Data::ReserveName>
         for (int indexGroup = 0; indexGroup < Data::ShortTermStorage::groupMax; indexGroup++)
         {
             if (column == index)
+            {
                 return {static_cast<Data::ShortTermStorage::Group>(indexGroup), reserveName};
+            }
             column++;
         }
     }
@@ -340,7 +349,9 @@ std::pair<Data::ShortTermStorage::Group, Data::ReserveName>
         for (int indexGroup = 0; indexGroup < Data::ShortTermStorage::groupMax; indexGroup++)
         {
             if (column == index)
+            {
                 return {static_cast<Data::ShortTermStorage::Group>(indexGroup), reserveName};
+            }
             column++;
         }
     }
@@ -355,9 +366,13 @@ std::optional<std::reference_wrapper<STStorageCluster>> STStorageInput::getClust
                            storagesByIndex.end(),
                            [&name](STStorageCluster& cluster) { return cluster.id == name; });
     if (it != storagesByIndex.end())
+    {
         return std::ref(*it);
+    }
     else
+    {
         return std::nullopt;
+    }
 }
 
 size_t STStorageInput::getClusterIdx(STStorageCluster& cluster)

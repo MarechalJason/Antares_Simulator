@@ -22,17 +22,18 @@
 #define __SOLVER_VARIABLE_INFO_H__
 
 #include <cmath>
-#include "economy/vCardReserveParticipationByDispatchableOnUnitsPlant.h"
-#include "economy/vCardReserveParticipationByDispatchableOffUnitsPlant.h"
-#include "economy/vCardReserveParticipationBySTStorage.h"
-#include "economy/vCardReserveParticipationByLTStorage.h"
-#include "economy/vCardReserveParticipationBySTStorageGroup.h"
-#include "economy/vCardReserveParticipationByThermalGroup.h"
-#include "economy/vCardReserveParticipationUnsuppliedSpilled.h"
-#include "economy/vCardReserveParticipationMarginalCost.h"
 
 #include "antares/solver/variable/surveyresults.h"
 #include "antares/study/fwd.h"
+
+#include "economy/vCardReserveParticipationByDispatchableOffUnitsPlant.h"
+#include "economy/vCardReserveParticipationByDispatchableOnUnitsPlant.h"
+#include "economy/vCardReserveParticipationByLTStorage.h"
+#include "economy/vCardReserveParticipationBySTStorage.h"
+#include "economy/vCardReserveParticipationBySTStorageGroup.h"
+#include "economy/vCardReserveParticipationByThermalGroup.h"
+#include "economy/vCardReserveParticipationMarginalCost.h"
+#include "economy/vCardReserveParticipationUnsuppliedSpilled.h"
 
 namespace Antares
 {
@@ -398,48 +399,57 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
                                 VCardT,
                                 Economy::VCardReserveParticipationByDispatchableOnUnitsPlant>)
                 {
-                    auto [clusterName, reserveName]
-                      = thermal.list.reserveParticipationClusterAt(results.data.area, i);
+                    auto [clusterName, reserveName] = thermal.list.reserveParticipationClusterAt(
+                      results.data.area,
+                      i);
                     results.variableCaption = reserveName + "_" + clusterName;
                 }
                 else if constexpr (std::is_same_v<
                                      VCardT,
                                      Economy::VCardReserveParticipationByDispatchableOffUnitsPlant>)
                 {
-                    auto [clusterName, reserveName]
-                      = thermal.list.reserveParticipationClusterAt(results.data.area, i);
+                    auto [clusterName, reserveName] = thermal.list.reserveParticipationClusterAt(
+                      results.data.area,
+                      i);
                     results.variableCaption = reserveName + "_" + clusterName + "_off";
                 }
                 else if constexpr (std::is_same_v<VCardT,
                                                   Economy::VCardReserveParticipationByThermalGroup>)
                 {
-                    auto [groupName, reserveName]
-                      = thermal.list.reserveParticipationGroupAt(results.data.area, i);
-                    results.variableCaption
-                      = reserveName + "_" + Economy::thermalDispatchableGroupToString(groupName);
+                    auto [groupName, reserveName] = thermal.list.reserveParticipationGroupAt(
+                      results.data.area,
+                      i);
+                    results.variableCaption = reserveName + "_"
+                                              + Economy::thermalDispatchableGroupToString(
+                                                groupName);
                 }
                 else if constexpr (std::is_same_v<VCardT,
                                                   Economy::VCardReserveParticipationBySTStorage>)
                 {
-                    auto [clusterName, reserveName]
-                      = shortTermStorage.reserveParticipationClusterAt(results.data.area, i);
+                    auto [clusterName, reserveName] = shortTermStorage
+                                                        .reserveParticipationClusterAt(
+                                                          results.data.area,
+                                                          i);
                     results.variableCaption = reserveName + "_" + clusterName;
                 }
                 else if constexpr (std::is_same_v<
                                      VCardT,
                                      Economy::VCardReserveParticipationBySTStorageGroup>)
                 {
-                    auto [groupName, reserveName]
-                      = shortTermStorage.reserveParticipationGroupAt(results.data.area, i);
-                    results.variableCaption
-                      = reserveName + "_" + Economy::STStorageGroupToString(groupName);
+                    auto [groupName, reserveName] = shortTermStorage.reserveParticipationGroupAt(
+                      results.data.area,
+                      i);
+                    results.variableCaption = reserveName + "_"
+                                              + Economy::STStorageGroupToString(groupName);
                 }
                 else if constexpr (std::is_same_v<VCardT,
-                    Economy::VCardReserveParticipationByLTStorage>)
+                                                  Economy::VCardReserveParticipationByLTStorage>)
                 {
                     auto reserveName = longTermStorage.reserveParticipationAt(results.data.area, i);
                     if (reserveName)
+                    {
                         results.variableCaption = reserveName.value() + "_LongTermStorage";
+                    }
                 }
                 else if constexpr (std::is_same_v<
                                      VCardT,
@@ -447,20 +457,21 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
                 {
                     auto [unsuppliedOrSpilled, reserveName]
                       = thermal.list.reserveParticipationUnsuppliedSpilledAt(results.data.area, i);
-                    results.variableCaption
-                      = reserveName + "_" + Economy::unsuppliedSpilledToString(unsuppliedOrSpilled);
+                    results.variableCaption = reserveName + "_"
+                                              + Economy::unsuppliedSpilledToString(
+                                                unsuppliedOrSpilled);
                 }
-                else if constexpr (std::is_same_v<
-                                     VCardT,
-                                     Economy::VCardReserveParticipationMarginalCost>)
+                else if constexpr (std::is_same_v<VCardT,
+                                                  Economy::VCardReserveParticipationMarginalCost>)
                 {
                     auto [unsuppliedOrSpilled, reserveName]
                       = thermal.list.reserveParticipationUnsuppliedSpilledAt(results.data.area, i);
-                    results.variableCaption = reserveName + "_"
-                                              + Economy::marginalCostToString();
+                    results.variableCaption = reserveName + "_" + Economy::marginalCostToString();
                 }
                 else
+                {
                     results.variableCaption = thermal.list.enabledClusterAt(i)->name();
+                }
 
                 container[i].template buildDigest<VCardT>(results, digestLevel, dataLevel);
             }
@@ -472,8 +483,9 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
         assert(results.data.area && "Area is NULL");
 
         auto& thermal = results.data.area->thermal;
-        auto [clusterName, reserveName]
-          = thermal.list.reserveParticipationClusterAt(results.data.area, reserveParticipationIdx);
+        auto [clusterName, reserveName] = thermal.list.reserveParticipationClusterAt(
+          results.data.area,
+          reserveParticipationIdx);
         results.variableCaption = clusterName + " - " + reserveName;
         return true;
     }
@@ -541,8 +553,9 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
                                 VCardType,
                                 Economy::VCardReserveParticipationByDispatchableOnUnitsPlant>)
                 {
-                    auto [clusterName, reserveName]
-                      = thermal.list.reserveParticipationClusterAt(results.data.area, i);
+                    auto [clusterName, reserveName] = thermal.list.reserveParticipationClusterAt(
+                      results.data.area,
+                      i);
                     results.variableCaption = reserveName + "_" + clusterName;
                     res = true;
                 }
@@ -550,34 +563,40 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
                                      VCardType,
                                      Economy::VCardReserveParticipationByDispatchableOffUnitsPlant>)
                 {
-                    auto [clusterName, reserveName]
-                      = thermal.list.reserveParticipationClusterAt(results.data.area, i);
+                    auto [clusterName, reserveName] = thermal.list.reserveParticipationClusterAt(
+                      results.data.area,
+                      i);
                     results.variableCaption = reserveName + "_" + clusterName + "_off";
                     res = true;
                 }
                 else if constexpr (std::is_same_v<VCardType,
                                                   Economy::VCardReserveParticipationBySTStorage>)
                 {
-                    auto [clusterName, reserveName]
-                      = shortTermStorage.reserveParticipationClusterAt(results.data.area, i);
+                    auto [clusterName, reserveName] = shortTermStorage
+                                                        .reserveParticipationClusterAt(
+                                                          results.data.area,
+                                                          i);
                     results.variableCaption = reserveName + "_" + clusterName;
                     res = true;
                 }
                 else if constexpr (std::is_same_v<VCardType,
                                                   Economy::VCardReserveParticipationByThermalGroup>)
                 {
-                    auto [groupName, reserveName]
-                      = thermal.list.reserveParticipationGroupAt(results.data.area, i);
-                    results.variableCaption
-                      = reserveName + "_" + Economy::thermalDispatchableGroupToString(groupName);
+                    auto [groupName, reserveName] = thermal.list.reserveParticipationGroupAt(
+                      results.data.area,
+                      i);
+                    results.variableCaption = reserveName + "_"
+                                              + Economy::thermalDispatchableGroupToString(
+                                                groupName);
                     res = true;
                 }
                 else if constexpr (std::is_same_v<
                                      VCardType,
                                      Economy::VCardReserveParticipationBySTStorageGroup>)
                 {
-                    auto [groupName, reserveName]
-                      = shortTermStorage.reserveParticipationGroupAt(results.data.area, i);
+                    auto [groupName, reserveName] = shortTermStorage.reserveParticipationGroupAt(
+                      results.data.area,
+                      i);
                     results.variableCaption = reserveName + "_"
                                               + Economy::STStorageGroupToString(groupName);
                     res = true;
@@ -607,18 +626,18 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
                                                 unsuppliedOrSpilled);
                     res = true;
                 }
-                else if constexpr (std::is_same_v<
-                                     VCardType,
-                                     Economy::VCardReserveParticipationMarginalCost>)
+                else if constexpr (std::is_same_v<VCardType,
+                                                  Economy::VCardReserveParticipationMarginalCost>)
                 {
                     auto [unsuppliedOrSpilled, reserveName]
                       = thermal.list.reserveParticipationUnsuppliedSpilledAt(results.data.area, i);
-                    results.variableCaption = reserveName + "_"
-                                              + Economy::marginalCostToString();
+                    results.variableCaption = reserveName + "_" + Economy::marginalCostToString();
                     res = true;
                 }
                 else
+                {
                     res = setClusterCaption(results, fileLevel, i);
+                }
                 if (!res)
                 {
                     return;

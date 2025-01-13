@@ -2,26 +2,23 @@
 
 void POutBounds::add(int pays, int cluster, int pdt)
 {
-    int globalClusterIdx
-      = data.thermalClusters[pays].NumeroDuPalierDansLEnsembleDesPaliersThermiques[cluster];
+    int globalClusterIdx = data.thermalClusters[pays]
+                             .NumeroDuPalierDansLEnsembleDesPaliersThermiques[cluster];
 
     if (!data.Simulation)
     {
         // 17 ter
-        // Power output is bounded by must-run commitments and power availability, reserves must fit within the bounds 
-        // P_down + Sum(P^on_re-) <= P <= P_up - Sum(P^on_re+)
-        // P^on_re- : Participation of running units in cluster θ to Down reserves
-        // P^on_re+ : Participation of running units in cluster θ to Up reserves
-        // P : Power output from cluster θ
-        // P_down : Minimal power output demanded from cluster θ 
-        // P_up : Maximal power output from cluster θ
-
+        // Power output is bounded by must-run commitments and power availability, reserves must fit
+        // within the bounds P_down + Sum(P^on_re-) <= P <= P_up - Sum(P^on_re+) P^on_re- :
+        // Participation of running units in cluster θ to Down reserves P^on_re+ : Participation of
+        // running units in cluster θ to Up reserves P : Power output from cluster θ P_down :
+        // Minimal power output demanded from cluster θ P_up : Maximal power output from cluster θ
 
         // 17 ter (1) : Sum(P^on_re-) - P <= - P_down
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsDown)
             {
                 if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
@@ -59,7 +56,7 @@ void POutBounds::add(int pays, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsUp)
             {
                 if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
@@ -96,27 +93,26 @@ void POutBounds::add(int pays, int cluster, int pdt)
     else
     {
         // Lambda that count the number of reserves Participations
-        auto countReservesParticipations
-          = [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
+        auto countReservesParticipations =
+          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
         {
             int counter = 0;
-            for (const auto& capacityReservation : reservations)
+            for (const auto& capacityReservation: reservations)
             {
-                        counter += capacityReservation.AllThermalReservesParticipation.count(cluster);
+                counter += capacityReservation.AllThermalReservesParticipation.count(cluster);
             }
             return counter;
         };
 
         int nbTermsUp = countReservesParticipations(
-            data.areaReserves[pays].areaCapacityReservationsUp);
+          data.areaReserves[pays].areaCapacityReservationsUp);
         int nbTermsDown = countReservesParticipations(
-            data.areaReserves[pays].areaCapacityReservationsDown);
+          data.areaReserves[pays].areaCapacityReservationsDown);
 
-        int nbTermsToAdd
-          = countReservesParticipations(
-              data.areaReserves[pays].areaCapacityReservationsUp)
-            + countReservesParticipations(
-              data.areaReserves[pays].areaCapacityReservationsDown);
+        int nbTermsToAdd = countReservesParticipations(
+                             data.areaReserves[pays].areaCapacityReservationsUp)
+                           + countReservesParticipations(
+                             data.areaReserves[pays].areaCapacityReservationsDown);
 
         builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);
     }

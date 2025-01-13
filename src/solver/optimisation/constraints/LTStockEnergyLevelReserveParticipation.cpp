@@ -50,11 +50,10 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
                           t,
                           builder.data.NombreDePasDeTempsPourUneOptimisation);
                     }
-                    builder.HydroLevel(
-                      globalClusterIdx,
-                      sign * capacityReservation.maxEnergyActivationRatio,
-                      t,
-                      builder.data.NombreDePasDeTempsPourUneOptimisation);
+                    builder.HydroLevel(globalClusterIdx,
+                                       sign * capacityReservation.maxEnergyActivationRatio,
+                                       t,
+                                       builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }
 
                 builder.lessThan();

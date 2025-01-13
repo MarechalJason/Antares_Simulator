@@ -31,7 +31,7 @@ namespace Antares::Data::ShortTermStorage
 
 const char* STStorageCluster::GroupName(enum Group grp)
 {
-    using Group = Data::ShortTermStorage::Group;  // Replace "using enum"
+    using Group = Data::ShortTermStorage::Group; // Replace "using enum"
     switch (grp)
     {
     case Group::PSP_open:
@@ -52,10 +52,11 @@ const char* STStorageCluster::GroupName(enum Group grp)
         return "Other4";
     case Group::Other5:
         return "Other5";
-    default :
+    default:
         throw std::out_of_range("groupMax shouln't be printed");
     }
 }
+
 bool STStorageCluster::loadFromSection(const IniFile::Section& section)
 {
     if (!section.firstProperty)
@@ -131,28 +132,44 @@ void STStorageCluster::addReserveParticipation(
 float STStorageCluster::reserveMaxTurbining(Data::ReserveName name)
 {
     if (clusterReservesParticipations().contains(name))
+    {
         return clusterReservesParticipations().at(name).maxTurbining;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
 float STStorageCluster::reserveMaxPumping(Data::ReserveName name)
 {
     if (clusterReservesParticipations().contains(name))
+    {
         return clusterReservesParticipations().at(name).maxPumping;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
 float STStorageCluster::reserveCost(Data::ReserveName name)
 {
     if (clusterReservesParticipations().contains(name))
+    {
         return clusterReservesParticipations().at(name).participationCost;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
-uint STStorageCluster::reserveParticipationsCount(){
+uint STStorageCluster::reserveParticipationsCount()
+{
     return clusterReservesParticipations ? clusterReservesParticipations().size() : 0;
 }
 } // namespace Antares::Data::ShortTermStorage

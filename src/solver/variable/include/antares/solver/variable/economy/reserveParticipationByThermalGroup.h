@@ -43,9 +43,10 @@ namespace Economy
 ** \brief Reserve participation for all groups for all reserves of the area
 */
 template<class NextT = Container::EndOfList>
-class ReserveParticipationByThermalGroup : public Variable::IVariable<ReserveParticipationByThermalGroup<NextT>,
-                                                               NextT,
-                                                               VCardReserveParticipationByThermalGroup>
+class ReserveParticipationByThermalGroup
+    : public Variable::IVariable<ReserveParticipationByThermalGroup<NextT>,
+                                 NextT,
+                                 VCardReserveParticipationByThermalGroup>
 {
 public:
     //! Type of the next static variable
@@ -53,7 +54,8 @@ public:
     //! VCard
     typedef VCardReserveParticipationByThermalGroup VCardType;
     //! Ancestor
-    typedef Variable::IVariable<ReserveParticipationByThermalGroup<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<ReserveParticipationByThermalGroup<NextT>, NextT, VCardType>
+      AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -71,23 +73,27 @@ public:
     {
         enum
         {
-            count
-            = ((VCardType::categoryDataLevel & CDataLevel && VCardType::categoryFileLevel & CFile)
-                 ? (NextType::template Statistics<CDataLevel, CFile>::count
-                    + VCardType::columnCount * ResultsType::count)
-                 : NextType::template Statistics<CDataLevel, CFile>::count),
+            count = ((VCardType::categoryDataLevel & CDataLevel
+                      && VCardType::categoryFileLevel & CFile)
+                       ? (NextType::template Statistics<CDataLevel, CFile>::count
+                          + VCardType::columnCount * ResultsType::count)
+                       : NextType::template Statistics<CDataLevel, CFile>::count),
         };
     };
 
 public:
-    ReserveParticipationByThermalGroup() : pValuesForTheCurrentYear(NULL), pSize(0)
+    ReserveParticipationByThermalGroup():
+        pValuesForTheCurrentYear(NULL),
+        pSize(0)
     {
     }
 
     ~ReserveParticipationByThermalGroup()
     {
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        {
             delete[] pValuesForTheCurrentYear[numSpace];
+        }
         delete[] pValuesForTheCurrentYear;
     }
 
@@ -116,16 +122,22 @@ public:
             AncestorType::pResults.resize(pSize);
 
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-                pValuesForTheCurrentYear[numSpace]
-                  = new VCardType::IntermediateValuesDeepType[pSize];
+            {
+                pValuesForTheCurrentYear[numSpace] = new VCardType::IntermediateValuesDeepType
+                  [pSize];
+            }
 
             // Minimum power values of the cluster for the whole year - from the solver in the
             // accurate mode not to be displayed in the output \todo think of a better place like
             // the DispatchableMarginForAllAreas done at the beginning of the year
 
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            {
                 for (unsigned int i = 0; i != pSize; ++i)
+                {
                     pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
+                }
+            }
 
             for (unsigned int i = 0; i != pSize; ++i)
             {
@@ -171,7 +183,9 @@ public:
     {
         // Reset the values for the current year
         for (unsigned int i = 0; i != pSize; ++i)
+        {
             pValuesForTheCurrentYear[numSpace][i].reset();
+        }
 
         // Next variable
         NextType::yearBegin(year, numSpace);
@@ -290,30 +304,38 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                for (int indexGroup = 0; indexGroup < Antares::Data::ThermalCluster::groupMax; indexGroup++)
+                for (int indexGroup = 0; indexGroup < Antares::Data::ThermalCluster::groupMax;
+                     indexGroup++)
                 {
                     // Write the data for the current year
                     Yuni::String caption = resName;
-                    caption << "_" << Data::ThermalCluster::GroupName(static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(indexGroup));
+                    caption << "_"
+                            << Data::ThermalCluster::GroupName(
+                                 static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(
+                                   indexGroup));
                     results.variableCaption = caption; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
-                    pValuesForTheCurrentYear[numSpace][column].template buildAnnualSurveyReport<VCardType>(
-                        results, fileLevel, precision);
+                    pValuesForTheCurrentYear[numSpace][column]
+                      .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
                     column++;
                 }
             }
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                for (int indexGroup = 0; indexGroup < Antares::Data::ThermalCluster::groupMax; indexGroup++)
+                for (int indexGroup = 0; indexGroup < Antares::Data::ThermalCluster::groupMax;
+                     indexGroup++)
                 {
                     // Write the data for the current year
                     Yuni::String caption = resName;
-                    caption << "_" << Data::ThermalCluster::GroupName(static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(indexGroup));
+                    caption << "_"
+                            << Data::ThermalCluster::GroupName(
+                                 static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(
+                                   indexGroup));
                     results.variableCaption = caption; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
-                    pValuesForTheCurrentYear[numSpace][column].template buildAnnualSurveyReport<VCardType>(
-                        results, fileLevel, precision);
+                    pValuesForTheCurrentYear[numSpace][column]
+                      .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
                     column++;
                 }
             }

@@ -21,8 +21,8 @@
 
 #include "antares/solver/optimisation/LinearProblemMatrix.h"
 
-#include "antares/solver/optimisation/LinearProblemMatrixStartUpCosts.h"
 #include "antares/solver/optimisation/LinearProblemMatrixReserves.h"
+#include "antares/solver/optimisation/LinearProblemMatrixStartUpCosts.h"
 #include "antares/solver/optimisation/opt_export_structure.h"
 #include "antares/solver/optimisation/opt_fonctions.h"
 #include "antares/solver/utils/filename.h"

@@ -21,12 +21,12 @@
 
 #include "antares/study/parts/thermal/cluster_list.h"
 
+#include <numeric>
 #include <ranges>
 
 #include <antares/utils/utils.h>
 #include "antares/study/parts/common/cluster.h"
 #include "antares/study/study.h"
-#include <numeric>
 
 namespace // anonymous
 {
@@ -101,11 +101,12 @@ unsigned int ThermalClusterList::reserveParticipationsCount() const
 unsigned int ThermalClusterList::capacityReservationsCount() const
 {
     std::set<const CapacityReservation*> uniqueReservations;
-    for (auto& cluster : allClusters_)
+    for (auto& cluster: allClusters_)
     {
-        for (const auto& [_, reserveParticipation] : cluster->clusterReservesParticipations())
+        for (const auto& [_, reserveParticipation]: cluster->clusterReservesParticipations())
         {
-            const CapacityReservation* reservationPtr = &(reserveParticipation.capacityReservation.get());
+            const CapacityReservation* reservationPtr = &(
+              reserveParticipation.capacityReservation.get());
             uniqueReservations.insert(reservationPtr);
         }
     }

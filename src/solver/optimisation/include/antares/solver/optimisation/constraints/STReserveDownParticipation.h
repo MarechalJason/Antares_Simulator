@@ -4,11 +4,12 @@
 /*!
  * represent 'STReserveDownParticipation' Constraint type
  */
-class STReserveDownParticipation : private ConstraintFactory
+class STReserveDownParticipation: private ConstraintFactory
 {
 public:
-    STReserveDownParticipation(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    STReserveDownParticipation(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

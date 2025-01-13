@@ -403,16 +403,16 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaire(PROBLEME_HEBDO* problemeHeb
                                   problemeHebdo->CorrespondanceCntNativesCntOptimHebdomadaires);
     if (problemeHebdo->OptimisationNotFastMode)
     {
-        OPT_InitialiserLeSecondMembreDuProblemeLineaireCoutsDeDemarrage(problemeHebdo, 
-									PremierPdtDeLIntervalle, 
-									DernierPdtDeLIntervalle);
+        OPT_InitialiserLeSecondMembreDuProblemeLineaireCoutsDeDemarrage(problemeHebdo,
+                                                                        PremierPdtDeLIntervalle,
+                                                                        DernierPdtDeLIntervalle);
         if (problemeHebdo->allReserves)
         {
             OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(problemeHebdo,
-                PremierPdtDeLIntervalle,
-                DernierPdtDeLIntervalle);
+                                                                    PremierPdtDeLIntervalle,
+                                                                    DernierPdtDeLIntervalle);
         }
     }
-    
+
     return;
 }

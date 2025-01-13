@@ -7,18 +7,17 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
     if (!data.Simulation)
     {
         // 15 (m)
-        // Turbining power remains within limits set by minimum stable power (0) and maximum capacity threasholds 
-        // Hmin + Sum(H^on_re-) <= H <= Hmax - Sum(H^on_re+) 
-        // H^on_re- : Turbining Participation of cluster to Down reserves 
-        // H^on_re+ : Turbining Participation of cluster to Up reserves 
-        // H : Turbining Power output from cluster 
-        // Hmax : Maximum Turbining Power from cluster
+        // Turbining power remains within limits set by minimum stable power (0) and maximum
+        // capacity threasholds Hmin + Sum(H^on_re-) <= H <= Hmax - Sum(H^on_re+) H^on_re- :
+        // Turbining Participation of cluster to Down reserves H^on_re+ : Turbining Participation of
+        // cluster to Up reserves H : Turbining Power output from cluster Hmax : Maximum Turbining
+        // Power from cluster
 
         // 15 (m) (1) : H - Sum(H^on_re-) >= Hmin
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsDown)
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
@@ -53,7 +52,7 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsUp)
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
@@ -87,7 +86,8 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
     else
     {
         // Lambda that count the number of reserveParticipations
-        auto countReservesParticipations = [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
+        auto countReservesParticipations =
+          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
         {
             int counter = 0;
             for (const auto& capacityReservation: reservations)

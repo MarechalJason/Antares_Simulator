@@ -359,8 +359,8 @@ void OPT_InitialiserLesCoutsLineaire(PROBLEME_HEBDO* problemeHebdo,
     if (problemeHebdo->OptimisationNotFastMode)
     {
         OPT_InitialiserLesCoutsLineaireCoutsDeDemarrage(problemeHebdo,
-						        PremierPdtDeLIntervalle, 
-							DernierPdtDeLIntervalle);
+                                                        PremierPdtDeLIntervalle,
+                                                        DernierPdtDeLIntervalle);
         if (problemeHebdo->allReserves)
         {
             OPT_InitialiserLesCoutsLineaireReserves(problemeHebdo,

@@ -72,7 +72,8 @@ struct NodeVisitsProvider
     {
         std::unordered_map<std::type_index, FunctionT> nodeDispatchFunctions;
         (
-          [&nodeDispatchFunctions] {
+          [&nodeDispatchFunctions]
+          {
               nodeDispatchFunctions[typeid(NodeTypes)] = &tryVisit<R,
                                                                    NodeVisitor<R, Args...>,
                                                                    NodeTypes>;

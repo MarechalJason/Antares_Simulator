@@ -4,11 +4,12 @@
 /*!
  * represent 'LTPumpingMaxReserve' Constraint type
  */
-class LTPumpingMaxReserve : private ConstraintFactory
+class LTPumpingMaxReserve: private ConstraintFactory
 {
 public:
-    LTPumpingMaxReserve(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    LTPumpingMaxReserve(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

@@ -4,11 +4,12 @@
 /*
  * represent 'ReserveSatisfaction' Constraint type
  */
-class ReserveSatisfaction : private ConstraintFactory
+class ReserveSatisfaction: private ConstraintFactory
 {
 public:
-    ReserveSatisfaction(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    ReserveSatisfaction(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

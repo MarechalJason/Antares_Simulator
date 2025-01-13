@@ -19,9 +19,10 @@
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
 
-#include "variable.h"
-#include "area.h"
 #include <cassert>
+
+#include "area.h"
+#include "variable.h"
 
 using namespace Yuni;
 
@@ -121,93 +122,100 @@ template<>
 void Areas<NEXTTYPE>::hourForEachArea(State& state, uint numSpace)
 {
     // For each area...
-    state.study.areas.each([&](Data::Area& area) {
-        state.area = &area; // the current area
+    state.study.areas.each(
+      [&](Data::Area& area)
+      {
+          state.area = &area; // the current area
 
-        // Initializing the state for the current area
-        state.initFromAreaIndex(area.index, numSpace);
+          // Initializing the state for the current area
+          state.initFromAreaIndex(area.index, numSpace);
 
-        for (auto cluster : area.thermal.list.each_enabled())
-        {
-            // Intiializing the state for the current thermal cluster
-            state.initFromThermalClusterIndex(cluster->areaWideIndex);
-        }
+          for (auto cluster: area.thermal.list.each_enabled())
+          {
+              // Intiializing the state for the current thermal cluster
+              state.initFromThermalClusterIndex(cluster->areaWideIndex);
+          }
 
-        // Variables
-        auto& variablesForArea = pAreas[area.index];
-        variablesForArea.hourForEachArea(state, numSpace);
+          // Variables
+          auto& variablesForArea = pAreas[area.index];
+          variablesForArea.hourForEachArea(state, numSpace);
 
-        // All links
-        auto end = area.links.end();
-        for (auto i = area.links.begin(); i != end; ++i)
-        {
-            state.link = i->second;
-            // Variables
-            variablesForArea.hourForEachLink(state, numSpace);
-        }
-    }); // for each area
+          // All links
+          auto end = area.links.end();
+          for (auto i = area.links.begin(); i != end; ++i)
+          {
+              state.link = i->second;
+              // Variables
+              variablesForArea.hourForEachLink(state, numSpace);
+          }
+      }); // for each area
 }
 
 template<>
 void Areas<NEXTTYPE>::weekForEachArea(State& state, uint numSpace)
 {
     // For each area...
-    state.study.areas.each([&](Data::Area& area) {
-        state.area = &area; // the current area
+    state.study.areas.each(
+      [&](Data::Area& area)
+      {
+          state.area = &area; // the current area
 
-        // Initializing the state for the current area
-        state.initFromAreaIndex(area.index, numSpace);
+          // Initializing the state for the current area
+          state.initFromAreaIndex(area.index, numSpace);
 
-        auto& variablesForArea = pAreas[area.index];
+          auto& variablesForArea = pAreas[area.index];
 
-        // DTG MRG
-        state.dispatchableMargin
-          = variablesForArea
-              .retrieveHourlyResultsForCurrentYear<Economy::VCardDispatchableGenMargin>(numSpace);
+          // DTG MRG
+          state.dispatchableMargin = variablesForArea.retrieveHourlyResultsForCurrentYear<
+            Economy::VCardDispatchableGenMargin>(numSpace);
 
-        variablesForArea.weekForEachArea(state, numSpace);
+          variablesForArea.weekForEachArea(state, numSpace);
 
-        // NOTE
-        // currently, the event is not broadcasted to thermal
-        // clusters and links
-    }); // for each area
+          // NOTE
+          // currently, the event is not broadcasted to thermal
+          // clusters and links
+      }); // for each area
 }
 
 template<>
 void Areas<NEXTTYPE>::yearBegin(uint year, uint numSpace)
 {
     for (uint i = 0; i != pAreaCount; ++i)
+    {
         pAreas[i].yearBegin(year, numSpace);
+    }
 }
 
 template<>
 void Areas<NEXTTYPE>::yearEndBuild(State& state, uint year, uint numSpace)
 {
     // For each area...
-    state.study.areas.each([&](Data::Area& area) {
-        state.area = &area; // the current area
+    state.study.areas.each(
+      [&](Data::Area& area)
+      {
+          state.area = &area; // the current area
 
-        // Initializing the state for the current area
-        state.initFromAreaIndex(area.index, numSpace);
+          // Initializing the state for the current area
+          state.initFromAreaIndex(area.index, numSpace);
 
-        // Variables
-        auto& variablesForArea = pAreas[area.index];
+          // Variables
+          auto& variablesForArea = pAreas[area.index];
 
-        for(auto cluster : area.thermal.list.each_enabled())
-        {
-            state.thermalCluster = cluster.get();
+          for (auto cluster: area.thermal.list.each_enabled())
+          {
+              state.thermalCluster = cluster.get();
 
-            // Variables
-            variablesForArea.yearEndBuildPrepareDataForEachThermalCluster(state, year, numSpace);
+              // Variables
+              variablesForArea.yearEndBuildPrepareDataForEachThermalCluster(state, year, numSpace);
 
-            // Building the end of year
-            state.yearEndBuildFromThermalClusterIndex(cluster->areaWideIndex);
+              // Building the end of year
+              state.yearEndBuildFromThermalClusterIndex(cluster->areaWideIndex);
 
-            // Variables
-            variablesForArea.yearEndBuildForEachThermalCluster(state, year, numSpace);
-            state.yearEndResetThermal();
-        } // for each thermal cluster
-    });   // for each area
+              // Variables
+              variablesForArea.yearEndBuildForEachThermalCluster(state, year, numSpace);
+              state.yearEndResetThermal();
+          } // for each thermal cluster
+      }); // for each area
 }
 
 template<>
@@ -235,42 +243,54 @@ template<>
 void Areas<NEXTTYPE>::weekBegin(State& state)
 {
     for (uint i = 0; i != pAreaCount; ++i)
+    {
         pAreas[i].weekBegin(state);
+    }
 }
 
 template<>
 void Areas<NEXTTYPE>::weekEnd(State& state)
 {
     for (uint i = 0; i != pAreaCount; ++i)
+    {
         pAreas[i].weekEnd(state);
+    }
 }
 
 template<>
 void Areas<NEXTTYPE>::hourBegin(uint hourInTheYear)
 {
     for (uint i = 0; i != pAreaCount; ++i)
+    {
         pAreas[i].hourBegin(hourInTheYear);
+    }
 }
 
 template<>
 void Areas<NEXTTYPE>::hourForEachLink(State& state, uint numSpace)
 {
     for (uint i = 0; i != pAreaCount; ++i)
+    {
         pAreas[i].hourForEachLink(state, numSpace);
+    }
 }
 
 template<>
 void Areas<NEXTTYPE>::hourEnd(State& state, uint hourInTheYear)
 {
     for (uint i = 0; i != pAreaCount; ++i)
+    {
         pAreas[i].hourEnd(state, hourInTheYear);
+    }
 }
 
 template<>
 void Areas<NEXTTYPE>::beforeYearByYearExport(uint year, uint numSpace)
 {
     for (uint i = 0; i != pAreaCount; ++i)
+    {
         pAreas[i].beforeYearByYearExport(year, numSpace);
+    }
 }
 
 } // namespace Variable

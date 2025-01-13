@@ -51,13 +51,13 @@ std::shared_ptr<ClusterT> ClusterList<ClusterT>::enabledClusterAt(unsigned int i
 
 template<class ClusterT>
 std::pair<Data::ClusterName, Data::ReserveName>
-  ClusterList<ClusterT>::reserveParticipationClusterAt(const Area* area, unsigned int index) const
+ClusterList<ClusterT>::reserveParticipationClusterAt(const Area* area, unsigned int index) const
 {
     int globalReserveParticipationIdx = 0;
 
-    for (auto const& [reserveUpName, _] : area->allCapacityReservations().areaCapacityReservationsUp)
+    for (const auto& [reserveUpName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        for (auto& cluster : allClusters_)
+        for (auto& cluster: allClusters_)
         {
             if (cluster->isParticipatingInReserve(reserveUpName))
             {
@@ -70,10 +70,10 @@ std::pair<Data::ClusterName, Data::ReserveName>
         }
     }
 
-    for (auto const& [reserveDownName, _] :
+    for (const auto& [reserveDownName, _]:
          area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        for (auto& cluster : allClusters_)
+        for (auto& cluster: allClusters_)
         {
             if (cluster->isParticipatingInReserve(reserveDownName))
             {
@@ -92,24 +92,30 @@ std::pair<Data::ClusterName, Data::ReserveName>
 
 template<class ClusterT>
 std::pair<Data::ThermalCluster::ThermalDispatchableGroup, Data::ReserveName>
-  ClusterList<ClusterT>::reserveParticipationGroupAt(const Area* area, unsigned int index) const
+ClusterList<ClusterT>::reserveParticipationGroupAt(const Area* area, unsigned int index) const
 {
     int column = 0;
-    for (auto [reserveName, _] : area->allCapacityReservations().areaCapacityReservationsUp)
+    for (auto [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
         for (int indexGroup = 0; indexGroup < Data::ThermalCluster::groupMax; indexGroup++)
         {
             if (column == index)
-                return {static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(indexGroup), reserveName};
+            {
+                return {static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(indexGroup),
+                        reserveName};
+            }
             column++;
         }
     }
-    for (auto [reserveName, _] : area->allCapacityReservations().areaCapacityReservationsDown)
+    for (auto [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
     {
         for (int indexGroup = 0; indexGroup < Data::ThermalCluster::groupMax; indexGroup++)
         {
             if (column == index)
-                return {static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(indexGroup), reserveName};
+            {
+                return {static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(indexGroup),
+                        reserveName};
+            }
             column++;
         }
     }
@@ -119,31 +125,43 @@ std::pair<Data::ThermalCluster::ThermalDispatchableGroup, Data::ReserveName>
 
 template<class ClusterT>
 std::pair<Data::ThermalCluster::UnsuppliedSpilled, Data::ReserveName>
-ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area, unsigned int index) const
+ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area,
+                                                               unsigned int index) const
 {
     int column = 0;
-    for (auto [reserveName, _] : area->allCapacityReservations().areaCapacityReservationsUp)
+    for (auto [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        for (int indexUnsuppliedSpilled = 0; indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax; indexUnsuppliedSpilled++)
+        for (int indexUnsuppliedSpilled = 0;
+             indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax;
+             indexUnsuppliedSpilled++)
         {
             if (column == index)
-                return { static_cast<Data::ThermalCluster::UnsuppliedSpilled>(indexUnsuppliedSpilled), reserveName };
+            {
+                return {static_cast<Data::ThermalCluster::UnsuppliedSpilled>(
+                          indexUnsuppliedSpilled),
+                        reserveName};
+            }
             column++;
         }
     }
-    for (auto [reserveName, _] : area->allCapacityReservations().areaCapacityReservationsDown)
+    for (auto [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        for (int indexUnsuppliedSpilled = 0; indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax; indexUnsuppliedSpilled++)
+        for (int indexUnsuppliedSpilled = 0;
+             indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax;
+             indexUnsuppliedSpilled++)
         {
             if (column == index)
-                return { static_cast<Data::ThermalCluster::UnsuppliedSpilled>(indexUnsuppliedSpilled), reserveName };
+            {
+                return {static_cast<Data::ThermalCluster::UnsuppliedSpilled>(
+                          indexUnsuppliedSpilled),
+                        reserveName};
+            }
             column++;
         }
     }
     throw std::out_of_range("This reserve status index has not been found in all the "
-        "reserve participations");
+                            "reserve participations");
 }
-
 
 template<class ClusterT>
 ClusterT* ClusterList<ClusterT>::findInAll(std::string_view id) const
@@ -381,7 +399,9 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
 {
     IniFile ini;
     if (!ini.open(file, false))
+    {
         return false;
+    }
     ini.each(
       [&](const IniFile::Section& section)
       {
@@ -438,7 +458,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
           if (reserve && cluster)
           {
               bool isClusterMustRun = false;
-              for (const auto& clusterMustRun : area.thermal.list.each_mustrun_and_enabled())
+              for (const auto& clusterMustRun: area.thermal.list.each_mustrun_and_enabled())
               {
                   if (clusterMustRun->id() == cluster.value().get()->id())
                   {
@@ -448,27 +468,35 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
               }
               if (!isClusterMustRun)
               {
-                  ThermalClusterReserveParticipation tmpReserveParticipation{ reserve.value(),
-                                                                             tmpMaxPower,
-                                                                             tmpParticipationCost,
-                                                                             tmpMaxPowerOff,
-                                                                             tmpParticipationCostOff };
+                  ThermalClusterReserveParticipation tmpReserveParticipation{
+                    reserve.value(),
+                    tmpMaxPower,
+                    tmpParticipationCost,
+                    tmpMaxPowerOff,
+                    tmpParticipationCostOff};
 
-
-                  cluster.value().get()->addReserveParticipation(section.name, tmpReserveParticipation);
+                  cluster.value().get()->addReserveParticipation(section.name,
+                                                                 tmpReserveParticipation);
               }
               else
               {
-                  logs.warning() << area.name << " : " << tmpClusterName << " is mustrun and is participating in capacity reservation " << section.name << ", ignored.";
+                  logs.warning() << area.name << " : " << tmpClusterName
+                                 << " is mustrun and is participating in capacity reservation "
+                                 << section.name << ", ignored.";
               }
           }
           else
           {
               if (!reserve)
-                logs.warning() << area.name << ": does not contains this reserve " << section.name;
+              {
+                  logs.warning() << area.name << ": does not contains this reserve "
+                                 << section.name;
+              }
               if (!cluster)
+              {
                   logs.warning() << area.name << ": does not contains this cluster "
                                  << tmpClusterName;
+              }
           }
       });
     return true;

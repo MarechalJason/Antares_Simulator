@@ -2,12 +2,14 @@
 
 void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
 {
-    CAPACITY_RESERVATION capacityReservation
-      = isUpReserve ? data.areaReserves[pays].areaCapacityReservationsUp[reserve]
-                    : data.areaReserves[pays].areaCapacityReservationsDown[reserve];
+    CAPACITY_RESERVATION capacityReservation = isUpReserve
+                                                 ? data.areaReserves[pays]
+                                                     .areaCapacityReservationsUp[reserve]
+                                                 : data.areaReserves[pays]
+                                                     .areaCapacityReservationsDown[reserve];
     int nbTermes = capacityReservation.AllThermalReservesParticipation.size()
-        + capacityReservation.AllSTStorageReservesParticipation.size()
-        + capacityReservation.AllLTStorageReservesParticipation.size();
+                   + capacityReservation.AllSTStorageReservesParticipation.size()
+                   + capacityReservation.AllLTStorageReservesParticipation.size();
     if (nbTermes)
     {
         if (!data.Simulation)
@@ -22,54 +24,55 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
             // J^+ : Amount of internal excess reserve for the reserve res
             // J^- : Amount of internal unsatisfied reserve for the reserve res
 
-
             builder.updateHourWithinWeek(pdt);
 
             // Thermal clusters reserve participation
-            for (auto& [clusterId, reserveParticipation] : capacityReservation.AllThermalReservesParticipation)
+            for (auto& [clusterId, reserveParticipation]:
+                 capacityReservation.AllThermalReservesParticipation)
             {
                 builder.ThermalClusterReserveParticipation(
-                    reserveParticipation.globalIndexClusterParticipation,
-                    1);
+                  reserveParticipation.globalIndexClusterParticipation,
+                  1);
             }
 
             // Short Term Storage clusters reserve participation
-            for (auto& [clusterId, reserveParticipation] : capacityReservation.AllSTStorageReservesParticipation)
+            for (auto& [clusterId, reserveParticipation]:
+                 capacityReservation.AllSTStorageReservesParticipation)
             {
                 if (isUpReserve)
                 {
                     builder.STStorageClusterReserveUpParticipation(
-                        reserveParticipation.globalIndexClusterParticipation,
-                        1);
+                      reserveParticipation.globalIndexClusterParticipation,
+                      1);
                 }
                 else
                 {
                     builder.STStorageClusterReserveDownParticipation(
-                        reserveParticipation.globalIndexClusterParticipation,
-                        1);
+                      reserveParticipation.globalIndexClusterParticipation,
+                      1);
                 }
             }
 
             // Long Term Storage clusters reserve participation
-            for (auto& reserveParticipation : capacityReservation.AllLTStorageReservesParticipation)
+            for (auto& reserveParticipation: capacityReservation.AllLTStorageReservesParticipation)
             {
                 if (isUpReserve)
                 {
                     builder.LTStorageClusterReserveUpParticipation(
-                        reserveParticipation.globalIndexClusterParticipation,
-                        1);
+                      reserveParticipation.globalIndexClusterParticipation,
+                      1);
                 }
                 else
                 {
                     builder.LTStorageClusterReserveDownParticipation(
-                        reserveParticipation.globalIndexClusterParticipation,
-                        1);
+                      reserveParticipation.globalIndexClusterParticipation,
+                      1);
                 }
             }
 
             builder.InternalUnsatisfiedReserve(capacityReservation.globalReserveIndex, 1)
-                .InternalExcessReserve(capacityReservation.globalReserveIndex, -1)
-                .equalTo();
+              .InternalExcessReserve(capacityReservation.globalReserveIndex, -1)
+              .equalTo();
             data.CorrespondanceCntNativesCntOptim[pdt]
               .reservesIndices()
               .need[capacityReservation.globalReserveIndex]
@@ -79,7 +82,7 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
             namer.UpdateTimeStep(hourInTheYear);
             namer.UpdateArea(builder.data.NomsDesPays[pays]);
             namer.ReserveSatisfaction(builder.data.nombreDeContraintes,
-                capacityReservation.reserveName);
+                                      capacityReservation.reserveName);
             builder.build();
         }
         else

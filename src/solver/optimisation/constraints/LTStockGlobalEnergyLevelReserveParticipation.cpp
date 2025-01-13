@@ -36,11 +36,10 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 }
                 if (builder.NumberOfVariables() > 0)
                 {
-                    builder.HydroLevel(
-                      globalClusterIdx,
-                      data.areaReserves[pays].maxGlobalEnergyActivationRatioDown,
-                      t,
-                      builder.data.NombreDePasDeTempsPourUneOptimisation);
+                    builder.HydroLevel(globalClusterIdx,
+                                       data.areaReserves[pays].maxGlobalEnergyActivationRatioDown,
+                                       t,
+                                       builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }
             }
 
@@ -85,11 +84,10 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 }
                 if (builder.NumberOfVariables() > 0)
                 {
-                    builder.HydroLevel(
-                      globalClusterIdx,
-                      -data.areaReserves[pays].maxGlobalEnergyActivationRatioUp,
-                      t,
-                      builder.data.NombreDePasDeTempsPourUneOptimisation);
+                    builder.HydroLevel(globalClusterIdx,
+                                       -data.areaReserves[pays].maxGlobalEnergyActivationRatioUp,
+                                       t,
+                                       builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }
             }
 
@@ -122,8 +120,7 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
             int counter = 0;
             for (const auto& capacityReservation: reservations)
             {
-                counter += capacityReservation.AllLTStorageReservesParticipation.size()
-                           * t_max;
+                counter += capacityReservation.AllLTStorageReservesParticipation.size() * t_max;
             }
             return counter;
         };

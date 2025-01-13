@@ -5,23 +5,26 @@ void STPumpingMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool 
     if (!data.Simulation)
     {
         // 15 (l)
-        // Participation to the reserve is bounded by the max pumping reserve participation of the cluster
-        // Π <= Π^max 
-        // Π : Pumping power 
-        // Π^max : Maximum accessible limit of the cluster for the reserve
+        // Participation to the reserve is bounded by the max pumping reserve participation of the
+        // cluster Π <= Π^max Π : Pumping power Π^max : Maximum accessible limit of the cluster for
+        // the reserve
 
-        CAPACITY_RESERVATION& capacityReservation
-          = isUpReserve ? data.areaReserves[pays].areaCapacityReservationsUp[reserve]
-                        : data.areaReserves[pays].areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION& capacityReservation = isUpReserve
+                                                      ? data.areaReserves[pays]
+                                                          .areaCapacityReservationsUp[reserve]
+                                                      : data.areaReserves[pays]
+                                                          .areaCapacityReservationsDown[reserve];
 
-        RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
-          = capacityReservation.AllSTStorageReservesParticipation[cluster];
+        RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation = capacityReservation
+                                                                  .AllSTStorageReservesParticipation
+                                                                    [cluster];
 
         int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 
         builder.updateHourWithinWeek(pdt)
           .STStoragePumpingClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation, 1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            1.0)
           .lessThan();
         data.CorrespondanceCntNativesCntOptim[pdt]
           .reservesIndices()

@@ -44,6 +44,7 @@ struct VCardReserveParticipationBySTStorage
     {
         return "CLUSTER PARTICIPATION TO RESERVE";
     }
+
     //! Unit
     static std::string Unit()
     {

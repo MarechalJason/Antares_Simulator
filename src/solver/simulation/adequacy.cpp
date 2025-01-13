@@ -289,7 +289,8 @@ bool Adequacy::year(Progression::Task& progression,
                           hourlyResults.CoutsMarginauxHoraires.end(),
                           0);
 
-                for (auto& res : hourlyResults.HydroUsage) {
+                for (auto& res: hourlyResults.HydroUsage)
+                {
                     res.PompageHoraire = 0;
                     res.debordementsHoraires = 0;
                     res.niveauxHoraires = 0;

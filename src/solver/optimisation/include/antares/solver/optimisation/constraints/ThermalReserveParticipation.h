@@ -4,11 +4,12 @@
 /*!
  * represent 'ThermalReserveParticipation' Constraint type
  */
-class ThermalReserveParticipation : private ConstraintFactory
+class ThermalReserveParticipation: private ConstraintFactory
 {
 public:
-    ThermalReserveParticipation(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    ThermalReserveParticipation(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

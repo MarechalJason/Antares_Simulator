@@ -22,12 +22,11 @@
 using namespace Antares::Data;
 
 LinearProblemMatrixReserves::LinearProblemMatrixReserves(PROBLEME_HEBDO* problemeHebdo,
-                                                       bool Simulation,
-                                                       ConstraintBuilder& builder) :
- ProblemMatrixEssential(problemeHebdo),
- simulation_(Simulation),
- reserveParticipationGroup_(problemeHebdo, simulation_, builder)
+                                                         bool Simulation,
+                                                         ConstraintBuilder& builder):
+    ProblemMatrixEssential(problemeHebdo),
+    simulation_(Simulation),
+    reserveParticipationGroup_(problemeHebdo, simulation_, builder)
 {
-    constraintgroups_
-      = {&reserveParticipationGroup_};
+    constraintgroups_ = {&reserveParticipationGroup_};
 }

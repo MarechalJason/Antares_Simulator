@@ -11,19 +11,23 @@ void LTReserveUpParticipation::add(int pays, int reserve, int cluster, int pdt)
         // Π : Pumping participation to reserve
         // P : Up Reserve Participation
 
-        CAPACITY_RESERVATION& capacityReservation
-          = data.areaReserves[pays].areaCapacityReservationsUp[reserve];
+        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                      .areaCapacityReservationsUp[reserve];
 
-        RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation
-          = capacityReservation.AllLTStorageReservesParticipation[cluster];
+        RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation = capacityReservation
+                                                                  .AllLTStorageReservesParticipation
+                                                                    [cluster];
 
         builder.updateHourWithinWeek(pdt)
           .LTStorageTurbiningClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation, -1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            -1.0)
           .LTStoragePumpingClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation, -1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            -1.0)
           .LTStorageClusterReserveUpParticipation(
-            reserveParticipation.globalIndexClusterParticipation, 1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            1.0)
           .equalTo();
 
         ConstraintNamer namer(builder.data.NomDesContraintes);

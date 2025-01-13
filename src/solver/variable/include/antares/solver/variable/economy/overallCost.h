@@ -21,12 +21,14 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_OverallCost_H__
 #define __SOLVER_VARIABLE_ECONOMY_OverallCost_H__
 
-#include "antares/solver/variable/variable.h"
 #include <filesystem>
-#include <yuni/io/file.h>
 #include <iomanip>
 #include <sstream>
+
 #include <yuni/io/directory.h>
+#include <yuni/io/file.h>
+
+#include "antares/solver/variable/variable.h"
 
 namespace Antares
 {
@@ -214,7 +216,6 @@ public:
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-
         // Next variable
         NextType::yearEndBuild(state, year, numSpace);
     }

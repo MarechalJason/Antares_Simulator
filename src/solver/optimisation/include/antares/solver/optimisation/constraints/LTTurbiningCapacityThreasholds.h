@@ -4,11 +4,12 @@
 /*
  * represent 'LTTurbiningCapacityThreasholds' Constraint type
  */
-class LTTurbiningCapacityThreasholds : private ConstraintFactory
+class LTTurbiningCapacityThreasholds: private ConstraintFactory
 {
 public:
-    LTTurbiningCapacityThreasholds(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    LTTurbiningCapacityThreasholds(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

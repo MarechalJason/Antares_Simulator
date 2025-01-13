@@ -4,11 +4,12 @@
 /*!
  * represent 'STTurbiningMaxReserve' Constraint type
  */
-class STTurbiningMaxReserve : private ConstraintFactory
+class STTurbiningMaxReserve: private ConstraintFactory
 {
 public:
-    STTurbiningMaxReserve(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    STTurbiningMaxReserve(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

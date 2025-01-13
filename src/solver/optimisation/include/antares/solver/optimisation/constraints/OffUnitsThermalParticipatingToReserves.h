@@ -4,11 +4,12 @@
 /*!
  * represent 'OffUnitsThermalParticipatingToReserves' Constraint type
  */
-class OffUnitsThermalParticipatingToReserves : private ConstraintFactory
+class OffUnitsThermalParticipatingToReserves: private ConstraintFactory
 {
 public:
-    OffUnitsThermalParticipatingToReserves(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    OffUnitsThermalParticipatingToReserves(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

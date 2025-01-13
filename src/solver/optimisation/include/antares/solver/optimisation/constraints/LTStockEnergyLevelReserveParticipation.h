@@ -4,11 +4,12 @@
 /*
  * represent 'LTStockLevelReserveParticipation' Constraint type
  */
-class LTStockEnergyLevelReserveParticipation : private ConstraintFactory
+class LTStockEnergyLevelReserveParticipation: private ConstraintFactory
 {
 public:
-    LTStockEnergyLevelReserveParticipation(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    LTStockEnergyLevelReserveParticipation(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

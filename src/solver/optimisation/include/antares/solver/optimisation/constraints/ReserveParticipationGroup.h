@@ -27,7 +27,7 @@
  *
  */
 
-class ReserveParticipationGroup : public ConstraintGroup
+class ReserveParticipationGroup: public ConstraintGroup
 {
 public:
     using ConstraintGroup::ConstraintGroup;

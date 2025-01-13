@@ -276,7 +276,7 @@ StudyRuntimeInfos::StudyRuntimeInfos():
     thermalPlantTotalCount(0),
     thermalPlantTotalCountMustRun(0),
     shortTermStorageCount(0),
-    longTermStorageCount(0),  
+    longTermStorageCount(0),
     quadraticOptimizationHasFailed(false)
 {
 }
@@ -384,7 +384,8 @@ bool StudyRuntimeInfos::loadFromStudy(Study& study)
                 << shortTermStorageCumulativeConstraintCount;
     logs.info() << "     long-term storages: " << longTermStorageCount;
     logs.info() << "     reserve participations: " << reserveParticipationCount;
-    logs.info() << "     binding constraints: " << study.bindingConstraints.activeConstraints().size();
+    logs.info() << "     binding constraints: "
+                << study.bindingConstraints.activeConstraints().size();
     logs.info() << "     geographic trimming:" << (gd.geographicTrimming ? "true" : "false");
     logs.info();
 

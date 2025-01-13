@@ -8,8 +8,7 @@ void ThermalReserveParticipation::add(int pays, int reserve, int cluster, int pd
                                                  : data.areaReserves[pays]
                                                      .areaCapacityReservationsDown[reserve];
 
-    auto& reserveParticipation = capacityReservation
-                                   .AllThermalReservesParticipation[cluster];
+    auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
     bool offUnitParticipating = isUpReserve && reserveParticipation.maxPowerOff > 0;
     if (!data.Simulation)
     {
@@ -20,22 +19,22 @@ void ThermalReserveParticipation::add(int pays, int reserve, int cluster, int pd
         // P^on : Participation of running units
         // P^off : Participation of off units
 
-        int globalClusterIdx
-          = data.thermalClusters[pays].NumeroDuPalierDansLEnsembleDesPaliersThermiques
-              [cluster];
+        int globalClusterIdx = data.thermalClusters[pays]
+                                 .NumeroDuPalierDansLEnsembleDesPaliersThermiques[cluster];
 
         builder.updateHourWithinWeek(pdt)
           .ThermalClusterReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
                                               1.0)
           .RunningThermalClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation, -1.0);
+            reserveParticipation.globalIndexClusterParticipation,
+            -1.0);
 
         if (offUnitParticipating)
         {
             builder.OffThermalClusterReserveParticipation(
               reserveParticipation.globalIndexClusterParticipation,
               -1.0);
-        } 
+        }
 
         builder.equalTo();
 

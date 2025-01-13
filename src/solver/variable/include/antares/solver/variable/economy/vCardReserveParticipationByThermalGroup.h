@@ -44,6 +44,7 @@ struct VCardReserveParticipationByThermalGroup
     {
         return "THERMAL GROUP PARTICIPATION TO RESERVE";
     }
+
     //! Unit
     static std::string Unit()
     {
@@ -69,7 +70,8 @@ struct VCardReserveParticipationByThermalGroup
         //! Data Level
         categoryDataLevel = Category::DataLevel::area,
         //! File level (provided by the type of the results)
-        categoryFileLevel = ResultsType::categoryFile & (Category::FileLevel::id | Category::FileLevel::va),
+        categoryFileLevel = ResultsType::categoryFile
+                            & (Category::FileLevel::id | Category::FileLevel::va),
         //! Precision (views)
         precision = Category::all,
         //! Indentation (GUI)
@@ -96,7 +98,8 @@ struct VCardReserveParticipationByThermalGroup
 
 }; // class VCard
 
-static std::string thermalDispatchableGroupToString(Data::ThermalCluster::ThermalDispatchableGroup idx)
+static std::string thermalDispatchableGroupToString(
+  Data::ThermalCluster::ThermalDispatchableGroup idx)
 {
     switch (idx)
     {

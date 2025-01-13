@@ -27,8 +27,7 @@
 
 void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireCoutsDeDemarrage(PROBLEME_HEBDO*,
                                                                                    bool);
-void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(PROBLEME_HEBDO*,
-                                                                                   bool);
+void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(PROBLEME_HEBDO*, bool);
 
 void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBDO* problemeHebdo)
 {

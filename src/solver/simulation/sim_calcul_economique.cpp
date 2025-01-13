@@ -60,7 +60,8 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
             areaCapacityReservationsUp.failureCost = reserveCapacity.failureCost;
             areaCapacityReservationsUp.spillageCost = reserveCapacity.spillageCost;
             areaCapacityReservationsUp.maxActivationRatio = reserveCapacity.maxActivationRatio;
-            areaCapacityReservationsUp.maxEnergyActivationRatio = reserveCapacity.maxEnergyActivationRatio;
+            areaCapacityReservationsUp.maxEnergyActivationRatio = reserveCapacity
+                                                                    .maxEnergyActivationRatio;
             areaCapacityReservationsUp.maxActivationDuration = reserveCapacity.maxActivationHours;
             areaCapacityReservationsUp.reserveName = reserveName;
             areaCapacityReservationsUp.globalReserveIndex = globalReserveIndex;
@@ -87,7 +88,8 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
             areaCapacityReservationsDown.spillageCost = reserveCapacity.spillageCost;
             areaCapacityReservationsDown.maxActivationRatio = reserveCapacity.maxActivationRatio;
             areaCapacityReservationsDown.maxActivationDuration = reserveCapacity.maxActivationHours;
-            areaCapacityReservationsDown.maxEnergyActivationRatio = reserveCapacity.maxEnergyActivationRatio;
+            areaCapacityReservationsDown.maxEnergyActivationRatio = reserveCapacity
+                                                                      .maxEnergyActivationRatio;
             areaCapacityReservationsDown.reserveName = reserveName;
             areaCapacityReservationsDown.globalReserveIndex = globalReserveIndex;
             areaCapacityReservationsDown.areaReserveIndex = areaReserveIndex;
@@ -125,7 +127,7 @@ static void importShortTermStorages(
         ShortTermStorageOut[areaIndex].resize(area->shortTermStorage.count());
         int storageIndex = 0;
 
-        for (auto& st : area->shortTermStorage.storagesByIndex)
+        for (auto& st: area->shortTermStorage.storagesByIndex)
         {
             ::ShortTermStorage::PROPERTIES& toInsert = ShortTermStorageOut[areaIndex][storageIndex];
             toInsert.clusterGlobalIndex = clusterGlobalIndex;
@@ -146,8 +148,8 @@ static void importShortTermStorages(
             {
                 constraint.globalIndex = clusterCumulativeConstraintGlobalIndex;
                 ++clusterCumulativeConstraintGlobalIndex;
-            }            
-            
+            }
+
             toInsert.clusterGlobalIndex = clusterGlobalIndex;
 
             toInsert.series = st.series;
@@ -288,8 +290,6 @@ static void importLongTermStoragesReserves(AreaList& areas, PROBLEME_HEBDO& prob
     }
 }
 
-
-
 void SIM_InitialisationProblemeHebdo(Data::Study& study,
                                      PROBLEME_HEBDO& problem,
                                      unsigned int NombreDePasDeTemps,
@@ -334,9 +334,8 @@ void SIM_InitialisationProblemeHebdo(Data::Study& study,
     problem.NamedProblems = study.parameters.namedProblems;
     problem.exportMPSOnError = Data::exportMPS(parameters.include.unfeasibleProblemBehavior);
 
-    problem.OptimisationNotFastMode
-      = (study.parameters.unitCommitment.ucMode
-         != Antares::Data::UnitCommitmentMode::ucHeuristicFast);
+    problem.OptimisationNotFastMode = (study.parameters.unitCommitment.ucMode
+                                       != Antares::Data::UnitCommitmentMode::ucHeuristicFast);
 
     problem.OptimisationAvecVariablesEntieres = (study.parameters.unitCommitment.ucMode
                                                  == Antares::Data::UnitCommitmentMode::ucMILP);
@@ -540,7 +539,6 @@ void SIM_InitialisationProblemeHebdo(Data::Study& study,
                   ? pbPalier.PmaxDUnGroupeDuPalierThermique[cluster->index]
                   : cluster->minStablePower;
             pbPalier.NomsDesPaliersThermiques[cluster->index] = cluster->name().c_str();
-            
         }
         if (study.parameters.unitCommitment.ucMode
               != Antares::Data::UnitCommitmentMode::ucHeuristicFast

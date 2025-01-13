@@ -4,11 +4,12 @@
 /*
  * represent 'POutBounds' Constraint type
  */
-class POutBounds : private ConstraintFactory
+class POutBounds: private ConstraintFactory
 {
 public:
-    POutBounds(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    POutBounds(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

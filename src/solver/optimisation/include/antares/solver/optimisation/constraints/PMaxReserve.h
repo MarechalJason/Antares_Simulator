@@ -4,11 +4,12 @@
 /*!
  * represent 'ReserveParticipation' Constraint type
  */
-class PMaxReserve : private ConstraintFactory
+class PMaxReserve: private ConstraintFactory
 {
 public:
-    PMaxReserve(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    PMaxReserve(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

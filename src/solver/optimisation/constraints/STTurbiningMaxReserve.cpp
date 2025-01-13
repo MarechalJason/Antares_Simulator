@@ -5,23 +5,26 @@ void STTurbiningMaxReserve::add(int pays, int reserve, int cluster, int pdt, boo
     if (!data.Simulation)
     {
         // 15 (k)
-        // Participation to the reserve using turbining is bounded by the max turbining reserve participation of the cluster
-        // constraint : H <= H^max
-        // H : Turbining power
-        // H^max : Maximum accessible power of the cluster for the reserve
+        // Participation to the reserve using turbining is bounded by the max turbining reserve
+        // participation of the cluster constraint : H <= H^max H : Turbining power H^max : Maximum
+        // accessible power of the cluster for the reserve
 
-        CAPACITY_RESERVATION& capacityReservation
-          = isUpReserve ? data.areaReserves[pays].areaCapacityReservationsUp[reserve]
-                        : data.areaReserves[pays].areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION& capacityReservation = isUpReserve
+                                                      ? data.areaReserves[pays]
+                                                          .areaCapacityReservationsUp[reserve]
+                                                      : data.areaReserves[pays]
+                                                          .areaCapacityReservationsDown[reserve];
 
-        RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
-          = capacityReservation.AllSTStorageReservesParticipation[cluster];
+        RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation = capacityReservation
+                                                                  .AllSTStorageReservesParticipation
+                                                                    [cluster];
 
         int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 
         builder.updateHourWithinWeek(pdt)
           .STStorageTurbiningClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation, 1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            1.0)
           .lessThan();
         data.CorrespondanceCntNativesCntOptim[pdt]
           .reservesIndices()

@@ -7,18 +7,16 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
     if (!data.Simulation)
     {
         // 15 (n)
-        // Pumping power remains within limits set by minimum stable power (0) and maximum capacity threasholds 
-        // Sum(Π^on_re+) <= Π <= Πmax - Sum(Π^on_re-) 
-        // Π^on_re- : Pumping Participation of cluster to Down reserves 
-        // Π^on_re+ : Pumping Participation of cluster to Up reserves 
-        // Π : Pumping Power output from cluster 
-        // Πmax : Maximum Pumping Power from cluster
+        // Pumping power remains within limits set by minimum stable power (0) and maximum capacity
+        // threasholds Sum(Π^on_re+) <= Π <= Πmax - Sum(Π^on_re-) Π^on_re- : Pumping Participation
+        // of cluster to Down reserves Π^on_re+ : Pumping Participation of cluster to Up reserves Π
+        // : Pumping Power output from cluster Πmax : Maximum Pumping Power from cluster
 
         // 15 (n) (1) : Sum(Π^on_re+) - Π <= 0
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsUp)
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
@@ -38,8 +36,9 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STPumpingCapacityThreasholdsDown(builder.data.nombreDeContraintes,
-                                                   data.shortTermStorageOfArea[pays][cluster].name);
+                namer.STPumpingCapacityThreasholdsDown(
+                  builder.data.nombreDeContraintes,
+                  data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
@@ -48,7 +47,7 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsDown)
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
@@ -72,8 +71,9 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STPumpingCapacityThreasholdsUp(builder.data.nombreDeContraintes,
-                                                   data.shortTermStorageOfArea[pays][cluster].name);
+                namer.STPumpingCapacityThreasholdsUp(
+                  builder.data.nombreDeContraintes,
+                  data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
@@ -81,7 +81,8 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
     else
     {
         // Lambda that count the number of reserves that the cluster is participating to
-        auto countReservesParticipations = [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
+        auto countReservesParticipations =
+          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
         {
             int counter = 0;
             for (const auto& capacityReservation: reservations)

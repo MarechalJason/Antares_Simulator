@@ -4,11 +4,12 @@
 /*!
  * represent 'POffUnits' Constraint type
  */
-class POffUnits : private ConstraintFactory
+class POffUnits: private ConstraintFactory
 {
 public:
-    POffUnits(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    POffUnits(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

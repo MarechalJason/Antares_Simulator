@@ -44,6 +44,7 @@ struct VCardReserveParticipationUnsuppliedSpilled
     {
         return "RESERVE UNSUPPLIED OR SPILLED ENERGY";
     }
+
     //! Unit
     static std::string Unit()
     {
@@ -69,7 +70,8 @@ struct VCardReserveParticipationUnsuppliedSpilled
         //! Data Level
         categoryDataLevel = Category::DataLevel::area,
         //! File level (provided by the type of the results)
-        categoryFileLevel = ResultsType::categoryFile & (Category::FileLevel::id | Category::FileLevel::va),
+        categoryFileLevel = ResultsType::categoryFile
+                            & (Category::FileLevel::id | Category::FileLevel::va),
         //! Precision (views)
         precision = Category::all,
         //! Indentation (GUI)
@@ -103,7 +105,7 @@ static std::string unsuppliedSpilledToString(Data::ThermalCluster::UnsuppliedSpi
     case 0:
         return "UNSP.";
     case 1:
-        return "SPIL."; 
+        return "SPIL.";
     default:
         return "<unknown>";
     }

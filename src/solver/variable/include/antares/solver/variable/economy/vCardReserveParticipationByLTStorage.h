@@ -4,20 +4,37 @@
 
 #include "../storage/results.h"
 
-namespace Antares {
-namespace Solver {
-namespace Variable {
-namespace Economy {
+namespace Antares
+{
+namespace Solver
+{
+namespace Variable
+{
+namespace Economy
+{
 
-struct VCardReserveParticipationByLTStorage {
-    static std::string Caption() { return "LT STORAGE PARTICIPATION TO RESERVE"; }
-    static std::string Unit() { return "MWh"; }
-    static std::string Description() { return "Reserve Participation from long-term storage to a reserve"; }
+struct VCardReserveParticipationByLTStorage
+{
+    static std::string Caption()
+    {
+        return "LT STORAGE PARTICIPATION TO RESERVE";
+    }
+
+    static std::string Unit()
+    {
+        return "MWh";
+    }
+
+    static std::string Description()
+    {
+        return "Reserve Participation from long-term storage to a reserve";
+    }
 
     typedef Results<R::AllYears::Average<>> ResultsType;
     typedef VCardReserveParticipationByLTStorage VCardForSpatialAggregate;
 
-    enum {
+    enum
+    {
         categoryDataLevel = Category::DataLevel::area,
         categoryFileLevel = ResultsType::categoryFile & (Category::FileLevel::de),
         precision = Category::all,

@@ -245,9 +245,9 @@ using AREA_INPUT = std::vector<::ShortTermStorage::PROPERTIES>; // index is loca
 struct RESULTS
 {
     // Index is the number of the STS in the area
-    std::vector<double> level;                         // MWh
-    std::vector<double> injection;                     // MWh
-    std::vector<double> withdrawal;                    // MWh
+    std::vector<double> level;                                     // MWh
+    std::vector<double> injection;                                 // MWh
+    std::vector<double> withdrawal;                                // MWh
     ReserveOpt<std::vector<double>> reserveParticipationOfCluster; // MWh
 };
 } // namespace ShortTermStorage
@@ -564,7 +564,7 @@ struct RESULTATS_HORAIRES
     std::vector<double> CoutsMarginauxHoraires;
     std::vector<PRODUCTION_THERMIQUE_OPTIMALE> ProductionThermique; // index is pdtHebdo
     std::vector<OPTIMAL_HYDRO_USAGE> HydroUsage;                    // index is pdtHebdo
-    
+
     std::vector<::ShortTermStorage::RESULTS> ShortTermStorage;
 
     ReserveOpt<std::vector<RESERVES>> Reserves;

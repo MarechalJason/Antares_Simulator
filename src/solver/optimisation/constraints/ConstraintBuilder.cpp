@@ -50,26 +50,35 @@ ConstraintBuilder& ConstraintBuilder::DispatchableProduction(unsigned int index,
 }
 
 ConstraintBuilder& ConstraintBuilder::RunningThermalClusterReserveParticipation(unsigned int index,
-                                                                   double coeff,
-                                                                   int offset,
-                                                                   int delta){
-    AddVariable(variableManager_.RunningThermalClusterReserveParticipation(index, hourInWeek_, offset, delta), coeff);
+                                                                                double coeff,
+                                                                                int offset,
+                                                                                int delta)
+{
+    AddVariable(
+      variableManager_.RunningThermalClusterReserveParticipation(index, hourInWeek_, offset, delta),
+      coeff);
     return *this;
 }
 
 ConstraintBuilder& ConstraintBuilder::OffThermalClusterReserveParticipation(unsigned int index,
-                                                                   double coeff,
-                                                                   int offset,
-                                                                   int delta){
-    AddVariable(variableManager_.OffThermalClusterReserveParticipation(index, hourInWeek_, offset, delta), coeff);
+                                                                            double coeff,
+                                                                            int offset,
+                                                                            int delta)
+{
+    AddVariable(
+      variableManager_.OffThermalClusterReserveParticipation(index, hourInWeek_, offset, delta),
+      coeff);
     return *this;
 }
 
 ConstraintBuilder& ConstraintBuilder::ThermalClusterReserveParticipation(unsigned int index,
-                                                                   double coeff,
-                                                                   int offset,
-                                                                   int delta){
-    AddVariable(variableManager_.ThermalClusterReserveParticipation(index, hourInWeek_, offset, delta), coeff);
+                                                                         double coeff,
+                                                                         int offset,
+                                                                         int delta)
+{
+    AddVariable(
+      variableManager_.ThermalClusterReserveParticipation(index, hourInWeek_, offset, delta),
+      coeff);
     return *this;
 }
 
@@ -101,8 +110,10 @@ ConstraintBuilder& ConstraintBuilder::STStorageTurbiningClusterReserveParticipat
   int offset,
   int delta)
 {
-    AddVariable(variableManager_.STStorageTurbiningClusterReserveParticipation(
-                  index, hourInWeek_, offset, delta),
+    AddVariable(variableManager_.STStorageTurbiningClusterReserveParticipation(index,
+                                                                               hourInWeek_,
+                                                                               offset,
+                                                                               delta),
                 coeff);
     return *this;
 }
@@ -113,8 +124,10 @@ ConstraintBuilder& ConstraintBuilder::STStoragePumpingClusterReserveParticipatio
   int offset,
   int delta)
 {
-    AddVariable(variableManager_.STStoragePumpingClusterReserveParticipation(
-                  index, hourInWeek_, offset, delta),
+    AddVariable(variableManager_.STStoragePumpingClusterReserveParticipation(index,
+                                                                             hourInWeek_,
+                                                                             offset,
+                                                                             delta),
                 coeff);
     return *this;
 }
@@ -147,8 +160,10 @@ ConstraintBuilder& ConstraintBuilder::LTStorageTurbiningClusterReserveParticipat
   int offset,
   int delta)
 {
-    AddVariable(variableManager_.LTStorageTurbiningClusterReserveParticipation(
-                  index, hourInWeek_, offset, delta),
+    AddVariable(variableManager_.LTStorageTurbiningClusterReserveParticipation(index,
+                                                                               hourInWeek_,
+                                                                               offset,
+                                                                               delta),
                 coeff);
     return *this;
 }
@@ -159,21 +174,21 @@ ConstraintBuilder& ConstraintBuilder::LTStoragePumpingClusterReserveParticipatio
   int offset,
   int delta)
 {
-    AddVariable(variableManager_.LTStoragePumpingClusterReserveParticipation(
-                  index, hourInWeek_, offset, delta),
+    AddVariable(variableManager_.LTStoragePumpingClusterReserveParticipation(index,
+                                                                             hourInWeek_,
+                                                                             offset,
+                                                                             delta),
                 coeff);
     return *this;
 }
-
 
 ConstraintBuilder& ConstraintBuilder::InternalUnsatisfiedReserve(unsigned int index,
                                                                  double coeff,
                                                                  int offset,
                                                                  int delta)
 {
-    AddVariable(
-      variableManager_.InternalUnsatisfiedReserve(index, hourInWeek_, offset, delta),
-      coeff);
+    AddVariable(variableManager_.InternalUnsatisfiedReserve(index, hourInWeek_, offset, delta),
+                coeff);
     return *this;
 }
 
@@ -182,8 +197,7 @@ ConstraintBuilder& ConstraintBuilder::InternalExcessReserve(unsigned int index,
                                                             int offset,
                                                             int delta)
 {
-    AddVariable(variableManager_.InternalExcessReserve(index, hourInWeek_, offset, delta),
-                coeff);
+    AddVariable(variableManager_.InternalExcessReserve(index, hourInWeek_, offset, delta), coeff);
     return *this;
 }
 
@@ -193,7 +207,8 @@ ConstraintBuilder& ConstraintBuilder::NumberOfDispatchableUnits(unsigned int ind
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::NumberOfOffUnitsParticipatingToReserve(unsigned int index, double coeff)
+ConstraintBuilder& ConstraintBuilder::NumberOfOffUnitsParticipatingToReserve(unsigned int index,
+                                                                             double coeff)
 {
     AddVariable(variableManager_.NumberOfOffUnitsParticipatingToReserve(index, hourInWeek_), coeff);
     return *this;

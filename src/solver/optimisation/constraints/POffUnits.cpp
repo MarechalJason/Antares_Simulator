@@ -5,21 +5,19 @@ void POffUnits::add(int pays, int reserve, int cluster, int pdt)
     if (!data.Simulation)
     {
         // 16 quater
-        // Participation to reserves remains within limits set by minimum stable power and maximum capacity threasholds 
-        // l * M^off ≤ P^off ≤ M^off * P^off_max 
-        // l : minimum stable power output when running 
-        // M^off : number of off units paricipating to reserves 
-        // P^off : Participation of off units to reserves
-        // P^off_max : Max Participation of off units
+        // Participation to reserves remains within limits set by minimum stable power and maximum
+        // capacity threasholds l * M^off ≤ P^off ≤ M^off * P^off_max l : minimum stable power
+        // output when running M^off : number of off units paricipating to reserves P^off :
+        // Participation of off units to reserves P^off_max : Max Participation of off units
 
-        CAPACITY_RESERVATION capacityReservation
-          = data.areaReserves[pays].areaCapacityReservationsUp[reserve];
+        CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]
+                                                     .areaCapacityReservationsUp[reserve];
 
         auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
 
-        int globalClusterIdx
-          = data.thermalClusters[pays].NumeroDuPalierDansLEnsembleDesPaliersThermiques
-              [reserveParticipation.clusterIdInArea];
+        int globalClusterIdx = data.thermalClusters[pays]
+                                 .NumeroDuPalierDansLEnsembleDesPaliersThermiques
+                                   [reserveParticipation.clusterIdInArea];
 
         // 16 quater (1) : l * M^off - P^off ≤ 0
         {
@@ -28,7 +26,8 @@ void POffUnits::add(int pays, int reserve, int cluster, int pdt)
                 reserveParticipation.globalIndexClusterParticipation,
                 data.thermalClusters[pays].pminDUnGroupeDuPalierThermique[cluster])
               .OffThermalClusterReserveParticipation(
-                reserveParticipation.globalIndexClusterParticipation, -1)
+                reserveParticipation.globalIndexClusterParticipation,
+                -1)
               .lessThan();
 
             ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -45,7 +44,8 @@ void POffUnits::add(int pays, int reserve, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt)
               .OffThermalClusterReserveParticipation(
-                reserveParticipation.globalIndexClusterParticipation, 1)
+                reserveParticipation.globalIndexClusterParticipation,
+                1)
               .NumberOfOffUnitsParticipatingToReserve(
                 reserveParticipation.globalIndexClusterParticipation,
                 -reserveParticipation.maxPowerOff)

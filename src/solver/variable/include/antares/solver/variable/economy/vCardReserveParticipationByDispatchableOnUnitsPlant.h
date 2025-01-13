@@ -44,6 +44,7 @@ struct VCardReserveParticipationByDispatchableOnUnitsPlant
     {
         return "RUNNING UNITS CLUSTER PARTICIPATION TO RESERVE";
     }
+
     //! Unit
     static std::string Unit()
     {

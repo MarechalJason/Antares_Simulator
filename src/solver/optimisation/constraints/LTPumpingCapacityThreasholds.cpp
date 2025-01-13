@@ -7,21 +7,19 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
     if (!data.Simulation)
     {
         // 15 (d)
-        // Pumping power remains within limits set by minimum stable power (0) and maximum capacity threasholds 
-        // Sum(Π^on_re+) <= Π <= Πmax - Sum(Π^on_re-) 
-        // Π^on_re- : Pumping Participation of cluster to Down reserves 
-        // Π^on_re+ : Pumping Participation of cluster to Up reserves 
-        // Π : Pumping Power output from cluster 
-        // Πmax : Maximum Pumping Power from cluster
+        // Pumping power remains within limits set by minimum stable power (0) and maximum capacity
+        // threasholds Sum(Π^on_re+) <= Π <= Πmax - Sum(Π^on_re-) Π^on_re- : Pumping Participation
+        // of cluster to Down reserves Π^on_re+ : Pumping Participation of cluster to Up reserves Π
+        // : Pumping Power output from cluster Πmax : Maximum Pumping Power from cluster
 
         // 15 (d) (1) : Sum(Π^on_re+) - Π <= 0
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsUp)
             {
-                for (const auto& reserveParticipations :
+                for (const auto& reserveParticipations:
                      capacityReservation.AllLTStorageReservesParticipation)
                 {
                     builder.LTStoragePumpingClusterReserveParticipation(
@@ -42,7 +40,7 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
                 namer.LTPumpingCapacityThreasholdsDown(builder.data.nombreDeContraintes,
-                    "LongTermStorage");
+                                                       "LongTermStorage");
                 builder.build();
             }
         }
@@ -51,10 +49,10 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsDown)
             {
-                for (const auto& reserveParticipations :
+                for (const auto& reserveParticipations:
                      capacityReservation.AllLTStorageReservesParticipation)
                 {
                     builder.LTStoragePumpingClusterReserveParticipation(
@@ -79,7 +77,7 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
                 namer.LTPumpingCapacityThreasholdsUp(builder.data.nombreDeContraintes,
-                    "LongTermStorage");
+                                                     "LongTermStorage");
                 builder.build();
             }
         }

@@ -44,11 +44,6 @@
 #include "dispatchableGeneration.h"
 #include "domesticUnsuppliedEnergy.h"
 #include "dtgMarginAfterCsr.h"
-#include "spilledEnergy.h"
-#include "reserveParticipationCost.h"
-#include "reserveParticipationMarginalCost.h"
-#include "reserveParticipationByThermalGroup.h"
-#include "reserveParticipationUnsuppliedSpilled.h"
 #include "hydroCost.h"
 #include "hydrostorage.h"
 #include "inflow.h"
@@ -67,6 +62,10 @@
 #include "overflow.h"
 #include "pumping.h"
 #include "renewableGeneration.h"
+#include "reserveParticipationByThermalGroup.h"
+#include "reserveParticipationCost.h"
+#include "reserveParticipationMarginalCost.h"
+#include "reserveParticipationUnsuppliedSpilled.h"
 #include "reservoirlevel.h"
 #include "spilledEnergy.h"
 #include "thermalAirPollutantEmissions.h"
@@ -80,9 +79,8 @@
 #include "productionByDispatchablePlant.h"
 #include "productionByRenewablePlant.h"
 #include "profitByPlant.h"
-#include "reserveParticipationByDispatchableOnUnitsPlant.h"
 #include "reserveParticipationByDispatchableOffUnitsPlant.h"
-
+#include "reserveParticipationByDispatchableOnUnitsPlant.h"
 
 // By RES plant
 #include "STSbyGroup.h"
@@ -90,8 +88,6 @@
 #include "STStorageInjectionByCluster.h"
 #include "STStorageLevelsByCluster.h"
 #include "STStorageWithdrawalByCluster.h"
-#include "STStorageLevelsByCluster.h"
-#include "STStorageCashFlowByCluster.h"
 #include "reserveParticipationBySTStorage.h"
 #include "reserveParticipationBySTStorageGroup.h"
 

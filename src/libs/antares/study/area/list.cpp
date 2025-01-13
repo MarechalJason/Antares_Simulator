@@ -26,8 +26,8 @@
 
 #include <antares/inifile/inifile.h>
 #include <antares/logs/logs.h>
-#include <antares/study/area/scratchpad.h>
 #include <antares/study/area/capacityReservation.h>
+#include <antares/study/area/scratchpad.h>
 #include "antares/antares/antares.h"
 #include "antares/study//study.h"
 #include "antares/study/area/area.h"
@@ -916,7 +916,8 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
     if (study.parameters.compatibility.reserves
         == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
     {
-        fs::path reserves = study.folderInput / "reserves" / area.id.to<std::string>() / "reserves.ini";
+        fs::path reserves = study.folderInput / "reserves" / area.id.to<std::string>()
+                            / "reserves.ini";
         area.allCapacityReservations = AllCapacityReservations();
         if (ini.open(reserves, false))
         {
@@ -937,7 +938,8 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                                                         .maxGlobalEnergyActivationRatioUp))
                               {
                                   logs.warning()
-                                    << area.name << ": invalid maximum energy activation ratio for UP reserves";
+                                    << area.name
+                                    << ": invalid maximum energy activation ratio for UP reserves";
                               }
                           }
                           else if (tmp == "max-energy-activation-ratio-down")
@@ -945,8 +947,9 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                               if (!p->value.to<float>(area.allCapacityReservations()
                                                         .maxGlobalEnergyActivationRatioDown))
                               {
-                                  logs.warning()
-                                    << area.name << ": invalid maximum energy activation ratio for DOWN reserves";
+                                  logs.warning() << area.name
+                                                 << ": invalid maximum energy activation ratio for "
+                                                    "DOWN reserves";
                               }
                           }
                           else if (tmp == "max-activation-duration-up")
@@ -954,8 +957,9 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                               if (!p->value.to<int>(
                                     area.allCapacityReservations().maxGlobalActivationDurationUp))
                               {
-                                  logs.warning()
-                                    << area.name << ": invalid maximum energy activation duration for UP reserves";
+                                  logs.warning() << area.name
+                                                 << ": invalid maximum energy activation duration "
+                                                    "for UP reserves";
                               }
                           }
                           else if (tmp == "max-activation-duration-down")
@@ -963,8 +967,9 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                               if (!p->value.to<int>(
                                     area.allCapacityReservations().maxGlobalActivationDurationDown))
                               {
-                                  logs.warning()
-                                    << area.name << ": invalid maximum energy activation duration for DOWN reserves";
+                                  logs.warning() << area.name
+                                                 << ": invalid maximum energy activation duration "
+                                                    "for DOWN reserves";
                               }
                           }
                       }
@@ -1008,16 +1013,19 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                               if (!p->value.to<float>(tmpCapacityReservation.maxActivationRatio))
                               {
                                   logs.warning()
-                                    << area.name << ": invalid maximum activation ratio for reserve "
+                                    << area.name
+                                    << ": invalid maximum activation ratio for reserve "
                                     << section.name;
                               }
                           }
                           else if (tmp == "max-energy-activation-ratio")
                           {
-                              if (!p->value.to<float>(tmpCapacityReservation.maxEnergyActivationRatio))
+                              if (!p->value.to<float>(
+                                    tmpCapacityReservation.maxEnergyActivationRatio))
                               {
                                   logs.warning()
-                                    << area.name << ": invalid maximum energy activation ratio for reserve "
+                                    << area.name
+                                    << ": invalid maximum energy activation ratio for reserve "
                                     << section.name;
                               }
                           }
@@ -1026,38 +1034,53 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                               if (!p->value.to<int>(tmpCapacityReservation.maxActivationHours))
                               {
                                   logs.warning()
-                                    << area.name << ": invalid maximum activation duration for reserve "
+                                    << area.name
+                                    << ": invalid maximum activation duration for reserve "
                                     << section.name;
                               }
                           }
                           else if (tmp == "type")
                           {
                               if (p->value == "up")
+                              {
                                   type = 0;
+                              }
                               else if (p->value == "down")
+                              {
                                   type = 1;
+                              }
                               else
+                              {
                                   logs.warning()
                                     << area.name << ": invalid type for reserve " << section.name;
+                              }
                           }
                           else
+                          {
                               logs.warning()
                                 << area.name << ": invalid key " << tmp << " in file " << buffer;
+                          }
                       }
                       fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()
-                          / (file_name + ".txt");
+                                          / (file_name + ".txt");
                       ret = tmpCapacityReservation.need.loadFromFile(filePath, false) && ret;
                       if (type == 0)
+                      {
                           area.allCapacityReservations().areaCapacityReservationsUp.emplace(
                             section.name,
                             tmpCapacityReservation);
+                      }
                       else if (type == 1)
+                      {
                           area.allCapacityReservations().areaCapacityReservationsDown.emplace(
                             section.name,
                             tmpCapacityReservation);
+                      }
                       else
+                      {
                           logs.warning()
                             << area.name << ": invalid type for reserve " << section.name;
+                      }
                   }
               });
         }
@@ -1166,13 +1189,13 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
         if (study.usedByTheSolver && study.parameters.mode == SimulationMode::Adequacy)
         {
             area.thermal.list.enableMustrunForEveryone();
-	    }
+        }
         if (study.parameters.unitCommitment.ucMode != UnitCommitmentMode::ucHeuristicFast
             && study.parameters.compatibility.reserves
-                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+                 == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
         {
             fs::path reservesThermal = study.folderInput / "thermal" / "clusters"
-                                        / area.id.to<std::string>() / "reserves.ini";
+                                       / area.id.to<std::string>() / "reserves.ini";
             area.thermal.list.loadReserveParticipations(area, reservesThermal);
         }
     }

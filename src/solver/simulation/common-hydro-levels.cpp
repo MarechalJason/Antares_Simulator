@@ -59,7 +59,11 @@ void computingHydroLevels(const Data::AreaList& areas,
 
         double nivInit = problem.CaracteristiquesHydrauliques[index].NiveauInitialReservoir;
 
-        computeTimeStepLevel computeLvlObj(nivInit, inflows, hydroUsage, pumpingRatio, reservoirCapacity);
+        computeTimeStepLevel computeLvlObj(nivInit,
+                                           inflows,
+                                           hydroUsage,
+                                           pumpingRatio,
+                                           reservoirCapacity);
 
         for (uint h = 0; h < nbHoursInAWeek - 1; h++)
         {
@@ -96,7 +100,8 @@ void interpolateWaterValue(const Data::AreaList& areas,
 
         RESULTATS_HORAIRES& weeklyResults = problem.ResultatsHoraires[index];
 
-        for (auto& res : weeklyResults.HydroUsage) {
+        for (auto& res: weeklyResults.HydroUsage)
+        {
             res.valeurH2oHoraire = 0;
         }
 

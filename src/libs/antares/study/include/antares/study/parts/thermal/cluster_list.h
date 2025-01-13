@@ -129,7 +129,7 @@ public:
 
     // returns the number of reserve participations of all clusters
     unsigned int reserveParticipationsCount() const;
-    // returns the number of capacity reserves that all the clusters are participating to 
+    // returns the number of capacity reserves that all the clusters are participating to
     // (count only capacity resarvations once)
     unsigned int capacityReservationsCount() const;
 

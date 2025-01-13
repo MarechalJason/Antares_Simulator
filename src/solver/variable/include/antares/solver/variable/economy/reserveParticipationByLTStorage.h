@@ -14,8 +14,9 @@ namespace Economy
 {
 template<class NextT = Container::EndOfList>
 class ReserveParticipationByLTStorage
- : public Variable::
-     IVariable<ReserveParticipationByLTStorage<NextT>, NextT, VCardReserveParticipationByLTStorage>
+    : public Variable::IVariable<ReserveParticipationByLTStorage<NextT>,
+                                 NextT,
+                                 VCardReserveParticipationByLTStorage>
 {
 public:
     typedef NextT NextType;
@@ -37,23 +38,27 @@ public:
     {
         enum
         {
-            count
-            = ((VCardType::categoryDataLevel & CDataLevel && VCardType::categoryFileLevel & CFile)
-                 ? (NextType::template Statistics<CDataLevel, CFile>::count
-                    + VCardType::columnCount * ResultsType::count)
-                 : NextType::template Statistics<CDataLevel, CFile>::count),
+            count = ((VCardType::categoryDataLevel & CDataLevel
+                      && VCardType::categoryFileLevel & CFile)
+                       ? (NextType::template Statistics<CDataLevel, CFile>::count
+                          + VCardType::columnCount * ResultsType::count)
+                       : NextType::template Statistics<CDataLevel, CFile>::count),
         };
     };
 
 public:
-    ReserveParticipationByLTStorage() : pValuesForTheCurrentYear(NULL), pSize(0)
+    ReserveParticipationByLTStorage():
+        pValuesForTheCurrentYear(NULL),
+        pSize(0)
     {
     }
 
     ~ReserveParticipationByLTStorage()
     {
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        {
             delete[] pValuesForTheCurrentYear[numSpace];
+        }
         delete[] pValuesForTheCurrentYear;
     }
 
@@ -76,12 +81,18 @@ public:
         {
             AncestorType::pResults.resize(pSize);
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-                pValuesForTheCurrentYear[numSpace]
-                  = new VCardType::IntermediateValuesDeepType[pSize];
+            {
+                pValuesForTheCurrentYear[numSpace] = new VCardType::IntermediateValuesDeepType
+                  [pSize];
+            }
 
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            {
                 for (unsigned int i = 0; i != pSize; ++i)
+                {
                     pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
+                }
+            }
 
             for (unsigned int i = 0; i != pSize; ++i)
             {
@@ -92,7 +103,9 @@ public:
         else
         {
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            {
                 pValuesForTheCurrentYear[numSpace] = nullptr;
+            }
 
             AncestorType::pResults.clear();
         }
@@ -123,7 +136,9 @@ public:
     void yearBegin(unsigned int year, unsigned int numSpace)
     {
         for (unsigned int i = 0; i != pSize; ++i)
+        {
             pValuesForTheCurrentYear[numSpace][i].reset();
+        }
 
         NextType::yearBegin(year, numSpace);
     }
@@ -173,8 +188,9 @@ public:
               == Antares::Data::Parameters::Compatibility::Reserves::Enabled
             && state.area->reserveParticipationIndexMaps().LTStorage.size())
         {
-            for (const auto& [reserveName, reserveParticipation] :
-                state.reserveParticipationPerLTStorageClusterForYear[state.hourInTheYear]["LongTermStorage"])
+            for (const auto& [reserveName, reserveParticipation]:
+                 state.reserveParticipationPerLTStorageClusterForYear[state.hourInTheYear]
+                                                                     ["LongTermStorage"])
             {
                 pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps()
                                                      .LTStorage.get(reserveName)]
@@ -193,7 +209,7 @@ public:
         return pValuesForTheCurrentYear[numSpace]->hour;
     }
 
-void localBuildAnnualSurveyReport(SurveyResults& results,
+    void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
                                       unsigned int numSpace) const
@@ -219,7 +235,6 @@ void localBuildAnnualSurveyReport(SurveyResults& results,
             }
         }
     }
-
 
 private:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;

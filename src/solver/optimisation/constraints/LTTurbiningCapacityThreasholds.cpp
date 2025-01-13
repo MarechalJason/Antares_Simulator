@@ -7,21 +7,20 @@ void LTTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
     if (!data.Simulation)
     {
         // 15 (c)
-        // Turbining power remains within limits set by minimum stable power (0) and maximum capacity threasholds 
-        // Hmin + Sum(H^on_re-) <= H <= Hmax - Sum(H^on_re+) 
-        // H^on_re- : Turbining Participation of cluster to Down reserves 
-        // H^on_re+ : Turbining Participation of cluster to Up reserves 
-        // H : Turbining Power output from cluster 
-        // Hmax : Maximum Turbining Power from cluster
+        // Turbining power remains within limits set by minimum stable power (0) and maximum
+        // capacity threasholds Hmin + Sum(H^on_re-) <= H <= Hmax - Sum(H^on_re+) H^on_re- :
+        // Turbining Participation of cluster to Down reserves H^on_re+ : Turbining Participation of
+        // cluster to Up reserves H : Turbining Power output from cluster Hmax : Maximum Turbining
+        // Power from cluster
 
         // 15 (c) (1) : H - Sum(H^on_re-) >= Hmin
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsDown)
             {
-                for (const auto& reserveParticipations :
+                for (const auto& reserveParticipations:
                      capacityReservation.AllLTStorageReservesParticipation)
                 {
                     builder.LTStorageTurbiningClusterReserveParticipation(
@@ -46,7 +45,7 @@ void LTTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
                 namer.LTTurbiningCapacityThreasholdsDown(builder.data.nombreDeContraintes,
-                    "LongTermStorage");
+                                                         "LongTermStorage");
                 builder.build();
             }
         }
@@ -55,10 +54,10 @@ void LTTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (const auto& capacityReservation :
+            for (const auto& capacityReservation:
                  data.areaReserves[pays].areaCapacityReservationsUp)
             {
-                for (const auto& reserveParticipations :
+                for (const auto& reserveParticipations:
                      capacityReservation.AllLTStorageReservesParticipation)
                 {
                     builder.LTStorageTurbiningClusterReserveParticipation(
@@ -83,7 +82,7 @@ void LTTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
                 namer.LTTurbiningCapacityThreasholdsUp(builder.data.nombreDeContraintes,
-                    "LongTermStorage");
+                                                       "LongTermStorage");
                 builder.build();
             }
         }

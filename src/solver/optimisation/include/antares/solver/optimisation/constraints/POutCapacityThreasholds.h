@@ -4,11 +4,12 @@
 /*
  * represent 'POutCapacityThreasholds' Constraint type
  */
-class POutCapacityThreasholds : private ConstraintFactory
+class POutCapacityThreasholds: private ConstraintFactory
 {
 public:
-    POutCapacityThreasholds(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    POutCapacityThreasholds(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

@@ -44,6 +44,7 @@ struct VCardReserveParticipationBySTStorageGroup
     {
         return "SHORT TERM STORAGE GROUP PARTICIPATION TO RESERVE";
     }
+
     //! Unit
     static std::string Unit()
     {
@@ -69,7 +70,8 @@ struct VCardReserveParticipationBySTStorageGroup
         //! Data Level
         categoryDataLevel = Category::DataLevel::area,
         //! File level (provided by the type of the results)
-        categoryFileLevel = ResultsType::categoryFile & (Category::FileLevel::id | Category::FileLevel::va),
+        categoryFileLevel = ResultsType::categoryFile
+                            & (Category::FileLevel::id | Category::FileLevel::va),
         //! Precision (views)
         precision = Category::all,
         //! Indentation (GUI)
@@ -98,7 +100,7 @@ struct VCardReserveParticipationBySTStorageGroup
 
 static std::string STStorageGroupToString(Data::ShortTermStorage::Group idx)
 {
-    using Group = Data::ShortTermStorage::Group;  //"using enum" not supported by g++10
+    using Group = Data::ShortTermStorage::Group; //"using enum" not supported by g++10
     switch (idx)
     {
     case Group::PSP_open:

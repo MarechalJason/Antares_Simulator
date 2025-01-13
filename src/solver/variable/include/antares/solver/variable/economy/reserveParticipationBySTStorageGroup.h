@@ -44,9 +44,9 @@ namespace Economy
 */
 template<class NextT = Container::EndOfList>
 class ReserveParticipationBySTStorageGroup
- : public Variable::IVariable<ReserveParticipationBySTStorageGroup<NextT>,
-                              NextT,
-                              VCardReserveParticipationBySTStorageGroup>
+    : public Variable::IVariable<ReserveParticipationBySTStorageGroup<NextT>,
+                                 NextT,
+                                 VCardReserveParticipationBySTStorageGroup>
 {
 public:
     //! Type of the next static variable
@@ -73,23 +73,27 @@ public:
     {
         enum
         {
-            count
-            = ((VCardType::categoryDataLevel & CDataLevel && VCardType::categoryFileLevel & CFile)
-                 ? (NextType::template Statistics<CDataLevel, CFile>::count
-                    + VCardType::columnCount * ResultsType::count)
-                 : NextType::template Statistics<CDataLevel, CFile>::count),
+            count = ((VCardType::categoryDataLevel & CDataLevel
+                      && VCardType::categoryFileLevel & CFile)
+                       ? (NextType::template Statistics<CDataLevel, CFile>::count
+                          + VCardType::columnCount * ResultsType::count)
+                       : NextType::template Statistics<CDataLevel, CFile>::count),
         };
     };
 
 public:
-    ReserveParticipationBySTStorageGroup() : pValuesForTheCurrentYear(NULL), pSize(0)
+    ReserveParticipationBySTStorageGroup():
+        pValuesForTheCurrentYear(NULL),
+        pSize(0)
     {
     }
 
     ~ReserveParticipationBySTStorageGroup()
     {
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        {
             delete[] pValuesForTheCurrentYear[numSpace];
+        }
         delete[] pValuesForTheCurrentYear;
     }
 
@@ -119,16 +123,22 @@ public:
             AncestorType::pResults.resize(pSize);
 
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-                pValuesForTheCurrentYear[numSpace]
-                  = new VCardType::IntermediateValuesDeepType[pSize];
+            {
+                pValuesForTheCurrentYear[numSpace] = new VCardType::IntermediateValuesDeepType
+                  [pSize];
+            }
 
             // Minimum power values of the cluster for the whole year - from the solver in the
             // accurate mode not to be displayed in the output \todo think of a better place like
             // the DispatchableMarginForAllAreas done at the beginning of the year
 
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            {
                 for (unsigned int i = 0; i != pSize; ++i)
+                {
                     pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
+                }
+            }
 
             for (unsigned int i = 0; i != pSize; ++i)
             {
@@ -174,7 +184,9 @@ public:
     {
         // Reset the values for the current year
         for (unsigned int i = 0; i != pSize; ++i)
+        {
             pValuesForTheCurrentYear[numSpace][i].reset();
+        }
 
         // Next variable
         NextType::yearBegin(year, numSpace);

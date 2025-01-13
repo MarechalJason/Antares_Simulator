@@ -164,7 +164,6 @@ public:
     //! \brief Returns the number of reserves linked to this cluster
     unsigned int reserveParticipationsCount();
 
-
 protected:
     Data::ClusterName pName;
     Data::ClusterName pID;
@@ -176,8 +175,6 @@ protected:
 private:
     virtual unsigned int precision() const = 0;
     //! @brief Stores the reserves Participations for each reserve, the key is the name of the
-    
-
 };
 } // namespace Data
 } // namespace Antares

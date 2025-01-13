@@ -22,14 +22,15 @@
 #include "antares/solver/variable/state.h"
 
 #include <cmath>
-
-#include <antares/study/study.h>
 #include <filesystem>
-#include <yuni/io/file.h>
 #include <iomanip>
 #include <sstream>
+
 #include <yuni/io/directory.h>
+#include <yuni/io/file.h>
 #include <yuni/string.h>
+
+#include <antares/study/study.h>
 #include "antares/solver/variable/variable.h"
 
 namespace Antares::Solver::Variable
@@ -85,7 +86,7 @@ void State::initReserveParticipationIndexMaps()
         }
 
         // Short Term Storage
-        for (auto& [clusterId, reserveParticipation] : reserve.AllSTStorageReservesParticipation)
+        for (auto& [clusterId, reserveParticipation]: reserve.AllSTStorageReservesParticipation)
         {
             area->reserveParticipationIndexMaps().STStorageClusters.insert(
               reserveParticipation.areaIndexClusterParticipation,
@@ -212,7 +213,7 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
         && STStorageCluster->clusterReservesParticipations)
     {
-        for (const auto& [resName, resParticipation] :
+        for (const auto& [resName, resParticipation]:
              STStorageCluster->clusterReservesParticipations())
         {
             double participation = hourlyResults->ShortTermStorage[hourInTheWeek]
@@ -225,7 +226,8 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
                                                                                       resName);
 
             reserveParticipationPerGroupForYear[hourInTheYear]
-              .shortTermStorageGroupsReserveParticipation[STStorageCluster->properties.getGroup()][resName]
+              .shortTermStorageGroupsReserveParticipation[STStorageCluster->properties.getGroup()]
+                                                         [resName]
               += participation;
 
             reserveParticipationPerSTStorageClusterForYear[hourInTheYear][STStorageCluster->id]
@@ -247,8 +249,8 @@ void State::initFromHydroStorage()
              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
         && LTStorage.reservesParticipations)
     {
-        //reserveParticipationPerLTStorageClusterForYear[hourInTheYear].clear();
-        for (const auto& [resName, resParticipation] : LTStorage.reservesParticipations())
+        // reserveParticipationPerLTStorageClusterForYear[hourInTheYear].clear();
+        for (const auto& [resName, resParticipation]: LTStorage.reservesParticipations())
         {
             double participation = hourlyResults->HydroUsage[hourInTheWeek]
                                      .reserveParticipationOfCluster()
@@ -346,19 +348,19 @@ void State::initFromThermalClusterIndexProduction(const uint clusterAreaWideInde
              == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
     {
         std::vector<std::string> clusterReserves = thermalCluster->listOfParticipatingReserves();
-        for (auto& res : clusterReserves)
+        for (auto& res: clusterReserves)
         {
             int reserveParticipationIdx = area->reserveParticipationIndexMaps().thermalClusters.get(
               std::make_pair(res, thermalCluster->name()));
             if (reserveParticipationIdx != -1)
             {
-                double participationOn
-                  = hourlyResults->ProductionThermique[hourInTheWeek]
-                      .ParticipationReservesDuPalierOn()[reserveParticipationIdx];
+                double participationOn = hourlyResults->ProductionThermique[hourInTheWeek]
+                                           .ParticipationReservesDuPalierOn()
+                                             [reserveParticipationIdx];
 
-                double participationOff
-                  = hourlyResults->ProductionThermique[hourInTheWeek]
-                      .ParticipationReservesDuPalierOff()[reserveParticipationIdx];
+                double participationOff = hourlyResults->ProductionThermique[hourInTheWeek]
+                                            .ParticipationReservesDuPalierOff()
+                                              [reserveParticipationIdx];
 
                 thermal[area->index].thermalClustersOperatingCost[clusterAreaWideIndex]
                   += participationOn * thermalCluster->reserveCost(res)
@@ -376,12 +378,15 @@ void State::initFromThermalClusterIndexProduction(const uint clusterAreaWideInde
                 participation.addOffParticipation(participationOff);
                 participation.addOnParticipation(participationOn);
 
-                reserveParticipationPerThermalClusterForYear[hourInTheYear][thermalCluster->name()][res] = participation;
-
+                reserveParticipationPerThermalClusterForYear[hourInTheYear][thermalCluster->name()]
+                                                            [res]
+                  = participation;
             }
             else
+            {
                 logs.error() << "No index for cluster " << thermalCluster->name() << " in reserve "
                              << res;
+            }
         }
     }
 }
@@ -538,8 +543,8 @@ void State::calculateReserveParticipationCosts()
     if (unitCommitmentMode != Antares::Data::UnitCommitmentMode::ucHeuristicFast)
     {
         uint startHourForCurrentYear = study.runtime.rangeLimits.hour[Data::rangeBegin];
-        uint endHourForCurrentYear
-            = startHourForCurrentYear + study.runtime.rangeLimits.hour[Data::rangeCount];
+        uint endHourForCurrentYear = startHourForCurrentYear
+                                     + study.runtime.rangeLimits.hour[Data::rangeCount];
         for (uint h = startHourForCurrentYear; h < endHourForCurrentYear; ++h)
         {
             reserveParticipationCostForYear()[h]

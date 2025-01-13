@@ -11,18 +11,22 @@ void PMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpRese
         // M : Number of running units in the cluster
         // B : Maximum accessible power if each unit running on the cluster for the reserve
 
-        CAPACITY_RESERVATION capacityReservation
-          = isUpReserve ? data.areaReserves[pays].areaCapacityReservationsUp[reserve]
-                        : data.areaReserves[pays].areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION capacityReservation = isUpReserve
+                                                     ? data.areaReserves[pays]
+                                                         .areaCapacityReservationsUp[reserve]
+                                                     : data.areaReserves[pays]
+                                                         .areaCapacityReservationsDown[reserve];
 
         auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
 
         int globalClusterIdx = data.thermalClusters[pays]
-          .NumeroDuPalierDansLEnsembleDesPaliersThermiques[reserveParticipation.clusterIdInArea];
+                                 .NumeroDuPalierDansLEnsembleDesPaliersThermiques
+                                   [reserveParticipation.clusterIdInArea];
 
         builder.updateHourWithinWeek(pdt)
           .RunningThermalClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation, 1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            1.0)
           .NumberOfDispatchableUnits(globalClusterIdx, -reserveParticipation.maxPower)
           .lessThan();
 

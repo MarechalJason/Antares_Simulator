@@ -239,18 +239,18 @@ static Data::ThermalCluster::ThermalDispatchableGroup stringToGroup(Data::Cluste
 static std::string groupToString(Data::ThermalCluster::ThermalDispatchableGroup group)
 {
     using namespace Antares::Data;
-    const static std::map<ThermalCluster::ThermalDispatchableGroup, ClusterName> reverseMapping
-      = {{ThermalCluster::thermalDispatchGrpNuclear, "nuclear"},
-         {ThermalCluster::thermalDispatchGrpLignite, "lignite"},
-         {ThermalCluster::thermalDispatchGrpHardCoal, "hard coal"},
-         {ThermalCluster::thermalDispatchGrpGas, "gas"},
-         {ThermalCluster::thermalDispatchGrpOil, "oil"},
-         {ThermalCluster::thermalDispatchGrpMixedFuel, "mixed fuel"},
-         {ThermalCluster::thermalDispatchGrpOther1, "other"},
-         {ThermalCluster::thermalDispatchGrpOther1, "other 1"},
-         {ThermalCluster::thermalDispatchGrpOther2, "other 2"},
-         {ThermalCluster::thermalDispatchGrpOther3, "other 3"},
-         {ThermalCluster::thermalDispatchGrpOther4, "other 4"}};
+    const static std::map<ThermalCluster::ThermalDispatchableGroup, ClusterName> reverseMapping = {
+      {ThermalCluster::thermalDispatchGrpNuclear, "nuclear"},
+      {ThermalCluster::thermalDispatchGrpLignite, "lignite"},
+      {ThermalCluster::thermalDispatchGrpHardCoal, "hard coal"},
+      {ThermalCluster::thermalDispatchGrpGas, "gas"},
+      {ThermalCluster::thermalDispatchGrpOil, "oil"},
+      {ThermalCluster::thermalDispatchGrpMixedFuel, "mixed fuel"},
+      {ThermalCluster::thermalDispatchGrpOther1, "other"},
+      {ThermalCluster::thermalDispatchGrpOther1, "other 1"},
+      {ThermalCluster::thermalDispatchGrpOther2, "other 2"},
+      {ThermalCluster::thermalDispatchGrpOther3, "other 3"},
+      {ThermalCluster::thermalDispatchGrpOther4, "other 4"}};
 
     if (auto res = reverseMapping.find(group); res != reverseMapping.end())
     {

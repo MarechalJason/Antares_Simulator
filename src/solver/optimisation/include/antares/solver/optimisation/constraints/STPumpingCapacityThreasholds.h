@@ -4,11 +4,12 @@
 /*
  * represent 'STPumpingCapacityThreasholds' Constraint type
  */
-class STPumpingCapacityThreasholds : private ConstraintFactory
+class STPumpingCapacityThreasholds: private ConstraintFactory
 {
 public:
-    STPumpingCapacityThreasholds(ConstraintBuilder& builder, ReserveData& data) :
-     ConstraintFactory(builder), data(data)
+    STPumpingCapacityThreasholds(ConstraintBuilder& builder, ReserveData& data):
+        ConstraintFactory(builder),
+        data(data)
     {
     }
 

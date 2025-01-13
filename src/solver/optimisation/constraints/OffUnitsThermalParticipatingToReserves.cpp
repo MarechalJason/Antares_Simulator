@@ -5,24 +5,24 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
     if (!data.Simulation)
     {
         // 16 ter
-        // The number of off units participating to Reserves is bounded by the number of units and number of running units
-        // constraint : M^off + M^on <= M
-        // M^off : Number of off units participating to the reserve
-        // M : Number of units in the cluster
-        // M^on : Number of running units in the cluster
+        // The number of off units participating to Reserves is bounded by the number of units and
+        // number of running units constraint : M^off + M^on <= M M^off : Number of off units
+        // participating to the reserve M : Number of units in the cluster M^on : Number of running
+        // units in the cluster
 
-        CAPACITY_RESERVATION capacityReservation
-          = data.areaReserves[pays].areaCapacityReservationsUp[reserve];
+        CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]
+                                                     .areaCapacityReservationsUp[reserve];
 
         auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
 
-        int globalClusterIdx
-          = data.thermalClusters[pays].NumeroDuPalierDansLEnsembleDesPaliersThermiques
-              [reserveParticipation.clusterIdInArea];
+        int globalClusterIdx = data.thermalClusters[pays]
+                                 .NumeroDuPalierDansLEnsembleDesPaliersThermiques
+                                   [reserveParticipation.clusterIdInArea];
 
         builder.updateHourWithinWeek(pdt)
           .NumberOfOffUnitsParticipatingToReserve(
-            reserveParticipation.globalIndexClusterParticipation, 1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            1.0)
           .NumberOfDispatchableUnits(globalClusterIdx, 1.0)
           .lessThan();
 
@@ -37,8 +37,8 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
         namer.UpdateTimeStep(hourInTheYear);
         namer.UpdateArea(builder.data.NomsDesPays[pays]);
         namer.NumberOfOffUnitsParticipatingToReserve(builder.data.nombreDeContraintes,
-                                                      reserveParticipation.clusterName,
-                                                      capacityReservation.reserveName);
+                                                     reserveParticipation.clusterName,
+                                                     capacityReservation.reserveName);
         builder.build();
     }
     else

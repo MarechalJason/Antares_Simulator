@@ -45,8 +45,6 @@ enum Group
 
 unsigned int groupIndex(Group group);
 
-
-
 class Properties
 {
 public:

@@ -11,21 +11,25 @@ void STReserveUpParticipation::add(int pays, int reserve, int cluster, int pdt)
         // Π : Pumping participation to reserve
         // P : Up Reserve Participation
 
-        CAPACITY_RESERVATION& capacityReservation
-          = data.areaReserves[pays].areaCapacityReservationsUp[reserve];
+        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                      .areaCapacityReservationsUp[reserve];
 
-        RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
-          = capacityReservation.AllSTStorageReservesParticipation[cluster];
+        RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation = capacityReservation
+                                                                  .AllSTStorageReservesParticipation
+                                                                    [cluster];
 
         int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 
         builder.updateHourWithinWeek(pdt)
           .STStorageTurbiningClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation, -1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            -1.0)
           .STStoragePumpingClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation, -1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            -1.0)
           .STStorageClusterReserveUpParticipation(
-            reserveParticipation.globalIndexClusterParticipation, 1.0)
+            reserveParticipation.globalIndexClusterParticipation,
+            1.0)
           .equalTo();
 
         ConstraintNamer namer(builder.data.NomDesContraintes);

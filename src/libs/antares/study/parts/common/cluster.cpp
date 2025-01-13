@@ -113,10 +113,8 @@ bool Cluster::loadDataSeriesFromFolder(Study& s, const fs::path& folder)
 
 #undef SEP
 
-
-void Cluster::addReserveParticipation(
-  Data::ReserveName name,
-  ThermalClusterReserveParticipation reserveParticipation)
+void Cluster::addReserveParticipation(Data::ReserveName name,
+                                      ThermalClusterReserveParticipation reserveParticipation)
 {
     clusterReservesParticipations.init();
     clusterReservesParticipations().emplace(name, reserveParticipation);
@@ -125,44 +123,69 @@ void Cluster::addReserveParticipation(
 bool Cluster::isParticipatingInReserve(Data::ReserveName name)
 {
     if (clusterReservesParticipations && clusterReservesParticipations().contains(name))
+    {
         return true;
+    }
     else
+    {
         return false;
+    }
 }
 
 float Cluster::reserveMaxPower(Data::ReserveName name)
 {
     if (isParticipatingInReserve(name))
+    {
         return clusterReservesParticipations().at(name).maxPower;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
 float Cluster::reserveCost(Data::ReserveName name)
 {
     if (isParticipatingInReserve(name))
+    {
         return clusterReservesParticipations().at(name).participationCost;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
 float Cluster::reserveCostOff(Data::ReserveName name)
 {
     if (isParticipatingInReserve(name))
+    {
         return clusterReservesParticipations().at(name).participationCostOff;
-   else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    }
+    else
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
 float Cluster::reserveMaxPowerOff(Data::ReserveName name)
 {
     if (isParticipatingInReserve(name))
+    {
         return clusterReservesParticipations().at(name).maxPowerOff;
+    }
     else
-        throw std::out_of_range("reserve " + name + " has not been found in this cluster participations");
+    {
+        throw std::out_of_range("reserve " + name
+                                + " has not been found in this cluster participations");
+    }
 }
 
-unsigned int Cluster::reserveParticipationsCount(){
+unsigned int Cluster::reserveParticipationsCount()
+{
     return clusterReservesParticipations ? clusterReservesParticipations().size() : 0;
 }
 

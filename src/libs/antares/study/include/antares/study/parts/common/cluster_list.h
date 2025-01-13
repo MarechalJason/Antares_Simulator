@@ -27,13 +27,12 @@
 #include <vector>
 
 #include <antares/logs/logs.h>
-#include "../../fwd.h"
-
-#include <antares/writer/i_writer.h>
 #include <antares/study/area/capacityReservation.h>
 #include <antares/study/parts/common/cluster.h>
 #include <antares/study/parts/thermal/cluster.h>
+#include <antares/writer/i_writer.h>
 
+#include "../../fwd.h"
 
 namespace Antares
 {
@@ -117,26 +116,25 @@ public:
     std::pair<Data::ClusterName, Data::ReserveName> reserveParticipationClusterAt(
       const Area* area,
       unsigned int index) const;
-    
+
     /*!
     ** @brief Get the group and reserve names for a given index of reserveParticipation
     ** @param area The area where to look for the reserveParticipation
     ** @param index Global index of the reserveParicipation
     ** @return the group and reserve names
     */
-    std::pair<Data::ThermalCluster::ThermalDispatchableGroup, Data::ReserveName> reserveParticipationGroupAt(
-      const Area* area,
-      unsigned int index) const;
+    std::pair<Data::ThermalCluster::ThermalDispatchableGroup, Data::ReserveName>
+    reserveParticipationGroupAt(const Area* area, unsigned int index) const;
 
     /*!
-** @brief Get the reserve and spilled/unsupplied status and names for a given index of reserveParticipation
-** @param area The area where to look for the reserveParticipation
-** @param index Global index of the reserveParicipation
-** @return the status and reserve names
-*/
-    std::pair<Data::ThermalCluster::UnsuppliedSpilled, Data::ReserveName> reserveParticipationUnsuppliedSpilledAt(
-        const Area* area,
-        unsigned int index) const;
+     ** @brief Get the reserve and spilled/unsupplied status and names for a given index of
+     *reserveParticipation
+     ** @param area The area where to look for the reserveParticipation
+     ** @param index Global index of the reserveParicipation
+     ** @return the status and reserve names
+     */
+    std::pair<Data::ThermalCluster::UnsuppliedSpilled, Data::ReserveName>
+    reserveParticipationUnsuppliedSpilledAt(const Area* area, unsigned int index) const;
 
     /*!
     ** \brief Resize all matrices dedicated to the sampled timeseries numbers
@@ -164,7 +162,8 @@ public:
     bool loadDataSeriesFromFolder(Study& study, const std::filesystem::path& folder);
 
     /// @brief Load the reserve participation. For each entry, it checks if the reserve has been
-    /// added to area.allCapacityReservations, if not then log the name of the reserve that has not been found.
+    /// added to area.allCapacityReservations, if not then log the name of the reserve that has not
+    /// been found.
     /// @tparam ClusterT Type of the Cluster list
     /// @param area Reference to area
     /// @param file File to read the reserve participations entries

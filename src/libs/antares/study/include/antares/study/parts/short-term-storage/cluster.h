@@ -57,7 +57,7 @@ public:
 
     //! \brief Returns max turbining power for a reserve if participating, -1 otherwise
     float reserveMaxTurbining(Data::ReserveName name);
-    
+
     //! \brief Returns max pumping power for a reserve if participating, -1 otherwise
     float reserveMaxPumping(Data::ReserveName name);
 

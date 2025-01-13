@@ -172,7 +172,8 @@ public:
     void addReserveParticipation(const std::string& reserveName,
                                  const LTStorageClusterReserveParticipation& participation);
 
-    std::optional<Data::ReserveName> reserveParticipationAt(const Area* area, unsigned int index) const;
+    std::optional<Data::ReserveName> reserveParticipationAt(const Area* area,
+                                                            unsigned int index) const;
 
     //! Returns max turbining power for a reserve if participating, -1 otherwise
     float reserveMaxTurbining(Data::ReserveName name);
@@ -182,7 +183,6 @@ public:
 
     //! Returns participating cost for a reserve if participating, -1 otherwise
     float reserveCost(Data::ReserveName name);
-
 
 public:
     //! Inter-daily breakdown (previously called Smoothing Factor or alpha)
@@ -245,15 +245,13 @@ public:
     Matrix<double, double> dailyNbHoursAtGenPmax;
     Matrix<double, double> dailyNbHoursAtPumpPmax;
     std::unordered_map<uint, AreaDependantHydroManagementData> managementData;
-    
+
     std::vector<std::optional<double>> deltaBetweenFinalAndInitialLevels;
-    ReserveOpt<std::map<std::string, LTStorageClusterReserveParticipation>>
-      reservesParticipations;
+    ReserveOpt<std::map<std::string, LTStorageClusterReserveParticipation>> reservesParticipations;
 
 private:
     static bool checkReservoirLevels(const Study& study);
     static bool checkProperties(Study& study);
-
 
 }; // class PartHydro
 
@@ -267,8 +265,6 @@ double getWaterValue(const double& level, const Matrix<double>& waterValues, con
 double getWeeklyModulation(const double& level /* format : in % of reservoir capacity */,
                            Matrix<double, double>& creditMod,
                            int modType);
-
-
 
 } // namespace Antares::Data
 

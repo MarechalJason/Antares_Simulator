@@ -56,9 +56,9 @@ int& VariableManager::RunningThermalClusterReserveParticipation(unsigned int ind
 }
 
 int& VariableManager::OffThermalClusterReserveParticipation(unsigned int index,
-                                                                unsigned int hourInWeek,
-                                                                int offset,
-                                                                int delta)
+                                                            unsigned int hourInWeek,
+                                                            int offset,
+                                                            int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
@@ -80,9 +80,9 @@ int& VariableManager::ThermalClusterReserveParticipation(unsigned int index,
 }
 
 int& VariableManager::STStorageClusterReserveUpParticipation(unsigned int index,
-                                                         unsigned int hourInWeek,
-                                                         int offset,
-                                                         int delta)
+                                                             unsigned int hourInWeek,
+                                                             int offset,
+                                                             int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
@@ -92,9 +92,9 @@ int& VariableManager::STStorageClusterReserveUpParticipation(unsigned int index,
 }
 
 int& VariableManager::STStorageClusterReserveDownParticipation(unsigned int index,
-                                                         unsigned int hourInWeek,
-                                                         int offset,
-                                                         int delta)
+                                                               unsigned int hourInWeek,
+                                                               int offset,
+                                                               int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
@@ -182,9 +182,9 @@ int& VariableManager::InternalUnsatisfiedReserve(unsigned int index,
 }
 
 int& VariableManager::InternalExcessReserve(unsigned int index,
-                                                 unsigned int hourInWeek,
-                                                 int offset,
-                                                 int delta)
+                                            unsigned int hourInWeek,
+                                            int offset,
+                                            int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
@@ -201,9 +201,9 @@ int& VariableManager::NumberOfDispatchableUnits(unsigned int index,
 }
 
 int& VariableManager::NumberOfOffUnitsParticipatingToReserve(unsigned int index,
-                                                              unsigned int hourInWeek,
-                                                              int offset,
-                                                              int delta)
+                                                             unsigned int hourInWeek,
+                                                             int offset,
+                                                             int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]

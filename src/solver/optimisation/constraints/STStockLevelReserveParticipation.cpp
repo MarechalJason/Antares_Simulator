@@ -9,21 +9,22 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // 15 (g) (1)
         // Participation of down reserves requires a sufficient level of stock
         // R_t + Sum(P_{res} * R_{min,res}) <= R_up
-        // R_t : stock level at time t 
+        // R_t : stock level at time t
         // P_{res} : power participation for reserve down res
-        // R_{min,res} : max power participation ratio 
+        // R_{min,res} : max power participation ratio
         // R_up : max stock level
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (auto& capacityReservation : data.areaReserves[pays].areaCapacityReservationsDown)
+            for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsDown)
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
-                    RESERVE_PARTICIPATION_STSTORAGE reserveParticipations = capacityReservation.AllSTStorageReservesParticipation[cluster];
+                    RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
+                      = capacityReservation.AllSTStorageReservesParticipation[cluster];
                     builder.STStorageClusterReserveDownParticipation(
-                                reserveParticipations.globalIndexClusterParticipation,
-                                capacityReservation.maxActivationRatio);
+                      reserveParticipations.globalIndexClusterParticipation,
+                      capacityReservation.maxActivationRatio);
                 }
             }
             if (builder.NumberOfVariables() > 0)
@@ -38,8 +39,9 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STStockLevelReserveParticipationDown(builder.data.nombreDeContraintes,
-                    data.shortTermStorageOfArea[pays][cluster].name);
+                namer.STStockLevelReserveParticipationDown(
+                  builder.data.nombreDeContraintes,
+                  data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
@@ -47,21 +49,22 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // 15 (g) (2)
         // Participation of up reserves requires a sufficient level of stock
         // -R_t + Sum(P_{res} * R_{min,res}) <= -R_down
-        // R_t : stock level at time t 
+        // R_t : stock level at time t
         // P_{res} : power participation for reserve up res
-        // R_{min,res} : max power participation ratio 
+        // R_{min,res} : max power participation ratio
         // R_down : min stock level
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (auto& capacityReservation : data.areaReserves[pays].areaCapacityReservationsUp)
+            for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsUp)
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
-                  RESERVE_PARTICIPATION_STSTORAGE reserveParticipations = capacityReservation.AllSTStorageReservesParticipation[cluster];
-                  builder.STStorageClusterReserveUpParticipation(
-                                reserveParticipations.globalIndexClusterParticipation,
-                                capacityReservation.maxActivationRatio);
+                    RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
+                      = capacityReservation.AllSTStorageReservesParticipation[cluster];
+                    builder.STStorageClusterReserveUpParticipation(
+                      reserveParticipations.globalIndexClusterParticipation,
+                      capacityReservation.maxActivationRatio);
                 }
             }
             if (builder.NumberOfVariables() > 0)
@@ -76,8 +79,9 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STStockLevelReserveParticipationUp(builder.data.nombreDeContraintes,
-                    data.shortTermStorageOfArea[pays][cluster].name);
+                namer.STStockLevelReserveParticipationUp(
+                  builder.data.nombreDeContraintes,
+                  data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
@@ -85,7 +89,8 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
     else
     {
         // Lambda that count the number of reserveParticipations
-        auto countReservesParticipations = [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
+        auto countReservesParticipations =
+          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
         {
             int counter = 0;
             for (const auto& capacityReservation: reservations)
@@ -95,8 +100,10 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
             return counter;
         };
 
-        int nbTermsUp = countReservesParticipations(data.areaReserves[pays].areaCapacityReservationsUp);
-        int nbTermsDown = countReservesParticipations(data.areaReserves[pays].areaCapacityReservationsDown);
+        int nbTermsUp = countReservesParticipations(
+          data.areaReserves[pays].areaCapacityReservationsUp);
+        int nbTermsDown = countReservesParticipations(
+          data.areaReserves[pays].areaCapacityReservationsDown);
 
         builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);
     }

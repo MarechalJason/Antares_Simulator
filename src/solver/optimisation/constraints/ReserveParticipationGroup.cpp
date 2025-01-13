@@ -50,8 +50,8 @@
 
 ReserveParticipationGroup::ReserveParticipationGroup(PROBLEME_HEBDO* problemeHebdo,
                                                      bool simulation,
-                                                     ConstraintBuilder& builder) :
- ConstraintGroup(problemeHebdo, builder)
+                                                     ConstraintBuilder& builder):
+    ConstraintGroup(problemeHebdo, builder)
 {
     this->simulation_ = simulation;
 }
@@ -75,7 +75,8 @@ void ReserveParticipationGroup::BuildConstraints()
     {
         auto data = GetReserveDataFromProblemHebdo();
         PMaxReserve pMaxReserve(builder_, data);
-        OffUnitsThermalParticipatingToReserves offUnitsThermalParticipatingToReserves(builder_, data);
+        OffUnitsThermalParticipatingToReserves offUnitsThermalParticipatingToReserves(builder_,
+                                                                                      data);
         POffUnits pOffUnits(builder_, data);
         ThermalReserveParticipation thermalReserveParticipation(builder_, data);
         ReserveSatisfaction reserveSatisfaction(builder_, data);
@@ -83,7 +84,8 @@ void ReserveParticipationGroup::BuildConstraints()
         STPumpingMaxReserve STPumpingMaxReserve(builder_, data);
         STReserveUpParticipation STReserveUpParticipation(builder_, data);
         STReserveDownParticipation STReserveDownParticipation(builder_, data);
-        STStockEnergyLevelReserveParticipation STStockEnergyLevelReserveParticipation(builder_, data);
+        STStockEnergyLevelReserveParticipation STStockEnergyLevelReserveParticipation(builder_,
+                                                                                      data);
         LTStockEnergyLevelReserveParticipation LTStockEnergyLevelReserveParticipation(builder_,
                                                                                       data);
         LTTurbiningMaxReserve LTTurbiningMaxReserve(builder_, data);
@@ -100,71 +102,49 @@ void ReserveParticipationGroup::BuildConstraints()
                 {
                     auto& areaReservesUp = data.areaReserves[pays].areaCapacityReservationsUp;
                     uint32_t reserve = 0;
-                    for (const auto& areaReserveUp : areaReservesUp)
+                    for (const auto& areaReserveUp: areaReservesUp)
                     {
                         // 24
                         reserveSatisfaction.add(pays, reserve, pdt, true);
 
-                        for (const auto& [clusterId, clusterReserveParticipation] :
+                        for (const auto& [clusterId, clusterReserveParticipation]:
                              areaReserveUp.AllThermalReservesParticipation)
                         {
                             // 16 bis
-                            pMaxReserve.add(pays,
-                                            reserve,
-                                            clusterId,
-                                            pdt,
-                                            true);
+                            pMaxReserve.add(pays, reserve, clusterId, pdt, true);
 
                             if (clusterReserveParticipation.maxPowerOff > 0)
                             {
                                 // 16 ter
-                                offUnitsThermalParticipatingToReserves.add(
-                                  pays,
-                                  reserve,
-                                  clusterId,
-                                  pdt);
+                                offUnitsThermalParticipatingToReserves.add(pays,
+                                                                           reserve,
+                                                                           clusterId,
+                                                                           pdt);
                                 // 16 quater
-                                pOffUnits.add(pays,
-                                              reserve,
-                                              clusterId,
-                                              pdt);
+                                pOffUnits.add(pays, reserve, clusterId, pdt);
                             }
 
                             // 17 quinquies
-                            thermalReserveParticipation.add(
-                              pays,
-                              reserve,
-                              clusterId,
-                              pdt,
-                              true);
+                            thermalReserveParticipation.add(pays, reserve, clusterId, pdt, true);
                         }
                         reserve++;
                     }
 
                     reserve = 0;
                     auto& areaReservesDown = data.areaReserves[pays].areaCapacityReservationsDown;
-                    for (const auto& areaReserveDown : areaReservesDown)
+                    for (const auto& areaReserveDown: areaReservesDown)
                     {
                         // 24
                         reserveSatisfaction.add(pays, reserve, pdt, false);
 
-                        for (const auto& [clusterId, clusterReserveParticipation] :
+                        for (const auto& [clusterId, clusterReserveParticipation]:
                              areaReserveDown.AllThermalReservesParticipation)
                         {
                             // 16 bis
-                            pMaxReserve.add(pays,
-                                            reserve,
-                                            clusterId,
-                                            pdt,
-                                            false);
+                            pMaxReserve.add(pays, reserve, clusterId, pdt, false);
 
                             // 17 sexies
-                            thermalReserveParticipation.add(
-                              pays,
-                              reserve,
-                              clusterId,
-                              pdt,
-                              false);
+                            thermalReserveParticipation.add(pays, reserve, clusterId, pdt, false);
                         }
                         reserve++;
                     }
@@ -174,9 +154,9 @@ void ReserveParticipationGroup::BuildConstraints()
                 {
                     auto& areaReservesUp = data.areaReserves[pays].areaCapacityReservationsUp;
                     uint32_t reserve = 0;
-                    for (const auto& areaReserveUp : areaReservesUp)
+                    for (const auto& areaReserveUp: areaReservesUp)
                     {
-                        for (const auto& [clusterId, clusterReserveParticipation] :
+                        for (const auto& [clusterId, clusterReserveParticipation]:
                              areaReserveUp.AllSTStorageReservesParticipation)
                         {
                             // 15 (k)
@@ -196,16 +176,21 @@ void ReserveParticipationGroup::BuildConstraints()
                               .add(pays, reserve, clusterReserveParticipation.clusterIdInArea, pdt);
 
                             // 15 (h)
-                            STStockEnergyLevelReserveParticipation.add(pays, clusterReserveParticipation.clusterIdInArea, reserve, pdt, true);
+                            STStockEnergyLevelReserveParticipation.add(
+                              pays,
+                              clusterReserveParticipation.clusterIdInArea,
+                              reserve,
+                              pdt,
+                              true);
                         }
                         reserve++;
                     }
 
                     auto& areaReservesDown = data.areaReserves[pays].areaCapacityReservationsDown;
                     reserve = 0;
-                    for (const auto& areaReserveDown : areaReservesDown)
+                    for (const auto& areaReserveDown: areaReservesDown)
                     {
-                        for (const auto& [clusterId, clusterReserveParticipation] :
+                        for (const auto& [clusterId, clusterReserveParticipation]:
                              areaReserveDown.AllSTStorageReservesParticipation)
                         {
                             // 15 (k)
@@ -225,7 +210,12 @@ void ReserveParticipationGroup::BuildConstraints()
                               .add(pays, reserve, clusterReserveParticipation.clusterIdInArea, pdt);
 
                             // 15 (h)
-                            STStockEnergyLevelReserveParticipation.add(pays, clusterReserveParticipation.clusterIdInArea, reserve, pdt, false);
+                            STStockEnergyLevelReserveParticipation.add(
+                              pays,
+                              clusterReserveParticipation.clusterIdInArea,
+                              reserve,
+                              pdt,
+                              false);
                         }
                         reserve++;
                     }
@@ -235,7 +225,7 @@ void ReserveParticipationGroup::BuildConstraints()
                 {
                     auto& areaReservesUp = data.areaReserves[pays].areaCapacityReservationsUp;
                     uint32_t reserve = 0;
-                    for (const auto& areaReserveUp : areaReservesUp)
+                    for (const auto& areaReserveUp: areaReservesUp)
                     {
                         for (const auto& clusterReserveParticipation:
                              areaReserveUp.AllLTStorageReservesParticipation)
@@ -269,7 +259,7 @@ void ReserveParticipationGroup::BuildConstraints()
 
                     auto& areaReservesDown = data.areaReserves[pays].areaCapacityReservationsDown;
                     reserve = 0;
-                    for (const auto& areaReserveDown : areaReservesDown)
+                    for (const auto& areaReserveDown: areaReservesDown)
                     {
                         for (const auto& clusterReserveParticipation:
                              areaReserveDown.AllLTStorageReservesParticipation)
@@ -314,16 +304,21 @@ void ReserveParticipationGroup::BuildConstraints()
         LTPumpingCapacityThreasholds LTPumpingCapacityThreasholds(builder_, data);
         LTStockLevelReserveParticipation LTStockLevelReserveParticipation(builder_, data);
         STStockLevelReserveParticipation STStockLevelReserveParticipation(builder_, data);
-        STStockGlobalEnergyLevelReserveParticipation STStockGlobalEnergyLevelReserveParticipation(builder_, data);
-        LTStockGlobalEnergyLevelReserveParticipation LTStockGlobalEnergyLevelReserveParticipation(builder_, data);
+        STStockGlobalEnergyLevelReserveParticipation STStockGlobalEnergyLevelReserveParticipation(
+          builder_,
+          data);
+        LTStockGlobalEnergyLevelReserveParticipation LTStockGlobalEnergyLevelReserveParticipation(
+          builder_,
+          data);
 
         for (int pdt = 0; pdt < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; pdt++)
         {
             for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; pays++)
             {
                 // Thermal Clusters
-                const PALIERS_THERMIQUES& PaliersThermiquesDuPays
-                  = problemeHebdo_->PaliersThermiquesDuPays[pays];
+                const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo_
+                                                                      ->PaliersThermiquesDuPays
+                                                                        [pays];
                 for (int cluster = 0; cluster < PaliersThermiquesDuPays.NombreDePaliersThermiques;
                      cluster++)
                 {
