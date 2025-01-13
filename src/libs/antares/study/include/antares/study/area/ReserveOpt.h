@@ -21,6 +21,8 @@
 #ifndef __ANTARES_LIBS_STUDY_RESERVE_OPT_H__
 #define __ANTARES_LIBS_STUDY_RESERVE_OPT_H__
 
+#include <optional>
+
 template<typename T>
 class ReserveOpt: public std::optional<T>
 {
