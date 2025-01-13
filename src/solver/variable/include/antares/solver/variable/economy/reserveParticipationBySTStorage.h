@@ -223,7 +223,8 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         if (state.study.parameters.compatibility.reserves
-            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+            && state.area->reserveParticipationIndexMaps().STStorageClusters.size())
         {
             for (auto& [clusterName, _]:
                  state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear])

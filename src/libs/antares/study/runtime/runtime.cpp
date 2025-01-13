@@ -101,12 +101,8 @@ static void StudyRuntimeInfosInitializeAllAreas(Study& study, StudyRuntimeInfos&
             r.reserveParticipationCount += area.hydro.reserveParticipationsCount();
             r.capacityReservationCount += area.allCapacityReservations()
                                             .areaCapacityReservationsUp.size();
-            r.capacityReservationUpCount += area.allCapacityReservations()
-                                              .areaCapacityReservationsUp.size();
             r.capacityReservationCount += area.allCapacityReservations()
                                             .areaCapacityReservationsDown.size();
-            r.capacityReservationUpCount += area.allCapacityReservations()
-                                              .areaCapacityReservationsUp.size();
         }
 
         r.shortTermStorageCount += area.shortTermStorage.count();

@@ -110,7 +110,6 @@ public:
     uint thermalPlantTotalCountMustRun;
     uint reserveParticipationCount = 0; //! Total number of reserve participations
     uint capacityReservationCount = 0; //! Total number of capacity reservations
-    uint capacityReservationUpCount = 0; //! Total number of capacity reservations
 
     uint shortTermStorageCount = 0;
     uint shortTermStorageCumulativeConstraintCount = 0;

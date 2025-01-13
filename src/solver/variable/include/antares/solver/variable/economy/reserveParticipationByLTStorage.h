@@ -171,7 +171,7 @@ public:
     {
         if (state.study.parameters.compatibility.reserves
               == Antares::Data::Parameters::Compatibility::Reserves::Enabled
-            && state.reserveParticipationPerLTStorageClusterForYear[state.hourInTheYear].size())
+            && state.area->reserveParticipationIndexMaps().LTStorage.size())
         {
             for (const auto& [reserveName, reserveParticipation] :
                 state.reserveParticipationPerLTStorageClusterForYear[state.hourInTheYear]["LongTermStorage"])

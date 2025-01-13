@@ -226,7 +226,8 @@ public:
     {
         // Get end year calculations
         if (state.study.parameters.compatibility.reserves
-            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+            && state.area->reserveParticipationIndexMaps().thermalClusters.size())
         {
             for (auto& [clusterName, _]:
                  state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear])

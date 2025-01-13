@@ -116,9 +116,6 @@ struct CORRESPONDANCES_DES_CONTRAINTES
     std::vector<int> NumeroDeContrainteDesContraintesDeDureeMinDArret;
     std::vector<int> NumeroDeLaDeuxiemeContrainteDesContraintesDesGroupesQuiTombentEnPanne;
 
-    std::vector<int> NumeroDeContrainteDesContraintesDePuissanceMinDuPalier;
-    std::vector<int> NumeroDeContrainteDesContraintesDePuissanceMaxDuPalier;
-
     std::vector<int> NumeroDeContrainteDesNiveauxPays;
 
     std::vector<int> ShortTermStorageLevelConstraint;
@@ -131,6 +128,8 @@ struct CORRESPONDANCES_DES_CONTRAINTES
     {
         std::vector<int> need;
         std::vector<int> nbOffGroupUnitsInThermalClusterParticipating;
+        std::vector<int> thermalClusterPOutBoundMin;
+        std::vector<int> thermalClusterPOutBoundMax;
         std::vector<int> STStorageLevelParticipationUp;
         std::vector<int> STStorageLevelParticipationDown;
         std::vector<int> STStorageEnergyLevelParticipation;

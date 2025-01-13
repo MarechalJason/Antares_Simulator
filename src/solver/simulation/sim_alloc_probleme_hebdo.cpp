@@ -194,7 +194,7 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               study.runtime.thermalPlantTotalCount * study.runtime.capacityReservationCount,
               0);
             variablesMapping.reservesIndices().offThermalClusterParticipation.assign(
-              study.runtime.thermalPlantTotalCount * study.runtime.capacityReservationUpCount,
+              study.runtime.thermalPlantTotalCount * study.runtime.capacityReservationCount,
               0);
             variablesMapping.reservesIndices().thermalClusterParticipation.assign(
               study.runtime.thermalPlantTotalCount * study.runtime.capacityReservationCount,
@@ -241,13 +241,6 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
           .NumeroDeContraintePourEviterLesChargesFictives.assign(nbPays, 0);
         problem.CorrespondanceCntNativesCntOptim[k].NumeroDeContrainteDesNiveauxPays.assign(nbPays,
                                                                                             0);
-
-        problem.CorrespondanceCntNativesCntOptim[k]
-          .NumeroDeContrainteDesContraintesDePuissanceMinDuPalier
-          .assign(study.runtime.thermalPlantTotalCount, -1);
-        problem.CorrespondanceCntNativesCntOptim[k]
-          .NumeroDeContrainteDesContraintesDePuissanceMaxDuPalier
-          .assign(study.runtime.thermalPlantTotalCount, -1);
 
         problem.CorrespondanceCntNativesCntOptim[k]
           .ShortTermStorageLevelConstraint.assign(shortTermStorageCount, 0);
@@ -302,6 +295,12 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               .nbOffGroupUnitsInThermalClusterParticipating.assign(
                 study.runtime.thermalPlantTotalCount * study.runtime.capacityReservationCount,
                 -1);
+            problem.CorrespondanceCntNativesCntOptim[k]
+              .reservesIndices()
+              .thermalClusterPOutBoundMin.assign(study.runtime.thermalPlantTotalCount, -1);
+            problem.CorrespondanceCntNativesCntOptim[k]
+              .reservesIndices()
+              .thermalClusterPOutBoundMax.assign(study.runtime.thermalPlantTotalCount, -1);
 
             problem.CorrespondanceCntNativesCntOptim[k].reservesIndices()
               .STStorageClusterMaxTurbiningParticipation.assign(
