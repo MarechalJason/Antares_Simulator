@@ -80,5 +80,18 @@ class study_output_handler:
     def get_unsupplied_energy_mwh(self, area: str, year: int, date: str) -> float:
         return self.__get_values_hourly_for_specific_hour(area, year, date)["UNSP. ENRG"]["MWh"].sum()
 
+    def get_reserve_participation_cost(self, area: str, year: int) -> float:
+        return self.__get_values_hourly(area, year)["RESERVE PARTICIPATION COST"]["Euro"].sum()
+
     def get_non_proportional_cost(self, area: str, year: int) -> float:
         return self.__get_values_hourly(area, year)["NP COST"]["Euro"].sum()
+
+    def get_reserve_unsp_energy(self, area: str, year: int, res: str) -> float:
+        return self.__get_values_hourly(area, year)[res+"_UNSP."]["MWh"].sum()
+
+    def get_reserve_total_participation_for_year_and_cluster(self, area: str, year: int, res: str, cluster: str) -> float:
+        return self.__get_details_hourly(area, year)[res + "_" + cluster]["Reserve Participation Power - MWh"].sum()
+        
+    def get_hourly_res_part_mwh(self, area: str, year: int, prod_name: str) -> pd.Series:
+        return self.__get_details_hourly(area, year)[prod_name]['Reserve Participation Power - MWh']
+

@@ -7,12 +7,17 @@ from behave import *
 
 from common_steps.assertions import *
 from common_steps.simulator_utils import *
+from common_steps.study_input_handler import *
 
 
 @given('the study path is "{string}"')
 def study_path_is(context, string):
     context.study_path = os.path.join(context.config.userdata["resources-path"], string.replace("/", os.sep))
 
+@when('I configure the reserve.ini file in area "{area}" for test "{testName}"')
+def replace_reserve_ini(context, area, testName):
+    input_handler = study_input_handler(Path(context.study_path))
+    input_handler.copy_reserve_ini_from_file(area, testName)
 
 @when('I run antares simulator')
 def run_antares(context):
@@ -121,3 +126,31 @@ def check_pmin_pmax(context, area, prod_name, min_p, max_p):
             lambda n: n * max_p)).all(), f"max_p constraint not respected during year {year}"
         assert (actual_hourly_prod >= actual_n_dispatched_units.apply(
             lambda n: n * min_p)).all(), f"min_p constraint not respected during year {year}"
+
+
+@then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", total reserve participation power is {res_part:g} MWh')
+def check_res_participation_for_specific_year_and_cluster_yearly(context, area, year, res, cluster, res_part):
+    assert_double_close(res_part, context.soh.get_reserve_total_participation_for_year_and_cluster(area, year, res,cluster), 1e-6)
+
+
+@then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", reserve participation power is always {comparator_and_res_part} MWh')
+def check_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, comparator_and_res_part):
+    expected_res_part = float(comparator_and_res_part.split(" ")[-1])
+    actual_hourly_prod = context.soh.get_hourly_res_part_mwh(area, year, res + "_" + cluster)
+    if "greater than" in comparator_and_res_part:
+        ok = actual_hourly_prod >= expected_res_part
+    elif "equal to" in comparator_and_res_part:
+        ok = (actual_hourly_prod - expected_res_part).abs() <= 1e-6
+    else:
+        raise NotImplementedError(f"Unknown comparator '{comparator_and_res_part}'")
+    if "zero or" in comparator_and_res_part:
+        ok = ok | (actual_hourly_prod == 0)
+    assert ok.all()
+
+@then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", the sum over two hours of reserve participation power is always equal to {expected_res_part} MWh')
+def check_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, expected_res_part):
+    actual_hourly_prod = context.soh.get_hourly_res_part_mwh(area, year, res + "_" + cluster)
+    expected_res_part=float(expected_res_part)
+    for index in range(0, actual_hourly_prod.size - 1):
+        sumOverTwoSteps = actual_hourly_prod[index] + actual_hourly_prod[index+1]
+        assert abs(sumOverTwoSteps - expected_res_part) <= 1e-6
