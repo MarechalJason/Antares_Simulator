@@ -91,5 +91,5 @@ class study_input_handler:
         shutil.copyfile(fileToCopy, fileToReplace)
 
     def set_parameter_from_file(self, area, sectionName, paramName, paramValue):
-        self.set_reserve_value(area, sectionName, paramName, paramValue)
+        self.set_reserve_value(area.lower(), sectionName, paramName, paramValue)
 
