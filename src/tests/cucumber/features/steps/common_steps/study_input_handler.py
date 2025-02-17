@@ -85,7 +85,7 @@ class study_input_handler:
 
     def copy_reserve_ini_from_file(self,area, testName):
         # File path
-        fileToReplace = self.files_path["reserves"] / area / "reserves.ini"
+        fileToReplace = self.files_path["reserves"] / area.lower() / "reserves.ini"
         testFile = testName +".ini"
         fileToCopy = self.files_path["reserve_ini_folder"] / testFile
         shutil.copyfile(fileToCopy, fileToReplace)
