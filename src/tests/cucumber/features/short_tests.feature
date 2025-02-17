@@ -171,7 +171,7 @@ Feature: short tests
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
-    And in area "AREA", during year 1, during first week, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 200 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 200 MWh
 
 @fast @short
   Scenario: ST_1UP_reserves_test5
