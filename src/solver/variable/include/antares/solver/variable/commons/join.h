@@ -302,8 +302,8 @@ public:
     template<class V>
     void yearEndSpatialAggregates(V& allVars, unsigned int year, unsigned int numSpace)
     {
-        LeftType ::template yearEndSpatialAggregates(allVars, year, numSpace);
-        RightType::template yearEndSpatialAggregates(allVars, year, numSpace);
+        LeftType::yearEndSpatialAggregates(allVars, year, numSpace);
+        RightType::yearEndSpatialAggregates(allVars, year, numSpace);
     }
 
     template<class V>
@@ -311,10 +311,10 @@ public:
                                          std::map<unsigned int, unsigned int>& numSpaceToYear,
                                          unsigned int nbYearsForCurrentSummary)
     {
-        LeftType ::template computeSpatialAggregatesSummary(allVars,
+        LeftType::computeSpatialAggregatesSummary(allVars,
                                                             numSpaceToYear,
                                                             nbYearsForCurrentSummary);
-        RightType::template computeSpatialAggregatesSummary(allVars,
+        RightType::computeSpatialAggregatesSummary(allVars,
                                                             numSpaceToYear,
                                                             nbYearsForCurrentSummary);
     }
@@ -322,8 +322,8 @@ public:
     template<class V>
     void simulationEndSpatialAggregates(V& allVars)
     {
-        LeftType ::template simulationEndSpatialAggregates(allVars);
-        RightType::template simulationEndSpatialAggregates(allVars);
+        LeftType::simulationEndSpatialAggregates(allVars);
+        RightType::simulationEndSpatialAggregates(allVars);
     }
 
     template<class I>
