@@ -110,6 +110,12 @@ public:
         pumpMod,
     };
 
+    struct LTStorageReserveParticipationWithName
+    {
+        std::reference_wrapper<LTStorageClusterReserveParticipation> reserveParticipation;
+        std::string reserveName;
+    };
+
     /*!
     ** \brief Load data for hydro container from a folder
     **
@@ -171,6 +177,14 @@ public:
 
     void addReserveParticipation(const std::string& reserveName,
                                  const LTStorageClusterReserveParticipation& participation);
+
+    void addReserveParticipationSymmetry(std::vector<Data::ReserveName>);
+
+    //! @brief Get the reserve participation symmetry list index
+    std::vector<int> symmetricalIndices(Data::ReserveName name) const;
+
+    //! @brief Get the number of symmetry groups
+    int getNbSymGroups();
 
     std::optional<Data::ReserveName> reserveParticipationAt(const Area* area,
                                                             unsigned int index) const;
@@ -248,6 +262,8 @@ public:
 
     std::vector<std::optional<double>> deltaBetweenFinalAndInitialLevels;
     ReserveOpt<std::map<std::string, LTStorageClusterReserveParticipation>> reservesParticipations;
+    ReserveOpt<std::vector<std::vector<LTStorageReserveParticipationWithName>>>
+      reserveParticipationsSymmetries;
 
 private:
     static bool checkReservoirLevels(const Study& study);

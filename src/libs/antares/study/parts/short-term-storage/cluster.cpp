@@ -129,6 +129,46 @@ void STStorageCluster::addReserveParticipation(
     clusterReservesParticipations().emplace(name, reserveParticipation);
 }
 
+void STStorageCluster::addReserveParticipationSymmetry(std::vector<Data::ReserveName> names)
+{
+    reserveParticipationsSymmetries.init();
+    auto symmetryRes = std::vector<STStorageClusterReserveParticipationWithName>();
+    for (auto name: names)
+    {
+        if (clusterReservesParticipations().contains(name))
+        {
+            symmetryRes.push_back(STStorageClusterReserveParticipationWithName{clusterReservesParticipations().at(name), name});
+        }
+        else
+        {
+            throw std::out_of_range("cluster " + id + " is not participating to reserve " + name);
+        }
+    }
+    reserveParticipationsSymmetries().push_back(symmetryRes);
+}
+
+std::vector<int> STStorageCluster::symmetricalIndices(Data::ReserveName name) const
+{
+    // Return the indices of the lists that contains reserveParticipation to the reserve name
+    std::vector<int> indices;
+    for (int i = 0; i < reserveParticipationsSymmetries().size(); i++)
+    {
+        for (auto reserveParticipation: reserveParticipationsSymmetries().at(i))
+        {
+            if (reserveParticipation.reserveName == name)
+            {
+                indices.push_back(i);
+            }
+        }
+    }
+    
+    return indices;
+}
+
+int STStorageCluster::getNbSymGroups(){
+    return reserveParticipationsSymmetries().size();
+}
+
 float STStorageCluster::reserveMaxTurbining(Data::ReserveName name)
 {
     if (clusterReservesParticipations().contains(name))

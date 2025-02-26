@@ -141,6 +141,8 @@ set(RTESOLVER_OPT
 		constraints/POutBounds.cpp
 		include/antares/solver/optimisation/constraints/ThermalReserveParticipation.h
 		constraints/ThermalReserveParticipation.cpp
+		include/antares/solver/optimisation/constraints/SymmetryReserveParticipation.h
+		constraints/SymmetryReserveParticipation.cpp
 		include/antares/solver/optimisation/constraints/POffUnits.h
 		constraints/POffUnits.cpp
 		include/antares/solver/optimisation/constraints/ReserveSatisfaction.h

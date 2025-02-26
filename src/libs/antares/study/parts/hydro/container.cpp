@@ -759,52 +759,82 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
         return false;
     }
 
+    std::vector<std::reference_wrapper<const IniFile::Section>> participationsSections;
+    std::vector<std::reference_wrapper<const IniFile::Section>> symmetriesSections;
+
+    // Collect sections into participationsSections and symmetriesSections
     ini.each(
       [&](const IniFile::Section& section)
       {
-          logs.info() << "Processing section: " << section.name;
-
-          std::string reserveName = section.name.c_str();
-          float maxTurbining = 0;
-          float maxPumping = 0;
-          float participationCost = 0;
-
-          section.each(
-            [&](const IniFile::Property& property)
-            {
-                CString<30, false> key = property.key;
-                key.toLower();
-                if (key == "max-turbining")
-                {
-                    property.value.to<float>(maxTurbining);
-                }
-                else if (key == "max-pumping")
-                {
-                    property.value.to<float>(maxPumping);
-                }
-                else if (key == "participation-cost")
-                {
-                    property.value.to<float>(participationCost);
-                }
-
-                logs.info() << "  Property: " << key << " = " << property.value;
-            });
-
-          auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
-          if (reserve)
+          if (section.name == "symmetries")
           {
-              LTStorageClusterReserveParticipation participation(*reserve,
-                                                                 maxTurbining,
-                                                                 maxPumping,
-                                                                 participationCost);
-              addReserveParticipation(reserveName, participation);
-              logs.info() << "Added reserve participation for " << reserveName;
+              symmetriesSections.emplace_back(section);
           }
           else
           {
-              logs.info() << area.name << ": does not contain this reserve " << reserveName;
+              participationsSections.emplace_back(section);
           }
       });
+
+    // Process clusters reserves participations
+    for (const auto& section: participationsSections)
+    {
+        logs.info() << "Processing section: " << section.get().name;
+        std::string reserveName = section.get().name.c_str();
+        float maxTurbining = 0;
+        float maxPumping = 0;
+        float participationCost = 0;
+
+        section.get().each(
+          [&](const IniFile::Property& property)
+          {
+              CString<30, false> key = property.key;
+              key.toLower();
+              if (key == "max-turbining")
+              {
+                  property.value.to<float>(maxTurbining);
+              }
+              else if (key == "max-pumping")
+              {
+                  property.value.to<float>(maxPumping);
+              }
+              else if (key == "participation-cost")
+              {
+                  property.value.to<float>(participationCost);
+              }
+              logs.info() << "Property: " << key << " = " << property.value;
+          });
+
+        auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
+        if (reserve)
+        {
+            LTStorageClusterReserveParticipation participation(*reserve,
+                                                               maxTurbining,
+                                                               maxPumping,
+                                                               participationCost);
+            addReserveParticipation(reserveName, participation);
+            logs.info() << "Added reserve participation for " << reserveName;
+        }
+        else
+        {
+            logs.info() << area.name << ": does not contain this reserve " << reserveName;
+        }
+    }
+
+    // Process symmetries
+    for (const auto& section: symmetriesSections)
+    {
+        for (auto* p = section.get().firstProperty; p; p = p->next)
+        {
+            std::string tmpClusterName;
+            TransformNameIntoID(p->key, tmpClusterName);
+            auto symmetries = Antares::parseStringToVectorOfVectorOfStrings(p->value);
+            for (auto& sym: symmetries)
+            {
+                area.hydro.addReserveParticipationSymmetry(sym);
+            }
+        }
+    }
 
     return true;
 }
@@ -820,6 +850,48 @@ void PartHydro::addReserveParticipation(const std::string& reserveName,
 {
     reservesParticipations.init();
     reservesParticipations().emplace(reserveName, participation);
+}
+
+void PartHydro::addReserveParticipationSymmetry(std::vector<Data::ReserveName> names)
+{
+    reserveParticipationsSymmetries.init();
+    auto symmetryRes = std::vector<LTStorageReserveParticipationWithName>();
+    for (auto name: names)
+    {
+        if (reservesParticipations().contains(name))
+        {
+            symmetryRes.push_back(
+              LTStorageReserveParticipationWithName{reservesParticipations().at(name), name});
+        }
+        else
+        {
+            throw std::out_of_range("LongTermStorage is not participating to reserve " + name);
+        }
+    }
+    reserveParticipationsSymmetries().push_back(symmetryRes);
+}
+
+std::vector<int> PartHydro::symmetricalIndices(Data::ReserveName name) const
+{
+    // Return the indices of the lists that contains reserveParticipation to the reserve name
+    std::vector<int> indices;
+    for (int i = 0; i < reserveParticipationsSymmetries().size(); i++)
+    {
+        for (auto reserveParticipation: reserveParticipationsSymmetries().at(i))
+        {
+            if (reserveParticipation.reserveName == name)
+            {
+                indices.push_back(i);
+            }
+        }
+    }
+
+    return indices;
+}
+
+int PartHydro::getNbSymGroups()
+{
+    return reserveParticipationsSymmetries().size();
 }
 
 std::optional<Data::ReserveName> PartHydro::reserveParticipationAt(const Area* area,

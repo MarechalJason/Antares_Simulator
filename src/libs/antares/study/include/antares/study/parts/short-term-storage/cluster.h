@@ -37,6 +37,12 @@ namespace Antares::Data::ShortTermStorage
 class STStorageCluster
 {
 public:
+    struct STStorageClusterReserveParticipationWithName
+    {
+        std::reference_wrapper<STStorageClusterReserveParticipation> reserveParticipation;
+        std::string reserveName;
+    };
+
     //! \brief Get the group name string
     static const char* GroupName(enum Group grp);
 
@@ -54,6 +60,14 @@ public:
 
     void addReserveParticipation(Data::ReserveName name,
                                  STStorageClusterReserveParticipation& reserveParticipation);
+
+    void addReserveParticipationSymmetry(std::vector<Data::ReserveName>);
+
+    //! @brief Get the reserve participation symmetry list index
+    std::vector<int> symmetricalIndices(Data::ReserveName name) const;
+
+    //! @brief Get the number of symmetry groups
+    int getNbSymGroups();
 
     //! \brief Returns max turbining power for a reserve if participating, -1 otherwise
     float reserveMaxTurbining(Data::ReserveName name);
@@ -73,8 +87,13 @@ public:
     mutable Properties properties;
     std::vector<AdditionalConstraint> additional_constraints;
 
-    //! reserve
+    //! \brief Map of reserve participations
     ReserveOpt<std::map<Data::ReserveName, STStorageClusterReserveParticipation>>
       clusterReservesParticipations;
+
+    //! \brief List of reserve participations symmetries
+    ReserveOpt<
+      std::vector<std::vector<STStorageClusterReserveParticipationWithName>>>
+      reserveParticipationsSymmetries;
 };
 } // namespace Antares::Data::ShortTermStorage

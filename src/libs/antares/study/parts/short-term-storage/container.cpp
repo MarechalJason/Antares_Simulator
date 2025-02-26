@@ -176,71 +176,116 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
     {
         return false;
     }
+
+    std::vector<std::reference_wrapper<const IniFile::Section>> clustersSections;
+    std::vector<std::reference_wrapper<const IniFile::Section>> symmetriesSections;
+
+    // Collect sections into clustersSections and symmetriesSections (because we need to process
+    // symmetries after reserve participations)
     ini.each(
       [&](const IniFile::Section& section)
       {
-          std::string tmpClusterName;
-          float tmpMaxTurbining = 0;
-          float tmpMaxPumping = 0;
-          float tmpParticipationCost = 0;
-          for (auto* p = section.firstProperty; p; p = p->next)
+          if (section.name == "symmetries")
           {
-              auto tmp = p->key;
-              tmp.toLower();
-
-              if (tmp == "cluster-name")
-              {
-                  TransformNameIntoID(p->value, tmpClusterName);
-              }
-              else if (tmp == "max-turbining")
-              {
-                  if (!p->value.to<float>(tmpMaxTurbining))
-                  {
-                      logs.warning() << area.name << ": invalid max turbining power for reserve "
-                                     << section.name;
-                  }
-              }
-              else if (tmp == "max-pumping")
-              {
-                  if (!p->value.to<float>(tmpMaxPumping))
-                  {
-                      logs.warning()
-                        << area.name << ": invalid max pumping power for reserve " << section.name;
-                  }
-              }
-              else if (tmp == "participation-cost")
-              {
-                  if (!p->value.to<float>(tmpParticipationCost))
-                  {
-                      logs.warning()
-                        << area.name << ": invalid participation cost for reserve " << section.name;
-                  }
-              }
-          }
-          auto reserve = area.allCapacityReservations().getReserveByName(section.name);
-          auto cluster = getClusterByName(tmpClusterName);
-          if (reserve && cluster)
-          {
-              STStorageClusterReserveParticipation tmpReserveParticipation{reserve.value(),
-                                                                           tmpMaxTurbining,
-                                                                           tmpMaxPumping,
-                                                                           tmpParticipationCost};
-              cluster.value().get().addReserveParticipation(section.name, tmpReserveParticipation);
+              symmetriesSections.emplace_back(section);
           }
           else
           {
-              if (!reserve)
-              {
-                  logs.warning() << area.name << ": does not contains this reserve "
-                                 << section.name;
-              }
-              if (!cluster)
-              {
-                  logs.warning() << area.name << ": does not contains this cluster "
-                                 << tmpClusterName;
-              }
+              clustersSections.emplace_back(section);
           }
       });
+
+    // Process clusters reserves participations
+    for (const auto& section: clustersSections)
+    {
+        std::string tmpClusterName;
+        float tmpMaxTurbining = 0;
+        float tmpMaxPumping = 0;
+        float tmpParticipationCost = 0;
+
+        for (auto* p = section.get().firstProperty; p; p = p->next)
+        {
+            auto tmp = p->key;
+            tmp.toLower();
+
+            if (tmp == "cluster-name")
+            {
+                TransformNameIntoID(p->value, tmpClusterName);
+            }
+            else if (tmp == "max-turbining")
+            {
+                if (!p->value.to<float>(tmpMaxTurbining))
+                {
+                    logs.warning() << area.name << ": invalid max turbining power for reserve "
+                                   << section.get().name;
+                }
+            }
+            else if (tmp == "max-pumping")
+            {
+                if (!p->value.to<float>(tmpMaxPumping))
+                {
+                    logs.warning() << area.name << ": invalid max pumping power for reserve "
+                                   << section.get().name;
+                }
+            }
+            else if (tmp == "participation-cost")
+            {
+                if (!p->value.to<float>(tmpParticipationCost))
+                {
+                    logs.warning() << area.name << ": invalid participation cost for reserve "
+                                   << section.get().name;
+                }
+            }
+        }
+
+        auto reserve = area.allCapacityReservations().getReserveByName(section.get().name);
+        auto cluster = getClusterByName(tmpClusterName);
+        if (reserve && cluster)
+        {
+            STStorageClusterReserveParticipation tmpReserveParticipation{reserve.value(),
+                                                                         tmpMaxTurbining,
+                                                                         tmpMaxPumping,
+                                                                         tmpParticipationCost};
+            cluster.value().get().addReserveParticipation(section.get().name,
+                                                          tmpReserveParticipation);
+        }
+        else
+        {
+            if (!reserve)
+            {
+                logs.warning() << area.name << ": does not contain this reserve "
+                               << section.get().name;
+            }
+            if (!cluster)
+            {
+                logs.warning() << area.name << ": does not contain this cluster " << tmpClusterName;
+            }
+        }
+    }
+
+    // Process symmetries
+    for (const auto& section: symmetriesSections)
+    {
+        for (auto* p = section.get().firstProperty; p; p = p->next)
+        {
+            std::string tmpClusterName;
+            TransformNameIntoID(p->key, tmpClusterName);
+            auto symmetries = Antares::parseStringToVectorOfVectorOfStrings(p->value);
+            for (auto& sym: symmetries)
+            {
+                auto cluster = area.shortTermStorage.getClusterByName(tmpClusterName);
+                if (cluster)
+                {
+                    cluster.value().get().addReserveParticipationSymmetry(sym);
+                }
+                else
+                {
+                    logs.warning() << "Short-term storage cluster " << tmpClusterName
+                                   << " is not participating to reserves of area " << area.name;
+                }
+            }
+        }
+    }
     return true;
 }
 

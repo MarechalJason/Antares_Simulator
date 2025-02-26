@@ -50,6 +50,8 @@ void BeautifyName(std::string& out, const std::string& oldname);
 std::vector<std::pair<std::string, std::string>> splitStringIntoPairs(const std::string& s,
                                                                       char delimiter1,
                                                                       char delimiter2);
+std::vector<std::vector<std::string>> parseStringToVectorOfVectorOfStrings(
+  const std::string& input);
 
 namespace Utils
 {
@@ -57,6 +59,7 @@ bool isZero(double d);
 double round(double d, unsigned precision);
 } // namespace Utils
 } // namespace Antares
+
 
 #include "utils.hxx"
 

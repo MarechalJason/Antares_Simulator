@@ -120,6 +120,49 @@ void Cluster::addReserveParticipation(Data::ReserveName name,
     clusterReservesParticipations().emplace(name, reserveParticipation);
 }
 
+void Cluster::addReserveParticipationSymmetry(std::vector<Data::ReserveName> names)
+{
+    reserveParticipationsSymmetries.init();
+    auto symmetryRes = std::vector<ThermalClusterReserveParticipationWithName>();
+    for (auto name: names)
+    {
+        if (clusterReservesParticipations().contains(name))
+        {
+            symmetryRes.push_back(ThermalClusterReserveParticipationWithName{clusterReservesParticipations().at(name), name});
+        }
+        else
+        {
+            throw std::out_of_range("cluster " + pID + " is not participating to reserve " + name);
+        }
+    }
+    reserveParticipationsSymmetries().push_back(symmetryRes);
+}
+
+std::vector<int> Cluster::symmetricalIndices(Data::ReserveName name) const
+{
+    // Return the indices of the lists that contains reserveParticipation to the reserve name
+    std::vector<int> indices;
+    if (reserveParticipationsSymmetries)
+    {
+        for (int i = 0; i < reserveParticipationsSymmetries().size(); i++)
+        {
+            for (auto reserveParticipation : reserveParticipationsSymmetries().at(i))
+            {
+                if (reserveParticipation.reserveName == name)
+                {
+                    indices.push_back(i);
+                }
+            }
+        }
+    }
+    
+    return indices;
+}
+
+int Cluster::getNbSymGroups(){
+    return reserveParticipationsSymmetries().size();
+}
+
 bool Cluster::isParticipatingInReserve(Data::ReserveName name)
 {
     if (clusterReservesParticipations && clusterReservesParticipations().contains(name))

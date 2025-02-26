@@ -51,6 +51,12 @@ class Cluster
 public:
     using Set = std::set<Cluster*, CompareClusterName>;
 
+    struct ThermalClusterReserveParticipationWithName
+    {
+        std::reference_wrapper<ThermalClusterReserveParticipation> reserveParticipation;
+        std::string reserveName;
+    };
+
 public:
     Cluster(Area* parent);
 
@@ -106,8 +112,18 @@ public:
     //! @brief Add the reserve participation to the current clusterReservesParticipations map
     //! @param name the name of the reserve to add
     //! @param reserveParticipation the reserve participation to add
-    void addReserveParticipation(std::string name,
+    void addReserveParticipation(Data::ReserveName name,
                                  ThermalClusterReserveParticipation reserveParticipation);
+
+    //! @brief Add the reserve participation symmetry
+    //! @param names the names of the reserves to add to the symmetry list
+    void addReserveParticipationSymmetry(std::vector<Data::ReserveName> names);
+
+    //! @brief Get the reserve participation symmetry list index
+    std::vector<int> symmetricalIndices(Data::ReserveName name) const;
+
+    //! @brief Get the number of symmetry groups
+    int getNbSymGroups();
 
     uint unitCount = 0;
 
@@ -171,6 +187,9 @@ protected:
     //! reserve
     ReserveOpt<std::map<Data::ReserveName, ThermalClusterReserveParticipation>>
       clusterReservesParticipations;
+    //! \brief List of reserve participations symmetries
+    ReserveOpt<std::vector<std::vector<ThermalClusterReserveParticipationWithName>>>
+      reserveParticipationsSymmetries;
 
 private:
     virtual unsigned int precision() const = 0;

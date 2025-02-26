@@ -109,6 +109,22 @@ void Namer::SetThermalClusterAndReserveElementName(unsigned int variable,
                                        variable);
 }
 
+void Namer::SetThermalClusterAndReservesElementName(unsigned int variable,
+                                                    const std::string& elementType,
+                                                    const std::string& clusterName,
+                                                    const std::string& reserveName1,
+                                                    const std::string& reserveName2)
+{
+    const auto location = LocationIdentifier(area_, AREA) + SEPARATOR + "ThermalCluster" + "<"
+                          + clusterName + ">" + SEPARATOR + "Reserves" + "<" + reserveName1 + ","
+                          + reserveName2 + ">";
+
+    targetUpdater_.UpdateTargetAtIndex(BuildName(elementType,
+                                                 location,
+                                                 TimeIdentifier(timeStep_, HOUR)),
+                                       variable);
+}
+
 void Namer::SetSTStorageClusterElementName(unsigned int variable,
                                            const std::string& elementType,
                                            const std::string& clusterName)
@@ -596,6 +612,18 @@ void ConstraintNamer::ParticipationOfUnitsToReserve(unsigned int constraint,
                                            "ParticipationOfUnitsToReserve",
                                            clusterName,
                                            reserveName);
+}
+
+void ConstraintNamer::SymmetryReserveParticipation(unsigned int constraint,
+                                                   const std::string& clusterName,
+                                                   const std::string& reserveName1,
+                                                   const std::string& reserveName2)
+{
+    SetThermalClusterAndReservesElementName(constraint,
+                                            "ParticipationOfUnitsToReserve",
+                                            clusterName,
+                                            reserveName1,
+                                            reserveName2);
 }
 
 void ConstraintNamer::POffUnitsLowerBound(unsigned int constraint,
