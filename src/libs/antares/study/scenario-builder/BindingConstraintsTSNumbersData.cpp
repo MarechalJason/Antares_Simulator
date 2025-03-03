@@ -73,7 +73,7 @@ bool BindingConstraintsTSNumberData::apply(Study& study)
           uint errors = 0;
           CString<512, false> logprefix;
           logprefix.clear() << "Binding constraints: group '" << groupName << "': ";
-          return ApplyToMatrix(errors, logprefix, *group, tsNumbers[0], get_tsGenCount(study));
+          return ApplyToMatrix(errors, logprefix, *group, (const Matrix<unsigned>::ColumnType &)(tsNumbers.data()), get_tsGenCount(study));
       });
 }
 
@@ -84,7 +84,7 @@ bool BindingConstraintsTSNumberData::reset(const Study& study)
                           [this, &nbYears](const auto& group)
                           {
                               auto& ts_numbers = rules_[group->name()];
-                              ts_numbers.reset(1, nbYears);
+                              ts_numbers.resize( nbYears, 1);
                           });
     return true;
 }
@@ -97,9 +97,9 @@ void BindingConstraintsTSNumberData::saveToINIFile(const Study&, Yuni::IO::File:
 
     for (const auto& [group_name, ts_numbers]: rules_)
     {
-        for (unsigned year = 0; year < ts_numbers.height; ++year)
+        for (unsigned year = 0; year < ts_numbers.rows(); ++year)
         {
-            auto value = ts_numbers[0][year];
+            auto value = ts_numbers.coeff(year, 0);
             if (value != 0)
             {
                 file << get_prefix() << group_name << "," << year << "=" << value << "\n";
@@ -113,7 +113,10 @@ void BindingConstraintsTSNumberData::setTSnumber(const std::string& group_name,
                                                  uint value)
 {
     auto& group_ts_numbers = rules_[group_name];
-    group_ts_numbers[0][year] = value;
+    if (year < group_ts_numbers.rows())
+    {
+        group_ts_numbers.coeffRef(year, 0) = value;
+    }
 }
 
 } // namespace Antares::Data::ScenarioBuilder
