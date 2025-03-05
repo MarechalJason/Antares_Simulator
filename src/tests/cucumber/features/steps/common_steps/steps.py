@@ -25,11 +25,11 @@ def run_antares(context):
     context.parallel = False
     run_simulation(context)
     
-@when('I run antares simulator with xpress as solver')
-def run_antares(context):
+@when('I run antares simulator with "{solver}" as solver')
+def run_antares_custom_solver(context, solver):
     context.named_mps_problems = False
     context.parallel = False
-    run_simulation(context, "xpress")
+    run_simulation(context, solver)
 
 
 def after_feature(context, feature):

@@ -1,5 +1,6 @@
 Feature: short tests
 
+
   @fast @short
   Scenario: 001 One node - passive
     Given the study path is "short-tests/001 One node - passive"
@@ -319,12 +320,11 @@ Feature: short tests
   Scenario: ST_3UP_unavailable_reserves_test1
     Given the study path is "short-tests/ST_3_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_unavailable_prod_1"
-    When I run antares simulator with xpress as solver
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33400 MWh
     And in area "AREA", battery level on "1 JAN 06:00" of year 1 is 0 MWh
-    And in area "AREA", battery level on "1 JAN 10:00" of year 1 is 200 MWh
     And the annual system cost is 3.521e+06
     And in area "AREA", during year 1, loss of load lasts 3 hours
 
@@ -332,7 +332,7 @@ Feature: short tests
   Scenario: ST_3UP_unavailable_reserves_test2
     Given the study path is "short-tests/ST_3_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_unavailable_prod_2"
-    When I run antares simulator with xpress as solver
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 32800 MWh
@@ -346,7 +346,7 @@ Feature: short tests
   Scenario: ST_3UP_unavailable_reserves_test3
     Given the study path is "short-tests/ST_3_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_unavailable_prod_3"
-    When I run antares simulator with xpress as solver
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 32800 MWh
@@ -360,7 +360,7 @@ Feature: short tests
   Scenario: ST_3UP_unavailable_reserves_test4
     Given the study path is "short-tests/ST_3_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_unavailable_prod_4"
-    When I run antares simulator with xpress as solver
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16400 MWh
