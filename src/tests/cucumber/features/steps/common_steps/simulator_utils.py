@@ -6,9 +6,9 @@ from common_steps.study_input_handler import study_input_handler
 from common_steps.study_output_handler import study_output_handler
 
 
-def run_simulation(context):
+def run_simulation(context, solver = "sirius"):
     init_simu(context)
-    command = build_antares_solver_command(context)
+    command = build_antares_solver_command(context, solver)
     print(f"Running command: {command}")
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     out, err = process.communicate()
@@ -26,9 +26,9 @@ def init_simu(context):
     sih.set_value(variable="year-by-year", value="true", file_nick_name="general")
 
 
-def build_antares_solver_command(context):
+def build_antares_solver_command(context, solverArg):
     command = [context.config.userdata["antares-solver"], "-i", str(context.study_path)]
-    solver = "sirius"
+    solver = solverArg
     if "solver" in context.config.userdata:
         solver = context.config.userdata["solver"]
     command.append('--solver=' + solver)

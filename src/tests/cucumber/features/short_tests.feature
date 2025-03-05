@@ -134,7 +134,7 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test1
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_1_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
@@ -145,7 +145,7 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test2
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_2_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
@@ -155,7 +155,7 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test3
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_3_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
@@ -165,7 +165,7 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test4
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_4_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
@@ -175,7 +175,7 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test5
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_5_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
@@ -185,7 +185,7 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test6
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_6_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
@@ -195,7 +195,7 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test7
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_7_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
@@ -205,7 +205,7 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test8
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_8_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
@@ -215,10 +215,157 @@ Feature: short tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test9
-    Given the study path is "short-tests/ST_1UP_reserves"
+    Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_9_up"
     When I run antares simulator
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test1
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_1_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test2
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_2_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 100 MWh
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test3
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_3_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 100 MWh
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test4
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_4_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 200 MWh
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test5
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_5_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test6
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_6_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test7
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_7_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test8
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_8_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+
+@fast @short
+  Scenario: ST_1DOWN_reserves_test9
+    Given the study path is "short-tests/ST_1_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_9_down"
+    When I run antares simulator
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+
+
+@fast @short
+  Scenario: ST_3UP_unavailable_reserves_test1
+    Given the study path is "short-tests/ST_3_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_unavailable_prod_1"
+    When I run antares simulator with xpress as solver
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33400 MWh
+    And in area "AREA", battery level on "1 JAN 06:00" of year 1 is 0 MWh
+    And in area "AREA", battery level on "1 JAN 10:00" of year 1 is 200 MWh
+    And the annual system cost is 3.521e+06
+    And in area "AREA", during year 1, loss of load lasts 3 hours
+
+@fast @short
+  Scenario: ST_3UP_unavailable_reserves_test2
+    Given the study path is "short-tests/ST_3_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_unavailable_prod_2"
+    When I run antares simulator with xpress as solver
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 32800 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", on "1 JAN 06:00", reserve participation power is 0 MWh
+    And in area "AREA", battery level on "1 JAN 06:00" of year 1 is 0 MWh
+    And in area "AREA", battery level on "1 JAN 10:00" of year 1 is 200 MWh
+    And the annual system cost is 3.572e+06
+    And in area "AREA", during year 1, loss of load lasts 3 hours
+
+@fast @short
+  Scenario: ST_3UP_unavailable_reserves_test3
+    Given the study path is "short-tests/ST_3_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_unavailable_prod_3"
+    When I run antares simulator with xpress as solver
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 32800 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", on "1 JAN 06:00", reserve participation power is 0 MWh
+    And in area "AREA", battery level on "1 JAN 06:00" of year 1 is 0 MWh
+    And in area "AREA", battery level on "1 JAN 10:00" of year 1 is 200 MWh
+    And the annual system cost is 3.572e+06
+    And in area "AREA", during year 1, loss of load lasts 3 hours
+
+@fast @short
+  Scenario: ST_3UP_unavailable_reserves_test4
+    Given the study path is "short-tests/ST_3_reserves"
+    When I configure the reserve.ini file in area "AREA" for test "reserves_unavailable_prod_4"
+    When I run antares simulator with xpress as solver
+    Then the simulation takes less than 20 seconds
+    And the simulation succeeds
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16400 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", on "1 JAN 06:00", reserve participation power is 0 MWh
+    And in area "AREA", battery level on "1 JAN 06:00" of year 1 is 0 MWh
+    And in area "AREA", battery level on "1 JAN 10:00" of year 1 is 200 MWh
+    And the annual system cost is 6.686e+06
+    And in area "AREA", during year 1, loss of load lasts 3 hours

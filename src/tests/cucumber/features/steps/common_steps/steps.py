@@ -24,6 +24,12 @@ def run_antares(context):
     context.named_mps_problems = False
     context.parallel = False
     run_simulation(context)
+    
+@when('I run antares simulator with xpress as solver')
+def run_antares(context):
+    context.named_mps_problems = False
+    context.parallel = False
+    run_simulation(context, "xpress")
 
 
 def after_feature(context, feature):
@@ -90,6 +96,12 @@ def check_lold_value(context, area, date, year, lold_value_mw):
     assert_double_close(lold_value_mw, actual_unsp_energ, 0.001)
 
 
+@then('in area "{area}", battery level on "{date}" of year {year:d} is {lold_value_mw:g} MWh')
+def check_lold_value(context, area, date, year, lold_value_mw):
+    actual_battery_level = context.soh.get_battery_level_mwh(area, year, date)
+    assert_double_close(lold_value_mw, actual_battery_level, 0.001)
+
+
 @then(
     'in area "{area}", during year {year:d}, hourly production of "{prod_name}" is always {comparator_and_hourly_prod} MWh')
 def check_prod_for_specific_year(context, area, year, prod_name, comparator_and_hourly_prod):
@@ -148,9 +160,14 @@ def check_res_participation_for_specific_year_and_cluster_hourly(context, area, 
     assert ok.all()
 
 @then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", the sum over two hours of reserve participation power is always equal to {expected_res_part} MWh')
-def check_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, expected_res_part):
+def check_res_participation_for_specific_year_and_cluster_hourly_sum(context, area, year, res, cluster, expected_res_part):
     actual_hourly_prod = context.soh.get_hourly_res_part_mwh(area, year, res + "_" + cluster)
     expected_res_part=float(expected_res_part)
     for index in range(0, actual_hourly_prod.size - 1):
         sumOverTwoSteps = actual_hourly_prod[index] + actual_hourly_prod[index+1]
         assert abs(sumOverTwoSteps - expected_res_part) <= 1e-6
+
+@then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", on "{date}", reserve participation power is {res_part} MWh')
+def check_res_participation_for_specific_year_hour_and_cluster(context, area, year, res, cluster, date, res_part):
+    actual_res_part = context.soh.get_res_part_for_date_mwh(area, year, date, res + "_" + cluster)
+    assert_double_close(float(actual_res_part), float(res_part), 1e-6)
