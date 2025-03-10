@@ -15,7 +15,6 @@ var classAntares_1_1Data_1_1Area =
     [ "forceReload", "classAntares_1_1Data_1_1Area.html#a57104b89d9bdfabb560dd18ca64d2fc0", null ],
     [ "isVisibleOnLayer", "classAntares_1_1Data_1_1Area.html#a07a9aacd08dfc7ca93970eef591a6e27", null ],
     [ "markAsModified", "classAntares_1_1Data_1_1Area.html#a8e18b4e1c8cb310d6981bdd871d5736b", null ],
-    [ "memoryUsage", "classAntares_1_1Data_1_1Area.html#afa4008486dc10a5a67def57cb4d21f0b", null ],
     [ "resetToDefaultValues", "classAntares_1_1Data_1_1Area.html#aa8299689caa40aa2c62aa5e2eda700dd", null ],
     [ "resizeAllTimeseriesNumbers", "classAntares_1_1Data_1_1Area.html#ad453f1402603adcd9c49069217a5b009", null ],
     [ "thermalClustersMinStablePowerValidity", "classAntares_1_1Data_1_1Area.html#a79528edfda396dafea0bde19fe39f870", null ],
@@ -34,6 +33,6 @@ var classAntares_1_1Data_1_1Area =
     [ "scratchpad", "classAntares_1_1Data_1_1Area.html#ae1f30bcfc28c2daaf3a7f0f9ccd258c9", null ],
     [ "spreadSpilledEnergyCost", "classAntares_1_1Data_1_1Area.html#af6379c374887f303a405e65b56ceb7d2", null ],
     [ "spreadUnsuppliedEnergyCost", "classAntares_1_1Data_1_1Area.html#a2f23f3620f56a800a963cba71ed68bf5", null ],
-    [ "ui", "classAntares_1_1Data_1_1Area.html#a8bb23430ecef5d090a966e34ba6980a4", null ],
+    [ "ui", "classAntares_1_1Data_1_1Area.html#a9c86f97baf23dae4328a187a85767f42", null ],
     [ "wind", "classAntares_1_1Data_1_1Area.html#af593b90ffde0b3e1d025f99fa654161e", null ]
 ];

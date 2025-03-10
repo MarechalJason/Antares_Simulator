@@ -1,7 +1,65 @@
 var namespaces_dup =
 [
+    [ "Antares", null, [
+      [ "Dispatcher", "namespaceAntares_1_1Dispatcher.html", [
+        [ "Empty", "namespaceAntares_1_1Dispatcher.html#a33f3a294047bb8779cf92c02a68d9f8e", null ],
+        [ "Post", "namespaceAntares_1_1Dispatcher.html#ab16ef2d0df97a7fccb412af68331dcd4", null ],
+        [ "Post", "namespaceAntares_1_1Dispatcher.html#a95b1e7ad114745d781e4a67b2285b972", null ],
+        [ "Post", "namespaceAntares_1_1Dispatcher.html#a26124bfe4ee373c437d539438277c9ef", null ],
+        [ "Post", "namespaceAntares_1_1Dispatcher.html#a8edb309d44a30a0db5e584e8780e2db6", null ],
+        [ "Start", "namespaceAntares_1_1Dispatcher.html#adb3d2e97f0c660074f1ffe87e071cd6b", null ],
+        [ "Stop", "namespaceAntares_1_1Dispatcher.html#acd828533c55060f7df6dca20e64ee7e2", null ],
+        [ "StudyClose", "namespaceAntares_1_1Dispatcher.html#aa5a2b4985d9e442f9c0438b72dd463a5", null ],
+        [ "StudyNew", "namespaceAntares_1_1Dispatcher.html#aa074f215a407fdc0b522a2f8c7133db5", null ],
+        [ "StudyOpen", "namespaceAntares_1_1Dispatcher.html#ae0b031dfb682fa4710e119a0efd2fa14", null ],
+        [ "Wait", "namespaceAntares_1_1Dispatcher.html#a7d529d349b513caf851b7a3594894cf8", null ]
+      ] ],
+      [ "IO", null, [
+        [ "Inputs", null, [
+          [ "DataSeriesCsvImporter", "namespaceAntares_1_1IO_1_1Inputs_1_1DataSeriesCsvImporter.html", "namespaceAntares_1_1IO_1_1Inputs_1_1DataSeriesCsvImporter" ]
+        ] ]
+      ] ],
+      [ "Optimisation", null, [
+        [ "LinearProblemApi", "namespaceAntares_1_1Optimisation_1_1LinearProblemApi.html", "namespaceAntares_1_1Optimisation_1_1LinearProblemApi" ]
+      ] ],
+      [ "Optimization", "namespaceAntares_1_1Optimization.html", "namespaceAntares_1_1Optimization" ],
+      [ "WIP", "namespaceAntares_1_1WIP.html", "namespaceAntares_1_1WIP" ],
+      [ "Application", "classAntares_1_1Application.html", "classAntares_1_1Application" ],
+      [ "areaInfo", "classAntares_1_1areaInfo.html", null ],
+      [ "ATSP", "classAntares_1_1ATSP.html", "classAntares_1_1ATSP" ],
+      [ "CBuilder", "classAntares_1_1CBuilder.html", "classAntares_1_1CBuilder" ],
+      [ "Cycle", "classAntares_1_1Cycle.html", null ],
+      [ "DebugData", "structAntares_1_1DebugData.html", null ],
+      [ "FatalError", "classAntares_1_1FatalError.html", null ],
+      [ "FileTreeStudyLoader", "classAntares_1_1FileTreeStudyLoader.html", "classAntares_1_1FileTreeStudyLoader" ],
+      [ "GUILocker", "classAntares_1_1GUILocker.html", null ],
+      [ "HydroErrorsCollector", "classAntares_1_1HydroErrorsCollector.html", "classAntares_1_1HydroErrorsCollector" ],
+      [ "HydroInputsChecker", "classAntares_1_1HydroInputsChecker.html", null ],
+      [ "HydroManagement", "classAntares_1_1HydroManagement.html", "classAntares_1_1HydroManagement" ],
+      [ "I_mtx_to_buffer_dumper", "classAntares_1_1I__mtx__to__buffer__dumper.html", null ],
+      [ "IniFile", "classAntares_1_1IniFile.html", "classAntares_1_1IniFile" ],
+      [ "IStudyLoader", "classAntares_1_1IStudyLoader.html", "classAntares_1_1IStudyLoader" ],
+      [ "linkInfo", "classAntares_1_1linkInfo.html", "classAntares_1_1linkInfo" ],
+      [ "Matrix", "classAntares_1_1Matrix.html", "classAntares_1_1Matrix" ],
+      [ "matrix_to_buffer_dumper_factory", "classAntares_1_1matrix__to__buffer__dumper__factory.html", null ],
+      [ "MatrixSubColumn", "classAntares_1_1MatrixSubColumn.html", null ],
+      [ "MatrixSubColumn< Matrix< double >::ColumnType * >", "classAntares_1_1MatrixSubColumn_3_01Matrix_3_01double_01_4_1_1ColumnType_01_5_01_4.html", null ],
+      [ "MatrixSubColumn< Matrix< float >::ColumnType * >", "classAntares_1_1MatrixSubColumn_3_01Matrix_3_01float_01_4_1_1ColumnType_01_5_01_4.html", null ],
+      [ "MatrixSubColumn< U ** >", "classAntares_1_1MatrixSubColumn_3_01U_01_5_5_01_4.html", null ],
+      [ "Memory", "classAntares_1_1Memory.html", "classAntares_1_1Memory" ],
+      [ "MemoryFlushLocker", "classAntares_1_1MemoryFlushLocker.html", null ],
+      [ "Menu", "classAntares_1_1Menu.html", null ],
+      [ "MersenneTwister", "classAntares_1_1MersenneTwister.html", "classAntares_1_1MersenneTwister" ],
+      [ "MinGenerationScaling", "classAntares_1_1MinGenerationScaling.html", null ],
+      [ "multiple_columns__dumper", "classAntares_1_1multiple__columns____dumper.html", null ],
+      [ "one_column__dumper", "classAntares_1_1one__column____dumper.html", null ],
+      [ "PrepareInflows", "classAntares_1_1PrepareInflows.html", null ],
+      [ "State", "classAntares_1_1State.html", null ],
+      [ "StudyUpdateLocker", "classAntares_1_1StudyUpdateLocker.html", null ],
+      [ "VENTILATION_HYDRO_RESULTS_BY_AREA", "structAntares_1_1VENTILATION__HYDRO__RESULTS__BY__AREA.html", null ]
+    ] ],
     [ "LocalPolicy", "namespaceLocalPolicy.html", [
-      [ "PolicyKey", "namespaceLocalPolicy.html#a47b0c7226dcf5d16ee301e7bbc468b14", null ],
+      [ "PolicyKey", "namespaceLocalPolicy.html#ac6096d266746f2da18face8c417e3aa2", null ],
       [ "CheckRootPrefix", "namespaceLocalPolicy.html#aa279d371e5b4e23c77448611eb2f4f04", null ],
       [ "Close", "namespaceLocalPolicy.html#ae48d9a3da78c07bbf43d0d97e68f5606", null ],
       [ "DumpToLogs", "namespaceLocalPolicy.html#a5437ae904734d642b435bd37a8f38e03", null ],
