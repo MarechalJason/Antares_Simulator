@@ -232,8 +232,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
             int cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                        .STStorageClusterMaxTurbiningParticipation
-                          [reserveParticipation.globalIndexClusterParticipation];
+                    .STStorageLevelParticipationUp[reserveParticipation
+                                                               .globalIndexClusterParticipation];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = reserveParticipation.maxTurbining;
@@ -244,7 +244,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                                                .globalIndexClusterParticipation];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserveParticipation.maxPumping;
+                SecondMembre[cnt] = reserveParticipation.maxTurbining;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
@@ -272,11 +272,11 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
             int cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                        .STStorageClusterMaxTurbiningParticipation
+                        .STStorageLevelParticipationDown
                           [reserveParticipation.globalIndexClusterParticipation];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserveParticipation.maxTurbining;
+                SecondMembre[cnt] = reserveParticipation.maxPumping;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()

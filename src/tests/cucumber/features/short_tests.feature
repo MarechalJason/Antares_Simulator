@@ -137,18 +137,18 @@ Feature: short tests
   Scenario: ST_1UP_reserves_test1
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_1_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33432 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 199 MWh
 
 
 @fast @short
   Scenario: ST_1UP_reserves_test2
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_2_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -158,7 +158,7 @@ Feature: short tests
   Scenario: ST_1UP_reserves_test3
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_3_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -168,7 +168,7 @@ Feature: short tests
   Scenario: ST_1UP_reserves_test4
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_4_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -178,7 +178,7 @@ Feature: short tests
   Scenario: ST_1UP_reserves_test5
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_5_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -188,7 +188,7 @@ Feature: short tests
   Scenario: ST_1UP_reserves_test6
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_6_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -198,7 +198,7 @@ Feature: short tests
   Scenario: ST_1UP_reserves_test7
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_7_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -208,38 +208,38 @@ Feature: short tests
   Scenario: ST_1UP_reserves_test8
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_8_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33432 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 199 MWh
 
 @fast @short
   Scenario: ST_1UP_reserves_test9
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_9_up"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33432 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 199 MWh
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test1
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_1_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33264 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 198 MWh
 
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test2
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_2_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -249,7 +249,7 @@ Feature: short tests
   Scenario: ST_1DOWN_reserves_test3
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_3_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -259,7 +259,7 @@ Feature: short tests
   Scenario: ST_1DOWN_reserves_test4
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_4_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -269,7 +269,7 @@ Feature: short tests
   Scenario: ST_1DOWN_reserves_test5
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_5_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -279,7 +279,7 @@ Feature: short tests
   Scenario: ST_1DOWN_reserves_test6
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_6_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -289,7 +289,7 @@ Feature: short tests
   Scenario: ST_1DOWN_reserves_test7
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_7_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -299,21 +299,21 @@ Feature: short tests
   Scenario: ST_1DOWN_reserves_test8
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_8_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33264 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 198 MWh
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test9
     Given the study path is "short-tests/ST_1_reserves"
     When I configure the reserve.ini file in area "AREA" for test "reserves_9_down"
-    When I run antares simulator
+    When I run antares simulator with "coin" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33264 MWh
+    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 198 MWh
 
 
 @fast @short
