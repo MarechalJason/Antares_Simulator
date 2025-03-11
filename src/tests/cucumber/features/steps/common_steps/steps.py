@@ -14,10 +14,12 @@ from common_steps.study_input_handler import *
 def study_path_is(context, string):
     context.study_path = os.path.join(context.config.userdata["resources-path"], string.replace("/", os.sep))
 
-@when('I configure the reserve.ini file in area "{area}" for test "{testName}"')
-def replace_reserve_ini(context, area, testName):
+@when('I replace the "{destinationPath}" file with "{originPath}"')
+def replace_reserve_ini(context, destinationPath, originPath):
+    destination = destinationPath.split("/")
+    origin = originPath.split("/")
     input_handler = study_input_handler(Path(context.study_path))
-    input_handler.copy_reserve_ini_from_file(area, testName)
+    input_handler.copy_reserve_ini_from_file(origin, destination)
 
 @when('I run antares simulator')
 def run_antares(context):

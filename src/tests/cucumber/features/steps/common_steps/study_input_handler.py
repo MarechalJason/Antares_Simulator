@@ -83,11 +83,10 @@ class study_input_handler:
         with open(file, "w") as f:
             f.writelines(content_out)
 
-    def copy_reserve_ini_from_file(self,area, testName):
+    def copy_reserve_ini_from_file(self, origin, destination):
         # File path
-        fileToReplace = self.files_path["reserves"] / area.lower() / "reserves.ini"
-        testFile = testName +".ini"
-        fileToCopy = self.files_path["reserve_ini_folder"] / testFile
+        fileToReplace = os.path.join(self.study_root_dir, *destination)
+        fileToCopy = os.path.join(self.study_root_dir, *origin)
         shutil.copyfile(fileToCopy, fileToReplace)
 
     def set_parameter_from_file(self, area, sectionName, paramName, paramValue):
