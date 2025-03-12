@@ -22,7 +22,7 @@ struct VCardReserveParticipationByLTStorage
 
     static std::string Unit()
     {
-        return "MWh";
+        return "Reserve Participation Power - MWh";
     }
 
     static std::string Description()

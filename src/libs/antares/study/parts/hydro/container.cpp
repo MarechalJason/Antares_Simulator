@@ -875,13 +875,16 @@ std::vector<int> PartHydro::symmetricalIndices(Data::ReserveName name) const
 {
     // Return the indices of the lists that contains reserveParticipation to the reserve name
     std::vector<int> indices;
-    for (int i = 0; i < reserveParticipationsSymmetries().size(); i++)
+    if (reserveParticipationsSymmetries)
     {
-        for (auto reserveParticipation: reserveParticipationsSymmetries().at(i))
+        for (int i = 0; i < reserveParticipationsSymmetries().size(); i++)
         {
-            if (reserveParticipation.reserveName == name)
+            for (auto reserveParticipation: reserveParticipationsSymmetries().at(i))
             {
-                indices.push_back(i);
+                if (reserveParticipation.reserveName == name)
+                {
+                    indices.push_back(i);
+                }
             }
         }
     }
