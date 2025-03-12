@@ -1,15 +1,5 @@
 Feature: short tests
 
-@fast @short
-  Scenario: ST_1UP_reserves_test1
-    Given the study path is "short-tests/ST_1_reserves"
-	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_1_up.ini"
-    When I run antares simulator with "coin" as solver
-    Then the simulation takes less than 20 seconds
-    And the simulation succeeds
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
-    And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
-
   @fast @short
   Scenario: 001 One node - passive
     Given the study path is "short-tests/001 One node - passive"

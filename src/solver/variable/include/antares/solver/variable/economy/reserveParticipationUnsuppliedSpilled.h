@@ -299,12 +299,12 @@ public:
             {
                 // Write the data for the current year
                 Yuni::String caption = reserveUp.first;
-                caption << "_UNSP. ENRG";
+                caption << "_UNSP.";
                 results.variableCaption = caption; // VCardType::Caption();
                 pValuesForTheCurrentYear[numSpace][column++]
                   .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
                 caption = reserveUp.first;
-                caption << "_SPIL. ENRG";
+                caption << "_SPIL.";
                 results.variableCaption = caption; // VCardType::Caption();
                 pValuesForTheCurrentYear[numSpace][column++]
                   .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
@@ -314,12 +314,12 @@ public:
             {
                 // Write the data for the current year
                 Yuni::String caption = reserveDown.first;
-                caption << "_UNSP. ENRG";
+                caption << "_UNSP.";
                 results.variableCaption = caption; // VCardType::Caption();
                 pValuesForTheCurrentYear[numSpace][column++]
                   .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
                 caption = reserveDown.first;
-                caption << "_SPIL. ENRG";
+                caption << "_SPIL.";
                 results.variableCaption = caption; // VCardType::Caption();
                 pValuesForTheCurrentYear[numSpace][column++]
                   .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);

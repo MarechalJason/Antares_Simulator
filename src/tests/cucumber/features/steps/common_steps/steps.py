@@ -104,8 +104,7 @@ def check_lold_value(context, area, date, year, lold_value_mw):
     assert_double_close(lold_value_mw, actual_battery_level, 0.001)
 
 
-@then(
-    'in area "{area}", during year {year:d}, hourly production of "{prod_name}" is always {comparator_and_hourly_prod} MWh')
+@then('in area "{area}", during year {year:d}, hourly production of "{prod_name}" is always {comparator_and_hourly_prod} MWh')
 def check_prod_for_specific_year(context, area, year, prod_name, comparator_and_hourly_prod):
     expected_prod = float(comparator_and_hourly_prod.split(" ")[-1])
     actual_hourly_prod = context.soh.get_hourly_prod_mwh(area, year, prod_name)
@@ -173,3 +172,17 @@ def check_res_participation_for_specific_year_and_cluster_hourly_sum(context, ar
 def check_res_participation_for_specific_year_hour_and_cluster(context, area, year, res, cluster, date, res_part):
     actual_res_part = context.soh.get_res_part_for_date_mwh(area, year, date, res + "_" + cluster)
     assert_double_close(float(actual_res_part), float(res_part), 1e-6)
+    
+@then('in area "{area}", during year {year:d}, for reserve "{res}", reserve unsupplied power is always {comparator_and_unsupplied} MWh')
+def check_res_unsp_for_specific_year_hourly(context, area, year, res, comparator_and_unsupplied):
+    expected_res_unsupplied = float(comparator_and_unsupplied.split(" ")[-1])
+    actual_hourly_res_unsp = context.soh.get_reserve_unsp_energy(area, year, res)
+    if "greater than" in comparator_and_unsupplied:
+        ok = actual_hourly_res_unsp >= expected_res_unsupplied
+    elif "equal to" in comparator_and_unsupplied:
+        ok = abs(actual_hourly_res_unsp - expected_res_unsupplied) <= 1e-6
+    else:
+        raise NotImplementedError(f"Unknown comparator '{comparator_and_unsupplied}'")
+    if "zero or" in comparator_and_unsupplied:
+        ok = ok | (actual_hourly_res_unsp == 0)
+    assert ok.all()
