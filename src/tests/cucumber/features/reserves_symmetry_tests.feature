@@ -2,7 +2,7 @@ Feature: reserves symmetry tests
 
   Scenario: Thermal_cluster_symmetry_test_1
     Given the study path is "short-tests/symmetry_test_1"
-    When I run antares simulator with "xpress" as solver
+    When I run antares simulator
     Then the simulation takes less than 60 seconds
     And the simulation succeeds
     And in area "FRANCE", during year 1, for cluster "therm" and reserve "res_1_up", reserve participation power is always equal to 40 MWh
@@ -14,7 +14,7 @@ Feature: reserves symmetry tests
 
   Scenario: ST_symmetry_test_2
     Given the study path is "short-tests/symmetry_test_2"
-    When I run antares simulator with "xpress" as solver
+    When I run antares simulator
     Then the simulation takes less than 60 seconds
     And the simulation succeeds
     And in area "FRANCE", during year 1, for cluster "st1" and reserve "res_1_up", reserve participation power is always equal to 44 MWh
@@ -25,7 +25,7 @@ Feature: reserves symmetry tests
 
   Scenario: LT_symmetry_test_3
     Given the study path is "short-tests/symmetry_test_3"
-    When I run antares simulator with "xpress" as solver
+    When I run antares simulator
     Then the simulation takes less than 60 seconds
     And the simulation succeeds
     And in area "FRANCE", during year 1, for cluster "LongTermStorage" and reserve "res_1_up", reserve participation power is always equal to 44 MWh
