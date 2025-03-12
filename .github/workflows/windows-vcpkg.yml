@@ -250,6 +250,32 @@ jobs:
         with:
           feature: "features/short_tests.feature"
 
+      - name: Run reserves-tests
+        if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+        uses: ./.github/workflows/run-tests
+        with:
+          simtest-tag: ${{ env.SIMTEST }}
+          batch-name: reserves-tests
+          os: ${{ env.os }}
+  
+      - name: Run cucumber on reserves-tests
+        uses: ./.github/workflows/cucumber-tests
+        with:
+          feature: "features/reserves_tests.feature"
+      
+      - name: Run reserves-symmetry-tests
+        if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+        uses: ./.github/workflows/run-tests
+        with:
+          simtest-tag: ${{ env.SIMTEST }}
+          batch-name: reserves-symmetry-tests
+          os: ${{ env.os }}
+
+      - name: Run cucumber on reserves-symmetry-tests
+        uses: ./.github/workflows/cucumber-tests
+        with:
+          feature: "features/reserves_symmetry_tests.feature"
+          
       - name: Run mps tests
         if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
         uses: ./.github/workflows/run-tests
