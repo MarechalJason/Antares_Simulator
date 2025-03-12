@@ -43,6 +43,7 @@ class study_output_handler:
         absolute_path = os.path.join(self.study_output_path, file_name.replace("/", os.sep))
         return pd.read_csv(absolute_path, header=[0, 1], skiprows=ignore_rows, sep='\t', low_memory=False)
 
+
     def __if_none_then_parse(self, rs: result_type, area, year, file_name: str):
         if self.hourly_results[rs] is None:
             self.hourly_results[rs] = {}
@@ -94,7 +95,7 @@ class study_output_handler:
         return self.__get_values_hourly(area, year)["NP COST"]["Euro"].sum()
 
     def get_reserve_unsp_energy(self, area: str, year: int, res: str) -> float:
-        return self.__get_values_hourly(area, year)[res+"_UNSP."]["MWh"].sum()
+        return self.__get_values_hourly(area, year)[res + "_UNSP."]["MWh"].sum()
 
     def get_reserve_total_participation_for_year_and_cluster(self, area: str, year: int, res: str, cluster: str) -> float:
         return self.__get_details_hourly(area, year)[res + "_" + cluster]["Reserve Participation Power - MWh"].sum()
