@@ -145,6 +145,44 @@ std::vector<std::pair<std::string, std::string>> splitStringIntoPairs(const std:
     return pairs;
 }
 
+std::vector<std::vector<std::string>> parseStringToVectorOfVectorOfStrings(const std::string& input)
+{
+    std::vector<std::vector<std::string>> result;
+    std::string current;
+    std::vector<std::string> currentVector;
+
+    for (char c : input)
+    {
+        if (c == '[')
+        {
+            currentVector.clear();
+        }
+        else if (c == ']')
+        {
+            if (!current.empty())
+            {
+                currentVector.push_back(current);
+                current.clear();
+            }
+            result.push_back(currentVector);
+        }
+        else if (c == ',')
+        {
+            if (!current.empty())
+            {
+                currentVector.push_back(current);
+                current = "";
+            }
+        }
+        else if (!std::isspace(c))
+        {
+            current += c;
+        }
+    }
+
+    return result;
+}
+
 namespace Utils
 {
 

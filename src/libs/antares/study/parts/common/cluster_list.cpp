@@ -402,103 +402,145 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
     {
         return false;
     }
+
+    std::vector<std::reference_wrapper<const IniFile::Section>> clustersSections;
+    std::vector<std::reference_wrapper<const IniFile::Section>> symmetriesSections;
+
+    // Collect sections into clustersSections and symmetriesSections
     ini.each(
       [&](const IniFile::Section& section)
       {
-          std::string tmpClusterName;
-          float tmpMaxPower = 0;
-          float tmpMaxPowerOff = 0;
-          float tmpParticipationCost = 0;
-          float tmpParticipationCostOff = 0;
-          for (auto* p = section.firstProperty; p; p = p->next)
+          if (section.name == "symmetries")
           {
-              CString<30, false> tmp;
-              tmp = p->key;
-              tmp.toLower();
-
-              if (tmp == "cluster-name")
-              {
-                  TransformNameIntoID(p->value, tmpClusterName);
-              }
-              else if (tmp == "max-power")
-              {
-                  if (!p->value.to<float>(tmpMaxPower))
-                  {
-                      logs.warning()
-                        << area.name << ": invalid max power for reserve " << section.name;
-                  }
-              }
-              else if (tmp == "participation-cost")
-              {
-                  if (!p->value.to<float>(tmpParticipationCost))
-                  {
-                      logs.warning()
-                        << area.name << ": invalid participation cost for reserve " << section.name;
-                  }
-              }
-              else if (tmp == "max-power-off")
-              {
-                  if (!p->value.to<float>(tmpMaxPowerOff))
-                  {
-                      logs.warning()
-                        << area.name << ": invalid max power off for reserve " << section.name;
-                  }
-              }
-              else if (tmp == "participation-cost-off")
-              {
-                  if (!p->value.to<float>(tmpParticipationCostOff))
-                  {
-                      logs.warning() << area.name << ": invalid participation cost off for reserve "
-                                     << section.name;
-                  }
-              }
-          }
-          auto reserve = area.allCapacityReservations().getReserveByName(section.name);
-          auto cluster = area.thermal.list.getClusterByName(tmpClusterName);
-          if (reserve && cluster)
-          {
-              bool isClusterMustRun = false;
-              for (const auto& clusterMustRun: area.thermal.list.each_mustrun_and_enabled())
-              {
-                  if (clusterMustRun->id() == cluster.value().get()->id())
-                  {
-                      isClusterMustRun = true;
-                      break;
-                  }
-              }
-              if (!isClusterMustRun)
-              {
-                  ThermalClusterReserveParticipation tmpReserveParticipation{
-                    reserve.value(),
-                    tmpMaxPower,
-                    tmpParticipationCost,
-                    tmpMaxPowerOff,
-                    tmpParticipationCostOff};
-
-                  cluster.value().get()->addReserveParticipation(section.name,
-                                                                 tmpReserveParticipation);
-              }
-              else
-              {
-                  logs.warning() << area.name << " : " << tmpClusterName
-                                 << " is mustrun and is participating in capacity reservation "
-                                 << section.name << ", ignored.";
-              }
+              symmetriesSections.emplace_back(section);
           }
           else
           {
-              if (!reserve)
-              {
-                  logs.warning() << area.name << ": does not contains this reserve "
-                                 << section.name;
-              }
-              if (!cluster)
-              {
-                  logs.warning() << area.name << ": does not contains this cluster "
-                                 << tmpClusterName;
-              }
+              clustersSections.emplace_back(section);
           }
       });
+
+    // Process clusters reserves participations
+    for (const auto& section: clustersSections)
+    {
+        std::string tmpClusterName;
+        float tmpMaxPower = 0;
+        float tmpMaxPowerOff = 0;
+        float tmpParticipationCost = 0;
+        float tmpParticipationCostOff = 0;
+
+        for (auto* p = section.get().firstProperty; p; p = p->next)
+        {
+            CString<30, false> tmp;
+            tmp = p->key;
+            tmp.toLower();
+
+            if (tmp == "cluster-name")
+            {
+                TransformNameIntoID(p->value, tmpClusterName);
+            }
+            else if (tmp == "max-power")
+            {
+                if (!p->value.to<float>(tmpMaxPower))
+                {
+                    logs.warning()
+                      << area.name << ": invalid max power for reserve " << section.get().name;
+                }
+            }
+            else if (tmp == "participation-cost")
+            {
+                if (!p->value.to<float>(tmpParticipationCost))
+                {
+                    logs.warning() << area.name << ": invalid participation cost for reserve "
+                                   << section.get().name;
+                }
+            }
+            else if (tmp == "max-power-off")
+            {
+                if (!p->value.to<float>(tmpMaxPowerOff))
+                {
+                    logs.warning()
+                      << area.name << ": invalid max power off for reserve " << section.get().name;
+                }
+            }
+            else if (tmp == "participation-cost-off")
+            {
+                if (!p->value.to<float>(tmpParticipationCostOff))
+                {
+                    logs.warning() << area.name << ": invalid participation cost off for reserve "
+                                   << section.get().name;
+                }
+            }
+        }
+
+        auto cluster = area.thermal.list.getClusterByName(tmpClusterName);
+        auto reserve = area.allCapacityReservations().getReserveByName(section.get().name);
+        if (reserve && cluster)
+        {
+            bool isClusterMustRun = false;
+            for (const auto& clusterMustRun: area.thermal.list.each_mustrun_and_enabled())
+            {
+                if (clusterMustRun->id() == cluster.value().get()->id())
+                {
+                    isClusterMustRun = true;
+                    break;
+                }
+            }
+            if (!isClusterMustRun)
+            {
+                ThermalClusterReserveParticipation tmpReserveParticipation{reserve.value(),
+                                                                           tmpMaxPower,
+                                                                           tmpParticipationCost,
+                                                                           tmpMaxPowerOff,
+                                                                           tmpParticipationCostOff};
+                cluster.value().get()->addReserveParticipation(section.get().name,
+                                                               tmpReserveParticipation);
+            }
+            else
+            {
+                logs.warning() << area.name << " : " << tmpClusterName
+                               << " is mustrun and is participating in capacity reservation "
+                               << section.get().name << ", ignored.";
+            }
+        }
+        else
+        {
+            if (!reserve)
+            {
+                logs.warning() << area.name << ": does not contain this reserve "
+                               << section.get().name;
+            }
+            if (!cluster)
+            {
+                logs.warning() << area.name << ": does not contain this cluster " << tmpClusterName;
+            }
+        }
+    }
+
+    // Process symmetries
+    for (const auto& section: symmetriesSections)
+    {
+        for (auto* p = section.get().firstProperty; p; p = p->next)
+        {
+            std::string tmpClusterName;
+            TransformNameIntoID(p->key, tmpClusterName);
+            auto symmetries = Antares::parseStringToVectorOfVectorOfStrings(p->value);
+            for (auto& sym: symmetries)
+            {
+                auto cluster = area.thermal.list.getClusterByName(tmpClusterName);
+                if (cluster)
+                {
+                    cluster.value().get()->addReserveParticipationSymmetry(sym);
+                }
+                else
+                {
+                    logs.warning() << "Thermal cluster " << tmpClusterName
+                                   << " is not participating to reserves of area " << area.name;
+                }
+            }
+        }
+    }
+
     return true;
 }
 

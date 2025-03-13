@@ -186,6 +186,19 @@ static void importShortTermStorages(
                           = areaClusterParticipationIndex;
                         areaReserves.areaCapacityReservationsUp[areaReserveIdx]
                           .AllSTStorageReservesParticipation.emplace(idx, reserveParticipation);
+                        for (const auto& symIdx: cluster.symmetricalIndices(reserveName))
+                        {
+                            if (areaReserves.STStorageReservesParticipationSymmetries[idx].size()
+                                <= symIdx)
+                            {
+                                areaReserves.STStorageReservesParticipationSymmetries[idx].resize(
+                                  cluster.getNbSymGroups());
+                            }
+                            areaReserves.STStorageReservesParticipationSymmetries[idx][symIdx]
+                              .push_back({reserveName,
+                                          areaReserves.areaCapacityReservationsUp[areaReserveIdx]
+                                            .AllSTStorageReservesParticipation[idx]});
+                        }
                         globalSTStorageClusterParticipationIndex++;
                         areaClusterParticipationIndex++;
                     }
@@ -216,6 +229,19 @@ static void importShortTermStorages(
                           = areaClusterParticipationIndex;
                         areaReserves.areaCapacityReservationsDown[areaReserveIdx]
                           .AllSTStorageReservesParticipation.emplace(idx, reserveParticipation);
+                        for (const auto& symIdx: cluster.symmetricalIndices(reserveName))
+                        {
+                            if (areaReserves.STStorageReservesParticipationSymmetries[idx].size()
+                                <= symIdx)
+                            {
+                                areaReserves.STStorageReservesParticipationSymmetries[idx].resize(
+                                  cluster.getNbSymGroups());
+                            }
+                            areaReserves.STStorageReservesParticipationSymmetries[idx][symIdx]
+                              .push_back({reserveName,
+                                          areaReserves.areaCapacityReservationsDown[areaReserveIdx]
+                                            .AllSTStorageReservesParticipation[idx]});
+                        }
                         globalSTStorageClusterParticipationIndex++;
                         areaClusterParticipationIndex++;
                     }
@@ -257,7 +283,19 @@ static void importLongTermStoragesReserves(AreaList& areas, PROBLEME_HEBDO& prob
                     reserveParticipation.areaIndexClusterParticipation
                       = areaClusterParticipationIndex;
                     areaReserves.areaCapacityReservationsUp[areaReserveIdx]
-                      .AllLTStorageReservesParticipation.push_back(reserveParticipation);
+                      .AllLTStorageReservesParticipation.push_back(std::ref(reserveParticipation));
+                    for (const auto& symIdx: ltStorage.symmetricalIndices(reserveName))
+                    {
+                        if (areaReserves.LTStorageReservesParticipationSymmetries.size() <= symIdx)
+                        {
+                            areaReserves.LTStorageReservesParticipationSymmetries.resize(
+                              ltStorage.getNbSymGroups());
+                        }
+                        areaReserves.LTStorageReservesParticipationSymmetries[symIdx].push_back(
+                          {reserveName,
+                           areaReserves.areaCapacityReservationsUp[areaReserveIdx]
+                             .AllLTStorageReservesParticipation.back()});
+                    }
                     globalLTStorageClusterParticipationIndex++;
                     areaClusterParticipationIndex++;
                 }
@@ -280,7 +318,19 @@ static void importLongTermStoragesReserves(AreaList& areas, PROBLEME_HEBDO& prob
                     reserveParticipation.areaIndexClusterParticipation
                       = areaClusterParticipationIndex;
                     areaReserves.areaCapacityReservationsDown[areaReserveIdx]
-                      .AllLTStorageReservesParticipation.push_back(reserveParticipation);
+                      .AllLTStorageReservesParticipation.push_back(std::ref(reserveParticipation));
+                    for (const auto& symIdx: ltStorage.symmetricalIndices(reserveName))
+                    {
+                        if (areaReserves.LTStorageReservesParticipationSymmetries.size() <= symIdx)
+                        {
+                            areaReserves.LTStorageReservesParticipationSymmetries.resize(
+                              ltStorage.getNbSymGroups());
+                        }
+                        areaReserves.LTStorageReservesParticipationSymmetries[symIdx].push_back(
+                          {reserveName,
+                           areaReserves.areaCapacityReservationsDown[areaReserveIdx]
+                             .AllLTStorageReservesParticipation.back()});
+                    }
                     globalLTStorageClusterParticipationIndex++;
                     areaClusterParticipationIndex++;
                 }
@@ -570,6 +620,21 @@ void SIM_InitialisationProblemeHebdo(Data::Study& study,
                         areaReserves.areaCapacityReservationsUp[areaReserveIdx]
                           .AllThermalReservesParticipation.emplace(cluster->index,
                                                                    reserveParticipation);
+                        for (const auto& symIdx: cluster->symmetricalIndices(reserveName))
+                        {
+                            if (areaReserves.ThermalReservesParticipationSymmetries[cluster->index]
+                                  .size()
+                                <= symIdx)
+                            {
+                                areaReserves.ThermalReservesParticipationSymmetries[cluster->index]
+                                  .resize(cluster->getNbSymGroups());
+                            }
+                            areaReserves
+                              .ThermalReservesParticipationSymmetries[cluster->index][symIdx]
+                              .push_back({reserveName,
+                                          areaReserves.areaCapacityReservationsUp[areaReserveIdx]
+                                            .AllThermalReservesParticipation[cluster->index]});
+                        }
                         globalThermalClusterParticipationIndex++;
                         areaClusterParticipationIndex++;
                     }
@@ -597,6 +662,21 @@ void SIM_InitialisationProblemeHebdo(Data::Study& study,
                         areaReserves.areaCapacityReservationsDown[areaReserveIdx]
                           .AllThermalReservesParticipation.emplace(cluster->index,
                                                                    reserveParticipation);
+                        for (const auto& symIdx: cluster->symmetricalIndices(reserveName))
+                        {
+                            if (areaReserves.ThermalReservesParticipationSymmetries[cluster->index]
+                                  .size()
+                                <= symIdx)
+                            {
+                                areaReserves.ThermalReservesParticipationSymmetries[cluster->index]
+                                  .resize(cluster->getNbSymGroups());
+                            }
+                            areaReserves
+                              .ThermalReservesParticipationSymmetries[cluster->index][symIdx]
+                              .push_back({reserveName,
+                                          areaReserves.areaCapacityReservationsDown[areaReserveIdx]
+                                            .AllThermalReservesParticipation[cluster->index]});
+                        }
                         globalThermalClusterParticipationIndex++;
                         areaClusterParticipationIndex++;
                     }

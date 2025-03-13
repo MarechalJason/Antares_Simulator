@@ -46,6 +46,7 @@
 #include "antares/solver/optimisation/constraints/STStockLevelReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/STTurbiningCapacityThreasholds.h"
 #include "antares/solver/optimisation/constraints/STTurbiningMaxReserve.h"
+#include "antares/solver/optimisation/constraints/SymmetryReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/ThermalReserveParticipation.h"
 
 ReserveParticipationGroup::ReserveParticipationGroup(PROBLEME_HEBDO* problemeHebdo,
@@ -92,6 +93,8 @@ void ReserveParticipationGroup::BuildConstraints()
         LTPumpingMaxReserve LTPumpingMaxReserve(builder_, data);
         LTReserveUpParticipation LTReserveUpParticipation(builder_, data);
         LTReserveDownParticipation LTReserveDownParticipation(builder_, data);
+
+        SymmetryReserveParticipation symmetryReserveParticipation(builder_, data);
 
         for (int pdt = 0; pdt < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; pdt++)
         {
@@ -147,6 +150,18 @@ void ReserveParticipationGroup::BuildConstraints()
                             thermalReserveParticipation.add(pays, reserve, clusterId, pdt, false);
                         }
                         reserve++;
+                    }
+
+                    // Thermal cluster Symmetries
+                    for (const auto& [clusterId, symmetries]:
+                         data.areaReserves[pays].ThermalReservesParticipationSymmetries)
+                    {
+                        // Add symmetry constraint between first element and all others
+                        for (const auto& symmetry: symmetries)
+                        {
+                            // 18
+                            symmetryReserveParticipation.add(pays, symmetry, pdt);
+                        }
                     }
                 }
 
@@ -219,6 +234,17 @@ void ReserveParticipationGroup::BuildConstraints()
                         }
                         reserve++;
                     }
+
+                    // ShortTerm Storage cluster Symmetries
+                    for (const auto& [clusterId, symmetries]:
+                         data.areaReserves[pays].STStorageReservesParticipationSymmetries)
+                    {
+                        for (const auto& symmetry: symmetries)
+                        {
+                            // 18
+                            symmetryReserveParticipation.add(pays, symmetry, pdt);
+                        }
+                    }
                 }
 
                 // LongTerm Storage reserve participations
@@ -289,6 +315,13 @@ void ReserveParticipationGroup::BuildConstraints()
                               false);
                         }
                         reserve++;
+                    }
+                    // LongTerm Storage Symmetries
+                    for (const auto& symmetry:
+                         data.areaReserves[pays].LTStorageReservesParticipationSymmetries)
+                    {
+                        // 18
+                        symmetryReserveParticipation.add(pays, symmetry, pdt);
                     }
                 }
             }

@@ -364,6 +364,13 @@ struct CAPACITY_RESERVATION
     int areaReserveIndex;
 };
 
+template<typename T>
+struct RESERVE_PARTICIPATION_WITH_RESERVE_NAME
+{
+    std::string reserveName;
+    std::reference_wrapper<T> reserveParticipation;
+};
+
 // Vector size is number of reserves up or down
 struct AREA_RESERVES_VECTOR
 {
@@ -373,6 +380,18 @@ struct AREA_RESERVES_VECTOR
     int maxGlobalActivationDurationDown = 0;
     std::vector<CAPACITY_RESERVATION> areaCapacityReservationsUp;
     std::vector<CAPACITY_RESERVATION> areaCapacityReservationsDown;
+    std::map<
+      /*area_clusterId*/ int,
+      std::vector<
+        std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_THERMAL>>>>
+      ThermalReservesParticipationSymmetries;
+    std::map</*area_clusterId*/ int,
+             std::vector<std::vector<
+               RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_STSTORAGE>>>>
+      STStorageReservesParticipationSymmetries;
+    std::vector<
+      std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_LTSTORAGE>>>
+      LTStorageReservesParticipationSymmetries;
 };
 
 struct PALIERS_THERMIQUES

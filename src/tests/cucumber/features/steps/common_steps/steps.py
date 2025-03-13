@@ -176,7 +176,7 @@ def check_res_participation_for_specific_year_hour_and_cluster(context, area, ye
 @then('in area "{area}", during year {year:d}, for reserve "{res}", reserve unsupplied power is always {comparator_and_unsupplied} MWh')
 def check_res_unsp_for_specific_year_hourly(context, area, year, res, comparator_and_unsupplied):
     expected_res_unsupplied = float(comparator_and_unsupplied.split(" ")[-1])
-    actual_hourly_res_unsp = context.soh.get_reserve_unsp_energy(area, year, res)
+    actual_hourly_res_unsp = context.soh.get_hourly_reserve_unsp_energy(area, year, res)
     if "greater than" in comparator_and_unsupplied:
         ok = actual_hourly_res_unsp >= expected_res_unsupplied
     elif "equal to" in comparator_and_unsupplied:
