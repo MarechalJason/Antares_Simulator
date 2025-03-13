@@ -1,7 +1,7 @@
 Feature: reserves symmetry tests
 
   Scenario: Thermal_cluster_symmetry_test_1
-    Given the study path is "short-tests/symmetry_test_1"
+    Given the study path is "reserves_tests/symmetry_test_1"
     When I run antares simulator
     Then the simulation takes less than 60 seconds
     And the simulation succeeds
@@ -13,7 +13,7 @@ Feature: reserves symmetry tests
     And in area "FRANCE", unsupplied energy on "2 JAN 09:00" of year 1 is of 40 MW
 
   Scenario: ST_symmetry_test_2
-    Given the study path is "short-tests/symmetry_test_2"
+    Given the study path is "reserves_tests/symmetry_test_2"
     When I run antares simulator
     Then the simulation takes less than 60 seconds
     And the simulation succeeds
@@ -24,7 +24,7 @@ Feature: reserves symmetry tests
     And in area "FRANCE", unsupplied energy on "2 JAN 09:00" of year 1 is of 100 MW
 
   Scenario: LT_symmetry_test_3
-    Given the study path is "short-tests/symmetry_test_3"
+    Given the study path is "reserves_tests/symmetry_test_3"
     When I run antares simulator
     Then the simulation takes less than 60 seconds
     And the simulation succeeds

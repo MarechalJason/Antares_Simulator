@@ -2,9 +2,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test1
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_1_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
@@ -13,9 +13,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test2
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_2_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -23,9 +23,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test3
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_3_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -33,9 +33,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test4
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_4_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -43,9 +43,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test5
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_5_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -53,9 +53,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test6
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_6_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -63,9 +63,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test7
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_7_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -73,9 +73,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test8
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_8_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
@@ -83,9 +83,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1UP_reserves_test9
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_9_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
@@ -93,9 +93,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test1
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_1_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
@@ -104,9 +104,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test2
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_2_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -114,9 +114,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test3
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_3_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -124,9 +124,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test4
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_4_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16800 MWh
@@ -134,9 +134,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test5
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_5_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -144,9 +144,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test6
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_6_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -154,9 +154,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test7
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_7_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -164,9 +164,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test8
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_8_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
@@ -174,9 +174,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_1DOWN_reserves_test9
-    Given the study path is "short-tests/ST_1_reserves"
+    Given the study path is "reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_9_down.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
@@ -184,9 +184,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_2UP_reserves_test1
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_1_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -196,9 +196,9 @@ Feature: reserves tests
 	
 @fast @short
   Scenario: ST_2UP_reserves_test2
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_2_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -208,9 +208,9 @@ Feature: reserves tests
 	
 @fast @short
   Scenario: ST_2UP_reserves_test3
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_3_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -220,9 +220,9 @@ Feature: reserves tests
 	
 @fast @short
   Scenario: ST_2UP_reserves_test4
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_4_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -232,9 +232,9 @@ Feature: reserves tests
 	
 @fast @short
   Scenario: ST_2UP_reserves_test5
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_5_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -243,9 +243,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_2UP_reserves_test6
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_6_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -254,9 +254,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_2UP_reserves_test7
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_7_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -266,9 +266,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_2UP_reserves_test8
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_8_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -278,9 +278,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_2UP_reserves_test9
-    Given the study path is "short-tests/ST_2_reserves"
+    Given the study path is "reserves_tests/ST_2_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_9_double_up.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 8400 MWh
@@ -290,9 +290,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_3UP_unavailable_reserves_test1
-    Given the study path is "short-tests/ST_3_reserves"
+    Given the study path is "reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_1.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33400 MWh
@@ -302,9 +302,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_3UP_unavailable_reserves_test2
-    Given the study path is "short-tests/ST_3_reserves"
+    Given the study path is "reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_2.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 32800 MWh
@@ -316,9 +316,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_3UP_unavailable_reserves_test3
-    Given the study path is "short-tests/ST_3_reserves"
+    Given the study path is "reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_3.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 32800 MWh
@@ -330,9 +330,9 @@ Feature: reserves tests
 
 @fast @short
   Scenario: ST_3UP_unavailable_reserves_test4
-    Given the study path is "short-tests/ST_3_reserves"
+    Given the study path is "reserves_tests/ST_3_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_4.ini"
-    When I run antares simulator
+    When I run antares simulator with "xpress" as solver
     Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 16400 MWh
