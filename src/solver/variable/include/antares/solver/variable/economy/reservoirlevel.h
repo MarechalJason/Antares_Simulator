@@ -86,7 +86,7 @@ struct VCardReservoirLevel
     static constexpr uint8_t isPossiblyNonApplicable = 1;
 
     typedef IntermediateValues IntermediateValuesBaseType;
-    typedef IntermediateValues* IntermediateValuesType;
+    typedef std::vector<IntermediateValues> IntermediateValuesType;
 
     typedef IntermediateValuesBaseType* IntermediateValuesTypeForSpatialAg;
 
@@ -131,18 +131,13 @@ public:
     };
 
 public:
-    ~ReservoirLevel()
-    {
-        delete[] pValuesForTheCurrentYear;
-    }
-
     void initializeFromStudy(Data::Study& study)
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
 
         InitializeResultsFromStudy(AncestorType::pResults, study);
 
-        pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
@@ -161,6 +156,7 @@ public:
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         // Next
+        pReservoirCapacity = area->hydro.reservoirCapacity;
         NextType::initializeFromArea(study, area);
     }
 
@@ -235,7 +231,8 @@ public:
         pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = state.hourlyResults
                                                                          ->HydroUsage
                                                                            [state.hourInTheWeek]
-                                                                         .niveauxHoraires;
+                                                                         .niveauxHoraires
+                                                                       / pReservoirCapacity * 100.;
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
@@ -270,6 +267,7 @@ private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     unsigned int pNbYearsParallel;
+    double pReservoirCapacity;
 
 }; // class HydroLevel
 

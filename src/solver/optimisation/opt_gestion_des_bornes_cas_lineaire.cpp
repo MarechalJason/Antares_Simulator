@@ -442,7 +442,10 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaire(PROBLEME_HEBDO* prob
                 Xmax[var] = problemeHebdo->CaracteristiquesHydrauliques[pays]
                               .ApportNaturelHoraire[pdtHebdo];
                 AdresseOuPlacerLaValeurDesCoutsReduits[var] = nullptr;
-                AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
+                AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = &problemeHebdo
+                                                                        ->ResultatsHoraires[pays]
+                                                                        .HydroUsage[pdtHebdo]
+                                                                        .debordementsHoraires;
             }
 
             var = variableManager.HydroLevel(pays, pdtJour);

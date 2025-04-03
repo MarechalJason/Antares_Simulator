@@ -70,25 +70,6 @@ void DispatchableMarginPostProcessCmd::execute(const optRuntimeData& opt_runtime
 }
 
 // -----------------------------
-//  Hydro levels update
-// -----------------------------
-HydroLevelsUpdatePostProcessCmd::HydroLevelsUpdatePostProcessCmd(PROBLEME_HEBDO* problemeHebdo,
-                                                                 AreaList& areas,
-                                                                 bool remixWasRun,
-                                                                 bool computeAnyway):
-    basePostProcessCommand(problemeHebdo),
-    area_list_(areas),
-    remixWasRun_(remixWasRun),
-    computeAnyway_(computeAnyway)
-{
-}
-
-void HydroLevelsUpdatePostProcessCmd::execute(const optRuntimeData&)
-{
-    computingHydroLevels(area_list_, *problemeHebdo_, remixWasRun_, computeAnyway_);
-}
-
-// -----------------------------
 //  Remix Hydro
 // -----------------------------
 RemixHydroPostProcessCmd::RemixHydroPostProcessCmd(PROBLEME_HEBDO* problemeHebdo,
@@ -142,6 +123,18 @@ void UpdateMrgPriceAfterCSRcmd::execute(const optRuntimeData&)
         {
             const bool isHourTriggeredByCsr = problemeHebdo_->adequacyPatchRuntimeData
                                                 ->wasCSRTriggeredAtAreaHour(Area, hour);
+
+            // IF UNSP. ENR CSR == 0, MRG. PRICE CSR = MRG. PRICE
+            // ELSE, MRG. PRICE CSR = “Unsupplied Energy Cost”
+            if (hourlyResults.ValeursHorairesDeDefaillancePositiveCSR[hour] > 0.5 && areaInside)
+            {
+                hourlyResults.CoutsMarginauxHorairesCSR[hour] = -unsuppliedEnergyCost;
+            }
+            else
+            {
+                hourlyResults.CoutsMarginauxHorairesCSR[hour] = hourlyResults
+                                                                  .CoutsMarginauxHoraires[hour];
+            }
 
             if (isHourTriggeredByCsr
                 && hourlyResults.ValeursHorairesDeDefaillancePositive[hour] > 0.5 && areaInside)

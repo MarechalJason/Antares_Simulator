@@ -78,8 +78,8 @@ set(SRC_VARIABLE_ECONOMY
         include/antares/solver/variable/economy/links.h
 
         # Variables for Economy
-		include/antares/solver/variable/economy/max-mrg-utils.h
-		max-mrg-utils.cpp
+        include/antares/solver/variable/economy/max-mrg-utils.h
+        max-mrg-utils.cpp
         include/antares/solver/variable/economy/max-mrg.h
         include/antares/solver/variable/economy/price.h
         include/antares/solver/variable/economy/balance.h
@@ -100,6 +100,7 @@ set(SRC_VARIABLE_ECONOMY
         include/antares/solver/variable/economy/STStorageCashFlowByCluster.h
         include/antares/solver/variable/economy/unsupliedEnergy.h
         include/antares/solver/variable/economy/unsupliedEnergyCsr.h
+        include/antares/solver/variable/economy/priceCSR.h
         include/antares/solver/variable/economy/domesticUnsuppliedEnergy.h
         include/antares/solver/variable/economy/localMatchingRuleViolations.h
         include/antares/solver/variable/economy/dtgMarginAfterCsr.h
@@ -108,6 +109,7 @@ set(SRC_VARIABLE_ECONOMY
         include/antares/solver/variable/economy/renewableGeneration.h
         include/antares/solver/variable/economy/thermalAirPollutantEmissions.h
         include/antares/solver/variable/economy/productionByDispatchablePlant.h
+        include/antares/solver/variable/economy/minDispatchableGenByPlant.h
         include/antares/solver/variable/economy/productionByRenewablePlant.h
         include/antares/solver/variable/economy/npCostByDispatchablePlant.h
         include/antares/solver/variable/economy/nbOfDispatchedUnitsByPlant.h
@@ -145,7 +147,7 @@ set(SRC_VARIABLE_ECONOMY
         include/antares/solver/variable/economy/links/congestionFeeAbs.h
         include/antares/solver/variable/economy/links/marginalCost.h
         include/antares/solver/variable/economy/links/congestionProbability.h
-		include/antares/solver/variable/economy/overallCostCsr.h
+        include/antares/solver/variable/economy/overallCostCsr.h
 
         # Binding constraints
         include/antares/solver/variable/economy/bindingConstraints/bindingConstraintsMarginalCost.h

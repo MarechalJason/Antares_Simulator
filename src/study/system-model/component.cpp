@@ -52,7 +52,8 @@ static void checkComponentDataValidity(const ComponentData& data)
     {
         if (!data.parameter_values.contains(param))
         {
-            throw std::invalid_argument("The component \"" + data.id + "\" has no value for parameter '" + param + "'");
+            throw std::invalid_argument("The component \"" + data.id
+                                        + "\" has no value for parameter '" + param + "'");
         }
     }
 }
@@ -95,7 +96,7 @@ ComponentBuilder& ComponentBuilder::withModel(const Model* model)
  * \return Reference to the ComponentBuilder object.
  */
 ComponentBuilder& ComponentBuilder::withParameterValues(
-  std::map<std::string, double> parameter_values)
+  std::map<std::string, Expressions::Visitors::ParameterTypeAndValue> parameter_values)
 {
     data_.parameter_values = std::move(parameter_values);
     return *this;

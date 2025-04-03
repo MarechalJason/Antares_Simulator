@@ -27,6 +27,7 @@
 
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 #include "antares/solver/utils/optimization_statistics.h"
+#include "antares/solver/simulation/OptimalHydroUsage.h"
 #include "antares/study/fwd.h"
 #include "antares/study/study.h"
 
@@ -235,7 +236,7 @@ struct PROPERTIES
     bool penalizeVariationInjection;
 
     std::shared_ptr<Antares::Data::ShortTermStorage::Series> series;
-    std::vector<Antares::Data::ShortTermStorage::AdditionalConstraint> additional_constraints;
+    std::vector<Antares::Data::ShortTermStorage::AdditionalConstraints> additionalConstraints;
     int clusterGlobalIndex;
     std::string name;
 };
@@ -487,19 +488,6 @@ struct PRODUCTION_THERMIQUE_OPTIMALE
     std::vector<double> NombreDeGroupesQuiTombentEnPanneDuPalier;
 };
 
-struct OPTIMAL_HYDRO_USAGE
-{
-    double PompageHoraire;
-    double TurbinageHoraire;
-
-    double niveauxHoraires;
-    double valeurH2oHoraire;
-
-    double debordementsHoraires;
-
-    ReserveOpt<std::vector<double>> reserveParticipationOfCluster; // MWh
-};
-
 class computeTimeStepLevel
 {
 private:
@@ -581,6 +569,7 @@ struct RESULTATS_HORAIRES
     std::vector<double> ValeursHorairesDeDefaillanceNegative;
 
     std::vector<double> CoutsMarginauxHoraires;
+    std::vector<double> CoutsMarginauxHorairesCSR;
     std::vector<PRODUCTION_THERMIQUE_OPTIMALE> ProductionThermique; // index is pdtHebdo
     std::vector<OPTIMAL_HYDRO_USAGE> HydroUsage;                    // index is pdtHebdo
 
@@ -651,6 +640,8 @@ struct PROBLEME_HEBDO
     std::vector<double> CoutDeDefaillancePositive;
     std::vector<double> CoutDeDefaillanceNegative;
 
+    std::vector<double> CoutDeDebordement;
+
     std::vector<PALIERS_THERMIQUES> PaliersThermiquesDuPays;
     std::vector<ENERGIES_ET_PUISSANCES_HYDRAULIQUES> CaracteristiquesHydrauliques;
 
@@ -684,6 +675,7 @@ struct PROBLEME_HEBDO
     bool exportMPSOnError = false;
     bool ExportStructure = false;
     bool NamedProblems = false;
+    bool exportSolutions = false;
 
     uint32_t HeureDansLAnnee = 0;
     bool LeProblemeADejaEteInstancie = false;

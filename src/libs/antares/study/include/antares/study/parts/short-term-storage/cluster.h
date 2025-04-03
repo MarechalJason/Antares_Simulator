@@ -25,10 +25,11 @@
 #include <string>
 
 #include <antares/inifile/inifile.h>
+#include <antares/study/version.h>
 #include <antares/study/area/ReserveOpt.h>
 #include <antares/study/area/capacityReservation.h>
 
-#include "AdditionalConstraint.h"
+#include "additionalConstraints.h"
 #include "properties.h"
 #include "series.h"
 
@@ -48,11 +49,11 @@ public:
 
     bool enabled() const;
 
-    bool validate() const;
+    bool validate(StudyVersion studyVersion) const;
 
     bool loadFromSection(const IniFile::Section& section);
 
-    bool loadSeries(const std::filesystem::path& folder) const;
+    bool loadSeries(const std::filesystem::path& folder, StudyVersion studyVersion) const;
 
     void saveProperties(IniFile& ini) const;
 
@@ -85,7 +86,7 @@ public:
 
     std::shared_ptr<Series> series = std::make_shared<Series>();
     mutable Properties properties;
-    std::vector<AdditionalConstraint> additional_constraints;
+    std::vector<AdditionalConstraints> additionalConstraints;
 
     //! \brief Map of reserve participations
     ReserveOpt<std::map<Data::ReserveName, STStorageClusterReserveParticipation>>

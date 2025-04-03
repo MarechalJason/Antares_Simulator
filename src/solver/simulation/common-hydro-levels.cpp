@@ -118,14 +118,14 @@ void interpolateWaterValue(const Data::AreaList& areas,
         double reservoirCapacity = area->hydro.reservoirCapacity;
 
         weeklyResults.HydroUsage[0].valeurH2oHoraire = Data::getWaterValue(
-          problem.previousSimulationFinalLevel[index] * 100 / reservoirCapacity,
+          100 * problem.previousSimulationFinalLevel[index] / reservoirCapacity,
           area->hydro.waterValues,
           weekFirstDay);
 
         for (uint h = 1; h < nbHoursInAWeek; h++)
         {
             weeklyResults.HydroUsage[h].valeurH2oHoraire = Data::getWaterValue(
-              weeklyResults.HydroUsage[h - 1].niveauxHoraires,
+              100 * weeklyResults.HydroUsage[h - 1].niveauxHoraires / reservoirCapacity,
               area->hydro.waterValues,
               daysOfWeek[h / 24]);
         }
@@ -148,8 +148,7 @@ void updatingWeeklyFinalHydroLevel(const Data::AreaList& areas, PROBLEME_HEBDO& 
         RESULTATS_HORAIRES& weeklyResults = problem.ResultatsHoraires[index];
 
         problem.previousSimulationFinalLevel[index] = weeklyResults.HydroUsage[nbHoursInAWeek - 1]
-                                                        .niveauxHoraires
-                                                      * reservoirCapacity / 100;
+                                                        .niveauxHoraires;
     }
 }
 

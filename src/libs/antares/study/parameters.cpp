@@ -208,7 +208,7 @@ const char* SimulationModeToCString(SimulationMode mode)
     }
 }
 
-const char* CompatibilityHydroPmaxToCString(Parameters::Compatibility::HydroPmax mode)
+const char* CompatibilityHydroPmaxToCString(const Parameters::Compatibility::HydroPmax mode)
 {
     switch (mode)
     {
@@ -401,6 +401,7 @@ void Parameters::reset()
 
     include.exportMPS = mpsExportStatus::NO_EXPORT;
     include.exportStructure = false;
+    include.exportSolutions = false;
     namedProblems = false;
 
     include.unfeasibleProblemBehavior = UnfeasibleProblemBehavior::ERROR_MPS;
@@ -752,6 +753,11 @@ static bool SGDIntLoadFamily_Optimization(Parameters& d,
             return false;
         }
         return true;
+    }
+
+    if (key == "include-export-solutions")
+    {
+        return value.to<bool>(d.include.exportSolutions);
     }
 
     if (key == "include-exportstructure")
@@ -1806,6 +1812,10 @@ void Parameters::prepareForSimulation(const StudyLoadOptions& options)
     {
         logs.info() << "  :: ignoring hurdle costs";
     }
+    if (!include.exportSolutions)
+    {
+        logs.info() << "  :: ignoring solution export";
+    }
 
     logs.info() << "  :: solver " << options.optOptions.ortoolsSolver
                 << " is used for problem resolution";
@@ -1925,7 +1935,9 @@ void Parameters::saveToINI(IniFile& ini) const
         section->add("include-primaryreserve", include.reserve.primary);
 
         section->add("include-exportmps", mpsExportStatusToString(include.exportMPS));
+
         section->add("include-exportstructure", include.exportStructure);
+        section->add("include-export-solutions", include.exportSolutions);
 
         // Unfeasible problem behavior
         section->add("include-unfeasible-problem-behavior",

@@ -85,6 +85,8 @@ void SIM_AllocationProblemeDonneesGenerales(PROBLEME_HEBDO& problem,
     problem.CoutDeDefaillancePositive.assign(nbPays, 0);
     problem.CoutDeDefaillanceNegative.assign(nbPays, 0);
 
+    problem.CoutDeDebordement.assign(nbPays, 0);
+
     problem.NumeroDeContrainteEnergieHydraulique.assign(nbPays, 0);
     problem.NumeroDeContrainteMinEnergieHydraulique.assign(nbPays, 0);
     problem.NumeroDeContrainteMaxEnergieHydraulique.assign(nbPays, 0);
@@ -574,6 +576,7 @@ void SIM_AllocateAreas(PROBLEME_HEBDO& problem,
                                                                                  0.);
 
         problem.ResultatsHoraires[k].CoutsMarginauxHoraires.assign(NombreDePasDeTemps, 0.);
+        problem.ResultatsHoraires[k].CoutsMarginauxHorairesCSR.assign(NombreDePasDeTemps, 0.);
 
         problem.PaliersThermiquesDuPays[k].PuissanceDisponibleEtCout.resize(nbPaliers);
         problem.ResultatsHoraires[k].ProductionThermique.resize(NombreDePasDeTemps);

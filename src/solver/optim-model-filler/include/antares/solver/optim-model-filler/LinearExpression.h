@@ -21,11 +21,66 @@
 
 #pragma once
 
-#include <map>
 #include <string>
+#include <unordered_map>
+
+#include <antares/solver/optim-model-filler/FullKey.h>
 
 namespace Antares::Optimization
 {
+
+template<typename T>
+struct IdentityFunction
+{
+    const T& operator()(const T& t)
+    {
+        return t;
+    }
+};
+
+using FullKeyMap = std::unordered_map<FullKey, double, FullKeyHash>;
+
+/**
+ * Element-wise sum of two [string, double] maps, preceded an element-wise multiplication of the
+ * right-hand-side map. Keys that do not exist in one of the two maps are considered to have a zero
+ * value. For every key: value = left_value + rhs_multiplier * right_value
+ * @param left The left hand side map
+ * @param right The right hand side map
+ * @return The map resulting from the operation
+ */
+template<typename Key,
+         typename Value,
+         typename UnaryOp = IdentityFunction<Value>,
+         typename HashType = std::hash<Key>>
+std::unordered_map<Key, Value, HashType> add_maps(
+  const std::unordered_map<Key, Value, HashType>& left,
+  const std::unordered_map<Key, Value, HashType>& right,
+  UnaryOp op = IdentityFunction<Value>{})
+{
+    auto result(left);
+    for (auto [key, value]: right)
+    {
+        if (result.contains(key))
+        {
+            result[key] += op(value);
+        }
+        else
+        {
+            result[key] = op(value);
+        }
+    }
+    return result;
+}
+
+/**
+ * Element-wise multiplication of a map by a scale.
+ * For every key: final_value = scale * initial_value
+ * @param map The [string, double] map to scale
+ * @param scale The scale
+ * @return The scaled map
+ */
+FullKeyMap scale_map(const FullKeyMap& map, double scale);
+
 /**
  * Linear Expression
  * Represents an expression that is linear in regard to an optimization problem's variables.
@@ -40,7 +95,7 @@ public:
     LinearExpression() = default;
     /// Build a linear expression with a given offset and a given map of non-zero coefficients per
     /// variable ID
-    LinearExpression(double offset, std::map<std::string, double> coef_per_var);
+    LinearExpression(double offset, FullKeyMap coef_per_var);
     /// Sum two linear expressions
     LinearExpression operator+(const LinearExpression& other) const;
     /// Subtract two linear expressions
@@ -52,22 +107,19 @@ public:
     /// Only first expression can have non-zero coefficients, otherwise the result cannot be linear
     LinearExpression operator/(const LinearExpression& other) const;
     /// Multiply linear expression by -1
-    LinearExpression negate() const;
+    LinearExpression operator-() const;
 
     /// Get the offset
-    double offset() const
-    {
-        return offset_;
-    }
+    double offset() const;
 
     /// Get the non-zero coefficients per variable ID
-    std::map<std::string, double> coefPerVar() const
-    {
-        return coef_per_var_;
-    }
+    const FullKeyMap& coefPerVar() const;
+
+    LinearExpression& operator+=(const LinearExpression& value);
 
 private:
     double offset_ = 0;
-    std::map<std::string, double> coef_per_var_;
+    FullKeyMap coef_per_var_;
 };
+
 } // namespace Antares::Optimization
