@@ -34,7 +34,12 @@ def run_antares(context):
     context.named_mps_problems = False
     context.parallel = False
     run_simulation(context)
-
+    
+@when('I run antares simulator with "{solver}" as solver')
+def run_antares_custom_solver(context, solver):
+    context.named_mps_problems = False
+    context.parallel = False
+    run_simulation(context, solver)
 
 @then('the simulation succeeds')
 def simu_success(context):

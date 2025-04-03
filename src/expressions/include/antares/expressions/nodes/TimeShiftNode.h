@@ -18,29 +18,21 @@
 ** You should have received a copy of the Mozilla Public Licence 2.0
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
-#include <antares/expressions/nodes/SumNode.h>
+#pragma once
+
+#include "antares/expressions/nodes/BinaryNode.h"
 
 namespace Antares::Expressions::Nodes
 {
 
-SumNode::SumNode(const std::vector<Node*>& operands):
-    operands_(operands)
+class TimeShiftNode: public BinaryNode
 {
-}
+public:
+    using BinaryNode::BinaryNode;
 
-const std::vector<Node*>& SumNode::getOperands() const
-{
-    return operands_;
-}
-
-size_t SumNode::size() const
-{
-    return operands_.size();
-}
-
-Node* SumNode::operator[](std::size_t idx) const
-{
-    return operands_[idx];
-}
-
+    std::string name() const override
+    {
+        return "TimeShiftNode";
+    }
+};
 } // namespace Antares::Expressions::Nodes
