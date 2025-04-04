@@ -255,20 +255,24 @@ void AllVariablesPrintInfo::computeMaxColumnsCountInReports()
 
 void AllVariablesPrintInfo::countSelectedAreaVars()
 {
-    numberSelectedAreaVariables = std::count_if(
-      allVarsPrintInfo.begin(),
-      allVarsPrintInfo.end(),
-      [](auto& p)
-      { return p.second.isPrinted() && p.second.isPrintedOnDataLevel(Category::DataLevel::area); });
+    numberSelectedAreaVariables = std::count_if(allVarsPrintInfo.begin(),
+                                                allVarsPrintInfo.end(),
+                                                [](auto& p) {
+                                                    return p.second.isPrinted()
+                                                           && p.second.isPrintedOnDataLevel(
+                                                             Category::DataLevel::area);
+                                                });
 }
 
 void AllVariablesPrintInfo::countSelectedLinkVars()
 {
-    numberSelectedLinkVariables = std::count_if(
-      allVarsPrintInfo.begin(),
-      allVarsPrintInfo.end(),
-      [](auto& p)
-      { return p.second.isPrinted() && p.second.isPrintedOnDataLevel(Category::DataLevel::link); });
+    numberSelectedLinkVariables = std::count_if(allVarsPrintInfo.begin(),
+                                                allVarsPrintInfo.end(),
+                                                [](auto& p) {
+                                                    return p.second.isPrinted()
+                                                           && p.second.isPrintedOnDataLevel(
+                                                             Category::DataLevel::link);
+                                                });
 }
 
 } // namespace Antares::Data

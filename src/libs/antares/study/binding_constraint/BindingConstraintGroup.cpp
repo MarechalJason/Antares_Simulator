@@ -53,8 +53,7 @@ unsigned BindingConstraintGroup::numberOfTimeseries() const
         return 0;
     }
     auto it = std::ranges::max_element(constraints_,
-                                       [](const auto& a, const auto& b)
-                                       {
+                                       [](const auto& a, const auto& b) {
                                            return a->RHSTimeSeries().width
                                                   < b->RHSTimeSeries().width;
                                        });

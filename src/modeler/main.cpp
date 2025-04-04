@@ -124,8 +124,7 @@ int main(int argc, const char** argv)
           [](const auto& component)
           {
               return std::ranges::any_of(component.getModel()->Variables() | std::views::values,
-                                         [](const auto& variable)
-                                         {
+                                         [](const auto& variable) {
                                              return variable.Type()
                                                     != Study::SystemModel::ValueType::FLOAT;
                                          });

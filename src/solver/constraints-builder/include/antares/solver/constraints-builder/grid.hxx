@@ -322,16 +322,14 @@ bool Grid<NodeT>::getDuplicatedGrid(Grid<NodeT>& grid)
         { //+
             auto nodeOrigIT = std::find_if(grid.pNodesList.begin(),
                                            grid.pNodesList.end(),
-                                           [&e](const NodeP& nodeP) -> bool
-                                           {
+                                           [&e](const NodeP& nodeP) -> bool {
                                                return nodeP->getName()
                                                       == (*e)->getOrigin()->getName() + "+";
                                            });
 
             auto nodeDestIT = std::find_if(grid.pNodesList.begin(),
                                            grid.pNodesList.end(),
-                                           [&e](const NodeP& nodeP) -> bool
-                                           {
+                                           [&e](const NodeP& nodeP) -> bool {
                                                return nodeP->getName()
                                                       == (*e)->getDestination()->getName() + "+";
                                            });
@@ -342,16 +340,14 @@ bool Grid<NodeT>::getDuplicatedGrid(Grid<NodeT>& grid)
         { //-
             auto nodeOrigIT = std::find_if(grid.pNodesList.begin(),
                                            grid.pNodesList.end(),
-                                           [&e](const NodeP& nodeP) -> bool
-                                           {
+                                           [&e](const NodeP& nodeP) -> bool {
                                                return nodeP->getName()
                                                       == (*e)->getOrigin()->getName() + "-";
                                            });
 
             auto nodeDestIT = std::find_if(grid.pNodesList.begin(),
                                            grid.pNodesList.end(),
-                                           [&e](const NodeP& nodeP) -> bool
-                                           {
+                                           [&e](const NodeP& nodeP) -> bool {
                                                return nodeP->getName()
                                                       == (*e)->getDestination()->getName() + "-";
                                            });
@@ -383,16 +379,14 @@ bool Grid<NodeT>::cloneGrid(Grid<NodeT>& grid)
         { //+
             auto nodeOrigIT = std::find_if(grid.pNodesList.begin(),
                                            grid.pNodesList.end(),
-                                           [&e](const NodeP& nodeP) -> bool
-                                           {
+                                           [&e](const NodeP& nodeP) -> bool {
                                                return nodeP->getName()
                                                       == (*e)->getOrigin()->getName();
                                            });
 
             auto nodeDestIT = std::find_if(grid.pNodesList.begin(),
                                            grid.pNodesList.end(),
-                                           [&e](const NodeP& nodeP) -> bool
-                                           {
+                                           [&e](const NodeP& nodeP) -> bool {
                                                return nodeP->getName()
                                                       == (*e)->getDestination()->getName();
                                            });

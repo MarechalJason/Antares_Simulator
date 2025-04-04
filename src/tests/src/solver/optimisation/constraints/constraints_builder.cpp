@@ -452,7 +452,7 @@ void SetupProblemHebdo(PROBLEME_HEBDO& problemeHebdo,
     // Setup short term storage data
     problemeHebdo.ShortTermStorage.resize(numberOfAreas);
     problemeHebdo.NombreDePays = numberOfAreas;
-    problemeHebdo.OptimisationAvecCoutsDeDemarrage = false;
+    problemeHebdo.OptimisationNotFastMode = false;
     problemeHebdo.NombreDePasDeTempsDUneJournee = 24;
     problemeHebdo.NombreDePasDeTempsPourUneOptimisation = 24;
     problemeHebdo.NombreDeContraintesCouplantes = 0;

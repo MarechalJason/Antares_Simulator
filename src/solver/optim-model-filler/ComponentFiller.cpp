@@ -73,8 +73,7 @@ void VariablesBulkAddition::addVariable(const std::vector<double>& lb,
       dim,
       key,
       [this, &lb, ub, integer, offset](const TimeAndScenario& timeAndScenario,
-                                       const std::string& name)
-      {
+                                       const std::string& name) {
           return linear_problem_.addVariable(lb[timeAndScenario.timestep - offset],
                                              ub,
                                              integer,
@@ -100,8 +99,7 @@ void VariablesBulkAddition::addVariable(double lb,
       dim,
       key,
       [this, lb, &ub, integer, offset](const TimeAndScenario& timeAndScenario,
-                                       const std::string& name)
-      {
+                                       const std::string& name) {
           return linear_problem_.addVariable(lb,
                                              ub[timeAndScenario.timestep - offset],
                                              integer,
