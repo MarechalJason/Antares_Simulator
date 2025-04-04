@@ -12,7 +12,7 @@ on:
       - doc/*
       - dependabot/*
   schedule:
-    - cron: '21 2 * * *'
+    - cron: "21 2 * * *"
   workflow_call:
     inputs:
       run-tests:
@@ -29,10 +29,8 @@ env:
   RUN_EXTENDED_TESTS: ${{ github.event_name == 'schedule' || inputs.run-tests == 'true' }}
   REF: ${{ inputs.target_branch =='' && github.ref || inputs.target_branch}}
 
-
 jobs:
   build:
-
     env:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -46,7 +44,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.REF }}
@@ -104,8 +101,8 @@ jobs:
         uses: actions/setup-python@v5
         id: setup-python
         with:
-          architecture: 'x64'
-          python-version: '3.12'
+          architecture: "x64"
+          python-version: "3.12"
 
       - name: Install pip dependencies if necessary
         run: pip install -r src/tests/examples/requirements.txt
@@ -168,7 +165,6 @@ jobs:
         uses: ./.github/workflows/cucumber-tests
         with:
           feature: "features/modeler-features"
-
 
       - name: Run unfeasibility-related tests
         if: ${{ env.RUN_SIMPLE_TESTS == 'true' && ! cancelled() }}
@@ -254,16 +250,16 @@ jobs:
           batch-name: short-tests
           os: ${{ env.os }}
 
-          - name: Run cucumber on v9.2 tests
-          if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
-          uses: ./.github/workflows/cucumber-tests
-          with:
-            feature: "features/solver-features/tests_for_v9.2.feature"
-        
-        - name : Run cucumber on reserves tests
-          uses : ./.github/workflows/cucumber-tests
-          with:
-            feature: "features/solver-features/reserves"
+      - name: Run cucumber on v9.2 tests
+        if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+        uses: ./.github/workflows/cucumber-tests
+        with:
+          feature: "features/solver-features/tests_for_v9.2.feature"
+
+      - name: Run cucumber on reserves tests
+        uses: ./.github/workflows/cucumber-tests
+        with:
+          feature: "features/solver-features/reserves"
 
       - name: Run mps tests
         if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
@@ -327,7 +323,6 @@ jobs:
           simtest-tag: ${{ env.SIMTEST }}
           batch-name: long-tests-3
           os: ${{ env.os }}
-
 
       - name: Barrier
         if: ${{ !success() }}
