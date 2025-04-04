@@ -67,7 +67,6 @@ bool checkAllElementsIdenticalOrOne(std::vector<std::pair<unsigned, std::string>
 } // namespace Utils
 } // namespace Antares
 
-
 #include "utils.hxx"
 
 #endif // __ANTARES_LIBS_UTILS_H__

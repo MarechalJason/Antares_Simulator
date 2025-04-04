@@ -138,7 +138,9 @@ void STStorageCluster::addReserveParticipationSymmetry(std::vector<Data::Reserve
     {
         if (clusterReservesParticipations().contains(name))
         {
-            symmetryRes.push_back(STStorageClusterReserveParticipationWithName{clusterReservesParticipations().at(name), name});
+            symmetryRes.push_back(
+              STStorageClusterReserveParticipationWithName{clusterReservesParticipations().at(name),
+                                                           name});
         }
         else
         {
@@ -169,7 +171,8 @@ std::vector<int> STStorageCluster::symmetricalIndices(Data::ReserveName name) co
     return indices;
 }
 
-int STStorageCluster::getNbSymGroups(){
+int STStorageCluster::getNbSymGroups()
+{
     return reserveParticipationsSymmetries().size();
 }
 

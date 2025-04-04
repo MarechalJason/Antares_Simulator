@@ -4,26 +4,25 @@
 #include <tuple>
 #include <vector>
 
-#include "antares/solver/simulation/OptimalHydroUsage.h"
-
 namespace Antares::Solver::Simulation
 {
 
 struct RemixHydroOutput
 {
-    std::vector<OPTIMAL_HYDRO_USAGE> hydroUsage;
+    std::vector<double> HydroGen;
     std::vector<double> UnsupE;
+    std::vector<double> levels;
 
     // Allow std::tie(a, b, c) = remixHydroOutput;
-    inline operator std::tuple<std::vector<OPTIMAL_HYDRO_USAGE>&, std::vector<double>&>()
+    inline operator std::tuple<std::vector<double>&, std::vector<double>&, std::vector<double>&>()
 
     {
-        return {hydroUsage, UnsupE};
+        return {HydroGen, UnsupE, levels};
     }
 };
 
 RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGen,
-                                           const std::vector<OPTIMAL_HYDRO_USAGE>& hydroUsage,
+                                           const std::vector<double>& HydroGen,
                                            const std::vector<double>& UnsupE,
                                            const std::vector<double>& HydroPmax,
                                            const std::vector<double>& HydroPmin,
@@ -32,6 +31,8 @@ RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGe
                                            double efficiency,
                                            bool reservoirManagement,
                                            const std::vector<double>& inflow,
+                                           const std::vector<double>& overflow,
+                                           const std::vector<double>& pump,
                                            const std::vector<double>& Spillage,
                                            const std::vector<double>& DTG_MRG);
 

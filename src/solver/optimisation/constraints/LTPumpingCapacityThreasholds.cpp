@@ -1,4 +1,4 @@
-﻿#include "antares/solver/optimisation/constraints/LTPumpingCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/LTPumpingCapacityThreasholds.h"
 
 void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
 {

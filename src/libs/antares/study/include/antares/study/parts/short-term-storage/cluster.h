@@ -25,9 +25,9 @@
 #include <string>
 
 #include <antares/inifile/inifile.h>
-#include <antares/study/version.h>
 #include <antares/study/area/ReserveOpt.h>
 #include <antares/study/area/capacityReservation.h>
+#include <antares/study/version.h>
 
 #include "additionalConstraints.h"
 #include "properties.h"
@@ -93,8 +93,7 @@ public:
       clusterReservesParticipations;
 
     //! \brief List of reserve participations symmetries
-    ReserveOpt<
-      std::vector<std::vector<STStorageClusterReserveParticipationWithName>>>
+    ReserveOpt<std::vector<std::vector<STStorageClusterReserveParticipationWithName>>>
       reserveParticipationsSymmetries;
 };
 } // namespace Antares::Data::ShortTermStorage

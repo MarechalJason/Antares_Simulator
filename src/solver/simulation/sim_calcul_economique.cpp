@@ -159,7 +159,6 @@ static void importShortTermStorages(
                 }
             }
 
-
             toInsert.clusterGlobalIndex = clusterGlobalIndex;
             toInsert.series = st.series;
 

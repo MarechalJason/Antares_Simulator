@@ -151,7 +151,7 @@ std::vector<std::vector<std::string>> parseStringToVectorOfVectorOfStrings(const
     std::string current;
     std::vector<std::string> currentVector;
 
-    for (char c : input)
+    for (char c: input)
     {
         if (c == '[')
         {

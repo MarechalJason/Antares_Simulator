@@ -1,4 +1,4 @@
-﻿#include "antares/solver/optimisation/constraints/LTReserveUpParticipation.h"
+#include "antares/solver/optimisation/constraints/LTReserveUpParticipation.h"
 
 void LTReserveUpParticipation::add(int pays, int reserve, int cluster, int pdt)
 {

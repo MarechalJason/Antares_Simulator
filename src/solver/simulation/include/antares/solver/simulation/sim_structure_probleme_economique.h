@@ -27,7 +27,6 @@
 
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 #include "antares/solver/utils/optimization_statistics.h"
-#include "antares/solver/simulation/OptimalHydroUsage.h"
 #include "antares/study/fwd.h"
 #include "antares/study/study.h"
 
@@ -486,6 +485,19 @@ struct PRODUCTION_THERMIQUE_OPTIMALE
     std::vector<double> NombreDeGroupesQuiSArretentDuPalier;
 
     std::vector<double> NombreDeGroupesQuiTombentEnPanneDuPalier;
+};
+
+struct OPTIMAL_HYDRO_USAGE
+{
+    double PompageHoraire;
+    double TurbinageHoraire;
+
+    double niveauxHoraires;
+    double valeurH2oHoraire;
+
+    double debordementsHoraires;
+
+    ReserveOpt<std::vector<double>> reserveParticipationOfCluster; // MWh
 };
 
 class computeTimeStepLevel

@@ -128,7 +128,9 @@ void Cluster::addReserveParticipationSymmetry(std::vector<Data::ReserveName> nam
     {
         if (clusterReservesParticipations().contains(name))
         {
-            symmetryRes.push_back(ThermalClusterReserveParticipationWithName{clusterReservesParticipations().at(name), name});
+            symmetryRes.push_back(
+              ThermalClusterReserveParticipationWithName{clusterReservesParticipations().at(name),
+                                                         name});
         }
         else
         {
@@ -146,7 +148,7 @@ std::vector<int> Cluster::symmetricalIndices(Data::ReserveName name) const
     {
         for (int i = 0; i < reserveParticipationsSymmetries().size(); i++)
         {
-            for (auto reserveParticipation : reserveParticipationsSymmetries().at(i))
+            for (auto reserveParticipation: reserveParticipationsSymmetries().at(i))
             {
                 if (reserveParticipation.reserveName == name)
                 {
@@ -155,11 +157,12 @@ std::vector<int> Cluster::symmetricalIndices(Data::ReserveName name) const
             }
         }
     }
-    
+
     return indices;
 }
 
-int Cluster::getNbSymGroups(){
+int Cluster::getNbSymGroups()
+{
     return reserveParticipationsSymmetries().size();
 }
 

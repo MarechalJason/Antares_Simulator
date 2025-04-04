@@ -75,10 +75,10 @@ public:
                                                 const std::string& clusterName,
                                                 const std::string& reserveName);
     void SetThermalClusterAndReservesElementName(unsigned int variable,
-                                                const std::string& elementType,
-                                                const std::string& clusterName,
-                                                const std::string& reserveName1,
-                                                const std::string& reserveName2);
+                                                 const std::string& elementType,
+                                                 const std::string& clusterName,
+                                                 const std::string& reserveName1,
+                                                 const std::string& reserveName2);
     void SetSTStorageClusterElementName(unsigned int variable,
                                         const std::string& variableType,
                                         const std::string& clusterName);

@@ -1,4 +1,4 @@
-﻿#include "antares/solver/optimisation/constraints/LTPumpingMaxReserve.h"
+#include "antares/solver/optimisation/constraints/LTPumpingMaxReserve.h"
 
 void LTPumpingMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
 {

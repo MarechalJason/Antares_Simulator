@@ -272,42 +272,42 @@ static void RunAccurateShavePeaks(const Data::AreaList& areas,
       {
           auto& weeklyResults = problem.ResultatsHoraires[area.index];
 
-         /* const auto load = extractLoadForCurrentWeek(area, problem.year, firstHourOfWeek);
-          auto& unsupE = weeklyResults.ValeursHorairesDeDefaillancePositive;
-          auto& hydroGen = weeklyResults.TurbinageHoraire;
-          auto& levels = weeklyResults.niveauxHoraires;
-          const auto DispatchGen = computeTotalGenWithoutHydro(load, unsupE, hydroGen);
-          const auto& hydroPmax = problem.CaracteristiquesHydrauliques[area.index]
-                                    .ContrainteDePmaxHydrauliqueHoraire;
-          const auto hydroPmin = extractHydroPmin(area, problem.year, firstHourOfWeek);
-          const double initLevel = problem.CaracteristiquesHydrauliques[area.index]
-                                     .NiveauInitialReservoir;
-          const double capacity = area.hydro.reservoirCapacity;
-          const double efficiency = area.hydro.pumpingEfficiency;
-          const bool reservoirManagement = area.hydro.reservoirManagement;
-          const auto& inflows = problem.CaracteristiquesHydrauliques[area.index]
-                                  .ApportNaturelHoraire;
-          const auto& ovf = weeklyResults.debordementsHoraires;
-          const auto& pump = weeklyResults.PompageHoraire;
-          const auto& spillage = weeklyResults.ValeursHorairesDeDefaillanceNegative;
+          /* const auto load = extractLoadForCurrentWeek(area, problem.year, firstHourOfWeek);
+           auto& unsupE = weeklyResults.ValeursHorairesDeDefaillancePositive;
+           auto& hydroGen = weeklyResults.TurbinageHoraire;
+           auto& levels = weeklyResults.niveauxHoraires;
+           const auto DispatchGen = computeTotalGenWithoutHydro(load, unsupE, hydroGen);
+           const auto& hydroPmax = problem.CaracteristiquesHydrauliques[area.index]
+                                     .ContrainteDePmaxHydrauliqueHoraire;
+           const auto hydroPmin = extractHydroPmin(area, problem.year, firstHourOfWeek);
+           const double initLevel = problem.CaracteristiquesHydrauliques[area.index]
+                                      .NiveauInitialReservoir;
+           const double capacity = area.hydro.reservoirCapacity;
+           const double efficiency = area.hydro.pumpingEfficiency;
+           const bool reservoirManagement = area.hydro.reservoirManagement;
+           const auto& inflows = problem.CaracteristiquesHydrauliques[area.index]
+                                   .ApportNaturelHoraire;
+           const auto& ovf = weeklyResults.debordementsHoraires;
+           const auto& pump = weeklyResults.PompageHoraire;
+           const auto& spillage = weeklyResults.ValeursHorairesDeDefaillanceNegative;
 
-          const auto& dtgMrgArray = area.scratchpad[numSpace].dispatchableGenerationMargin;
-          const std::vector<double> dtgMrg(dtgMrgArray, dtgMrgArray + HOURS_IN_WEEK);
+           const auto& dtgMrgArray = area.scratchpad[numSpace].dispatchableGenerationMargin;
+           const std::vector<double> dtgMrg(dtgMrgArray, dtgMrgArray + HOURS_IN_WEEK);
 
-          std::tie(hydroGen, unsupE, levels) = shavePeaksByRemixingHydro(DispatchGen,
-                                                                         hydroGen,
-                                                                         unsupE,
-                                                                         hydroPmax,
-                                                                         hydroPmin,
-                                                                         initLevel,
-                                                                         capacity,
-                                                                         efficiency,
-                                                                         reservoirManagement,
-                                                                         inflows,
-                                                                         ovf,
-                                                                         pump,
-                                                                         spillage,
-                                                                         dtgMrg);*/
+           std::tie(hydroGen, unsupE, levels) = shavePeaksByRemixingHydro(DispatchGen,
+                                                                          hydroGen,
+                                                                          unsupE,
+                                                                          hydroPmax,
+                                                                          hydroPmin,
+                                                                          initLevel,
+                                                                          capacity,
+                                                                          efficiency,
+                                                                          reservoirManagement,
+                                                                          inflows,
+                                                                          ovf,
+                                                                          pump,
+                                                                          spillage,
+                                                                          dtgMrg);*/
       });
 }
 

@@ -48,42 +48,42 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
         builder
           .ThermalClusterReserveParticipation(
             refIndex,
-            1/reserveParticipationRefWithName.reserveParticipation.get().maxPower)
+            1 / reserveParticipationRefWithName.reserveParticipation.get().maxPower)
           .ThermalClusterReserveParticipation(
             targetIndex,
-            -1/reserveParticipationWithName.reserveParticipation.get().maxPower);
+            -1 / reserveParticipationWithName.reserveParticipation.get().maxPower);
     }
     else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_STSTORAGE>)
     {
         builder
           .STStorageTurbiningClusterReserveParticipation(
             refIndex,
-            1/reserveParticipationRefWithName.reserveParticipation.get().maxTurbining)
+            1 / reserveParticipationRefWithName.reserveParticipation.get().maxTurbining)
           .STStorageTurbiningClusterReserveParticipation(
             targetIndex,
-            -1/reserveParticipationWithName.reserveParticipation.get().maxTurbining)
+            -1 / reserveParticipationWithName.reserveParticipation.get().maxTurbining)
           .STStoragePumpingClusterReserveParticipation(
             refIndex,
-            1/reserveParticipationRefWithName.reserveParticipation.get().maxPumping)
+            1 / reserveParticipationRefWithName.reserveParticipation.get().maxPumping)
           .STStoragePumpingClusterReserveParticipation(
             targetIndex,
-            -1/reserveParticipationWithName.reserveParticipation.get().maxPumping);
+            -1 / reserveParticipationWithName.reserveParticipation.get().maxPumping);
     }
     else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_LTSTORAGE>)
     {
         builder
           .LTStorageTurbiningClusterReserveParticipation(
             refIndex,
-            1/reserveParticipationRefWithName.reserveParticipation.get().maxTurbining)
+            1 / reserveParticipationRefWithName.reserveParticipation.get().maxTurbining)
           .LTStorageTurbiningClusterReserveParticipation(
             targetIndex,
-            -1/reserveParticipationWithName.reserveParticipation.get().maxTurbining)
+            -1 / reserveParticipationWithName.reserveParticipation.get().maxTurbining)
           .LTStoragePumpingClusterReserveParticipation(
             refIndex,
-            1/reserveParticipationRefWithName.reserveParticipation.get().maxPumping)
+            1 / reserveParticipationRefWithName.reserveParticipation.get().maxPumping)
           .LTStoragePumpingClusterReserveParticipation(
             targetIndex,
-            -1/reserveParticipationWithName.reserveParticipation.get().maxPumping);
+            -1 / reserveParticipationWithName.reserveParticipation.get().maxPumping);
     }
 }
 
@@ -107,16 +107,16 @@ void SymmetryReserveParticipation::setupConstraintNamer(
 }
 
 template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_THERMAL>(
-    int,
-    const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_THERMAL>>&,
-    int);
+  int,
+  const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_THERMAL>>&,
+  int);
 
 template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_STSTORAGE>(
-    int,
-    const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_STSTORAGE>>&,
-    int);
+  int,
+  const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_STSTORAGE>>&,
+  int);
 
 template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_LTSTORAGE>(
-    int,
-    const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_LTSTORAGE>>&,
-    int);
+  int,
+  const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_LTSTORAGE>>&,
+  int);

@@ -8,8 +8,6 @@ target_sources(shave-peaks-by-remix-hydro
 target_include_directories(shave-peaks-by-remix-hydro
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/solver/simulation/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libs/antares/study/include>
 )
 #
 # Simulation
@@ -25,7 +23,6 @@ set(SRC_SIMULATION
         include/antares/solver/simulation/solver.h
         include/antares/solver/simulation/solver.hxx
         include/antares/solver/simulation/timeseries-numbers.h
-        include/antares/solver/simulation/OptimalHydroUsage.h
         timeseries-numbers.cpp
         include/antares/solver/simulation/apply-scenario.h
         apply-scenario.cpp

@@ -14,7 +14,7 @@ namespace Antares::Solver::Simulation
 
 int find_min_index(const std::vector<double>& TotalGen,
                    const std::vector<double>& OutUnsupE,
-                   const std::vector<OPTIMAL_HYDRO_USAGE>& OutHydroUsage,
+                   const std::vector<double>& OutHydroGen,
                    const std::vector<bool>& triedBottom,
                    const std::vector<double>& HydroPmax,
                    const std::vector<bool>& enabledHours,
@@ -24,8 +24,7 @@ int find_min_index(const std::vector<double>& TotalGen,
     int min_hour = -1;
     for (unsigned int h = 0; h < TotalGen.size(); ++h)
     {
-        if (OutUnsupE[h] > 0 && OutHydroUsage[h].TurbinageHoraire < HydroPmax[h] && !triedBottom[h]
-            && enabledHours[h])
+        if (OutUnsupE[h] > 0 && OutHydroGen[h] < HydroPmax[h] && !triedBottom[h] && enabledHours[h])
         {
             if (TotalGen[h] < min_val)
             {
@@ -38,7 +37,7 @@ int find_min_index(const std::vector<double>& TotalGen,
 }
 
 int find_max_index(const std::vector<double>& TotalGen,
-                   const std::vector<OPTIMAL_HYDRO_USAGE>& OutHydroUsage,
+                   const std::vector<double>& OutHydroGen,
                    const std::vector<bool>& triedPeak,
                    const std::vector<double>& HydroPmin,
                    const std::vector<bool>& enabledHours,
@@ -49,8 +48,8 @@ int find_max_index(const std::vector<double>& TotalGen,
     int max_hour = -1;
     for (unsigned int h = 0; h < TotalGen.size(); ++h)
     {
-        if (OutHydroUsage[h].TurbinageHoraire > HydroPmin[h] && TotalGen[h] >= ref_value + eps
-            && !triedPeak[h] && enabledHours[h])
+        if (OutHydroGen[h] > HydroPmin[h] && TotalGen[h] >= ref_value + eps && !triedPeak[h]
+            && enabledHours[h])
         {
             if (TotalGen[h] > max_val)
             {
@@ -82,14 +81,17 @@ bool operator>=(const std::vector<double>& v, const double c)
 }
 
 void checkInputCorrectness(const std::vector<double>& DispatchGen,
-                           const std::vector<OPTIMAL_HYDRO_USAGE>& hydroUsage,
+                           const std::vector<double>& HydroGen,
                            const std::vector<double>& UnsupE,
+                           const std::vector<double>& levels,
                            const std::vector<double>& HydroPmax,
                            const std::vector<double>& HydroPmin,
                            double initialLevel,
                            double reservoirCapacity,
                            bool reservoirManagement,
                            const std::vector<double>& inflows,
+                           const std::vector<double>& overflow,
+                           const std::vector<double>& pump,
                            const std::vector<double>& Spillage,
                            const std::vector<double>& DTG_MRG)
 {
@@ -102,11 +104,14 @@ void checkInputCorrectness(const std::vector<double>& DispatchGen,
     }
     // Arrays sizes must be identical
     std::vector<size_t> sizes = {DispatchGen.size(),
-                                 hydroUsage.size(),
+                                 HydroGen.size(),
                                  UnsupE.size(),
+                                 levels.size(),
                                  HydroPmax.size(),
                                  HydroPmin.size(),
                                  inflows.size(),
+                                 overflow.size(),
+                                 pump.size(),
                                  Spillage.size(),
                                  DTG_MRG.size()};
 
@@ -121,23 +126,15 @@ void checkInputCorrectness(const std::vector<double>& DispatchGen,
         throw std::invalid_argument(msg_prefix + "all arrays of sizes 0");
     }
 
-    bool allValid = std::all_of(hydroUsage.begin(),
-                                hydroUsage.end(),
-                                [&HydroPmax, i = 0](const OPTIMAL_HYDRO_USAGE& usage) mutable
-                                { return usage.TurbinageHoraire <= HydroPmax[i++]; });
     // Hydro production < Pmax
-    if (!allValid)
+    if (!(HydroGen <= HydroPmax))
     {
         throw std::invalid_argument(msg_prefix
                                     + "Hydro generation not smaller than Pmax everywhere");
     }
 
-    allValid = std::all_of(hydroUsage.begin(),
-                           hydroUsage.end(),
-                           [&HydroPmin, i = 0](const OPTIMAL_HYDRO_USAGE& usage) mutable
-                           { return usage.TurbinageHoraire >= HydroPmin[i++]; });
     // Hydro production > Pmin
-    if (!allValid)
+    if (!(HydroPmin <= HydroGen))
     {
         throw std::invalid_argument(msg_prefix
                                     + "Hydro generation not greater than Pmin everywhere");
@@ -145,14 +142,8 @@ void checkInputCorrectness(const std::vector<double>& DispatchGen,
 
     if (reservoirManagement)
     {
-        if (!std::ranges::all_of(hydroUsage,
-                                 [&reservoirCapacity](const OPTIMAL_HYDRO_USAGE& usage)
-                                 {
-                                     return usage.niveauxHoraires
-                                              <= reservoirCapacity + RESERVOIR_LEVEL_TOLERANCE
-                                            && usage.niveauxHoraires
-                                                 >= reservoirCapacity - RESERVOIR_LEVEL_TOLERANCE;
-                                 }))
+        if (!(levels <= reservoirCapacity + RESERVOIR_LEVEL_TOLERANCE)
+            || !(levels >= -RESERVOIR_LEVEL_TOLERANCE))
         {
             throw std::invalid_argument(
               msg_prefix + "levels computed from input don't respect reservoir bounds");
@@ -162,7 +153,7 @@ void checkInputCorrectness(const std::vector<double>& DispatchGen,
 } // namespace
 
 RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGen,
-                                           const std::vector<OPTIMAL_HYDRO_USAGE>& hydroUsage,
+                                           const std::vector<double>& HydroGen,
                                            const std::vector<double>& UnsupE,
                                            const std::vector<double>& HydroPmax,
                                            const std::vector<double>& HydroPmin,
@@ -171,52 +162,51 @@ RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGe
                                            double pumpingEfficiency,
                                            bool reservoirManagement,
                                            const std::vector<double>& inflows,
+                                           const std::vector<double>& overflow,
+                                           const std::vector<double>& pump,
                                            const std::vector<double>& Spillage,
                                            const std::vector<double>& DTG_MRG)
 {
     std::vector<double> levels(DispatchGen.size());
     if (!levels.empty() && reservoirManagement)
     {
-        levels[0] = initialLevel + inflows[0] - hydroUsage[0].debordementsHoraires
-                    + pumpingEfficiency * hydroUsage[0].PompageHoraire
-                    - hydroUsage[0].TurbinageHoraire;
+        levels[0] = initialLevel + inflows[0] - overflow[0] + pumpingEfficiency * pump[0]
+                    - HydroGen[0];
         for (size_t h = 1; h < levels.size(); ++h)
         {
-            levels[h] = levels[h - 1] + inflows[h] - hydroUsage[h].debordementsHoraires
-                        + pumpingEfficiency * hydroUsage[h].PompageHoraire
-                        - hydroUsage[h].TurbinageHoraire;
+            levels[h] = levels[h - 1] + inflows[h] - overflow[h] + pumpingEfficiency * pump[h]
+                        - HydroGen[h];
         }
     }
 
     checkInputCorrectness(DispatchGen,
-                          hydroUsage,
+                          HydroGen,
                           UnsupE,
+                          levels,
                           HydroPmax,
                           HydroPmin,
                           initialLevel,
                           reservoirCapacity,
                           reservoirManagement,
                           inflows,
+                          overflow,
+                          pump,
                           Spillage,
                           DTG_MRG);
 
-    std::vector<OPTIMAL_HYDRO_USAGE> OutHydroUsage = hydroUsage;
+    std::vector<double> OutHydroGen = HydroGen;
     std::vector<double> OutUnsupE = UnsupE;
 
     int loop = 1000;
     double eps = 1e-3;
     double top = *std::max_element(DispatchGen.begin(), DispatchGen.end())
-                 + std::max_element(hydroUsage.begin(),
-                                    hydroUsage.end(),
-                                    [](const OPTIMAL_HYDRO_USAGE& a, const OPTIMAL_HYDRO_USAGE& b)
-                                    { return a.TurbinageHoraire < b.TurbinageHoraire; })
-                     ->TurbinageHoraire
+                 + *std::max_element(HydroGen.begin(), HydroGen.end())
                  + *std::max_element(UnsupE.begin(), UnsupE.end()) + 1;
 
     std::vector<bool> enabledHours(DispatchGen.size(), false);
     for (unsigned int h = 0; h < enabledHours.size(); h++)
     {
-        if (Spillage[h] + DTG_MRG[h] == 0. && hydroUsage[h].TurbinageHoraire + UnsupE[h] > 0.)
+        if (Spillage[h] + DTG_MRG[h] == 0. && HydroGen[h] + UnsupE[h] > 0.)
         {
             enabledHours[h] = true;
         }
@@ -225,10 +215,9 @@ RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGe
     std::vector<double> TotalGen(DispatchGen.size());
     std::transform(DispatchGen.begin(),
                    DispatchGen.end(),
-                   hydroUsage.begin(),
+                   HydroGen.begin(),
                    TotalGen.begin(),
-                   [](double dispatch, const OPTIMAL_HYDRO_USAGE& hydro)
-                   { return dispatch + hydro.TurbinageHoraire; });
+                   std::plus<>());
 
     while (loop-- > 0)
     {
@@ -239,7 +228,7 @@ RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGe
         {
             int hourBottom = find_min_index(TotalGen,
                                             OutUnsupE,
-                                            OutHydroUsage,
+                                            OutHydroGen,
                                             triedBottom,
                                             HydroPmax,
                                             enabledHours,
@@ -253,7 +242,7 @@ RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGe
             while (true)
             {
                 int hourPeak = find_max_index(TotalGen,
-                                              OutHydroUsage,
+                                              OutHydroGen,
                                               triedPeak,
                                               HydroPmin,
                                               enabledHours,
@@ -289,12 +278,10 @@ RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGe
                     max_creux = std::numeric_limits<double>::max();
                 }
 
-                max_pic = std::min(OutHydroUsage[hourPeak].TurbinageHoraire - HydroPmin[hourPeak],
-                                   max_pic);
-                max_creux = std::min(
-                  {HydroPmax[hourBottom] - OutHydroUsage[hourBottom].TurbinageHoraire,
-                   OutUnsupE[hourBottom],
-                   max_creux});
+                max_pic = std::min(OutHydroGen[hourPeak] - HydroPmin[hourPeak], max_pic);
+                max_creux = std::min({HydroPmax[hourBottom] - OutHydroGen[hourBottom],
+                                      OutUnsupE[hourBottom],
+                                      max_creux});
 
                 double dif_pic_creux = std::max(TotalGen[hourPeak] - TotalGen[hourBottom], 0.);
 
@@ -307,14 +294,12 @@ RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGe
 
                 if (delta > 0)
                 {
-                    OutHydroUsage[hourPeak].TurbinageHoraire -= delta;
-                    OutHydroUsage[hourBottom].TurbinageHoraire += delta;
-                    OutUnsupE[hourPeak] = OutHydroUsage[hourPeak].TurbinageHoraire
-                                          + UnsupE[hourPeak]
-                                          - OutHydroUsage[hourPeak].TurbinageHoraire;
-                    OutUnsupE[hourBottom] = OutHydroUsage[hourBottom].TurbinageHoraire
-                                            + UnsupE[hourBottom]
-                                            - OutHydroUsage[hourBottom].TurbinageHoraire;
+                    OutHydroGen[hourPeak] -= delta;
+                    OutHydroGen[hourBottom] += delta;
+                    OutUnsupE[hourPeak] = HydroGen[hourPeak] + UnsupE[hourPeak]
+                                          - OutHydroGen[hourPeak];
+                    OutUnsupE[hourBottom] = HydroGen[hourBottom] + UnsupE[hourBottom]
+                                            - OutHydroGen[hourBottom];
                     break;
                 }
                 else
@@ -337,25 +322,21 @@ RemixHydroOutput shavePeaksByRemixingHydro(const std::vector<double>& DispatchGe
 
         std::transform(DispatchGen.begin(),
                        DispatchGen.end(),
-                       OutHydroUsage.begin(),
+                       OutHydroGen.begin(),
                        TotalGen.begin(),
-                       [](double dispatch, const OPTIMAL_HYDRO_USAGE& hydro)
-                       { return dispatch + hydro.TurbinageHoraire; });
-
+                       std::plus<>());
         if (reservoirManagement)
         {
-            levels[0] = initialLevel + inflows[0] - hydroUsage[0].debordementsHoraires
-                        + pumpingEfficiency * hydroUsage[0].PompageHoraire
-                        - OutHydroUsage[0].TurbinageHoraire;
+            levels[0] = initialLevel + inflows[0] - overflow[0] + pumpingEfficiency * pump[0]
+                        - OutHydroGen[0];
             for (size_t h = 1; h < levels.size(); ++h)
             {
-                levels[h] = levels[h - 1] + inflows[h] - hydroUsage[h].debordementsHoraires
-                            + pumpingEfficiency * hydroUsage[h].PompageHoraire
-                            - OutHydroUsage[h].TurbinageHoraire;
+                levels[h] = levels[h - 1] + inflows[h] - overflow[h] + pumpingEfficiency * pump[h]
+                            - OutHydroGen[h];
             }
         }
     }
-    return {OutHydroUsage, OutUnsupE};
+    return {OutHydroGen, OutUnsupE, levels};
 }
 
 } // End namespace Antares::Solver::Simulation
