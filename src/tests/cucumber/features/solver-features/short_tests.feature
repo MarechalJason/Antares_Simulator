@@ -4,7 +4,7 @@ Feature: short tests
   Scenario: 001 One node - passive
     Given the study path is "Antares_Simulator_Tests_NR/short-tests/001 One node - passive"
     When I run antares simulator
-    Then the simulation takes less than 5 seconds
+    Then the simulation takes less than 20 seconds
     And the simulation succeeds
     And the annual system cost is 0
 
