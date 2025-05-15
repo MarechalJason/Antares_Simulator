@@ -27,8 +27,8 @@
 #include <string>
 
 #include <antares/utils/utils.h>
-#include "antares/study/parts/short-term-storage/makeGroupsOfHoursFromString.h"
 #include "antares/study/parts/short-term-storage/container.h"
+#include "antares/study/parts/short-term-storage/makeGroupsOfHoursFromString.h"
 #include "antares/study/study.h"
 
 #define SEP Yuni::IO::Separator
