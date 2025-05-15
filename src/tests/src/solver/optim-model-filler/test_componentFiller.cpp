@@ -38,7 +38,7 @@
 
 using namespace Antares::Optimisation::LinearProblemApi;
 using namespace Antares::Optimisation::LinearProblemDataImpl;
-using namespace Antares::Study::SystemModel;
+using namespace Antares::ModelerStudy::SystemModel;
 using namespace Antares::Optimization;
 using namespace Antares::Expressions;
 using namespace Antares::Expressions::Nodes;
@@ -226,9 +226,11 @@ void LinearProblemBuildingFixture::buildLinearProblem(FillContext& time_scenario
 {
     vector<unique_ptr<ComponentFiller>> fillers;
     vector<LinearProblemFiller*> fillers_ptr;
+    // All LP variables coordinates (component id, variable id, scenario, time step)
+    VariableDictionary variableDictionary;
     for (auto& component: components)
     {
-        auto cf = make_unique<ComponentFiller>(component);
+        auto cf = make_unique<ComponentFiller>(component, variableDictionary);
         fillers.push_back(move(cf));
     }
     for (auto& component_filler: fillers)
