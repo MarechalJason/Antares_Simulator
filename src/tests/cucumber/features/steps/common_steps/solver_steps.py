@@ -150,7 +150,7 @@ def check_prod_for_specific_year(context, area, year, prod_name, comparator_and_
     if "greater than" in comparator_and_hourly_prod:
         ok = actual_hourly_prod >= expected_prod
     elif "equal to" in comparator_and_hourly_prod:
-        ok = actual_hourly_prod - expected_prod <= 1e-6
+        ok = abs(actual_hourly_prod - expected_prod) <= 1e-6
     else:
         raise NotImplementedError(f"Unknown comparator '{comparator_and_hourly_prod}'")
     if "zero or" in comparator_and_hourly_prod:
