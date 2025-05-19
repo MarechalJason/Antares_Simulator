@@ -9,7 +9,7 @@ Feature: reserves symmetry tests
     And in area "FRANCE", during year 1, for cluster "therm" and reserve "res_1_down", reserve participation power is always equal to 20 MWh
     And in area "FRANCE", during year 1, for reserve "res_1_up", reserve unsupplied power is always equal to 10 MWh
     And in area "FRANCE", during year 1, for reserve "res_1_down", reserve unsupplied power is always equal to 30 MWh
-    And in area "FRANCE", during year 1, hourly production of "therm" is always equal to 80 MWh
+    And in area "FRANCE", during year 1, hourly production of "therm" is always equal to 60 MWh
     And in area "FRANCE", unsupplied energy on "2 JAN 09:00" of year 1 is of 40 MW
 
   Scenario: ST_symmetry_test_2
