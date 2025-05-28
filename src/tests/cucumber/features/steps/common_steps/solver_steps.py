@@ -203,14 +203,24 @@ def run_simulation(context):
     print(f"Running command: {command}")
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     out, err = process.communicate()
-    if out:
-        context.logs_out = out.decode("utf-8")
-    else:
-        context.logs_out = ""
-    if err:
-        context.logs_err = err.decode("utf-8")
-    else:
-        context.logs_err = ""
+    try:
+        if out:
+            context.logs_out = out.decode('utf-8')
+        else:
+            context.logs_out = ""
+        if err:
+            context.logs_err = err.decode('utf-8')
+        else:
+            context.logs_err = ""
+    except UnicodeDecodeError: # On windows, process communication can return another format
+        if out:
+            context.logs_out = out.decode('cp1252')
+        else:
+            context.logs_out = ""
+        if err:
+            context.logs_err = err.decode('cp1252')
+        else:
+            context.logs_err = ""
     context.output_path = parse_output_folder_from_logs(out)
     context.return_code = process.returncode
     context.soh = solver_output_handler(context.output_path)
@@ -309,15 +319,25 @@ def check_res_participation_for_specific_year_and_cluster_yearly(context, area, 
 def check_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, comparator_and_res_part):
     expected_res_part = float(comparator_and_res_part.split(" ")[-1])
     actual_hourly_prod = context.soh.get_hourly_res_part_mwh(area, year, res + "_" + cluster)
+    msg="At least one value in reserve participation power "
     if "greater than" in comparator_and_res_part:
         ok = actual_hourly_prod >= expected_res_part
+        if not ok.all():
+            msg += f'is not superior to {expected_res_part} MWh'
+    elif "smaller than" in comparator_and_res_part:
+        ok = actual_hourly_prod <= expected_res_part
+        if not ok.all():
+            msg += f'is not inferior to {expected_res_part} MWh'
     elif "equal to" in comparator_and_res_part:
         ok = (actual_hourly_prod - expected_res_part).abs() <= 1e-6
+        if not ok.all():
+            msg += f'is not close to {expected_res_part} MWh'
     else:
         raise NotImplementedError(f"Unknown comparator '{comparator_and_res_part}'")
     if "zero or" in comparator_and_res_part:
         ok = ok | (actual_hourly_prod == 0)
-    assert ok.all()
+        msg += " (or null)"
+    assert ok.all(), msg
 
 @then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", the sum over two hours of reserve participation power is always equal to {expected_res_part} MWh')
 def check_res_participation_for_specific_year_and_cluster_hourly_sum(context, area, year, res, cluster, expected_res_part):
@@ -336,12 +356,22 @@ def check_res_participation_for_specific_year_hour_and_cluster(context, area, ye
 def check_res_unsp_for_specific_year_hourly(context, area, year, res, comparator_and_unsupplied):
     expected_res_unsupplied = float(comparator_and_unsupplied.split(" ")[-1])
     actual_hourly_res_unsp = context.soh.get_hourly_reserve_unsp_energy(area, year, res)
+    msg="At least one value in reserve unsupplied power "
     if "greater than" in comparator_and_unsupplied:
         ok = actual_hourly_res_unsp >= expected_res_unsupplied
+        if not ok.all():
+            msg += f'is not superior to {expected_res_unsupplied} MWh'
+    elif "smaller than" in comparator_and_unsupplied:
+        ok = actual_hourly_res_unsp <= expected_res_unsupplied
+        if not ok.all():
+            msg += f'is not inferior to {expected_res_unsupplied} MWh'
     elif "equal to" in comparator_and_unsupplied:
         ok = abs(actual_hourly_res_unsp - expected_res_unsupplied) <= 1e-6
+        if not ok.all():
+            msg += f'is not close to {expected_res_unsupplied} MWh'
     else:
         raise NotImplementedError(f"Unknown comparator '{comparator_and_unsupplied}'")
     if "zero or" in comparator_and_unsupplied:
         ok = ok | (actual_hourly_res_unsp == 0)
-    assert ok.all()
+        msg += " (or null)"
+    assert ok.all(), msg
