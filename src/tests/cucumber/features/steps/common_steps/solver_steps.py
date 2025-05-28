@@ -375,3 +375,23 @@ def check_res_unsp_for_specific_year_hourly(context, area, year, res, comparator
         ok = ok | (actual_hourly_res_unsp == 0)
         msg += " (or null)"
     assert ok.all(), msg
+
+@then('in area "{area}", on "{date}" of year {year:d}, hydro storage {injection_or_pumping} is of {value_hydro} MWh')
+def check_hydro_values_for_specific_year_hour(context, area, year, date, injection_or_pumping, value_hydro):
+    if "injection" in injection_or_pumping:
+        actual_hydro_value = context.soh.get_values_hydro_for_specific_hour_mwh(area, year, date, "H. STOR")
+    elif "pumping" in injection_or_pumping:
+        actual_hydro_value = context.soh.get_values_hydro_for_specific_hour_mwh(area, year, date, "H. PUMP")
+    else:
+        raise NotImplementedError(f"Unknown value for variable injection_or_pumping '{injection_or_pumping}'")
+    assert_double_close(float(actual_hydro_value), float(value_hydro), 1e-6)
+    
+@then('in area "{area}", on "{date}" of year {year:d}, storage {injection_or_withdrawal} for cluster "{cluster}" is of {value_storage} MW')
+def check_storages_values_for_specific_year_hour_and_cluster(context, area, year, date, injection_or_withdrawal, cluster, value_storage):
+    if "injection" in injection_or_withdrawal:
+        actual_storage_value = context.soh.get_values_for_st_storage_cluster_for_specific_hour_mw(area, year, date, cluster, "P-injection - MW")
+    elif "withdrawal" in injection_or_withdrawal:
+        actual_storage_value = context.soh.get_values_for_st_storage_cluster_for_specific_hour_mw(area, year, date, cluster, "P-withdrawal - MW")
+    else:
+        raise NotImplementedError(f"Unknown value for variable injection_or_withdrawal '{injection_or_withdrawal}'")
+    assert_double_close(float(actual_storage_value), float(value_storage), 1e-6)

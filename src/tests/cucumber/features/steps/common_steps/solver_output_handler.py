@@ -10,6 +10,7 @@ from pathlib import Path
 class result_type(Enum):
     VALUES = "values"
     DETAILS = "details"
+    DETAILS_ST_STORAGE= "details-STstorage"
 
 
 class solver_output_handler:
@@ -17,7 +18,7 @@ class solver_output_handler:
     def __init__(self, study_output_path):
         self.study_output_path = study_output_path
         self.annual_system_cost = None
-        self.hourly_results = {result_type.VALUES: None, result_type.DETAILS: None}
+        self.hourly_results = {result_type.VALUES: None, result_type.DETAILS: None, result_type.DETAILS_ST_STORAGE: None}
 
     def get_annual_system_cost(self):
         if self.annual_system_cost is None:
@@ -70,6 +71,13 @@ class solver_output_handler:
 
     def __get_details_hourly(self, area: str, year: int):
         return self.__if_none_then_parse(result_type.DETAILS, area.lower(), year, "details-hourly.txt")
+        
+    def __get_details_st_storage_hourly(self, area: str, year: int):
+        return self.__if_none_then_parse(result_type.DETAILS_ST_STORAGE, area.lower(), year, "details-STstorage-hourly.txt")
+        
+    def __get_details_st_storage_hourly_for_specific_hour(self, area: str, year: int, datetime: str):
+        df = self.__get_details_st_storage_hourly(area, year)
+        return df.loc[df['datetime'] == datetime]
 
     def __get_details_hourly_for_specific_hour(self, area: str, year: int, datetime: str):
         df = self.__get_details_hourly(area, year)
@@ -134,3 +142,9 @@ class solver_output_handler:
 
     def get_res_part_for_date_mwh(self, area: str, year: int, date: str, prod_name: str) -> float:
         return self.__get_details_hourly_for_specific_hour(area, year, date)[prod_name]['Reserve Participation Power - MWh'].sum()
+        
+    def get_values_hydro_for_specific_hour_mwh(self, area: str, year: int, date: str, hydro_val: str) -> float:
+        return self.__get_values_hourly_for_specific_hour(area, year, date)[hydro_val]['MWh'].sum()
+        
+    def get_values_for_st_storage_cluster_for_specific_hour_mw(self, area: str, year: int, date: str, cluster_name: str, keySTstorageValue: str):
+        return self.__get_details_st_storage_hourly_for_specific_hour(area, year, date)[cluster_name][keySTstorageValue]
