@@ -626,24 +626,9 @@ void ConstraintNamer::SymmetryReserveParticipation(unsigned int constraint,
                                             reserveName2);
 }
 
-void ConstraintNamer::POffUnitsLowerBound(unsigned int constraint,
-                                          const std::string& clusterName,
-                                          const std::string& reserveName)
+void ConstraintNamer::POffUnitsUpperBound(unsigned int constraint, const std::string& clusterName)
 {
-    SetThermalClusterAndReserveElementName(constraint,
-                                           "POffUnitsLowerBound",
-                                           clusterName,
-                                           reserveName);
-}
-
-void ConstraintNamer::POffUnitsUpperBound(unsigned int constraint,
-                                          const std::string& clusterName,
-                                          const std::string& reserveName)
-{
-    SetThermalClusterAndReserveElementName(constraint,
-                                           "POffUnitsUpperBound",
-                                           clusterName,
-                                           reserveName);
+    SetThermalClusterElementName(constraint, "POffUnitsUpperBound", clusterName);
 }
 
 void ConstraintNamer::POutCapacityThreasholdInf(unsigned int constraint,

@@ -104,6 +104,17 @@ void ReserveParticipationGroup::BuildConstraints()
                 // Thermal clusters reserve participations
                 {
                     auto& areaReservesUp = data.areaReserves[pays].areaCapacityReservationsUp;
+                    const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo_
+                                                                          ->PaliersThermiquesDuPays
+                                                                            [pays];
+                    for (int cluster = 0;
+                         cluster < PaliersThermiquesDuPays.NombreDePaliersThermiques;
+                         cluster++)
+                    {
+                        // 16 quater
+                        pOffUnits.add(pays, cluster, pdt);
+                    }
+
                     uint32_t reserve = 0;
                     for (const auto& areaReserveUp: areaReservesUp)
                     {
@@ -123,8 +134,6 @@ void ReserveParticipationGroup::BuildConstraints()
                                                                            reserve,
                                                                            clusterId,
                                                                            pdt);
-                                // 16 quater
-                                pOffUnits.add(pays, reserve, clusterId, pdt);
                             }
 
                             // 17 quinquies

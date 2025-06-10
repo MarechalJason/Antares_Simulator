@@ -5,10 +5,12 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
     if (!data.Simulation)
     {
         // 16 ter
-        // The number of off units participating to Reserves is bounded by the number of units and
-        // number of running units constraint : M^off + M^on <= M M^off : Number of off units
-        // participating to the reserve M : Number of units in the cluster M^on : Number of running
-        // units in the cluster
+        // The max power of off units participating to Reserves is bounded by the number of units
+        // and max power of each unit : P^off + (Pmax^off . M^on) <= (Pmax^off . M) P^off: total
+        // participation of turned off units to res Pmax^off : max participation for each off unit
+        // M : Number of units in the cluster
+        // M^on : Number of running units in the cluster
+        //
 
         CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]
                                                      .areaCapacityReservationsUp[reserve];
@@ -20,16 +22,16 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
                                    [reserveParticipation.clusterIdInArea];
 
         builder.updateHourWithinWeek(pdt)
-          .NumberOfOffUnitsParticipatingToReserve(
+          .OffThermalClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            1.0)
-          .NumberOfDispatchableUnits(globalClusterIdx, 1.0)
+            1.0) // P^off
+          .NumberOfDispatchableUnits(globalClusterIdx, -reserveParticipation.maxPowerOff)
           .lessThan();
 
         data.CorrespondanceCntNativesCntOptim[pdt]
           .reservesIndices()
-          .nbOffGroupUnitsInThermalClusterParticipating[reserveParticipation
-                                                          .globalIndexClusterParticipation]
+          .powerOffGroupUnitsInThermalClusterParticipating[reserveParticipation
+                                                             .globalIndexClusterParticipation]
           = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);

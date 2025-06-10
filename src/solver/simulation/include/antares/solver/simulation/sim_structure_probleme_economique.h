@@ -127,7 +127,8 @@ struct CORRESPONDANCES_DES_CONTRAINTES
     struct ReservesIndices
     {
         std::vector<int> need;
-        std::vector<int> nbOffGroupUnitsInThermalClusterParticipating;
+        std::vector<int> powerOffGroupUnitsInThermalClusterParticipating;
+        std::vector<int> maxPowerOffUnitsInThermalCluster;
         std::vector<int> thermalClusterPOutBoundMin;
         std::vector<int> thermalClusterPOutBoundMax;
         std::vector<int> STStorageLevelParticipationUp;

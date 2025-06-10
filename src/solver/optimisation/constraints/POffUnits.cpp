@@ -1,68 +1,70 @@
 #include "antares/solver/optimisation/constraints/POffUnits.h"
 
-void POffUnits::add(int pays, int reserve, int cluster, int pdt)
+void POffUnits::add(int pays, int cluster, int pdt)
 {
     if (!data.Simulation)
     {
         // 16 quater
-        // Participation to reserves remains within limits set by minimum stable power and maximum
-        // capacity threasholds l * M^off ≤ P^off ≤ M^off * P^off_max l : minimum stable power
-        // output when running M^off : number of off units paricipating to reserves P^off :
-        // Participation of off units to reserves P^off_max : Max Participation of off units
-
-        CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]
-                                                     .areaCapacityReservationsUp[reserve];
-
-        auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
+        // Sum of participations to reserves is inferior to unit max power times number of off units
+        // Sum P^off  ≤ Umax (M - M^on)
+        // P^off : total participation of turned off units to res
+        // Umax : Max power of an unit
+        // M : max number of running units in cluster
+        // M : actual number of running units in cluster
 
         int globalClusterIdx = data.thermalClusters[pays]
-                                 .NumeroDuPalierDansLEnsembleDesPaliersThermiques
-                                   [reserveParticipation.clusterIdInArea];
+                                 .NumeroDuPalierDansLEnsembleDesPaliersThermiques[cluster];
 
-        // 16 quater (1) : l * M^off - P^off ≤ 0
         {
-            builder.updateHourWithinWeek(pdt)
-              .NumberOfOffUnitsParticipatingToReserve(
-                reserveParticipation.globalIndexClusterParticipation,
-                data.thermalClusters[pays].pminDUnGroupeDuPalierThermique[cluster])
-              .OffThermalClusterReserveParticipation(
-                reserveParticipation.globalIndexClusterParticipation,
-                -1)
+            builder.updateHourWithinWeek(pdt);
+
+            for (const auto& capacityReservation:
+                 data.areaReserves[pays].areaCapacityReservationsUp)
+            {
+                if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
+                {
+                    auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation
+                                                   .at(cluster);
+                    builder.PowerOfOffUnitsParticipatingToReserve(
+                      reserveParticipation.globalIndexClusterParticipation,
+                      1);
+                }
+            }
+            builder
+              .NumberOfDispatchableUnits(
+                globalClusterIdx,
+                -data.thermalClusters[pays].PmaxDUnGroupeDuPalierThermique[cluster])
               .lessThan();
 
-            ConstraintNamer namer(builder.data.NomDesContraintes);
-            const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
-            namer.UpdateTimeStep(hourInTheYear);
-            namer.UpdateArea(builder.data.NomsDesPays[pays]);
-            namer.POffUnitsLowerBound(builder.data.nombreDeContraintes,
-                                      reserveParticipation.clusterName,
-                                      capacityReservation.reserveName);
-            builder.build();
-        }
-
-        // 16 quater (2) : P^off - M^off * P^off_max ≤ 0
-        {
-            builder.updateHourWithinWeek(pdt)
-              .OffThermalClusterReserveParticipation(
-                reserveParticipation.globalIndexClusterParticipation,
-                1)
-              .NumberOfOffUnitsParticipatingToReserve(
-                reserveParticipation.globalIndexClusterParticipation,
-                -reserveParticipation.maxPowerOff)
-              .lessThan();
+            data.CorrespondanceCntNativesCntOptim[pdt]
+              .reservesIndices()
+              .maxPowerOffUnitsInThermalCluster[globalClusterIdx]
+              = builder.data.nombreDeContraintes;
 
             ConstraintNamer namer(builder.data.NomDesContraintes);
             const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
             namer.UpdateTimeStep(hourInTheYear);
             namer.UpdateArea(builder.data.NomsDesPays[pays]);
             namer.POffUnitsUpperBound(builder.data.nombreDeContraintes,
-                                      reserveParticipation.clusterName,
-                                      capacityReservation.reserveName);
+                                      data.thermalClusters[pays].NomsDesPaliersThermiques[cluster]);
             builder.build();
         }
     }
     else
     {
-        builder.data.nombreDeContraintes += 2;
+        // Lambda that count the number of reserves that the cluster is participating to
+        auto countReservesParticipations =
+          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
+        {
+            int counter = 0;
+            for (const auto& capacityReservation: reservations)
+            {
+                counter += capacityReservation.AllThermalReservesParticipation.count(cluster);
+            }
+            return counter;
+        };
+
+        builder.data.nombreDeContraintes += countReservesParticipations(
+          data.areaReserves[pays].areaCapacityReservationsUp);
     }
 }

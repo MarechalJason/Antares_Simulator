@@ -105,14 +105,15 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
             int cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                        .nbOffGroupUnitsInThermalClusterParticipating
+                        .powerOffGroupUnitsInThermalClusterParticipating
                           [reserveParticipation.globalIndexClusterParticipation];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = problemeHebdo->PaliersThermiquesDuPays[pays]
                                       .PuissanceDisponibleEtCout[reserveParticipation
                                                                    .clusterIdInArea]
-                                      .NombreMaxDeGroupesEnMarcheDuPalierThermique[pdtJour];
+                                      .NombreMaxDeGroupesEnMarcheDuPalierThermique[pdtJour]
+                                    * reserveParticipation.maxPowerOff;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
         }
@@ -144,6 +145,18 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                 SecondMembre[cnt] = problemeHebdo->PaliersThermiquesDuPays[pays]
                                       .PuissanceDisponibleEtCout[areaClusterId]
                                       .PuissanceDisponibleDuPalierThermiqueRef[pdtJour];
+                AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
+            }
+
+            cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
+                    .maxPowerOffUnitsInThermalCluster[globalClusterIdx];
+            if (cnt >= 0)
+            {
+                SecondMembre[cnt] = problemeHebdo->PaliersThermiquesDuPays[pays]
+                                      .PuissanceDisponibleEtCout[areaClusterId]
+                                      .NombreMaxDeGroupesEnMarcheDuPalierThermique[pdtJour]
+                                    * problemeHebdo->PaliersThermiquesDuPays[pays]
+                                        .PmaxDUnGroupeDuPalierThermique[areaClusterId];
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
         }

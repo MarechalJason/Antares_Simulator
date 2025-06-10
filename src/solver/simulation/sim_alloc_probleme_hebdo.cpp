@@ -296,9 +296,12 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .nbOffGroupUnitsInThermalClusterParticipating.assign(
+              .powerOffGroupUnitsInThermalClusterParticipating.assign(
                 study.runtime.thermalPlantTotalCount * study.runtime.capacityReservationCount,
                 -1);
+            problem.CorrespondanceCntNativesCntOptim[k]
+              .reservesIndices()
+              .maxPowerOffUnitsInThermalCluster.assign(study.runtime.thermalPlantTotalCount, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
               .thermalClusterPOutBoundMin.assign(study.runtime.thermalPlantTotalCount, -1);
