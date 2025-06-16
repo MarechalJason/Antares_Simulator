@@ -6,10 +6,9 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
     {
         // 16 ter
         // The max power of off units participating to Reserves is bounded by the number of units
-        // and max power of each unit : P^off + (Pmax^off . M^on) <= (Pmax^off . M) P^off: total
-        // participation of turned off units to res Pmax^off : max participation for each off unit
-        // M : Number of units in the cluster
-        // M^on : Number of running units in the cluster
+        // and max power of each unit : P^off +(Pmax^off . M)  <= (Pmax^off . M^on) with P^off:
+        // total participation of turned off units to res Pmax^off : max participation for each off
+        // unit M : Number of units in the cluster M^on : Number of running units in the cluster
         //
 
         CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]
@@ -25,7 +24,7 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
           .OffThermalClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
             1.0) // P^off
-          .NumberOfDispatchableUnits(globalClusterIdx, -reserveParticipation.maxPowerOff)
+          .NumberOfDispatchableUnits(globalClusterIdx, reserveParticipation.maxPowerOff)
           .lessThan();
 
         data.CorrespondanceCntNativesCntOptim[pdt]

@@ -33,7 +33,7 @@ void POffUnits::add(int pays, int cluster, int pdt)
             builder
               .NumberOfDispatchableUnits(
                 globalClusterIdx,
-                -data.thermalClusters[pays].PmaxDUnGroupeDuPalierThermique[cluster])
+                data.thermalClusters[pays].PmaxDUnGroupeDuPalierThermique[cluster])
               .lessThan();
 
             data.CorrespondanceCntNativesCntOptim[pdt]
