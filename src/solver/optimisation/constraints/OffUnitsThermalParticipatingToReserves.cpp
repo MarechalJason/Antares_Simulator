@@ -37,9 +37,9 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
         const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
         namer.UpdateTimeStep(hourInTheYear);
         namer.UpdateArea(builder.data.NomsDesPays[pays]);
-        namer.NumberOfOffUnitsParticipatingToReserve(builder.data.nombreDeContraintes,
-                                                     reserveParticipation.clusterName,
-                                                     capacityReservation.reserveName);
+        namer.PowerOfOffUnitsParticipatingToReserve(builder.data.nombreDeContraintes,
+                                                    reserveParticipation.clusterName,
+                                                    capacityReservation.reserveName);
         builder.build();
     }
     else

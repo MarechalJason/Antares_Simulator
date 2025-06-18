@@ -231,10 +231,6 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               .internalUnsatisfied.assign(study.runtime.capacityReservationCount, 0);
             variablesMapping.reservesIndices()
               .internalExcess.assign(study.runtime.capacityReservationCount, 0);
-
-            variablesMapping.reservesIndices().nbOffGroupUnitsInThermalClusterParticipating.assign(
-              study.runtime.thermalPlantTotalCount * study.runtime.capacityReservationCount,
-              0);
         }
 
         problem.CorrespondanceCntNativesCntOptim[k].NumeroDeContrainteDesBilansPays.assign(nbPays,
@@ -656,10 +652,10 @@ void SIM_AllocateAreas(PROBLEME_HEBDO& problem,
                   .assign(nbThermalReserveParticipations, 0.);
                 problem.ResultatsHoraires[k]
                   .ProductionThermique[j]
-                  .NombreDeGroupesEteintDuPalierQuiParticipentAuxReserves.init();
+                  .PuissanceGroupesEteintDuPalierQuiParticipentAuxReserves.init();
                 problem.ResultatsHoraires[k]
                   .ProductionThermique[j]
-                  .NombreDeGroupesEteintDuPalierQuiParticipentAuxReserves()
+                  .PuissanceGroupesEteintDuPalierQuiParticipentAuxReserves()
                   .assign(nbPaliers, 0.);
 
                 problem.ResultatsHoraires[k]

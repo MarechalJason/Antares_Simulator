@@ -200,15 +200,15 @@ int& VariableManager::NumberOfDispatchableUnits(unsigned int index,
     return CorrespondanceVarNativesVarOptim_[pdt].nbOnGroupUnitsInThermalClusterIndex[index];
 }
 
-int& VariableManager::NumberOfOffUnitsParticipatingToReserve(unsigned int index,
-                                                             unsigned int hourInWeek,
-                                                             int offset,
-                                                             int delta)
+int& VariableManager::PowerOfOffUnitsParticipatingToReserve(unsigned int index,
+                                                            unsigned int hourInWeek,
+                                                            int offset,
+                                                            int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .reservesIndices()
-      .nbOffGroupUnitsInThermalClusterParticipating[index];
+      .offThermalClusterParticipation[index];
 }
 
 int& VariableManager::NumberStoppingDispatchableUnits(unsigned int index,

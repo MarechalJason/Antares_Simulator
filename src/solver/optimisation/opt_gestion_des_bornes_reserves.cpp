@@ -126,17 +126,6 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
 
             var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                    .nbOffGroupUnitsInThermalClusterParticipating[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = problemeHebdo->PaliersThermiquesDuPays[pays]
-                          .TailleUnitaireDUnGroupeDuPalierThermique[clusterId];
-            adresseDuResultat = &(
-              problemeHebdo->ResultatsHoraires[pays]
-                .ProductionThermique[pdtHebdo]
-                .NombreDeGroupesEteintDuPalierQuiParticipentAuxReserves()[clusterIdInArea]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
-
-            var = CorrespondanceVarNativesVarOptim.reservesIndices()
                     .thermalClusterParticipation[clusterParticipationId];
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;

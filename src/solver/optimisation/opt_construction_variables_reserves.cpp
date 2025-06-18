@@ -114,7 +114,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                                                                reserveName);
                 NombreDeVariables++;
 
-                variableManager.NumberOfOffUnitsParticipatingToReserve(
+                variableManager.PowerOfOffUnitsParticipatingToReserve(
                   clusterReserveParticipation.globalIndexClusterParticipation,
                   pdt)
                   = NombreDeVariables;
@@ -122,9 +122,9 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
                 ProblemeAResoudre->VariablesEntieres[NombreDeVariables]
                   = problemeHebdo->OptimisationAvecVariablesEntieres;
-                variableNamer.NumberOfOffUnitsParticipatingToReserve(NombreDeVariables,
-                                                                     clusterName,
-                                                                     reserveName);
+                variableNamer.PowerOfOffUnitsParticipatingToReserve(NombreDeVariables,
+                                                                    clusterName,
+                                                                    reserveName);
                 NombreDeVariables++;
 
                 // For all units in cluster

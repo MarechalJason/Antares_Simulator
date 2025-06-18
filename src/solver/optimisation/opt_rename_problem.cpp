@@ -325,12 +325,12 @@ void VariableNamer::NODU(unsigned int variable, const std::string& clusterName)
     SetThermalClusterElementName(variable, "NODU", clusterName);
 }
 
-void VariableNamer::NumberOfOffUnitsParticipatingToReserve(unsigned int variable,
-                                                           const std::string& clusterName,
-                                                           const std::string& reserveName)
+void VariableNamer::PowerOfOffUnitsParticipatingToReserve(unsigned int variable,
+                                                          const std::string& clusterName,
+                                                          const std::string& reserveName)
 {
     SetThermalClusterAndReserveElementName(variable,
-                                           "NumberOfOffUnitsParticipatingToReserve",
+                                           "PowerOfOffUnitsParticipatingToReserve",
                                            clusterName,
                                            reserveName);
 }
@@ -594,12 +594,12 @@ void ConstraintNamer::PMaxReserve(unsigned int constraint,
     SetThermalClusterAndReserveElementName(constraint, "PMaxReserve", clusterName, reserveName);
 }
 
-void ConstraintNamer::NumberOfOffUnitsParticipatingToReserve(unsigned int constraint,
-                                                             const std::string& clusterName,
-                                                             const std::string& reserveName)
+void ConstraintNamer::PowerOfOffUnitsParticipatingToReserve(unsigned int constraint,
+                                                            const std::string& clusterName,
+                                                            const std::string& reserveName)
 {
     SetThermalClusterAndReserveElementName(constraint,
-                                           "NumberOfOffUnitsParticipatingToReserve",
+                                           "PowerOfOffUnitsParticipatingToReserve",
                                            clusterName,
                                            reserveName);
 }

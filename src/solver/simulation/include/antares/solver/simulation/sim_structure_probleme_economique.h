@@ -80,8 +80,6 @@ struct CORRESPONDANCES_DES_VARIABLES
 
         std::vector<int> internalUnsatisfied;
         std::vector<int> internalExcess;
-
-        std::vector<int> nbOffGroupUnitsInThermalClusterParticipating;
     };
 
     ReserveOpt<ReservesIndices> reservesIndices;
@@ -480,7 +478,7 @@ struct PRODUCTION_THERMIQUE_OPTIMALE
     ReserveOpt<std::vector<double>> ParticipationReservesDuPalierOff;
 
     std::vector<double> NombreDeGroupesEnMarcheDuPalier;
-    ReserveOpt<std::vector<double>> NombreDeGroupesEteintDuPalierQuiParticipentAuxReserves;
+    ReserveOpt<std::vector<double>> PuissanceGroupesEteintDuPalierQuiParticipentAuxReserves;
     std::vector<double> NombreDeGroupesQuiDemarrentDuPalier;
 
     std::vector<double> NombreDeGroupesQuiSArretentDuPalier;
