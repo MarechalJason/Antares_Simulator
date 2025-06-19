@@ -117,6 +117,12 @@ def check_unsupplied_energy_value_for_date(context, area, date, year, unsupplied
     assert_double_close(unsupplied_energy_value, actual_unsp_energ, 0.001, "Unsupplied energy")
 
 
+@then('in area "{area}", overall cost on "{date}" of year {year:d} is of {overall_cost_value:g} Euro')
+def check_overall_cost_for_date(context, area, date, year, overall_cost_value):
+    actual_overall_cost = context.soh.get_overall_cost_eur(area, year, date)
+    assert_double_close(overall_cost_value, actual_overall_cost, 0.001, "Overall cost")
+
+
 @then('in area "{area}", during year {year:d}, total unsupplied energy is {unsupplied_energy_value:g} MWh')
 def check_unsupplied_energy_value(context, area, year, unsupplied_energy_value):
     assert_double_close(unsupplied_energy_value, context.soh.get_unsupplied_energy_mwh(area, year), 0.001, "Unsupplied energy")
@@ -319,7 +325,7 @@ def check_res_participation_for_specific_year_and_cluster_yearly(context, area, 
 def check_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, comparator_and_res_part):
     expected_res_part = float(comparator_and_res_part.split(" ")[-1])
     actual_hourly_prod = context.soh.get_hourly_res_part_mwh(area, year, res + "_" + cluster)
-    msg="At least one value in reserve participation power "
+    msg = "At least one value in reserve participation power "
     if "greater than" in comparator_and_res_part:
         ok = actual_hourly_prod >= expected_res_part
         if not ok.all():
@@ -338,6 +344,11 @@ def check_res_participation_for_specific_year_and_cluster_hourly(context, area, 
         ok = ok | (actual_hourly_prod == 0)
         msg += " (or null)"
     assert ok.all(), msg
+    
+@then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", participation of off units to the reserve is always {comparator_and_res_part} MWh')
+def check_off_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, comparator_and_res_part):
+    cluster_off = cluster + "_off"
+    check_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster_off, comparator_and_res_part)
 
 @then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", the sum over two hours of reserve participation power is always equal to {expected_res_part} MWh')
 def check_res_participation_for_specific_year_and_cluster_hourly_sum(context, area, year, res, cluster, expected_res_part):

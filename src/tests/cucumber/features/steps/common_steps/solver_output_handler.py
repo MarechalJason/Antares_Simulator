@@ -112,6 +112,12 @@ class solver_output_handler:
             return self.__get_values_hourly(area, year)["UNSP. ENRG"]["MWh"].sum()
         else:
             return self.__get_values_hourly_for_specific_hour(area, year, date)["UNSP. ENRG"]["MWh"].sum()
+            
+    def get_overall_cost_eur(self, area: str, year: int, date: str = None) -> float:
+        if date is None:
+            return self.__get_values_hourly(area, year)["OV. COST"]["Euro"].sum()
+        else:
+            return self.__get_values_hourly_for_specific_hour(area, year, date)["OV. COST"]["Euro"].sum()
 
     def get_battery_level_mwh(self, area: str, year: int, date: str) -> float:
         return self.__get_values_hourly_for_specific_hour(area, year, date)["BATTERY_LEVEL"]["MWh"].sum()
