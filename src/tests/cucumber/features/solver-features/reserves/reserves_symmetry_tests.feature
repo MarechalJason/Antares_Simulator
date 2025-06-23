@@ -3,8 +3,8 @@ Feature: reserves symmetry tests
   Scenario: Thermal_cluster_symmetry_test_1
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/symmetry_test_1"
     When I run antares simulator 
-    Then the simulation takes less than 60 seconds
-    And the simulation succeeds
+    Then the simulation succeeds
+    And the simulation takes less than 60 seconds
     And in area "FRANCE", during year 1, for cluster "therm" and reserve "res_1_up", reserve participation power is always equal to 40 MWh
     And in area "FRANCE", during year 1, for cluster "therm" and reserve "res_1_down", reserve participation power is always equal to 20 MWh
     And in area "FRANCE", during year 1, for reserve "res_1_up", reserve unsupplied power is always equal to 10 MWh
@@ -15,8 +15,8 @@ Feature: reserves symmetry tests
   Scenario: ST_symmetry_test_2
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/symmetry_test_2"
     When I run antares simulator
-    Then the simulation takes less than 60 seconds
-    And the simulation succeeds
+    Then the simulation succeeds
+    And the simulation takes less than 60 seconds
     And in area "FRANCE", during year 1, for cluster "st1" and reserve "res_1_up", reserve participation power is always equal to 44 MWh
     And in area "FRANCE", during year 1, for cluster "st1" and reserve "res_1_down", reserve participation power is always equal to 36 MWh
     And in area "FRANCE", during year 1, for reserve "res_1_up", reserve unsupplied power is always equal to 6 MWh
@@ -28,8 +28,8 @@ Feature: reserves symmetry tests
   Scenario: LT_symmetry_test_3
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/symmetry_test_3"
     When I run antares simulator
-    Then the simulation takes less than 60 seconds
-    And the simulation succeeds
+    Then the simulation succeeds
+    And the simulation takes less than 60 seconds
     And in area "FRANCE", during year 1, for cluster "LongTermStorage" and reserve "res_1_up", reserve participation power is always equal to 44 MWh
     And in area "FRANCE", during year 1, for cluster "LongTermStorage" and reserve "res_1_down", reserve participation power is always equal to 36 MWh
     And in area "FRANCE", during year 1, for reserve "res_1_up", reserve unsupplied power is always equal to 6 MWh
