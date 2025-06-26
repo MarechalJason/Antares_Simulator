@@ -1,6 +1,7 @@
 Feature: reserves tests
 
 @fast @short
+# Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
   Scenario: ST_1UP_reserves_test1
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_1_up.ini"
@@ -12,6 +13,7 @@ Feature: reserves tests
 
 
 @fast @short
+# Lot 3
   Scenario: ST_1UP_reserves_test2
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_2_up.ini"
@@ -22,6 +24,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1UP_reserves_test3
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_3_up.ini"
@@ -32,6 +35,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1UP_reserves_test4
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_4_up.ini"
@@ -42,6 +46,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 200 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1UP_reserves_test5
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_5_up.ini"
@@ -52,6 +57,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1UP_reserves_test6
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_6_up.ini"
@@ -62,6 +68,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1UP_reserves_test7
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_7_up.ini"
@@ -72,6 +79,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1UP_reserves_test8
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_8_up.ini"
@@ -82,6 +90,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1UP_reserves_test9
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_9_up.ini"
@@ -92,6 +101,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test1
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_1_down.ini"
@@ -103,6 +113,7 @@ Feature: reserves tests
 
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test2
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
   	When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_2_down.ini"
@@ -113,6 +124,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test3
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_3_down.ini"
@@ -123,6 +135,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test4
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
 	  When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_4_down.ini"
@@ -133,6 +146,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 200 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test5
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_5_down.ini"
@@ -143,6 +157,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test6
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_6_down.ini"
@@ -153,6 +168,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test7
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_7_down.ini"
@@ -163,6 +179,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", the sum over two hours of reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test8
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_8_down.ini"
@@ -173,6 +190,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_1DOWN_reserves_test9
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_9_down.ini"
@@ -183,6 +201,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test1
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_1_double_up.ini"
@@ -195,6 +214,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", reserve participation power is always equal to 150 MWh
 	
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test2
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_2_double_up.ini"
@@ -207,6 +227,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", reserve participation power is always equal to 50 MWh
 	
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test3
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_3_double_up.ini"
@@ -219,6 +240,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", reserve participation power is always equal to 50 MWh
 	
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test4
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_4_double_up.ini"
@@ -231,6 +253,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", the sum over two hours of reserve participation power is always equal to 100 MWh
 	
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test5
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_5_double_up.ini"
@@ -242,6 +265,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", reserve participation power is always equal to 0 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test6
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_6_double_up.ini"
@@ -253,6 +277,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", reserve participation power is always equal to 0 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test7
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_7_double_up.ini"
@@ -265,6 +290,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", the sum over two hours of reserve participation power is always equal to 100 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test8
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_8_double_up.ini"
@@ -277,6 +303,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", reserve participation power is always equal to 150 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_2UP_reserves_test9
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_9_double_up.ini"
@@ -289,6 +316,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", reserve participation power is always equal to 150 MWh
 
 @fast @short
+# Lot 3
   Scenario: ST_3UP_unavailable_reserves_test1
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_1.ini"
@@ -301,6 +329,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, loss of load lasts 3 hours
 
 @fast @short
+# Lot 3
   Scenario: ST_3UP_unavailable_reserves_test2
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_2.ini"
@@ -315,6 +344,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, loss of load lasts 3 hours
 
 @fast @short
+# Lot 3
   Scenario: ST_3UP_unavailable_reserves_test3
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_3.ini"
@@ -329,6 +359,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, loss of load lasts 3 hours
 
 @fast @short
+# Lot 3
   Scenario: ST_3UP_unavailable_reserves_test4
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_4.ini"
@@ -343,6 +374,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, loss of load lasts 3 hours
 
 @fast @short
+# Lot 2 : Intégration de la participation du thermique éteint et des stockage CT et LT
   Scenario: ST_5_off_cluster_participation
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_5_reserves"
     When I run antares simulator
@@ -355,6 +387,7 @@ Feature: reserves tests
     And the annual system cost is 9.414e+06
     
 @fast @short
+# Lot 2
   Scenario: ST_6_off_cluster_participation_multiple_res
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_6_reserves"
     When I run antares simulator
