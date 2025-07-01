@@ -478,7 +478,6 @@ struct PRODUCTION_THERMIQUE_OPTIMALE
     ReserveOpt<std::vector<double>> ParticipationReservesDuPalierOff;
 
     std::vector<double> NombreDeGroupesEnMarcheDuPalier;
-    ReserveOpt<std::vector<double>> PuissanceGroupesEteintDuPalierQuiParticipentAuxReserves;
     std::vector<double> NombreDeGroupesQuiDemarrentDuPalier;
 
     std::vector<double> NombreDeGroupesQuiSArretentDuPalier;

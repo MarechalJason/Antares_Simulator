@@ -1,6 +1,96 @@
 Feature: reserves tests
 
 @fast @short
+# Lot 1 : Intégration de la participation du thermique allumé à des réserves à la hausse et baisse
+  Scenario: lot_1_disabled
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/lot_1_disabled"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, hourly production of "thermal_all_cheap" is always equal to 100 MWh
+    And in area "AREA", during year 1, hourly production of "thermal_expensive_prod" is always equal to 0 MWh
+    And in area "AREA", during year 1, hourly production of "thermal_expensive_res_part" is always equal to 100 MWh
+    And the annual system cost is 6.787e+07
+
+@fast @short
+# Lot 1
+  Scenario: lot_1_simple_up
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/lot_1_simple_up"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, hourly production of "thermal_all_cheap" is always equal to 80 MWh
+    And in area "AREA", during year 1, hourly production of "thermal_expensive_prod" is always equal to 0 MWh
+    And in area "AREA", during year 1, hourly production of "thermal_expensive_res_part" is always equal to 100 MWh
+    And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_1", reserve participation power is always equal to 20 MWh
+    And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_1", reserve participation power is always equal to 20 MWh
+    And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_1", reserve participation power is always equal to 0 MWh
+    And the annual system cost is 7.049e+07
+
+@fast @short
+# Lot 1
+  Scenario: lot_1_simple_down
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/lot_1_simple_down"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, hourly production of "thermal_all_cheap" is always equal to 100 MWh
+    And in area "AREA", during year 1, hourly production of "thermal_expensive_prod" is always equal to 0 MWh
+    And in area "AREA", during year 1, hourly production of "thermal_expensive_res_part" is always equal to 100 MWh
+    And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_1", reserve participation power is always equal to 20 MWh
+    And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_1", reserve participation power is always equal to 0 MWh
+    And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_1", reserve participation power is always equal to 0 MWh
+    And the annual system cost is 7.089e+07
+
+@fast @short
+# Lot 1
+  Scenario: lot_1_simple_up_and_down
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/lot_1_simple_up_and_down"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, hourly production of "thermal_all_cheap" is always equal to 80 MWh
+    And in area "AREA", during year 1, hourly production of "thermal_expensive_prod" is always equal to 0 MWh
+    And in area "AREA", during year 1, hourly production of "thermal_expensive_res_part" is always equal to 100 MWh
+    And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_up", reserve participation power is always equal to 20 MWh
+    And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_up", reserve participation power is always equal to 20 MWh
+    And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_up", reserve participation power is always equal to 0 MWh
+    And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_down", reserve participation power is always equal to 20 MWh
+    And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_down", reserve participation power is always equal to 0 MWh
+    And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_down", reserve participation power is always equal to 0 MWh
+    And the annual system cost is 7.352e+07
+
+@fast @short
+# Lot 2 : Intégration de la participation du thermique éteint et des stockage CT et LT
+  Scenario: ST_5_off_cluster_participation
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_4_reserves"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", total reserve participation power is 0 MWh
+    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", participation of off units to the reserve is always equal to 40 MWh
+    # OV. Cost = 20 *50+1*40+500*50+3000*10 euros (Prod cluster + Surcoûts réserves + défaillance EOD + défaillance réserves)
+    And in area "AREA", overall cost on "1 JAN 06:00" of year 1 is of 56040 Euro 
+    And the annual system cost is 9.414e+06
+
+@fast @short
+# Lot 2
+  Scenario: ST_6_off_cluster_participation_multiple_res
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_5_reserves"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", total reserve participation power is 0 MWh
+    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_2", total reserve participation power is 0 MWh
+    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", participation of off units to the reserve is always equal to 30 MWh
+    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_2", participation of off units to the reserve is always equal to 20 MWh
+    And in area "AREA", during year 1, for reserve "Res_1", reserve unsupplied power is always equal to 10 MWh
+    And in area "AREA", during year 1, for reserve "Res_2", reserve unsupplied power is always equal to 0 MWh
+    And in area "AREA", overall cost on "1 JAN 06:00" of year 1 is of 80050 Euro 
+    And in area "AREA", unsupplied energy on "2 JAN 09:00" of year 1 is of 100 MW
+    And the annual system cost is 1.345e+07
+
+@fast @short
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
   Scenario: ST_1UP_reserves_test1
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_1_reserves"
@@ -10,7 +100,6 @@ Feature: reserves tests
     And the simulation takes less than 20 seconds
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", total reserve participation power is 33600 MWh
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_1", reserve participation power is always equal to 200 MWh
-
 
 @fast @short
 # Lot 3
@@ -373,32 +462,3 @@ Feature: reserves tests
     And the annual system cost is 6.686e+06
     And in area "AREA", during year 1, loss of load lasts 3 hours
 
-@fast @short
-# Lot 2 : Intégration de la participation du thermique éteint et des stockage CT et LT
-  Scenario: ST_5_off_cluster_participation
-    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_5_reserves"
-    When I run antares simulator
-    Then the simulation succeeds
-    And the simulation takes less than 20 seconds
-    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", total reserve participation power is 0 MWh
-    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", participation of off units to the reserve is always equal to 40 MWh
-    # OV. Cost = 20 *50+1*40+500*50+3000*10 euros (Prod cluster + Surcoûts réserves + défaillance EOD + défaillance réserves)
-    And in area "AREA", overall cost on "1 JAN 06:00" of year 1 is of 56040 Euro 
-    And the annual system cost is 9.414e+06
-    
-@fast @short
-# Lot 2
-  Scenario: ST_6_off_cluster_participation_multiple_res
-    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_6_reserves"
-    When I run antares simulator
-    Then the simulation succeeds
-    And the simulation takes less than 20 seconds
-    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", total reserve participation power is 0 MWh
-    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_2", total reserve participation power is 0 MWh
-    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", participation of off units to the reserve is always equal to 30 MWh
-    And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_2", participation of off units to the reserve is always equal to 20 MWh
-    And in area "AREA", during year 1, for reserve "Res_1", reserve unsupplied power is always equal to 10 MWh
-    And in area "AREA", during year 1, for reserve "Res_2", reserve unsupplied power is always equal to 0 MWh
-    And in area "AREA", overall cost on "1 JAN 06:00" of year 1 is of 80050 Euro 
-    And in area "AREA", unsupplied energy on "2 JAN 09:00" of year 1 is of 100 MW
-    And the annual system cost is 1.345e+07

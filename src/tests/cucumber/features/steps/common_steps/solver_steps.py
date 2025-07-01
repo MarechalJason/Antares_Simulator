@@ -148,20 +148,30 @@ def check_lold_value(context, area, date, year, lold_value_mw):
     actual_battery_level = context.soh.get_battery_level_mwh(area, year, date)
     assert_double_close(lold_value_mw, actual_battery_level, 0.001)
 
-
+    
 @then('in area "{area}", during year {year:d}, hourly production of "{prod_name}" is always {comparator_and_hourly_prod} MWh')
 def check_prod_for_specific_year(context, area, year, prod_name, comparator_and_hourly_prod):
     expected_prod = float(comparator_and_hourly_prod.split(" ")[-1])
     actual_hourly_prod = context.soh.get_hourly_prod_mwh(area, year, prod_name)
+    msg = "At least one value in power production power "
     if "greater than" in comparator_and_hourly_prod:
         ok = actual_hourly_prod >= expected_prod
+        if not ok.all():
+            msg += f'is not superior to {expected_prod} MWh'
+    elif "smaller than" in comparator_and_hourly_prod:
+        ok = actual_hourly_prod <= expected_prod
+        if not ok.all():
+            msg += f'is not inferior to {expected_prod} MWh'
     elif "equal to" in comparator_and_hourly_prod:
-        ok = abs(actual_hourly_prod - expected_prod) <= 1e-6
+        ok = (actual_hourly_prod - expected_prod).abs() <= 1e-6
+        if not ok.all():
+            msg += f'is not close to {expected_prod} MWh'
     else:
         raise NotImplementedError(f"Unknown comparator '{comparator_and_hourly_prod}'")
     if "zero or" in comparator_and_hourly_prod:
         ok = ok | (actual_hourly_prod == 0)
-    assert ok.all()
+        msg += " (or null)"
+    assert ok.all(), msg
 
 
 @then('in area "{area}", hourly production of "{prod_name}" is always {comparator_and_hourly_prod} MWh')

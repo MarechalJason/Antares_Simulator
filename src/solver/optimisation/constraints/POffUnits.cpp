@@ -52,19 +52,6 @@ void POffUnits::add(int pays, int cluster, int pdt)
     }
     else
     {
-        // Lambda that count the number of reserves that the cluster is participating to
-        auto countReservesParticipations =
-          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
-        {
-            int counter = 0;
-            for (const auto& capacityReservation: reservations)
-            {
-                counter += capacityReservation.AllThermalReservesParticipation.count(cluster);
-            }
-            return counter;
-        };
-
-        builder.data.nombreDeContraintes += countReservesParticipations(
-          data.areaReserves[pays].areaCapacityReservationsUp);
+        builder.data.nombreDeContraintes++;
     }
 }

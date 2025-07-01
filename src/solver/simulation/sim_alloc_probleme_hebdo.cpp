@@ -650,13 +650,6 @@ void SIM_AllocateAreas(PROBLEME_HEBDO& problem,
                   .ProductionThermique[j]
                   .ParticipationReservesDuPalierOff()
                   .assign(nbThermalReserveParticipations, 0.);
-                problem.ResultatsHoraires[k]
-                  .ProductionThermique[j]
-                  .PuissanceGroupesEteintDuPalierQuiParticipentAuxReserves.init();
-                problem.ResultatsHoraires[k]
-                  .ProductionThermique[j]
-                  .PuissanceGroupesEteintDuPalierQuiParticipentAuxReserves()
-                  .assign(nbPaliers, 0.);
 
                 problem.ResultatsHoraires[k]
                   .Reserves()[j]
