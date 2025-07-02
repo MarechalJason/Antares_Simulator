@@ -62,7 +62,7 @@ Feature: reserves tests
 
 @fast @short
 # Lot 2 : Intégration de la participation du thermique éteint et des stockage CT et LT
-  Scenario: ST_5_off_cluster_participation
+  Scenario: ST_4_off_cluster_participation
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_4_reserves"
     When I run antares simulator
     Then the simulation succeeds
@@ -75,7 +75,7 @@ Feature: reserves tests
 
 @fast @short
 # Lot 2
-  Scenario: ST_6_off_cluster_participation_multiple_res
+  Scenario: ST_5_off_cluster_participation_multiple_res
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_5_reserves"
     When I run antares simulator
     Then the simulation succeeds
