@@ -251,10 +251,11 @@ public:
                      state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
                                                                        [clusterName])
                 {
-                    pValuesForTheCurrentYear
-                      [numSpace][state.area->reserveParticipationIndexMaps().thermalClusters.get(
-                                   std::make_pair(reserveName, clusterName))]
-                        .hour[state.hourInTheYear]
+                    pValuesForTheCurrentYear[numSpace]
+                                            [state.area->reserveParticipationIndexMaps()
+                                               .thermalClusters.left.at(
+                                                 std::make_pair(reserveName, clusterName))]
+                                              .hour[state.hourInTheYear]
                       = reserveParticipation.onUnitsParticipation;
                 }
             }
@@ -293,7 +294,7 @@ public:
                 {
                     auto [reserveName, clusterName] = results.data.area
                                                         ->reserveParticipationIndexMaps()
-                                                        .thermalClusters.get(i);
+                                                        .thermalClusters.right.at(i);
                     results.variableCaption = reserveName + "_"
                                               + clusterName; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();

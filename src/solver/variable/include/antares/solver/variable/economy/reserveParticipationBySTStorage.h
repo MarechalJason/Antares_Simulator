@@ -248,10 +248,11 @@ public:
                      state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
                                                                          [clusterName])
                 {
-                    pValuesForTheCurrentYear
-                      [numSpace][state.area->reserveParticipationIndexMaps().STStorageClusters.get(
-                                   std::make_pair(reserveName, clusterName))]
-                        .hour[state.hourInTheYear]
+                    pValuesForTheCurrentYear[numSpace]
+                                            [state.area->reserveParticipationIndexMaps()
+                                               .STStorageClusters.left.at(
+                                                 std::make_pair(reserveName, clusterName))]
+                                              .hour[state.hourInTheYear]
                       = reserveParticipation;
                 }
             }
@@ -289,7 +290,7 @@ public:
                 {
                     auto [reserveName, clusterName] = results.data.area
                                                         ->reserveParticipationIndexMaps()
-                                                        .STStorageClusters.get(i);
+                                                        .STStorageClusters.right.at(i);
                     // Write the data for the current year
                     results.variableCaption = reserveName + "_"
                                               + clusterName; // VCardType::Caption();

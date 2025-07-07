@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <vector>
 
+#include <boost/bimap.hpp>
+
 #include <yuni/yuni.h>
 #include <yuni/core/noncopyable.h>
 #include <yuni/core/string.h>
@@ -40,57 +42,6 @@
 #include "constants.h"
 #include "links.h"
 #include "ui.h"
-
-template<typename T>
-class BiMap
-{
-    // Maps for both directions: key-to-value and value-to-key
-    std::map<int, T> key_to_value; //!< Map from key (int) to value (T)
-    std::map<T, int> value_to_key; //!< Map from value (T) to key (int)
-
-public:
-    // Function to insert a key-value pair
-    bool insert(int key, const T& value)
-    {
-        // Ensure uniqueness: check if key or value already exists
-        if (key_to_value.count(key) || value_to_key.count(value))
-        {
-            return false; // Insertion fails if either key or value already exists
-        }
-
-        // Insert into both maps
-        key_to_value[key] = value;
-        value_to_key[value] = key;
-        return true;
-    }
-
-    // Function to get the value from the key
-    const T& get(int key) const
-    {
-        if (key_to_value.count(key))
-        {
-            return key_to_value.at(key); // Return the associated value if the key exists
-        }
-        throw std::out_of_range("This index is not in the BiMap");
-    }
-
-    // Function to get the key from the value
-    int get(const T& value) const
-    {
-        auto it = value_to_key.find(value);
-        if (it != value_to_key.end())
-        {
-            return it->second; // Return the associated key if the value exists
-        }
-        return -1; // Return -1 if value is not found
-    }
-
-    // Function to return the size of the bimap
-    int size() const
-    {
-        return key_to_value.size();
-    }
-};
 
 namespace Antares
 {
@@ -348,9 +299,9 @@ public:
 
     struct ReserveIndexMap
     {
-        BiMap<std::pair<Data::ReserveName, Data::ClusterName>> thermalClusters;
-        BiMap<std::pair<Data::ReserveName, Data::ClusterName>> STStorageClusters;
-        BiMap<Data::ReserveName> LTStorage;
+        boost::bimap<std::pair<Data::ReserveName, Data::ClusterName>, int> thermalClusters;
+        boost::bimap<std::pair<Data::ReserveName, Data::ClusterName>, int> STStorageClusters;
+        boost::bimap<Data::ReserveName, int> LTStorage;
     };
 
     ReserveOpt<ReserveIndexMap> reserveParticipationIndexMaps;

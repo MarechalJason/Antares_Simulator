@@ -23,6 +23,8 @@
 
 #include <optional>
 
+/// \brief A wrapper around std::optional to allow access to the value using the () operator
+// The objects using this type are used if the reserves are enabled in the study
 template<typename T>
 class ReserveOpt: public std::optional<T>
 {

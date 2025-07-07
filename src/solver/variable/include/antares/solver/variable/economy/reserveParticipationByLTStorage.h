@@ -193,7 +193,7 @@ public:
                                                                      ["LongTermStorage"])
             {
                 pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps()
-                                                     .LTStorage.get(reserveName)]
+                                                     .LTStorage.left.at(reserveName)]
                   .hour[state.hourInTheYear]
                   = reserveParticipation;
             }
@@ -225,7 +225,7 @@ public:
                          .LTStorage.size()) // Bimap is not empty
                 {
                     auto reserveName = results.data.area->reserveParticipationIndexMaps()
-                                         .LTStorage.get(i);
+                                         .LTStorage.right.at(i);
                     results.variableCaption = reserveName
                                               + "_LongTermStorage"; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
