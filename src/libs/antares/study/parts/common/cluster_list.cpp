@@ -25,6 +25,7 @@
 
 #include <boost/algorithm/string/case_conv.hpp>
 
+#include <antares/study/parts/common/makeGroupsOfSymmetriesFromString.h>
 #include <antares/utils/utils.h>
 #include "antares/study/study.h"
 
@@ -418,10 +419,10 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
     for (const auto& section: clustersSections)
     {
         std::string tmpClusterName;
-        float tmpMaxPower = 0;
-        float tmpMaxPowerOff = 0;
-        float tmpParticipationCost = 0;
-        float tmpParticipationCostOff = 0;
+        double tmpMaxPower = 0;
+        double tmpMaxPowerOff = 0;
+        double tmpParticipationCost = 0;
+        double tmpParticipationCostOff = 0;
 
         for (auto* p = section.get().firstProperty; p; p = p->next)
         {
@@ -435,7 +436,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             }
             else if (tmp == "max-power")
             {
-                if (!p->value.to<float>(tmpMaxPower))
+                if (!p->value.to<double>(tmpMaxPower))
                 {
                     logs.warning()
                       << area.name << ": invalid max power for reserve " << section.get().name;
@@ -443,7 +444,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             }
             else if (tmp == "participation-cost")
             {
-                if (!p->value.to<float>(tmpParticipationCost))
+                if (!p->value.to<double>(tmpParticipationCost))
                 {
                     logs.warning() << area.name << ": invalid participation cost for reserve "
                                    << section.get().name;
@@ -451,7 +452,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             }
             else if (tmp == "max-power-off")
             {
-                if (!p->value.to<float>(tmpMaxPowerOff))
+                if (!p->value.to<double>(tmpMaxPowerOff))
                 {
                     logs.warning()
                       << area.name << ": invalid max power off for reserve " << section.get().name;
@@ -459,7 +460,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             }
             else if (tmp == "participation-cost-off")
             {
-                if (!p->value.to<float>(tmpParticipationCostOff))
+                if (!p->value.to<double>(tmpParticipationCostOff))
                 {
                     logs.warning() << area.name << ": invalid participation cost off for reserve "
                                    << section.get().name;
@@ -518,7 +519,8 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
         {
             std::string tmpClusterName;
             TransformNameIntoID(p->key, tmpClusterName);
-            auto symmetries = Antares::parseStringToVectorOfVectorOfStrings(p->value);
+
+            auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
             for (auto& sym: symmetries)
             {
                 auto cluster = area.thermal.list.getClusterByName(tmpClusterName);

@@ -23,6 +23,7 @@
 
 #include <antares/inifile/inifile.h>
 #include <antares/study/area/capacityReservation.h>
+#include <antares/study/parts/common/makeGroupsOfSymmetriesFromString.h>
 #include "antares/study/parts/hydro/hydromaxtimeseriesreader.h"
 #include "antares/study/study.h"
 
@@ -812,9 +813,9 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
     {
         logs.info() << "Processing section: " << section.get().name;
         std::string reserveName = section.get().name.c_str();
-        float maxTurbining = 0;
-        float maxPumping = 0;
-        float participationCost = 0;
+        double maxTurbining = 0;
+        double maxPumping = 0;
+        double participationCost = 0;
 
         section.get().each(
           [&](const IniFile::Property& property)
@@ -823,15 +824,15 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
               key.toLower();
               if (key == "max-turbining")
               {
-                  property.value.to<float>(maxTurbining);
+                  property.value.to<double>(maxTurbining);
               }
               else if (key == "max-pumping")
               {
-                  property.value.to<float>(maxPumping);
+                  property.value.to<double>(maxPumping);
               }
               else if (key == "participation-cost")
               {
-                  property.value.to<float>(participationCost);
+                  property.value.to<double>(participationCost);
               }
               logs.info() << "Property: " << key << " = " << property.value;
           });
@@ -859,7 +860,7 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
         {
             std::string tmpClusterName;
             TransformNameIntoID(p->key, tmpClusterName);
-            auto symmetries = Antares::parseStringToVectorOfVectorOfStrings(p->value);
+            auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
             for (auto& sym: symmetries)
             {
                 area.hydro.addReserveParticipationSymmetry(sym);
@@ -883,7 +884,7 @@ void PartHydro::addReserveParticipation(const std::string& reserveName,
     reservesParticipations().emplace(reserveName, participation);
 }
 
-void PartHydro::addReserveParticipationSymmetry(std::vector<Data::ReserveName> names)
+void PartHydro::addReserveParticipationSymmetry(std::set<Data::ReserveName> names)
 {
     reserveParticipationsSymmetries.init();
     auto symmetryRes = std::vector<LTStorageReserveParticipationWithName>();
@@ -961,7 +962,7 @@ std::optional<Data::ReserveName> PartHydro::reserveParticipationAt(const Area* a
     return std::nullopt;
 }
 
-float PartHydro::reserveMaxTurbining(Data::ReserveName name)
+double PartHydro::reserveMaxTurbining(Data::ReserveName name)
 {
     if (reservesParticipations().contains(name))
     {
@@ -974,7 +975,7 @@ float PartHydro::reserveMaxTurbining(Data::ReserveName name)
     }
 }
 
-float PartHydro::reserveMaxPumping(Data::ReserveName name)
+double PartHydro::reserveMaxPumping(Data::ReserveName name)
 {
     if (reservesParticipations().contains(name))
     {
@@ -987,7 +988,7 @@ float PartHydro::reserveMaxPumping(Data::ReserveName name)
     }
 }
 
-float PartHydro::reserveCost(Data::ReserveName name)
+double PartHydro::reserveCost(Data::ReserveName name)
 {
     if (reservesParticipations().contains(name))
     {

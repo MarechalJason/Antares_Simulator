@@ -104,6 +104,7 @@ set(TARGET_LIBS #No alias
         data-series-csv-importer
         expressions-iterators
         additional-constraint-rhs-antlr-interface
+        resserves-parsing-antlr-interface
 )
 
 install(TARGETS ${TARGET_LIBS}

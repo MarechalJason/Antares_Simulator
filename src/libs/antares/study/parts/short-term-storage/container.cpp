@@ -26,6 +26,7 @@
 #include <regex>
 #include <string>
 
+#include <antares/study/parts/common/makeGroupsOfSymmetriesFromString.h>
 #include <antares/utils/utils.h>
 #include "antares/study/parts/short-term-storage/container.h"
 #include "antares/study/parts/short-term-storage/makeGroupsOfHoursFromString.h"
@@ -251,9 +252,9 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
     for (const auto& section: clustersSections)
     {
         std::string tmpClusterName;
-        float tmpMaxTurbining = 0;
-        float tmpMaxPumping = 0;
-        float tmpParticipationCost = 0;
+        double tmpMaxTurbining = 0;
+        double tmpMaxPumping = 0;
+        double tmpParticipationCost = 0;
 
         for (auto* p = section.get().firstProperty; p; p = p->next)
         {
@@ -266,7 +267,7 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
             }
             else if (tmp == "max-turbining")
             {
-                if (!p->value.to<float>(tmpMaxTurbining))
+                if (!p->value.to<double>(tmpMaxTurbining))
                 {
                     logs.warning() << area.name << ": invalid max turbining power for reserve "
                                    << section.get().name;
@@ -274,7 +275,7 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
             }
             else if (tmp == "max-pumping")
             {
-                if (!p->value.to<float>(tmpMaxPumping))
+                if (!p->value.to<double>(tmpMaxPumping))
                 {
                     logs.warning() << area.name << ": invalid max pumping power for reserve "
                                    << section.get().name;
@@ -282,7 +283,7 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
             }
             else if (tmp == "participation-cost")
             {
-                if (!p->value.to<float>(tmpParticipationCost))
+                if (!p->value.to<double>(tmpParticipationCost))
                 {
                     logs.warning() << area.name << ": invalid participation cost for reserve "
                                    << section.get().name;
@@ -322,7 +323,8 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
         {
             std::string tmpClusterName;
             TransformNameIntoID(p->key, tmpClusterName);
-            auto symmetries = Antares::parseStringToVectorOfVectorOfStrings(p->value);
+
+            auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
             for (auto& sym: symmetries)
             {
                 auto cluster = area.shortTermStorage.getClusterByName(tmpClusterName);

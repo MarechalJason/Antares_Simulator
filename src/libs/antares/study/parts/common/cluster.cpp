@@ -120,7 +120,7 @@ void Cluster::addReserveParticipation(Data::ReserveName name,
     clusterReservesParticipations().emplace(name, reserveParticipation);
 }
 
-void Cluster::addReserveParticipationSymmetry(std::vector<Data::ReserveName> names)
+void Cluster::addReserveParticipationSymmetry(std::set<Data::ReserveName> names)
 {
     reserveParticipationsSymmetries.init();
     auto symmetryRes = std::vector<ThermalClusterReserveParticipationWithName>();

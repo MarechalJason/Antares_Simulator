@@ -117,7 +117,7 @@ public:
 
     //! @brief Add the reserve participation symmetry
     //! @param names the names of the reserves to add to the symmetry list
-    void addReserveParticipationSymmetry(std::vector<Data::ReserveName> names);
+    void addReserveParticipationSymmetry(std::set<Data::ReserveName> names);
 
     //! @brief Get the reserve participation symmetry list index
     std::vector<int> symmetricalIndices(Data::ReserveName name) const;

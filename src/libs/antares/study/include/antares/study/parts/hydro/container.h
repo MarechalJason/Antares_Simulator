@@ -182,7 +182,7 @@ public:
     void addReserveParticipation(const std::string& reserveName,
                                  const LTStorageClusterReserveParticipation& participation);
 
-    void addReserveParticipationSymmetry(std::vector<Data::ReserveName>);
+    void addReserveParticipationSymmetry(std::set<Data::ReserveName>);
 
     //! @brief Get the reserve participation symmetry list index
     std::vector<int> symmetricalIndices(Data::ReserveName name) const;
@@ -194,13 +194,13 @@ public:
                                                             unsigned int index) const;
 
     //! Returns max turbining power for a reserve if participating, -1 otherwise
-    float reserveMaxTurbining(Data::ReserveName name);
+    double reserveMaxTurbining(Data::ReserveName name);
 
     //! Returns max pumping power for a reserve if participating, -1 otherwise
-    float reserveMaxPumping(Data::ReserveName name);
+    double reserveMaxPumping(Data::ReserveName name);
 
     //! Returns participating cost for a reserve if participating, -1 otherwise
-    float reserveCost(Data::ReserveName name);
+    double reserveCost(Data::ReserveName name);
 
 public:
     //! Inter-daily breakdown (previously called Smoothing Factor or alpha)

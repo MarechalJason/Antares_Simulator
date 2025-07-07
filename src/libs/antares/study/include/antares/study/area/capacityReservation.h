@@ -46,10 +46,10 @@ struct CapacityReservation
     {
     }
 
-    float failureCost;
-    float spillageCost;
-    float maxActivationRatio;
-    float maxEnergyActivationRatio;
+    double failureCost;
+    double spillageCost;
+    double maxActivationRatio;
+    double maxEnergyActivationRatio;
     int maxActivationHours;
     Antares::Data::TimeSeries need;
 
@@ -60,8 +60,8 @@ private:
 /// @brief Stores all the Capacity reservations in two vectors for the up and down reserves
 struct AllCapacityReservations
 {
-    float maxGlobalEnergyActivationRatioUp = 1.;
-    float maxGlobalEnergyActivationRatioDown = 1.;
+    double maxGlobalEnergyActivationRatioUp = 1.;
+    double maxGlobalEnergyActivationRatioDown = 1.;
     int maxGlobalActivationDurationUp = 1;
     int maxGlobalActivationDurationDown = 1;
 
@@ -118,16 +118,16 @@ struct AllCapacityReservations
 struct ThermalClusterReserveParticipation
 {
     std::reference_wrapper<CapacityReservation> capacityReservation;
-    float maxPower = 0;
-    float participationCost = 0;
-    float maxPowerOff = 0;
-    float participationCostOff = 0;
+    double maxPower = 0;
+    double participationCost = 0;
+    double maxPowerOff = 0;
+    double participationCostOff = 0;
 
     ThermalClusterReserveParticipation(std::reference_wrapper<CapacityReservation> reserve,
-                                       float power,
-                                       float cost,
-                                       float powerOff,
-                                       float costOff):
+                                       double power,
+                                       double cost,
+                                       double powerOff,
+                                       double costOff):
         capacityReservation(reserve),
         maxPower(power),
         participationCost(cost),
@@ -156,14 +156,14 @@ struct ThermalClusterReserveParticipation
 struct STStorageClusterReserveParticipation
 {
     std::reference_wrapper<CapacityReservation> capacityReservation;
-    float maxTurbining = 0;
-    float maxPumping = 0;
-    float participationCost = 0;
+    double maxTurbining = 0;
+    double maxPumping = 0;
+    double participationCost = 0;
 
     STStorageClusterReserveParticipation(std::reference_wrapper<CapacityReservation> reserve,
-                                         float turbining,
-                                         float pumping,
-                                         float cost):
+                                         double turbining,
+                                         double pumping,
+                                         double cost):
         capacityReservation(reserve),
         maxTurbining(turbining),
         maxPumping(pumping),
@@ -191,14 +191,14 @@ struct STStorageClusterReserveParticipation
 struct LTStorageClusterReserveParticipation
 {
     std::reference_wrapper<CapacityReservation> capacityReservation;
-    float maxTurbining = 0;
-    float maxPumping = 0;
-    float participationCost = 0;
+    double maxTurbining = 0;
+    double maxPumping = 0;
+    double participationCost = 0;
 
     LTStorageClusterReserveParticipation(std::reference_wrapper<CapacityReservation> reserve,
-                                         float turbining,
-                                         float pumping,
-                                         float cost):
+                                         double turbining,
+                                         double pumping,
+                                         double cost):
         capacityReservation(reserve),
         maxTurbining(turbining),
         maxPumping(pumping),

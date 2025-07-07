@@ -63,7 +63,11 @@ set(SRC_STUDY_PART_COMMON
         parts/common/cluster.cpp
         include/antares/study/parts/common/cluster.h
         include/antares/study/parts/common/cluster_list.h
+        include/antares/study/parts/common/makeGroupsOfSymmetriesFromString.h
+        include/antares/study/parts/common/SymmetryCollectorVisitor.h
         parts/common/cluster_list.cpp
+        parts/common/makeGroupsofSymmettriesFromString.cpp
+
 )
 source_group("study\\part\\common" FILES ${SRC_STUDY_PART_COMMON})
 
@@ -315,7 +319,8 @@ target_link_libraries(study
         Antares::exception
         Antares::benchmarking
         antares-solver-variable
-		Antares::additional-constraint-rhs-antlr-interface
+        Antares::additional-constraint-rhs-antlr-interface
+        Antares::resserves-parsing-antlr-interface
 )
 
 target_include_directories(study

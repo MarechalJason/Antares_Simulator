@@ -62,7 +62,7 @@ public:
     void addReserveParticipation(Data::ReserveName name,
                                  STStorageClusterReserveParticipation& reserveParticipation);
 
-    void addReserveParticipationSymmetry(std::vector<Data::ReserveName>);
+    void addReserveParticipationSymmetry(std::set<Data::ReserveName>);
 
     //! @brief Get the reserve participation symmetry list index
     std::vector<int> symmetricalIndices(Data::ReserveName name) const;
@@ -71,13 +71,13 @@ public:
     int getNbSymGroups();
 
     //! \brief Returns max turbining power for a reserve if participating, -1 otherwise
-    float reserveMaxTurbining(Data::ReserveName name);
+    double reserveMaxTurbining(Data::ReserveName name);
 
     //! \brief Returns max pumping power for a reserve if participating, -1 otherwise
-    float reserveMaxPumping(Data::ReserveName name);
+    double reserveMaxPumping(Data::ReserveName name);
 
     //! \brief Returns participating cost for a reserve if participating, -1 otherwise
-    float reserveCost(Data::ReserveName name);
+    double reserveCost(Data::ReserveName name);
 
     //! \brief Returns the number of reserve the cluster is participating to
     uint reserveParticipationsCount();

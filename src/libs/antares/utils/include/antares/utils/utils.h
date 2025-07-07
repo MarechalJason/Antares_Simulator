@@ -50,8 +50,6 @@ void BeautifyName(std::string& out, const std::string& oldname);
 std::vector<std::pair<std::string, std::string>> splitStringIntoPairs(const std::string& s,
                                                                       char delimiter1,
                                                                       char delimiter2);
-std::vector<std::vector<std::string>> parseStringToVectorOfVectorOfStrings(
-  const std::string& input);
 
 namespace Utils
 {

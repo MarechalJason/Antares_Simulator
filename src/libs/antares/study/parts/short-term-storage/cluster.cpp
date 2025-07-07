@@ -130,7 +130,7 @@ void STStorageCluster::addReserveParticipation(
     clusterReservesParticipations().emplace(name, reserveParticipation);
 }
 
-void STStorageCluster::addReserveParticipationSymmetry(std::vector<Data::ReserveName> names)
+void STStorageCluster::addReserveParticipationSymmetry(std::set<Data::ReserveName> names)
 {
     reserveParticipationsSymmetries.init();
     auto symmetryRes = std::vector<STStorageClusterReserveParticipationWithName>();
@@ -176,7 +176,7 @@ int STStorageCluster::getNbSymGroups()
     return reserveParticipationsSymmetries().size();
 }
 
-float STStorageCluster::reserveMaxTurbining(Data::ReserveName name)
+double STStorageCluster::reserveMaxTurbining(Data::ReserveName name)
 {
     if (clusterReservesParticipations().contains(name))
     {
@@ -189,7 +189,7 @@ float STStorageCluster::reserveMaxTurbining(Data::ReserveName name)
     }
 }
 
-float STStorageCluster::reserveMaxPumping(Data::ReserveName name)
+double STStorageCluster::reserveMaxPumping(Data::ReserveName name)
 {
     if (clusterReservesParticipations().contains(name))
     {
@@ -202,7 +202,7 @@ float STStorageCluster::reserveMaxPumping(Data::ReserveName name)
     }
 }
 
-float STStorageCluster::reserveCost(Data::ReserveName name)
+double STStorageCluster::reserveCost(Data::ReserveName name)
 {
     if (clusterReservesParticipations().contains(name))
     {
