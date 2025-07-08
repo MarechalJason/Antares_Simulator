@@ -9,7 +9,7 @@
 ** the Free Software Foundation, either version 3 of the License, or
 ** (at your option) any later version.
 **
-** There are special exceptions to the terms and conditi96ons of the
+** There are special exceptions to the terms and conditions of the
 ** license as they are applied to this software. View the full text of
 ** the exceptions in file COPYING.txt in the directory of this software
 ** distribution
@@ -24,10 +24,10 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationMarginalCost_H__
-#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationMarginalCost_H__
+#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByThermalGroup_H__
+#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByThermalGroup_H__
 
-#include "../storage/results.h"
+#include "../../storage/results.h"
 
 namespace Antares
 {
@@ -37,24 +37,24 @@ namespace Variable
 {
 namespace Economy
 {
-struct VCardReserveParticipationMarginalCost
+struct VCardReserveParticipationByThermalGroup
 {
     //! Caption
     static std::string Caption()
     {
-        return "RESERVE PARTICIPATION MARGINAL COST";
+        return "THERMAL GROUP PARTICIPATION TO RESERVE";
     }
 
     //! Unit
     static std::string Unit()
     {
-        return "Euro";
+        return "MWh";
     }
 
     //! The short description of the variable
     static std::string Description()
     {
-        return "Reserve participation marginal cost";
+        return "Reserve Participation from a group to a reserve";
     }
 
     //! The expected results
@@ -63,7 +63,7 @@ struct VCardReserveParticipationMarginalCost
       ResultsType;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardReserveParticipationMarginalCost VCardForSpatialAggregate;
+    typedef VCardReserveParticipationByThermalGroup VCardForSpatialAggregate;
 
     enum
     {
@@ -77,7 +77,7 @@ struct VCardReserveParticipationMarginalCost
         //! Indentation (GUI)
         nodeDepthForGUI = +0,
         //! Decimal precision
-        decimal = 4,
+        decimal = 0,
         //! Number of columns used by the variable
         columnCount = Category::dynamicColumns,
         //! The Spatial aggregation
@@ -98,14 +98,39 @@ struct VCardReserveParticipationMarginalCost
 
 }; // class VCard
 
-static std::string marginalCostToString()
+static std::string thermalDispatchableGroupToString(
+  Data::ThermalCluster::ThermalDispatchableGroup idx)
 {
-    return "MRG.COST";
-}
+    switch (idx)
+    {
+    case 0:
+        return "NUCLEAR";
+    case 1:
+        return "LIGNITE";
+    case 2:
+        return "COAL";
+    case 3:
+        return "GAS";
+    case 4:
+        return "OIL";
+    case 5:
+        return "MIX. FUEL";
+    case 6:
+        return "MISC. DTG";
+    case 7:
+        return "MISC. DTG 2";
+    case 8:
+        return "MISC. DTG 3";
+    case 9:
+        return "MISC. DTG 4";
 
+    default:
+        return "<unknown>";
+    }
+}
 } // namespace Economy
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
 
-#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationMarginalCost_H__
+#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByThermalGroup_H__

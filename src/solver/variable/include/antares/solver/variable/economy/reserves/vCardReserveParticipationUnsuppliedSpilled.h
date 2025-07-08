@@ -9,7 +9,7 @@
 ** the Free Software Foundation, either version 3 of the License, or
 ** (at your option) any later version.
 **
-** There are special exceptions to the terms and conditions of the
+** There are special exceptions to the terms and conditi96ons of the
 ** license as they are applied to this software. View the full text of
 ** the exceptions in file COPYING.txt in the directory of this software
 ** distribution
@@ -24,10 +24,10 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationBySTStorageGroup_H__
-#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationBySTStorageGroup_H__
+#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationUnsuppliedSpilled_H__
+#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationUnsuppliedSpilled_H__
 
-#include "../storage/results.h"
+#include "../../storage/results.h"
 
 namespace Antares
 {
@@ -37,12 +37,12 @@ namespace Variable
 {
 namespace Economy
 {
-struct VCardReserveParticipationBySTStorageGroup
+struct VCardReserveParticipationUnsuppliedSpilled
 {
     //! Caption
     static std::string Caption()
     {
-        return "SHORT TERM STORAGE GROUP PARTICIPATION TO RESERVE";
+        return "RESERVE UNSUPPLIED OR SPILLED ENERGY";
     }
 
     //! Unit
@@ -54,7 +54,7 @@ struct VCardReserveParticipationBySTStorageGroup
     //! The short description of the variable
     static std::string Description()
     {
-        return "Reserve Participation from a group to a reserve";
+        return "Reserve unsupplied or spilled Power";
     }
 
     //! The expected results
@@ -63,7 +63,7 @@ struct VCardReserveParticipationBySTStorageGroup
       ResultsType;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardReserveParticipationBySTStorageGroup VCardForSpatialAggregate;
+    typedef VCardReserveParticipationUnsuppliedSpilled VCardForSpatialAggregate;
 
     enum
     {
@@ -98,36 +98,22 @@ struct VCardReserveParticipationBySTStorageGroup
 
 }; // class VCard
 
-static std::string STStorageGroupToString(Data::ShortTermStorage::Group idx)
+static std::string unsuppliedSpilledToString(Data::ThermalCluster::UnsuppliedSpilled idx)
 {
-    using Group = Data::ShortTermStorage::Group; //"using enum" not supported by g++10
     switch (idx)
     {
-    case Group::PSP_open:
-        return "PSP_open";
-    case Group::PSP_closed:
-        return "PSP_closed";
-    case Group::Pondage:
-        return "Pondage";
-    case Group::Battery:
-        return "Battery";
-    case Group::Other1:
-        return "Other1";
-    case Group::Other2:
-        return "Other2";
-    case Group::Other3:
-        return "Other3";
-    case Group::Other4:
-        return "Other4";
-    case Group::Other5:
-        return "Other5";
+    case 0:
+        return "UNSP.";
+    case 1:
+        return "SPIL.";
     default:
         return "<unknown>";
     }
 }
+
 } // namespace Economy
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
 
-#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationBySTStorageGroup_H__
+#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationUnsuppliedSpilled_H__

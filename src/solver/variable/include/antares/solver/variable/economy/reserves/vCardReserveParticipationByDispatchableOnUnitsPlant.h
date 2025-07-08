@@ -24,10 +24,10 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByThermalGroup_H__
-#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByThermalGroup_H__
+#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOnUnitsPlant_H__
+#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOnUnitsPlant_H__
 
-#include "../storage/results.h"
+#include "../../storage/results.h"
 
 namespace Antares
 {
@@ -37,24 +37,24 @@ namespace Variable
 {
 namespace Economy
 {
-struct VCardReserveParticipationByThermalGroup
+struct VCardReserveParticipationByDispatchableOnUnitsPlant
 {
     //! Caption
     static std::string Caption()
     {
-        return "THERMAL GROUP PARTICIPATION TO RESERVE";
+        return "RUNNING UNITS CLUSTER PARTICIPATION TO RESERVE";
     }
 
     //! Unit
     static std::string Unit()
     {
-        return "MWh";
+        return "Reserve Participation Power - MWh";
     }
 
     //! The short description of the variable
     static std::string Description()
     {
-        return "Reserve Participation from a group to a reserve";
+        return "Reserve Participation from running units in cluster to a reserve";
     }
 
     //! The expected results
@@ -63,15 +63,14 @@ struct VCardReserveParticipationByThermalGroup
       ResultsType;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardReserveParticipationByThermalGroup VCardForSpatialAggregate;
+    typedef VCardReserveParticipationByDispatchableOnUnitsPlant VCardForSpatialAggregate;
 
     enum
     {
         //! Data Level
         categoryDataLevel = Category::DataLevel::area,
         //! File level (provided by the type of the results)
-        categoryFileLevel = ResultsType::categoryFile
-                            & (Category::FileLevel::id | Category::FileLevel::va),
+        categoryFileLevel = ResultsType::categoryFile & (Category::FileLevel::de),
         //! Precision (views)
         precision = Category::all,
         //! Indentation (GUI)
@@ -97,40 +96,9 @@ struct VCardReserveParticipationByThermalGroup
     // typedef IntermediateValues IntermediateValuesType;
 
 }; // class VCard
-
-static std::string thermalDispatchableGroupToString(
-  Data::ThermalCluster::ThermalDispatchableGroup idx)
-{
-    switch (idx)
-    {
-    case 0:
-        return "NUCLEAR";
-    case 1:
-        return "LIGNITE";
-    case 2:
-        return "COAL";
-    case 3:
-        return "GAS";
-    case 4:
-        return "OIL";
-    case 5:
-        return "MIX. FUEL";
-    case 6:
-        return "MISC. DTG";
-    case 7:
-        return "MISC. DTG 2";
-    case 8:
-        return "MISC. DTG 3";
-    case 9:
-        return "MISC. DTG 4";
-
-    default:
-        return "<unknown>";
-    }
-}
 } // namespace Economy
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
 
-#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByThermalGroup_H__
+#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOnUnitsPlant_H__

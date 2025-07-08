@@ -27,7 +27,7 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationMarginalCost_H__
 #define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationMarginalCost_H__
 
-#include "../variable.h"
+#include "../../variable.h"
 #include "./vCardReserveParticipationMarginalCost.h"
 
 namespace Antares

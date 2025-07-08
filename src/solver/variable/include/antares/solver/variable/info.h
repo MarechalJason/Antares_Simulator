@@ -26,14 +26,14 @@
 #include "antares/solver/variable/surveyresults.h"
 #include "antares/study/fwd.h"
 
-#include "economy/vCardReserveParticipationByDispatchableOffUnitsPlant.h"
-#include "economy/vCardReserveParticipationByDispatchableOnUnitsPlant.h"
-#include "economy/vCardReserveParticipationByLTStorage.h"
-#include "economy/vCardReserveParticipationBySTStorage.h"
-#include "economy/vCardReserveParticipationBySTStorageGroup.h"
-#include "economy/vCardReserveParticipationByThermalGroup.h"
-#include "economy/vCardReserveParticipationMarginalCost.h"
-#include "economy/vCardReserveParticipationUnsuppliedSpilled.h"
+#include "economy/reserves/vCardReserveParticipationByDispatchableOffUnitsPlant.h"
+#include "economy/reserves/vCardReserveParticipationByDispatchableOnUnitsPlant.h"
+#include "economy/reserves/vCardReserveParticipationByLTStorage.h"
+#include "economy/reserves/vCardReserveParticipationBySTStorage.h"
+#include "economy/reserves/vCardReserveParticipationBySTStorageGroup.h"
+#include "economy/reserves/vCardReserveParticipationByThermalGroup.h"
+#include "economy/reserves/vCardReserveParticipationMarginalCost.h"
+#include "economy/reserves/vCardReserveParticipationUnsuppliedSpilled.h"
 
 namespace Antares
 {

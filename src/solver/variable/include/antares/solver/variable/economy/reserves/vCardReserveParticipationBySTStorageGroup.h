@@ -24,10 +24,10 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOnUnitsPlant_H__
-#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOnUnitsPlant_H__
+#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationBySTStorageGroup_H__
+#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationBySTStorageGroup_H__
 
-#include "../storage/results.h"
+#include "../../storage/results.h"
 
 namespace Antares
 {
@@ -37,24 +37,24 @@ namespace Variable
 {
 namespace Economy
 {
-struct VCardReserveParticipationByDispatchableOnUnitsPlant
+struct VCardReserveParticipationBySTStorageGroup
 {
     //! Caption
     static std::string Caption()
     {
-        return "RUNNING UNITS CLUSTER PARTICIPATION TO RESERVE";
+        return "SHORT TERM STORAGE GROUP PARTICIPATION TO RESERVE";
     }
 
     //! Unit
     static std::string Unit()
     {
-        return "Reserve Participation Power - MWh";
+        return "MWh";
     }
 
     //! The short description of the variable
     static std::string Description()
     {
-        return "Reserve Participation from running units in cluster to a reserve";
+        return "Reserve Participation from a group to a reserve";
     }
 
     //! The expected results
@@ -63,14 +63,15 @@ struct VCardReserveParticipationByDispatchableOnUnitsPlant
       ResultsType;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardReserveParticipationByDispatchableOnUnitsPlant VCardForSpatialAggregate;
+    typedef VCardReserveParticipationBySTStorageGroup VCardForSpatialAggregate;
 
     enum
     {
         //! Data Level
         categoryDataLevel = Category::DataLevel::area,
         //! File level (provided by the type of the results)
-        categoryFileLevel = ResultsType::categoryFile & (Category::FileLevel::de),
+        categoryFileLevel = ResultsType::categoryFile
+                            & (Category::FileLevel::id | Category::FileLevel::va),
         //! Precision (views)
         precision = Category::all,
         //! Indentation (GUI)
@@ -96,9 +97,37 @@ struct VCardReserveParticipationByDispatchableOnUnitsPlant
     // typedef IntermediateValues IntermediateValuesType;
 
 }; // class VCard
+
+static std::string STStorageGroupToString(Data::ShortTermStorage::Group idx)
+{
+    using Group = Data::ShortTermStorage::Group; //"using enum" not supported by g++10
+    switch (idx)
+    {
+    case Group::PSP_open:
+        return "PSP_open";
+    case Group::PSP_closed:
+        return "PSP_closed";
+    case Group::Pondage:
+        return "Pondage";
+    case Group::Battery:
+        return "Battery";
+    case Group::Other1:
+        return "Other1";
+    case Group::Other2:
+        return "Other2";
+    case Group::Other3:
+        return "Other3";
+    case Group::Other4:
+        return "Other4";
+    case Group::Other5:
+        return "Other5";
+    default:
+        return "<unknown>";
+    }
+}
 } // namespace Economy
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
 
-#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOnUnitsPlant_H__
+#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationBySTStorageGroup_H__

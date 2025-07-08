@@ -24,11 +24,11 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOnUnitsPlant_H__
-#define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOnUnitsPlant_H__
+#ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationBySTStorage_H__
+#define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationBySTStorage_H__
 
-#include "../variable.h"
-#include "./vCardReserveParticipationByDispatchableOnUnitsPlant.h"
+#include "../../variable.h"
+#include "./vCardReserveParticipationBySTStorage.h"
 
 namespace Antares
 {
@@ -44,20 +44,19 @@ namespace Economy
 **   the thermal dispatchable clusters
 */
 template<class NextT = Container::EndOfList>
-class ReserveParticipationByDispatchableOnUnitsPlant
-    : public Variable::IVariable<ReserveParticipationByDispatchableOnUnitsPlant<NextT>,
+class ReserveParticipationBySTStorage
+    : public Variable::IVariable<ReserveParticipationBySTStorage<NextT>,
                                  NextT,
-                                 VCardReserveParticipationByDispatchableOnUnitsPlant>
+                                 VCardReserveParticipationBySTStorage>
 {
 public:
     //! Type of the next static variable
     typedef NextT NextType;
     //! VCard
-    typedef VCardReserveParticipationByDispatchableOnUnitsPlant VCardType;
+    typedef VCardReserveParticipationBySTStorage VCardType;
     //! Ancestor
-    typedef Variable::
-      IVariable<ReserveParticipationByDispatchableOnUnitsPlant<NextT>, NextT, VCardType>
-        AncestorType;
+    typedef Variable::IVariable<ReserveParticipationBySTStorage<NextT>, NextT, VCardType>
+      AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -84,13 +83,13 @@ public:
     };
 
 public:
-    ReserveParticipationByDispatchableOnUnitsPlant():
+    ReserveParticipationBySTStorage():
         pValuesForTheCurrentYear(NULL),
         pSize(0)
     {
     }
 
-    ~ReserveParticipationByDispatchableOnUnitsPlant()
+    ~ReserveParticipationBySTStorage()
     {
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
@@ -111,12 +110,11 @@ public:
         pNbYearsParallel = study->maxNbYearsInParallel;
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
-        // Get the number of thermal reserveParticipations
+        // Get the number of STStorage reserveParticipations
         pSize = study->parameters.compatibility.reserves
                     == Antares::Data::Parameters::Compatibility::Reserves::Enabled
-                  ? area->thermal.list.reserveParticipationsCount()
+                  ? area->shortTermStorage.reserveParticipationsCount()
                   : 0;
-
         if (pSize)
         {
             AncestorType::pResults.resize(pSize);
@@ -239,24 +237,23 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        // Get end year calculations
         if (state.study.parameters.compatibility.reserves
               == Antares::Data::Parameters::Compatibility::Reserves::Enabled
-            && state.area->reserveParticipationIndexMaps().thermalClusters.size())
+            && state.area->reserveParticipationIndexMaps().STStorageClusters.size())
         {
             for (auto& [clusterName, _]:
-                 state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear])
+                 state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear])
             {
                 for (const auto& [reserveName, reserveParticipation]:
-                     state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
-                                                                       [clusterName])
+                     state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
+                                                                         [clusterName])
                 {
                     pValuesForTheCurrentYear[numSpace]
                                             [state.area->reserveParticipationIndexMaps()
-                                               .thermalClusters.left.at(
+                                               .STStorageClusters.left.at(
                                                  std::make_pair(reserveName, clusterName))]
                                               .hour[state.hourInTheYear]
-                      = reserveParticipation.onUnitsParticipation;
+                      = reserveParticipation;
                 }
             }
         }
@@ -283,18 +280,18 @@ public:
         if (AncestorType::isPrinted[0])
         {
             assert(NULL != results.data.area);
-            const auto& thermal = results.data.area->thermal;
 
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
             {
                 if (results.data.area->reserveParticipationIndexMaps
                     && results.data.area->reserveParticipationIndexMaps()
-                         .thermalClusters.size()) // Bimap is not empty
+                         .STStorageClusters.size()) // Bimap is not empty
                 {
                     auto [reserveName, clusterName] = results.data.area
                                                         ->reserveParticipationIndexMaps()
-                                                        .thermalClusters.right.at(i);
+                                                        .STStorageClusters.right.at(i);
+                    // Write the data for the current year
                     results.variableCaption = reserveName + "_"
                                               + clusterName; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
@@ -311,11 +308,11 @@ private:
     size_t pSize;
     unsigned int pNbYearsParallel;
 
-}; // class ReserveParticipationByDispatchableOnUnitsPlant
+}; // class ReserveParticipationBySTStorage
 
 } // namespace Economy
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
 
-#endif // __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOnUnitsPlant_H__
+#endif // __SOLVER_VARIABLE_ECONOMY_ReserveParticipationBySTStorage_H__

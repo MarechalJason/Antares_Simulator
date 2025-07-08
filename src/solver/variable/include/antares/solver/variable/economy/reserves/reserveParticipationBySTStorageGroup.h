@@ -27,7 +27,7 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationBySTStorageGroup_H__
 #define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationBySTStorageGroup_H__
 
-#include "../variable.h"
+#include "../../variable.h"
 #include "./vCardReserveParticipationBySTStorageGroup.h"
 
 namespace Antares

@@ -27,7 +27,7 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByThermalGroup_H__
 #define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByThermalGroup_H__
 
-#include "../variable.h"
+#include "../../variable.h"
 #include "./vCardReserveParticipationByThermalGroup.h"
 
 namespace Antares

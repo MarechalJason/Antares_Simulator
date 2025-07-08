@@ -24,11 +24,11 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOffUnitsPlant_H__
-#define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOffUnitsPlant_H__
+#ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOnUnitsPlant_H__
+#define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOnUnitsPlant_H__
 
-#include "../variable.h"
-#include "./vCardReserveParticipationByDispatchableOffUnitsPlant.h"
+#include "../../variable.h"
+#include "./vCardReserveParticipationByDispatchableOnUnitsPlant.h"
 
 namespace Antares
 {
@@ -44,19 +44,19 @@ namespace Economy
 **   the thermal dispatchable clusters
 */
 template<class NextT = Container::EndOfList>
-class ReserveParticipationByDispatchableOffUnitsPlant
-    : public Variable::IVariable<ReserveParticipationByDispatchableOffUnitsPlant<NextT>,
+class ReserveParticipationByDispatchableOnUnitsPlant
+    : public Variable::IVariable<ReserveParticipationByDispatchableOnUnitsPlant<NextT>,
                                  NextT,
-                                 VCardReserveParticipationByDispatchableOffUnitsPlant>
+                                 VCardReserveParticipationByDispatchableOnUnitsPlant>
 {
 public:
     //! Type of the next static variable
     typedef NextT NextType;
     //! VCard
-    typedef VCardReserveParticipationByDispatchableOffUnitsPlant VCardType;
+    typedef VCardReserveParticipationByDispatchableOnUnitsPlant VCardType;
     //! Ancestor
     typedef Variable::
-      IVariable<ReserveParticipationByDispatchableOffUnitsPlant<NextT>, NextT, VCardType>
+      IVariable<ReserveParticipationByDispatchableOnUnitsPlant<NextT>, NextT, VCardType>
         AncestorType;
 
     //! List of expected results
@@ -84,13 +84,13 @@ public:
     };
 
 public:
-    ReserveParticipationByDispatchableOffUnitsPlant():
+    ReserveParticipationByDispatchableOnUnitsPlant():
         pValuesForTheCurrentYear(NULL),
         pSize(0)
     {
     }
 
-    ~ReserveParticipationByDispatchableOffUnitsPlant()
+    ~ReserveParticipationByDispatchableOnUnitsPlant()
     {
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
@@ -256,10 +256,11 @@ public:
                                                .thermalClusters.left.at(
                                                  std::make_pair(reserveName, clusterName))]
                                               .hour[state.hourInTheYear]
-                      = reserveParticipation.offUnitsParticipation;
+                      = reserveParticipation.onUnitsParticipation;
                 }
             }
         }
+
         // Next variable
         NextType::hourForEachArea(state, numSpace);
     }
@@ -294,8 +295,8 @@ public:
                     auto [reserveName, clusterName] = results.data.area
                                                         ->reserveParticipationIndexMaps()
                                                         .thermalClusters.right.at(i);
-                    results.variableCaption = reserveName + "_" + clusterName
-                                              + "_off"; // VCardType::Caption();
+                    results.variableCaption = reserveName + "_"
+                                              + clusterName; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
                     pValuesForTheCurrentYear[numSpace][i]
                       .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
@@ -310,11 +311,11 @@ private:
     size_t pSize;
     unsigned int pNbYearsParallel;
 
-}; // class ReserveParticipationByDispatchableOffUnitsPlant
+}; // class ReserveParticipationByDispatchableOnUnitsPlant
 
 } // namespace Economy
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
 
-#endif // __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOffUnitsPlant_H__
+#endif // __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByDispatchableOnUnitsPlant_H__

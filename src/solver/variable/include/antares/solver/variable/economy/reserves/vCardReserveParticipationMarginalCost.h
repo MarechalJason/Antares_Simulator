@@ -9,7 +9,7 @@
 ** the Free Software Foundation, either version 3 of the License, or
 ** (at your option) any later version.
 **
-** There are special exceptions to the terms and conditions of the
+** There are special exceptions to the terms and conditi96ons of the
 ** license as they are applied to this software. View the full text of
 ** the exceptions in file COPYING.txt in the directory of this software
 ** distribution
@@ -24,10 +24,10 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOffUnitsPlant_H__
-#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOffUnitsPlant_H__
+#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationMarginalCost_H__
+#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationMarginalCost_H__
 
-#include "../storage/results.h"
+#include "../../storage/results.h"
 
 namespace Antares
 {
@@ -37,24 +37,24 @@ namespace Variable
 {
 namespace Economy
 {
-struct VCardReserveParticipationByDispatchableOffUnitsPlant
+struct VCardReserveParticipationMarginalCost
 {
     //! Caption
     static std::string Caption()
     {
-        return "OFF UNITS CLUSTER PARTICIPATION TO RESERVE";
+        return "RESERVE PARTICIPATION MARGINAL COST";
     }
 
     //! Unit
     static std::string Unit()
     {
-        return "Reserve Participation Power - MWh";
+        return "Euro";
     }
 
     //! The short description of the variable
     static std::string Description()
     {
-        return "Reserve Participation from off units in cluster to a reserve";
+        return "Reserve participation marginal cost";
     }
 
     //! The expected results
@@ -63,20 +63,21 @@ struct VCardReserveParticipationByDispatchableOffUnitsPlant
       ResultsType;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardReserveParticipationByDispatchableOffUnitsPlant VCardForSpatialAggregate;
+    typedef VCardReserveParticipationMarginalCost VCardForSpatialAggregate;
 
     enum
     {
         //! Data Level
         categoryDataLevel = Category::DataLevel::area,
         //! File level (provided by the type of the results)
-        categoryFileLevel = ResultsType::categoryFile & (Category::FileLevel::de),
+        categoryFileLevel = ResultsType::categoryFile
+                            & (Category::FileLevel::id | Category::FileLevel::va),
         //! Precision (views)
         precision = Category::all,
         //! Indentation (GUI)
         nodeDepthForGUI = +0,
         //! Decimal precision
-        decimal = 0,
+        decimal = 4,
         //! Number of columns used by the variable
         columnCount = Category::dynamicColumns,
         //! The Spatial aggregation
@@ -96,9 +97,15 @@ struct VCardReserveParticipationByDispatchableOffUnitsPlant
     // typedef IntermediateValues IntermediateValuesType;
 
 }; // class VCard
+
+static std::string marginalCostToString()
+{
+    return "MRG.COST";
+}
+
 } // namespace Economy
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
 
-#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByDispatchableOffUnitsPlant_H__
+#endif //__SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationMarginalCost_H__

@@ -64,10 +64,10 @@
 #include "priceCSR.h"
 #include "pumping.h"
 #include "renewableGeneration.h"
-#include "reserveParticipationByThermalGroup.h"
-#include "reserveParticipationCost.h"
-#include "reserveParticipationMarginalCost.h"
-#include "reserveParticipationUnsuppliedSpilled.h"
+#include "reserves/reserveParticipationByThermalGroup.h"
+#include "reserves/reserveParticipationCost.h"
+#include "reserves/reserveParticipationMarginalCost.h"
+#include "reserves/reserveParticipationUnsuppliedSpilled.h"
 #include "reservoirlevel.h"
 #include "spilledEnergy.h"
 #include "thermalAirPollutantEmissions.h"
@@ -81,8 +81,8 @@
 #include "productionByDispatchablePlant.h"
 #include "productionByRenewablePlant.h"
 #include "profitByPlant.h"
-#include "reserveParticipationByDispatchableOffUnitsPlant.h"
-#include "reserveParticipationByDispatchableOnUnitsPlant.h"
+#include "reserves/reserveParticipationByDispatchableOffUnitsPlant.h"
+#include "reserves/reserveParticipationByDispatchableOnUnitsPlant.h"
 
 // By RES plant
 #include "STSbyGroup.h"
@@ -90,11 +90,11 @@
 #include "STStorageInjectionByCluster.h"
 #include "STStorageLevelsByCluster.h"
 #include "STStorageWithdrawalByCluster.h"
-#include "reserveParticipationBySTStorage.h"
-#include "reserveParticipationBySTStorageGroup.h"
+#include "reserves/reserveParticipationBySTStorage.h"
+#include "reserves/reserveParticipationBySTStorageGroup.h"
 
 // Short term storage output variables
-#include "reserveParticipationByLTStorage.h"
+#include "reserves/reserveParticipationByLTStorage.h"
 
 // Output variables associated to links
 #include "links.h"
