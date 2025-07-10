@@ -295,12 +295,19 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
         auto cluster = getClusterByName(tmpClusterName);
         if (reserve && cluster)
         {
-            STStorageClusterReserveParticipation tmpReserveParticipation{reserve.value(),
-                                                                         tmpMaxTurbining,
-                                                                         tmpMaxPumping,
-                                                                         tmpParticipationCost};
-            cluster.value().get().addReserveParticipation(section.get().name,
-                                                          tmpReserveParticipation);
+            const STStorageClusterReserveParticipation tmpReserveParticipation{
+              reserve.value(),
+              tmpMaxTurbining,
+              tmpMaxPumping,
+              tmpParticipationCost};
+            if (!cluster.value().get().reserveParticipationContainer)
+            {
+                cluster.value().get().reserveParticipationContainer = ReserveParticipationContainer<
+                  STStorageClusterReserveParticipation>();
+            }
+            cluster.value().get().reserveParticipationContainer().addReserveParticipation(
+              section.get().name,
+              tmpReserveParticipation);
         }
         else
         {
@@ -330,7 +337,10 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
                 auto cluster = area.shortTermStorage.getClusterByName(tmpClusterName);
                 if (cluster)
                 {
-                    cluster.value().get().addReserveParticipationSymmetry(sym);
+                    cluster.value()
+                      .get()
+                      .reserveParticipationContainer()
+                      .addReserveParticipationSymmetry(sym);
                 }
                 else
                 {
@@ -394,7 +404,7 @@ uint STStorageInput::removeDisabledClusters()
     return std::erase_if(storagesByIndex, [](const auto& c) { return !c.enabled(); });
 }
 
-std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipationClusterAt(
+std::pair<Data::ClusterName, ReserveName> STStorageInput::reserveParticipationClusterAt(
   const Area* area,
   unsigned int index) const
 {
@@ -404,8 +414,7 @@ std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipa
     {
         for (auto& cluster: storagesByIndex)
         {
-            if (cluster.clusterReservesParticipations().find(reserveUpName)
-                != cluster.clusterReservesParticipations().end())
+            if (cluster.reserveParticipationContainer().isParticipatingInReserve(reserveUpName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -421,8 +430,7 @@ std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipa
     {
         for (auto& cluster: storagesByIndex)
         {
-            if (cluster.clusterReservesParticipations().find(reserveDownName)
-                != cluster.clusterReservesParticipations().end())
+            if (cluster.reserveParticipationContainer().isParticipatingInReserve(reserveDownName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -437,8 +445,9 @@ std::pair<Data::ClusterName, Data::ReserveName> STStorageInput::reserveParticipa
                             "the reserve participations");
 }
 
-std::pair<Data::ShortTermStorage::Group, Data::ReserveName>
-STStorageInput::reserveParticipationGroupAt(const Area* area, unsigned int index) const
+std::pair<Data::ShortTermStorage::Group, ReserveName> STStorageInput::reserveParticipationGroupAt(
+  const Area* area,
+  unsigned int index) const
 {
     int column = 0;
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
@@ -483,11 +492,11 @@ std::optional<std::reference_wrapper<STStorageCluster>> STStorageInput::getClust
     }
 }
 
-size_t STStorageInput::getClusterIdx(STStorageCluster& cluster)
+size_t STStorageInput::getClusterIdx(STStorageCluster& cluster) const
 {
     auto it = std::find_if(storagesByIndex.begin(),
                            storagesByIndex.end(),
-                           [&cluster](STStorageCluster& elem) { return &elem == &cluster; });
+                           [&cluster](const STStorageCluster& elem) { return &elem == &cluster; });
     if (it != storagesByIndex.end())
     {
         return std::distance(storagesByIndex.begin(), it);
@@ -498,12 +507,13 @@ size_t STStorageInput::getClusterIdx(STStorageCluster& cluster)
     }
 }
 
-uint STStorageInput::reserveParticipationsCount()
+uint STStorageInput::reserveParticipationsCount() const
 {
-    return std::accumulate(storagesByIndex.begin(),
-                           storagesByIndex.end(),
-                           0,
-                           [](int total, STStorageCluster& cluster)
-                           { return total + cluster.reserveParticipationsCount(); });
+    return std::accumulate(
+      storagesByIndex.begin(),
+      storagesByIndex.end(),
+      0,
+      [](int total, const STStorageCluster& cluster)
+      { return total + cluster.reserveParticipationContainer().reserveParticipationsCount(); });
 }
 } // namespace Antares::Data::ShortTermStorage

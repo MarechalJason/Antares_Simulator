@@ -840,12 +840,18 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
         auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
         if (reserve)
         {
-            LTStorageClusterReserveParticipation participation(*reserve,
-                                                               maxTurbining,
-                                                               maxPumping,
-                                                               participationCost);
-            addReserveParticipation(reserveName, participation);
-            logs.info() << "Added reserve participation for " << reserveName;
+            const LTStorageClusterReserveParticipation tmpReserveParticipation{reserve.value(),
+                                                                               maxTurbining,
+                                                                               maxPumping,
+                                                                               participationCost};
+
+            if (!reserveParticipationContainer)
+            {
+                reserveParticipationContainer = ReserveParticipationContainer<
+                  LTStorageClusterReserveParticipation>();
+            }
+            reserveParticipationContainer().addReserveParticipation(section.get().name,
+                                                                    tmpReserveParticipation);
         }
         else
         {
@@ -863,7 +869,7 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
             auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
             for (auto& sym: symmetries)
             {
-                area.hydro.addReserveParticipationSymmetry(sym);
+                reserveParticipationContainer().addReserveParticipationSymmetry(sym);
             }
         }
     }
@@ -873,70 +879,19 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
 
 uint PartHydro::reserveParticipationsCount() const
 {
-    return series && reservoirManagement && reservesParticipations ? reservesParticipations().size()
-                                                                   : 0;
+    return reserveParticipationContainer
+             ? reserveParticipationContainer().reserveParticipationsCount()
+             : 0;
 }
 
-void PartHydro::addReserveParticipation(const std::string& reserveName,
-                                        const LTStorageClusterReserveParticipation& participation)
-{
-    reservesParticipations.init();
-    reservesParticipations().emplace(reserveName, participation);
-}
-
-void PartHydro::addReserveParticipationSymmetry(std::set<Data::ReserveName> names)
-{
-    reserveParticipationsSymmetries.init();
-    auto symmetryRes = std::vector<LTStorageReserveParticipationWithName>();
-    for (auto name: names)
-    {
-        if (reservesParticipations().contains(name))
-        {
-            symmetryRes.push_back(
-              LTStorageReserveParticipationWithName{reservesParticipations().at(name), name});
-        }
-        else
-        {
-            throw std::out_of_range("LongTermStorage is not participating to reserve " + name);
-        }
-    }
-    reserveParticipationsSymmetries().push_back(symmetryRes);
-}
-
-std::vector<int> PartHydro::symmetricalIndices(Data::ReserveName name) const
-{
-    // Return the indices of the lists that contains reserveParticipation to the reserve name
-    std::vector<int> indices;
-    if (reserveParticipationsSymmetries)
-    {
-        for (int i = 0; i < reserveParticipationsSymmetries().size(); i++)
-        {
-            for (auto reserveParticipation: reserveParticipationsSymmetries().at(i))
-            {
-                if (reserveParticipation.reserveName == name)
-                {
-                    indices.push_back(i);
-                }
-            }
-        }
-    }
-
-    return indices;
-}
-
-int PartHydro::getNbSymGroups()
-{
-    return reserveParticipationsSymmetries().size();
-}
-
-std::optional<Data::ReserveName> PartHydro::reserveParticipationAt(const Area* area,
-                                                                   unsigned int index) const
+std::optional<ReserveName> PartHydro::reserveParticipationAt(const Area* area,
+                                                             unsigned int index) const
 {
     int globalReserveParticipationIdx = 0;
 
     for (const auto& [reserveUpName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        if (reservesParticipations().find(reserveUpName) != reservesParticipations().end())
+        if (reserveParticipationContainer().isParticipatingInReserve(reserveUpName))
         {
             if (globalReserveParticipationIdx == index)
             {
@@ -949,7 +904,7 @@ std::optional<Data::ReserveName> PartHydro::reserveParticipationAt(const Area* a
     for (const auto& [reserveDownName, _]:
          area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        if (reservesParticipations().find(reserveDownName) != reservesParticipations().end())
+        if (reserveParticipationContainer().isParticipatingInReserve(reserveDownName))
         {
             if (globalReserveParticipationIdx == index)
             {
@@ -960,45 +915,6 @@ std::optional<Data::ReserveName> PartHydro::reserveParticipationAt(const Area* a
     }
 
     return std::nullopt;
-}
-
-double PartHydro::reserveMaxTurbining(Data::ReserveName name)
-{
-    if (reservesParticipations().contains(name))
-    {
-        return reservesParticipations().at(name).maxTurbining;
-    }
-    else
-    {
-        throw std::out_of_range("reserve " + name
-                                + " has not been found in this cluster participations");
-    }
-}
-
-double PartHydro::reserveMaxPumping(Data::ReserveName name)
-{
-    if (reservesParticipations().contains(name))
-    {
-        return reservesParticipations().at(name).maxPumping;
-    }
-    else
-    {
-        throw std::out_of_range("reserve " + name
-                                + " has not been found in this cluster participations");
-    }
-}
-
-double PartHydro::reserveCost(Data::ReserveName name)
-{
-    if (reservesParticipations().contains(name))
-    {
-        return reservesParticipations().at(name).participationCost;
-    }
-    else
-    {
-        throw std::out_of_range("reserve " + name
-                                + " has not been found in this cluster participations");
-    }
 }
 
 uint PartHydro::count() const

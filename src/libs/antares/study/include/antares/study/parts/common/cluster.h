@@ -31,7 +31,7 @@
 #include <antares/array/matrix.h>
 #include <antares/series/series.h>
 #include <antares/study/area/ReserveOpt.h>
-#include <antares/study/area/capacityReservation.h>
+#include <antares/study/area/reserveParticipationContainer.h>
 
 #include "../../fwd.h"
 
@@ -50,12 +50,6 @@ class Cluster
 {
 public:
     using Set = std::set<Cluster*, CompareClusterName>;
-
-    struct ThermalClusterReserveParticipationWithName
-    {
-        std::reference_wrapper<ThermalClusterReserveParticipation> reserveParticipation;
-        std::string reserveName;
-    };
 
 public:
     Cluster(Area* parent);
@@ -109,22 +103,6 @@ public:
     bool saveDataSeriesToFolder(const AnyString& folder) const;
     bool loadDataSeriesFromFolder(Study& s, const std::filesystem::path& folder);
 
-    //! @brief Add the reserve participation to the current clusterReservesParticipations map
-    //! @param name the name of the reserve to add
-    //! @param reserveParticipation the reserve participation to add
-    void addReserveParticipation(Data::ReserveName name,
-                                 ThermalClusterReserveParticipation reserveParticipation);
-
-    //! @brief Add the reserve participation symmetry
-    //! @param names the names of the reserves to add to the symmetry list
-    void addReserveParticipationSymmetry(std::set<Data::ReserveName> names);
-
-    //! @brief Get the reserve participation symmetry list index
-    std::vector<int> symmetricalIndices(Data::ReserveName name) const;
-
-    //! @brief Get the number of symmetry groups
-    int getNbSymGroups();
-
     uint unitCount = 0;
 
     bool isEnabled() const
@@ -158,37 +136,15 @@ public:
     */
     Matrix<> modulation;
 
-    //! \brief Returns true if cluster participates in a reserve with this name
-    bool isParticipatingInReserve(Data::ReserveName name);
-
-    //! \brief Returns an array of all reserves the cluster is participating in
-    std::vector<Data::ReserveName> listOfParticipatingReserves();
-
-    //! \brief Returns max power for a reserve if participating, -1 otherwise
-    float reserveMaxPower(Data::ReserveName name);
-
-    //! \brief Returns participating cost for a reserve if participating, -1 otherwise
-    float reserveCost(Data::ReserveName name);
-
-    //! \brief Returns max power off for a reserve if participating, -1 otherwise
-    float reserveMaxPowerOff(Data::ReserveName name);
-
-    //! \brief Returns participating cost off for a reserve if participating, -1 otherwise
-    float reserveCostOff(Data::ReserveName name);
-
-    //! \brief Returns the number of reserves linked to this cluster
-    unsigned int reserveParticipationsCount();
+    //! Reserve participation container to store the participation of the cluster in the reserves
+    //! and the symmetries
+    ReserveOpt<ReserveParticipationContainer<ThermalClusterReserveParticipation>>
+      reserveParticipationContainer;
 
 protected:
     Data::ClusterName pName;
     Data::ClusterName pID;
     Data::ClusterName pGroup;
-    //! reserve
-    ReserveOpt<std::map<Data::ReserveName, ThermalClusterReserveParticipation>>
-      clusterReservesParticipations;
-    //! \brief List of reserve participations symmetries
-    ReserveOpt<std::vector<std::vector<ThermalClusterReserveParticipationWithName>>>
-      reserveParticipationsSymmetries;
 
 private:
     virtual unsigned int precision() const = 0;

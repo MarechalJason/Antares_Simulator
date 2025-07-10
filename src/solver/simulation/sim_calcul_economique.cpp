@@ -172,91 +172,68 @@ static void importShortTermStorages(
             && area->allCapacityReservations)
         {
             auto& areaReserves = problem.allReserves()[areaIndex];
-            for (int areaReserveIdx = 0; const auto& [reserveName, _]:
-                                         area->allCapacityReservations().areaCapacityReservationsUp)
+
+            auto processReservations = [&](const auto& reserveDefs, auto& targetMap)
             {
-                for (size_t idx = 0; auto& cluster: area->shortTermStorage.storagesByIndex)
+                int areaReserveIdx = 0;
+                for (const auto& [reserveName, _]: reserveDefs)
                 {
-                    if (cluster.clusterReservesParticipations
-                        && cluster.clusterReservesParticipations().contains(reserveName))
+                    for (size_t idx = 0; auto& cluster: area->shortTermStorage.storagesByIndex)
                     {
-                        RESERVE_PARTICIPATION_STSTORAGE reserveParticipation;
-                        reserveParticipation.maxTurbining = cluster.reserveMaxTurbining(
-                          reserveName);
-                        reserveParticipation.maxPumping = cluster.reserveMaxPumping(reserveName);
-                        reserveParticipation.participationCost = cluster.reserveCost(reserveName);
-                        reserveParticipation.clusterName = cluster.id;
-                        reserveParticipation.clusterIdInArea = idx;
-                        reserveParticipation.clusterId = cluster.properties.clusterGlobalIndex;
-                        reserveParticipation.globalIndexClusterParticipation
-                          = globalSTStorageClusterParticipationIndex;
-                        reserveParticipation.areaIndexClusterParticipation
-                          = areaClusterParticipationIndex;
-                        areaReserves.areaCapacityReservationsUp[areaReserveIdx]
-                          .AllSTStorageReservesParticipation.emplace(idx, reserveParticipation);
-                        for (const auto& symIdx: cluster.symmetricalIndices(reserveName))
+                        if (cluster.reserveParticipationContainer
+                            && cluster.reserveParticipationContainer().isParticipatingInReserve(
+                              reserveName))
                         {
-                            if (areaReserves.STStorageReservesParticipationSymmetries[idx].size()
-                                <= symIdx)
+                            RESERVE_PARTICIPATION_STSTORAGE reserveParticipation;
+                            reserveParticipation.maxTurbining = cluster
+                                                                  .reserveParticipationContainer()
+                                                                  .reserveMaxTurbining(reserveName);
+                            reserveParticipation.maxPumping = cluster
+                                                                .reserveParticipationContainer()
+                                                                .reserveMaxPumping(reserveName);
+                            reserveParticipation.participationCost
+                              = cluster.reserveParticipationContainer().reserveCost(reserveName);
+                            reserveParticipation.clusterName = cluster.id;
+                            reserveParticipation.clusterIdInArea = idx;
+                            reserveParticipation.clusterId = cluster.properties.clusterGlobalIndex;
+                            reserveParticipation.globalIndexClusterParticipation
+                              = globalSTStorageClusterParticipationIndex;
+                            reserveParticipation.areaIndexClusterParticipation
+                              = areaClusterParticipationIndex;
+
+                            targetMap[areaReserveIdx]
+                              .AllSTStorageReservesParticipation.emplace(idx, reserveParticipation);
+
+                            for (const auto& symIdx:
+                                 cluster.reserveParticipationContainer().symmetricalIndices(
+                                   reserveName))
                             {
-                                areaReserves.STStorageReservesParticipationSymmetries[idx].resize(
-                                  cluster.getNbSymGroups());
+                                auto& symmetries = areaReserves
+                                                     .STStorageReservesParticipationSymmetries[idx];
+                                if (symmetries.size() <= symIdx)
+                                {
+                                    symmetries.resize(
+                                      cluster.reserveParticipationContainer().getNbSymGroups());
+                                }
+                                symmetries[symIdx].emplace_back(
+                                  reserveName,
+                                  targetMap[areaReserveIdx].AllSTStorageReservesParticipation[idx]);
                             }
-                            areaReserves.STStorageReservesParticipationSymmetries[idx][symIdx]
-                              .push_back({reserveName,
-                                          areaReserves.areaCapacityReservationsUp[areaReserveIdx]
-                                            .AllSTStorageReservesParticipation[idx]});
+
+                            ++globalSTStorageClusterParticipationIndex;
+                            ++areaClusterParticipationIndex;
                         }
-                        globalSTStorageClusterParticipationIndex++;
-                        areaClusterParticipationIndex++;
+                        ++idx;
                     }
-                    idx++;
+                    ++areaReserveIdx;
                 }
-                areaReserveIdx++;
-            }
-            for (int areaReserveIdx = 0;
-                 const auto& [reserveName, _]:
-                 area->allCapacityReservations().areaCapacityReservationsDown)
-            {
-                for (size_t idx = 0; auto& cluster: area->shortTermStorage.storagesByIndex)
-                {
-                    if (cluster.clusterReservesParticipations
-                        && cluster.clusterReservesParticipations().contains(reserveName))
-                    {
-                        RESERVE_PARTICIPATION_STSTORAGE reserveParticipation;
-                        reserveParticipation.maxTurbining = cluster.reserveMaxTurbining(
-                          reserveName);
-                        reserveParticipation.maxPumping = cluster.reserveMaxPumping(reserveName);
-                        reserveParticipation.participationCost = cluster.reserveCost(reserveName);
-                        reserveParticipation.clusterName = cluster.id;
-                        reserveParticipation.clusterIdInArea = idx;
-                        reserveParticipation.clusterId = cluster.properties.clusterGlobalIndex;
-                        reserveParticipation.globalIndexClusterParticipation
-                          = globalSTStorageClusterParticipationIndex;
-                        reserveParticipation.areaIndexClusterParticipation
-                          = areaClusterParticipationIndex;
-                        areaReserves.areaCapacityReservationsDown[areaReserveIdx]
-                          .AllSTStorageReservesParticipation.emplace(idx, reserveParticipation);
-                        for (const auto& symIdx: cluster.symmetricalIndices(reserveName))
-                        {
-                            if (areaReserves.STStorageReservesParticipationSymmetries[idx].size()
-                                <= symIdx)
-                            {
-                                areaReserves.STStorageReservesParticipationSymmetries[idx].resize(
-                                  cluster.getNbSymGroups());
-                            }
-                            areaReserves.STStorageReservesParticipationSymmetries[idx][symIdx]
-                              .push_back({reserveName,
-                                          areaReserves.areaCapacityReservationsDown[areaReserveIdx]
-                                            .AllSTStorageReservesParticipation[idx]});
-                        }
-                        globalSTStorageClusterParticipationIndex++;
-                        areaClusterParticipationIndex++;
-                    }
-                    idx++;
-                }
-                areaReserveIdx++;
-            }
+            };
+
+            processReservations(area->allCapacityReservations().areaCapacityReservationsUp,
+                                areaReserves.areaCapacityReservationsUp);
+
+            processReservations(area->allCapacityReservations().areaCapacityReservationsDown,
+                                areaReserves.areaCapacityReservationsDown);
         }
     }
 }
@@ -272,78 +249,64 @@ static void importLongTermStoragesReserves(AreaList& areas, PROBLEME_HEBDO& prob
         auto area = areas[areaIndex];
         auto& ltStorage = area->hydro;
 
-        if (area->allCapacityReservations && ltStorage.reservesParticipations)
+        if (area->allCapacityReservations && ltStorage.reserveParticipationContainer)
         {
             auto& areaReserves = problem.allReserves()[areaIndex];
-            for (int areaReserveIdx = 0; const auto& [reserveName, _]:
-                                         area->allCapacityReservations().areaCapacityReservationsUp)
+
+            auto processLTStorageReservations = [&](const auto& reserveDefs, auto& targetMap)
             {
-                if (ltStorage.reservesParticipations().contains(reserveName))
+                int areaReserveIdx = 0;
+                for (const auto& [reserveName, _]: reserveDefs)
                 {
-                    RESERVE_PARTICIPATION_LTSTORAGE reserveParticipation;
-                    reserveParticipation.maxTurbining = ltStorage.reserveMaxTurbining(reserveName);
-                    reserveParticipation.maxPumping = ltStorage.reserveMaxPumping(reserveName);
-                    reserveParticipation.participationCost = ltStorage.reserveCost(reserveName);
-                    reserveParticipation.clusterName = "LongTermStorage";
-                    reserveParticipation.clusterIdInArea = 0;
-                    reserveParticipation.globalIndexClusterParticipation
-                      = globalLTStorageClusterParticipationIndex;
-                    reserveParticipation.areaIndexClusterParticipation
-                      = areaClusterParticipationIndex;
-                    areaReserves.areaCapacityReservationsUp[areaReserveIdx]
-                      .AllLTStorageReservesParticipation.push_back(std::ref(reserveParticipation));
-                    for (const auto& symIdx: ltStorage.symmetricalIndices(reserveName))
+                    if (ltStorage.reserveParticipationContainer().isParticipatingInReserve(reserveName))
                     {
-                        if (areaReserves.LTStorageReservesParticipationSymmetries.size() <= symIdx)
+                        RESERVE_PARTICIPATION_LTSTORAGE reserveParticipation;
+                        reserveParticipation.maxTurbining = ltStorage
+                                                              .reserveParticipationContainer()
+                                                              .reserveMaxTurbining(reserveName);
+                        reserveParticipation.maxPumping = ltStorage.reserveParticipationContainer()
+                                                            .reserveMaxPumping(reserveName);
+                        reserveParticipation.participationCost = ltStorage
+                                                                   .reserveParticipationContainer()
+                                                                   .reserveCost(reserveName);
+                        reserveParticipation.clusterName = "LongTermStorage";
+                        reserveParticipation.clusterIdInArea = 0;
+                        reserveParticipation.globalIndexClusterParticipation
+                          = globalLTStorageClusterParticipationIndex;
+                        reserveParticipation.areaIndexClusterParticipation
+                          = areaClusterParticipationIndex;
+
+                        targetMap[areaReserveIdx].AllLTStorageReservesParticipation.push_back(
+                          std::move(reserveParticipation));
+
+                        for (const auto& symIdx:
+                             ltStorage.reserveParticipationContainer().symmetricalIndices(
+                               reserveName))
                         {
-                            areaReserves.LTStorageReservesParticipationSymmetries.resize(
-                              ltStorage.getNbSymGroups());
+                            if (areaReserves.LTStorageReservesParticipationSymmetries.size()
+                                <= symIdx)
+                            {
+                                areaReserves.LTStorageReservesParticipationSymmetries.resize(
+                                  ltStorage.reserveParticipationContainer().getNbSymGroups());
+                            }
+                            areaReserves.LTStorageReservesParticipationSymmetries[symIdx].push_back(
+                              {reserveName,
+                               targetMap[areaReserveIdx].AllLTStorageReservesParticipation.back()});
                         }
-                        areaReserves.LTStorageReservesParticipationSymmetries[symIdx].push_back(
-                          {reserveName,
-                           areaReserves.areaCapacityReservationsUp[areaReserveIdx]
-                             .AllLTStorageReservesParticipation.back()});
+
+                        ++globalLTStorageClusterParticipationIndex;
+                        ++areaClusterParticipationIndex;
                     }
-                    globalLTStorageClusterParticipationIndex++;
-                    areaClusterParticipationIndex++;
+                    ++areaReserveIdx;
                 }
-                areaReserveIdx++;
-            }
-            for (int areaReserveIdx = 0;
-                 const auto& [reserveName, _]:
-                 area->allCapacityReservations().areaCapacityReservationsDown)
-            {
-                if (ltStorage.reservesParticipations().contains(reserveName))
-                {
-                    RESERVE_PARTICIPATION_LTSTORAGE reserveParticipation;
-                    reserveParticipation.maxTurbining = ltStorage.reserveMaxTurbining(reserveName);
-                    reserveParticipation.maxPumping = ltStorage.reserveMaxPumping(reserveName);
-                    reserveParticipation.participationCost = ltStorage.reserveCost(reserveName);
-                    reserveParticipation.clusterName = "LongTermStorage";
-                    reserveParticipation.clusterIdInArea = 0;
-                    reserveParticipation.globalIndexClusterParticipation
-                      = globalLTStorageClusterParticipationIndex;
-                    reserveParticipation.areaIndexClusterParticipation
-                      = areaClusterParticipationIndex;
-                    areaReserves.areaCapacityReservationsDown[areaReserveIdx]
-                      .AllLTStorageReservesParticipation.push_back(std::ref(reserveParticipation));
-                    for (const auto& symIdx: ltStorage.symmetricalIndices(reserveName))
-                    {
-                        if (areaReserves.LTStorageReservesParticipationSymmetries.size() <= symIdx)
-                        {
-                            areaReserves.LTStorageReservesParticipationSymmetries.resize(
-                              ltStorage.getNbSymGroups());
-                        }
-                        areaReserves.LTStorageReservesParticipationSymmetries[symIdx].push_back(
-                          {reserveName,
-                           areaReserves.areaCapacityReservationsDown[areaReserveIdx]
-                             .AllLTStorageReservesParticipation.back()});
-                    }
-                    globalLTStorageClusterParticipationIndex++;
-                    areaClusterParticipationIndex++;
-                }
-                areaReserveIdx++;
-            }
+            };
+
+            processLTStorageReservations(area->allCapacityReservations().areaCapacityReservationsUp,
+                                         areaReserves.areaCapacityReservationsUp);
+
+            processLTStorageReservations(
+              area->allCapacityReservations().areaCapacityReservationsDown,
+              areaReserves.areaCapacityReservationsDown);
         }
     }
 }
@@ -603,6 +566,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
                   : cluster->minStablePower;
             pbPalier.NomsDesPaliersThermiques[cluster->index] = cluster->name().c_str();
         }
+
         if (study.parameters.unitCommitment.ucMode
               != Antares::Data::UnitCommitmentMode::ucHeuristicFast
             && study.parameters.compatibility.reserves
@@ -610,92 +574,75 @@ void SIM_InitialisationProblemeHebdo(Study& study,
             && area.allCapacityReservations)
         {
             auto& areaReserves = problem.allReserves()[i];
-            for (int areaReserveIdx = 0; const auto& [reserveName, _]:
-                                         area.allCapacityReservations().areaCapacityReservationsUp)
+
+            auto processThermalReservations = [&](const auto& reserveDefs, auto& targetMap)
             {
-                for (auto& cluster: area.thermal.list.all())
+                int areaReserveIdx = 0;
+                for (const auto& [reserveName, _]: reserveDefs)
                 {
-                    if (cluster->isParticipatingInReserve(reserveName))
+                    for (auto& cluster: area.thermal.list.all())
                     {
-                        RESERVE_PARTICIPATION_THERMAL reserveParticipation;
-                        reserveParticipation.maxPower = cluster->reserveMaxPower(reserveName);
-                        reserveParticipation.participationCost = cluster->reserveCost(reserveName);
-                        reserveParticipation.maxPowerOff = cluster->reserveMaxPowerOff(reserveName);
-                        reserveParticipation.participationCostOff = cluster->reserveCostOff(
-                          reserveName);
-                        reserveParticipation.clusterName = cluster->name();
-                        reserveParticipation.clusterIdInArea = cluster->index;
-                        reserveParticipation.clusterId = NombrePaliers + cluster->index;
-                        reserveParticipation.globalIndexClusterParticipation
-                          = globalThermalClusterParticipationIndex;
-                        reserveParticipation.areaIndexClusterParticipation
-                          = areaClusterParticipationIndex;
-                        areaReserves.areaCapacityReservationsUp[areaReserveIdx]
-                          .AllThermalReservesParticipation.emplace(cluster->index,
-                                                                   reserveParticipation);
-                        for (const auto& symIdx: cluster->symmetricalIndices(reserveName))
+                        if (cluster->reserveParticipationContainer
+                            && cluster->reserveParticipationContainer().isParticipatingInReserve(
+                              reserveName))
                         {
-                            if (areaReserves.ThermalReservesParticipationSymmetries[cluster->index]
-                                  .size()
-                                <= symIdx)
+                            RESERVE_PARTICIPATION_THERMAL reserveParticipation;
+                            reserveParticipation.maxPower = cluster->reserveParticipationContainer()
+                                                              .reserveMaxPower(reserveName);
+                            reserveParticipation.participationCost
+                              = cluster->reserveParticipationContainer().reserveCost(reserveName);
+                            reserveParticipation.maxPowerOff = cluster
+                                                                 ->reserveParticipationContainer()
+                                                                 .reserveMaxPowerOff(reserveName);
+                            reserveParticipation.participationCostOff
+                              = cluster->reserveParticipationContainer().reserveCostOff(
+                                reserveName);
+                            reserveParticipation.clusterName = cluster->name();
+                            reserveParticipation.clusterIdInArea = cluster->index;
+                            reserveParticipation.clusterId = NombrePaliers + cluster->index;
+                            reserveParticipation.globalIndexClusterParticipation
+                              = globalThermalClusterParticipationIndex;
+                            reserveParticipation.areaIndexClusterParticipation
+                              = areaClusterParticipationIndex;
+                            areaReserves.areaCapacityReservationsUp[areaReserveIdx]
+                              .AllThermalReservesParticipation.emplace(cluster->index,
+                                                                       reserveParticipation);
+
+                            targetMap[areaReserveIdx].AllThermalReservesParticipation.emplace(
+                              cluster->index,
+                              reserveParticipation);
+
+                            for (const auto& symIdx:
+                                 cluster->reserveParticipationContainer().symmetricalIndices(
+                                   reserveName))
                             {
-                                areaReserves.ThermalReservesParticipationSymmetries[cluster->index]
-                                  .resize(cluster->getNbSymGroups());
+                                auto& symmetries = areaReserves
+                                                     .ThermalReservesParticipationSymmetries
+                                                       [cluster->index];
+                                if (symmetries.size() <= symIdx)
+                                {
+                                    symmetries.resize(
+                                      cluster->reserveParticipationContainer().getNbSymGroups());
+                                }
+                                symmetries[symIdx].emplace_back(
+                                  reserveName,
+                                  targetMap[areaReserveIdx]
+                                    .AllThermalReservesParticipation[cluster->index]);
                             }
-                            areaReserves
-                              .ThermalReservesParticipationSymmetries[cluster->index][symIdx]
-                              .push_back({reserveName,
-                                          areaReserves.areaCapacityReservationsUp[areaReserveIdx]
-                                            .AllThermalReservesParticipation[cluster->index]});
+
+                            ++globalThermalClusterParticipationIndex;
+                            ++areaClusterParticipationIndex;
                         }
-                        globalThermalClusterParticipationIndex++;
-                        areaClusterParticipationIndex++;
                     }
+                    ++areaReserveIdx;
                 }
-                areaReserveIdx++;
-            }
-            for (int areaReserveIdx = 0;
-                 const auto& [reserveName, _]:
-                 area.allCapacityReservations().areaCapacityReservationsDown)
-            {
-                for (auto& cluster: area.thermal.list.all())
-                {
-                    if (cluster->isParticipatingInReserve(reserveName))
-                    {
-                        RESERVE_PARTICIPATION_THERMAL reserveParticipation;
-                        reserveParticipation.maxPower = cluster->reserveMaxPower(reserveName);
-                        reserveParticipation.participationCost = cluster->reserveCost(reserveName);
-                        reserveParticipation.clusterName = cluster->name();
-                        reserveParticipation.clusterIdInArea = cluster->index;
-                        reserveParticipation.clusterId = NombrePaliers + cluster->index;
-                        reserveParticipation.globalIndexClusterParticipation
-                          = globalThermalClusterParticipationIndex;
-                        reserveParticipation.areaIndexClusterParticipation
-                          = areaClusterParticipationIndex;
-                        areaReserves.areaCapacityReservationsDown[areaReserveIdx]
-                          .AllThermalReservesParticipation.emplace(cluster->index,
-                                                                   reserveParticipation);
-                        for (const auto& symIdx: cluster->symmetricalIndices(reserveName))
-                        {
-                            if (areaReserves.ThermalReservesParticipationSymmetries[cluster->index]
-                                  .size()
-                                <= symIdx)
-                            {
-                                areaReserves.ThermalReservesParticipationSymmetries[cluster->index]
-                                  .resize(cluster->getNbSymGroups());
-                            }
-                            areaReserves
-                              .ThermalReservesParticipationSymmetries[cluster->index][symIdx]
-                              .push_back({reserveName,
-                                          areaReserves.areaCapacityReservationsDown[areaReserveIdx]
-                                            .AllThermalReservesParticipation[cluster->index]});
-                        }
-                        globalThermalClusterParticipationIndex++;
-                        areaClusterParticipationIndex++;
-                    }
-                }
-                areaReserveIdx++;
-            }
+            };
+
+            processThermalReservations(area.allCapacityReservations().areaCapacityReservationsUp,
+                                       areaReserves.areaCapacityReservationsUp);
+
+            processThermalReservations(area.allCapacityReservations().areaCapacityReservationsDown,
+                                       areaReserves.areaCapacityReservationsDown);
         }
 
         NombrePaliers += clusterCount;

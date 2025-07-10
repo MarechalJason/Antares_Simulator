@@ -1155,9 +1155,10 @@ void loadReserves(Antares::Data::Study& study,
                   Antares::IniFile& ini,
                   bool ret)
 {
-    fs::path reserves = study.folderInput / "reserves" / area.id.to<std::string>() / "reserves.ini";
+    fs::path reservesIni = study.folderInput / "reserves" / area.id.to<std::string>()
+                           / "reserves.ini";
     area.allCapacityReservations = AllCapacityReservations();
-    if (ini.open(reserves, false))
+    if (ini.open(reservesIni, false))
     {
         ini.each(
           [&](const IniFile::Section& section)

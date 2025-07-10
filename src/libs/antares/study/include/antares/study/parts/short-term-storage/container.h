@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <string>
 
+#include <antares/study/fwd.h>
 #include <antares/study/version.h>
 
 #include "cluster.h"
@@ -51,12 +52,12 @@ public:
     uint removeDisabledClusters();
 
     /// Get the names of the cluster and reserve of the participation
-    std::pair<Data::ClusterName, Data::ReserveName> reserveParticipationClusterAt(
+    std::pair<Data::ClusterName, ReserveName> reserveParticipationClusterAt(
       const Area* area,
       unsigned int index) const;
 
     /// Get the names of the group and reserve of the participation
-    std::pair<Data::ShortTermStorage::Group, Data::ReserveName> reserveParticipationGroupAt(
+    std::pair<Data::ShortTermStorage::Group, ReserveName> reserveParticipationGroupAt(
       const Area* area,
       unsigned int index) const;
 
@@ -67,10 +68,10 @@ public:
     std::optional<std::reference_wrapper<STStorageCluster>> getClusterByName(
       const std::string& name);
 
-    size_t getClusterIdx(STStorageCluster& cluster);
+    size_t getClusterIdx(STStorageCluster& cluster) const;
 
     // returns the number of reserve participations of all clusters
-    uint reserveParticipationsCount();
+    uint reserveParticipationsCount() const;
 
     std::vector<STStorageCluster> storagesByIndex;
 

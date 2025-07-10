@@ -113,7 +113,7 @@ public:
     ** @param index Global index of the reserveParicipation
     ** @return the cluster and reserve names
     */
-    std::pair<Data::ClusterName, Data::ReserveName> reserveParticipationClusterAt(
+    std::pair<Data::ClusterName, ReserveName> reserveParticipationClusterAt(
       const Area* area,
       unsigned int index) const;
 
@@ -123,7 +123,7 @@ public:
     ** @param index Global index of the reserveParicipation
     ** @return the group and reserve names
     */
-    std::pair<Data::ThermalCluster::ThermalDispatchableGroup, Data::ReserveName>
+    std::pair<Data::ThermalCluster::ThermalDispatchableGroup, ReserveName>
     reserveParticipationGroupAt(const Area* area, unsigned int index) const;
 
     /*!
@@ -133,7 +133,7 @@ public:
      ** @param index Global index of the reserveParicipation
      ** @return the status and reserve names
      */
-    std::pair<Data::ThermalCluster::UnsuppliedSpilled, Data::ReserveName>
+    std::pair<Data::ThermalCluster::UnsuppliedSpilled, ReserveName>
     reserveParticipationUnsuppliedSpilledAt(const Area* area, unsigned int index) const;
 
     /*!
@@ -194,7 +194,7 @@ public:
     /// @brief Get the cluster from the vector allClusters_ using it's name
     /// @param clusterName
     /// @return nullopt if no clusters found else a pointer to the cluster
-    std::optional<std::shared_ptr<Cluster>> getClusterByName(std::string clusterName);
+    std::optional<std::shared_ptr<ClusterT>> getClusterByName(std::string clusterName) const;
 
 protected:
     std::vector<std::shared_ptr<ClusterT>> allClusters_;

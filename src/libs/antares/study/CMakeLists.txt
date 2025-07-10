@@ -37,6 +37,9 @@ set(SRC_AREAS
         include/antares/study/area/constants.h
         include/antares/study/area/area.h
         include/antares/study/area/capacityReservation.h
+        include/antares/study/area/reserveParticipation.h
+        include/antares/study/area/reserveParticipationContainer.h
+        include/antares/study/area/reserveParticipationTraits.h
         include/antares/study/area/ReserveOpt.h
         include/antares/study/area/area.hxx
         include/antares/study/area/scratchpad.h

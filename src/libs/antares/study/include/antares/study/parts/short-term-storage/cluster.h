@@ -26,7 +26,7 @@
 
 #include <antares/inifile/inifile.h>
 #include <antares/study/area/ReserveOpt.h>
-#include <antares/study/area/capacityReservation.h>
+#include <antares/study/area/reserveParticipationContainer.h>
 #include <antares/study/version.h>
 
 #include "additionalConstraints.h"
@@ -38,12 +38,6 @@ namespace Antares::Data::ShortTermStorage
 class STStorageCluster
 {
 public:
-    struct STStorageClusterReserveParticipationWithName
-    {
-        std::reference_wrapper<STStorageClusterReserveParticipation> reserveParticipation;
-        std::string reserveName;
-    };
-
     //! \brief Get the group name string
     static const char* GroupName(enum Group grp);
 
@@ -59,41 +53,15 @@ public:
 
     bool saveSeries(const std::string& path) const;
 
-    void addReserveParticipation(Data::ReserveName name,
-                                 STStorageClusterReserveParticipation& reserveParticipation);
-
-    void addReserveParticipationSymmetry(std::set<Data::ReserveName>);
-
-    //! @brief Get the reserve participation symmetry list index
-    std::vector<int> symmetricalIndices(Data::ReserveName name) const;
-
-    //! @brief Get the number of symmetry groups
-    int getNbSymGroups();
-
-    //! \brief Returns max turbining power for a reserve if participating, -1 otherwise
-    double reserveMaxTurbining(Data::ReserveName name);
-
-    //! \brief Returns max pumping power for a reserve if participating, -1 otherwise
-    double reserveMaxPumping(Data::ReserveName name);
-
-    //! \brief Returns participating cost for a reserve if participating, -1 otherwise
-    double reserveCost(Data::ReserveName name);
-
-    //! \brief Returns the number of reserve the cluster is participating to
-    uint reserveParticipationsCount();
-
     std::string id;
 
     std::shared_ptr<Series> series = std::make_shared<Series>();
     mutable Properties properties;
     std::vector<AdditionalConstraints> additionalConstraints;
 
-    //! \brief Map of reserve participations
-    ReserveOpt<std::map<Data::ReserveName, STStorageClusterReserveParticipation>>
-      clusterReservesParticipations;
-
-    //! \brief List of reserve participations symmetries
-    ReserveOpt<std::vector<std::vector<STStorageClusterReserveParticipationWithName>>>
-      reserveParticipationsSymmetries;
+    //! Reserve participation container to store the participation of the cluster in the reserves
+    //! and the symmetries
+    ReserveOpt<ReserveParticipationContainer<STStorageClusterReserveParticipation>>
+      reserveParticipationContainer;
 };
 } // namespace Antares::Data::ShortTermStorage

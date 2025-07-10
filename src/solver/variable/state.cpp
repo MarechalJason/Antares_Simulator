@@ -210,20 +210,19 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
     if (unitCommitmentMode != Antares::Data::UnitCommitmentMode::ucHeuristicFast
         && study.parameters.compatibility.reserves
              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
-        && STStorageCluster->clusterReservesParticipations)
+        && STStorageCluster->reserveParticipationContainer)
     {
         for (const auto& [resName, resParticipation]:
-             STStorageCluster->clusterReservesParticipations())
+             STStorageCluster->reserveParticipationContainer().reservesParticipations)
         {
             double participation = hourlyResults->ShortTermStorage[hourInTheWeek]
                                      .reserveParticipationOfCluster()
                                        [area->reserveParticipationIndexMaps()
                                           .STStorageClusters.left.at(
                                             std::make_pair(resName, STStorageCluster->id))];
-            STStorageClusterReserveParticipationCostForYear()[hourInTheYear] += participation
-                                                                                * STStorageCluster
-                                                                                    ->reserveCost(
-                                                                                      resName);
+            STStorageClusterReserveParticipationCostForYear()[hourInTheYear]
+              += participation
+                 * STStorageCluster->reserveParticipationContainer().reserveCost(resName);
 
             reserveParticipationPerGroupForYear[hourInTheYear]
               .shortTermStorageGroupsReserveParticipation[STStorageCluster->properties.getGroup()]
@@ -247,19 +246,18 @@ void State::initFromHydroStorage()
     if (unitCommitmentMode != Antares::Data::UnitCommitmentMode::ucHeuristicFast
         && study.parameters.compatibility.reserves
              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
-        && LTStorage.reservesParticipations)
+        && LTStorage.reserveParticipationContainer)
     {
         // reserveParticipationPerLTStorageClusterForYear[hourInTheYear].clear();
-        for (const auto& [resName, resParticipation]: LTStorage.reservesParticipations())
+        for (const auto& [resName, resParticipation]:
+             LTStorage.reserveParticipationContainer().reservesParticipations)
         {
             double participation = hourlyResults->HydroUsage[hourInTheWeek]
                                      .reserveParticipationOfCluster()
                                        [area->reserveParticipationIndexMaps().LTStorage.left.at(
                                          resName)];
-            LTStorageClusterReserveParticipationCostForYear()[hourInTheYear] += participation
-                                                                                * LTStorage
-                                                                                    .reserveCost(
-                                                                                      resName);
+            LTStorageClusterReserveParticipationCostForYear()[hourInTheYear]
+              += participation * LTStorage.reserveParticipationContainer().reserveCost(resName);
 
             reserveParticipationPerLTStorageClusterForYear[hourInTheYear]["LongTermStorage"]
                                                           [resName]
@@ -348,12 +346,12 @@ void State::initFromThermalClusterIndexProduction(const uint clusterEnabledIndex
         && study.parameters.compatibility.reserves
              == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
     {
-        std::vector<std::string> clusterReserves = thermalCluster->listOfParticipatingReserves();
-        for (auto& res: clusterReserves)
+        for (const auto& [res_name, _]:
+             thermalCluster->reserveParticipationContainer().reservesParticipations)
         {
             int reserveParticipationIdx = area->reserveParticipationIndexMaps()
                                             .thermalClusters.left.at(
-                                              std::make_pair(res, thermalCluster->name()));
+                                              std::make_pair(res_name, thermalCluster->name()));
             if (reserveParticipationIdx != -1)
             {
                 double participationOn = hourlyResults->ProductionThermique[hourInTheWeek]
@@ -365,15 +363,19 @@ void State::initFromThermalClusterIndexProduction(const uint clusterEnabledIndex
                                               [reserveParticipationIdx];
 
                 thermal[area->index].thermalClustersOperatingCost[clusterEnabledIndex]
-                  += participationOn * thermalCluster->reserveCost(res)
-                     + participationOff * thermalCluster->reserveCostOff(res);
+                  += participationOn
+                       * thermalCluster->reserveParticipationContainer().reserveCost(res_name)
+                     + participationOff
+                         * thermalCluster->reserveParticipationContainer().reserveCostOff(res_name);
 
                 thermalClusterReserveParticipationCostForYear()[hourInTheYear]
-                  += participationOn * thermalCluster->reserveCost(res)
-                     + participationOff * thermalCluster->reserveCostOff(res);
+                  += participationOn
+                       * thermalCluster->reserveParticipationContainer().reserveCost(res_name)
+                     + participationOff
+                         * thermalCluster->reserveParticipationContainer().reserveCostOff(res_name);
 
                 reserveParticipationPerGroupForYear[hourInTheYear]
-                  .thermalGroupsReserveParticipation[thermalCluster->groupID][res]
+                  .thermalGroupsReserveParticipation[thermalCluster->groupID][res_name]
                   += participationOn + participationOff;
 
                 DetailledParticipation participation;
@@ -381,13 +383,13 @@ void State::initFromThermalClusterIndexProduction(const uint clusterEnabledIndex
                 participation.addOnParticipation(participationOn);
 
                 reserveParticipationPerThermalClusterForYear[hourInTheYear][thermalCluster->name()]
-                                                            [res]
+                                                            [res_name]
                   = participation;
             }
             else
             {
                 logs.error() << "No index for cluster " << thermalCluster->name() << " in reserve "
-                             << res;
+                             << res_name;
             }
         }
     }

@@ -51,8 +51,9 @@ std::shared_ptr<ClusterT> ClusterList<ClusterT>::enabledClusterAt(unsigned int i
 }
 
 template<class ClusterT>
-std::pair<Data::ClusterName, Data::ReserveName>
-ClusterList<ClusterT>::reserveParticipationClusterAt(const Area* area, unsigned int index) const
+std::pair<Data::ClusterName, ReserveName> ClusterList<ClusterT>::reserveParticipationClusterAt(
+  const Area* area,
+  unsigned int index) const
 {
     int globalReserveParticipationIdx = 0;
 
@@ -60,7 +61,7 @@ ClusterList<ClusterT>::reserveParticipationClusterAt(const Area* area, unsigned 
     {
         for (auto& cluster: allClusters_)
         {
-            if (cluster->isParticipatingInReserve(reserveUpName))
+            if (cluster->reserveParticipationContainer().isParticipatingInReserve(reserveUpName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -76,7 +77,7 @@ ClusterList<ClusterT>::reserveParticipationClusterAt(const Area* area, unsigned 
     {
         for (auto& cluster: allClusters_)
         {
-            if (cluster->isParticipatingInReserve(reserveDownName))
+            if (cluster->reserveParticipationContainer().isParticipatingInReserve(reserveDownName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -92,7 +93,7 @@ ClusterList<ClusterT>::reserveParticipationClusterAt(const Area* area, unsigned 
 }
 
 template<class ClusterT>
-std::pair<Data::ThermalCluster::ThermalDispatchableGroup, Data::ReserveName>
+std::pair<Data::ThermalCluster::ThermalDispatchableGroup, ReserveName>
 ClusterList<ClusterT>::reserveParticipationGroupAt(const Area* area, unsigned int index) const
 {
     int column = 0;
@@ -125,7 +126,7 @@ ClusterList<ClusterT>::reserveParticipationGroupAt(const Area* area, unsigned in
 }
 
 template<class ClusterT>
-std::pair<Data::ThermalCluster::UnsuppliedSpilled, Data::ReserveName>
+std::pair<Data::ThermalCluster::UnsuppliedSpilled, ReserveName>
 ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area,
                                                                unsigned int index) const
 {
@@ -222,8 +223,8 @@ void ClusterList<ClusterT>::storeTimeseriesNumbers(Solver::IResultWriter& writer
 }
 
 template<class ClusterT>
-std::optional<std::shared_ptr<Cluster>> ClusterList<ClusterT>::getClusterByName(
-  std::string clusterName)
+std::optional<std::shared_ptr<ClusterT>> ClusterList<ClusterT>::getClusterByName(
+  std::string clusterName) const
 {
     auto it = std::find_if(allClusters_.begin(),
                            allClusters_.end(),
@@ -488,8 +489,14 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
                                                                            tmpParticipationCost,
                                                                            tmpMaxPowerOff,
                                                                            tmpParticipationCostOff};
-                cluster.value().get()->addReserveParticipation(section.get().name,
-                                                               tmpReserveParticipation);
+                if (!cluster.value()->reserveParticipationContainer)
+                {
+                    cluster.value()->reserveParticipationContainer = ReserveParticipationContainer<
+                      ThermalClusterReserveParticipation>();
+                }
+                cluster.value()->reserveParticipationContainer().addReserveParticipation(
+                  section.get().name,
+                  tmpReserveParticipation);
             }
             else
             {
@@ -526,7 +533,9 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
                 auto cluster = area.thermal.list.getClusterByName(tmpClusterName);
                 if (cluster)
                 {
-                    cluster.value().get()->addReserveParticipationSymmetry(sym);
+                    cluster.value()
+                      ->reserveParticipationContainer()
+                      .addReserveParticipationSymmetry(sym);
                 }
                 else
                 {

@@ -317,7 +317,7 @@ struct PDISP_ET_COUTS_HORAIRES_PAR_PALIER
 
 struct RESERVE_PARTICIPATION_BASE
 {
-    float participationCost;
+    double participationCost;
     int globalIndexClusterParticipation;
     int areaIndexClusterParticipation;
     std::string clusterName;
@@ -329,21 +329,21 @@ struct RESERVE_PARTICIPATION_BASE
 
 struct RESERVE_PARTICIPATION_THERMAL: public RESERVE_PARTICIPATION_BASE
 {
-    float maxPower;
-    float maxPowerOff;
-    float participationCostOff;
+    double maxPower;
+    double maxPowerOff;
+    double participationCostOff;
 };
 
 struct RESERVE_PARTICIPATION_STSTORAGE: public RESERVE_PARTICIPATION_BASE
 {
-    float maxTurbining;
-    float maxPumping;
+    double maxTurbining;
+    double maxPumping;
 };
 
 struct RESERVE_PARTICIPATION_LTSTORAGE: public RESERVE_PARTICIPATION_BASE
 {
-    float maxTurbining;
-    float maxPumping;
+    double maxTurbining;
+    double maxPumping;
 };
 
 struct CAPACITY_RESERVATION
@@ -353,10 +353,10 @@ struct CAPACITY_RESERVATION
       AllSTStorageReservesParticipation;
     std::vector<RESERVE_PARTICIPATION_LTSTORAGE> AllLTStorageReservesParticipation;
     std::vector<int> need; //!< Vector size is number of hours in year
-    float failureCost = 0;
-    float spillageCost = 0;
-    float maxActivationRatio = 0;
-    float maxEnergyActivationRatio = 1;
+    double failureCost = 0;
+    double spillageCost = 0;
+    double maxActivationRatio = 0;
+    double maxEnergyActivationRatio = 1;
     int maxActivationDuration = 0;
     std::string reserveName;
     int globalReserveIndex;
@@ -373,8 +373,8 @@ struct RESERVE_PARTICIPATION_WITH_RESERVE_NAME
 // Vector size is number of reserves up or down
 struct AREA_RESERVES_VECTOR
 {
-    float maxGlobalEnergyActivationRatioUp = 1.;
-    float maxGlobalEnergyActivationRatioDown = 1.;
+    double maxGlobalEnergyActivationRatioUp = 1.;
+    double maxGlobalEnergyActivationRatioDown = 1.;
     int maxGlobalActivationDurationUp = 0;
     int maxGlobalActivationDurationDown = 0;
     std::vector<CAPACITY_RESERVATION> areaCapacityReservationsUp;

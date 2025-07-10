@@ -24,6 +24,7 @@
 #include <optional>
 
 #include <antares/study/area/ReserveOpt.h>
+#include <antares/study/area/reserveParticipationContainer.h>
 
 #include "../../fwd.h"
 #include "allocation.h"
@@ -175,32 +176,11 @@ public:
 
     uint reserveParticipationsCount() const;
 
+    std::optional<ReserveName> reserveParticipationAt(const Area* area, unsigned int index) const;
+
     uint count() const;
 
     bool loadReserveParticipations(Area& area, const std::filesystem::path& file);
-
-    void addReserveParticipation(const std::string& reserveName,
-                                 const LTStorageClusterReserveParticipation& participation);
-
-    void addReserveParticipationSymmetry(std::set<Data::ReserveName>);
-
-    //! @brief Get the reserve participation symmetry list index
-    std::vector<int> symmetricalIndices(Data::ReserveName name) const;
-
-    //! @brief Get the number of symmetry groups
-    int getNbSymGroups();
-
-    std::optional<Data::ReserveName> reserveParticipationAt(const Area* area,
-                                                            unsigned int index) const;
-
-    //! Returns max turbining power for a reserve if participating, -1 otherwise
-    double reserveMaxTurbining(Data::ReserveName name);
-
-    //! Returns max pumping power for a reserve if participating, -1 otherwise
-    double reserveMaxPumping(Data::ReserveName name);
-
-    //! Returns participating cost for a reserve if participating, -1 otherwise
-    double reserveCost(Data::ReserveName name);
 
 public:
     //! Inter-daily breakdown (previously called Smoothing Factor or alpha)
@@ -268,9 +248,11 @@ public:
     std::unordered_map<uint, AreaDependantHydroManagementData> managementData;
 
     std::vector<std::optional<double>> deltaBetweenFinalAndInitialLevels;
-    ReserveOpt<std::map<std::string, LTStorageClusterReserveParticipation>> reservesParticipations;
-    ReserveOpt<std::vector<std::vector<LTStorageReserveParticipationWithName>>>
-      reserveParticipationsSymmetries;
+
+    //! Reserve participation container to store the participation of the cluster in the reserves
+    //! and the symmetries
+    ReserveOpt<ReserveParticipationContainer<LTStorageClusterReserveParticipation>>
+      reserveParticipationContainer;
 
     double overflowSpilledCostDifference = 1.;
 

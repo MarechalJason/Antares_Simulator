@@ -18,19 +18,14 @@
 ** You should have received a copy of the Mozilla Public Licence 2.0
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
-#ifndef __ANTARES_LIBS_STUDY_NEW_RESERVES_H__
-#define __ANTARES_LIBS_STUDY_NEW_RESERVES_H__
+#pragma once
 
 #include <optional>
-#include <vector>
 
-#include <yuni/yuni.h>
-#include <yuni/core/noncopyable.h>
-#include <yuni/core/string.h>
-
-#include <antares/array/matrix.h>
 #include <antares/series/series.h>
-#include <antares/study/fwd.h>
+
+//! Name of a reserve
+using ReserveName = std::string;
 
 /// @brief Represents an area capacity reservation using it's name, it's failure cost and it's
 /// spillage cost
@@ -57,7 +52,7 @@ private:
     Data::TimeSeriesNumbers timeseriesNumbers;
 };
 
-/// @brief Stores all the Capacity reservations in two vectors for the up and down reserves
+/// @brief Stores all the Capacity reservations in two maps for the up and down reserves
 struct AllCapacityReservations
 {
     double maxGlobalEnergyActivationRatioUp = 1.;
@@ -65,13 +60,13 @@ struct AllCapacityReservations
     int maxGlobalActivationDurationUp = 1;
     int maxGlobalActivationDurationDown = 1;
 
-    std::map<Data::ReserveName, CapacityReservation> areaCapacityReservationsUp;
-    std::map<Data::ReserveName, CapacityReservation> areaCapacityReservationsDown;
+    std::map<ReserveName, CapacityReservation> areaCapacityReservationsUp;
+    std::map<ReserveName, CapacityReservation> areaCapacityReservationsDown;
 
     /// @brief Check if the capacity reservation name already exist in both the up and down reserves
     /// @param name
     /// @return true if the capacity reservation already existed
-    bool contains(Data::ReserveName name)
+    bool contains(ReserveName name) const
     {
         return areaCapacityReservationsUp.contains(name)
                || areaCapacityReservationsDown.contains(name);
@@ -81,8 +76,8 @@ struct AllCapacityReservations
     /// @param name
     /// @return an optional of the capacity reservation reference if the reserve was found, and a
     /// nullopt otherwise
-    std::optional<std::reference_wrapper<CapacityReservation>> getReserveByName(
-      Yuni::ShortString256 name)
+    std::optional<std::reference_wrapper<const CapacityReservation>> getReserveByName(
+      std::string name) const
     {
         if (areaCapacityReservationsUp.contains(name))
         {
@@ -97,7 +92,7 @@ struct AllCapacityReservations
 
     /// @brief Get the number of capacityReservations in the area
     /// @return the number of capacityReservations in the area
-    size_t size()
+    size_t size() const
     {
         return areaCapacityReservationsUp.size() + areaCapacityReservationsDown.size();
     }
@@ -113,111 +108,3 @@ struct AllCapacityReservations
         return file_name;
     }
 };
-
-/// @brief Represents the thermal cluster reserve participation to a given reserve
-struct ThermalClusterReserveParticipation
-{
-    std::reference_wrapper<CapacityReservation> capacityReservation;
-    double maxPower = 0;
-    double participationCost = 0;
-    double maxPowerOff = 0;
-    double participationCostOff = 0;
-
-    ThermalClusterReserveParticipation(std::reference_wrapper<CapacityReservation> reserve,
-                                       double power,
-                                       double cost,
-                                       double powerOff,
-                                       double costOff):
-        capacityReservation(reserve),
-        maxPower(power),
-        participationCost(cost),
-        maxPowerOff(powerOff),
-        participationCostOff(costOff)
-    {
-    }
-
-    ThermalClusterReserveParticipation& operator=(const ThermalClusterReserveParticipation& other)
-    {
-        // Check for self-assignment
-        if (this != &other)
-        {
-            // Copy the values from the other object
-            capacityReservation = other.capacityReservation;
-            maxPower = other.maxPower;
-            participationCost = other.participationCost;
-            maxPowerOff = other.maxPowerOff;
-            participationCostOff = other.participationCostOff;
-        }
-        return *this;
-    }
-};
-
-/// @brief Represents the Short Term Storage cluster reserve participation to a given reserve
-struct STStorageClusterReserveParticipation
-{
-    std::reference_wrapper<CapacityReservation> capacityReservation;
-    double maxTurbining = 0;
-    double maxPumping = 0;
-    double participationCost = 0;
-
-    STStorageClusterReserveParticipation(std::reference_wrapper<CapacityReservation> reserve,
-                                         double turbining,
-                                         double pumping,
-                                         double cost):
-        capacityReservation(reserve),
-        maxTurbining(turbining),
-        maxPumping(pumping),
-        participationCost(cost)
-    {
-    }
-
-    STStorageClusterReserveParticipation& operator=(
-      const STStorageClusterReserveParticipation& other)
-    {
-        // Check for self-assignment
-        if (this != &other)
-        {
-            // Copy the values from the other object
-            capacityReservation = other.capacityReservation;
-            maxTurbining = other.maxTurbining;
-            maxPumping = other.maxPumping;
-            participationCost = other.participationCost;
-        }
-        return *this;
-    }
-};
-
-/// @brief Represents the Long Term Storage cluster reserve participation to a given reserve
-struct LTStorageClusterReserveParticipation
-{
-    std::reference_wrapper<CapacityReservation> capacityReservation;
-    double maxTurbining = 0;
-    double maxPumping = 0;
-    double participationCost = 0;
-
-    LTStorageClusterReserveParticipation(std::reference_wrapper<CapacityReservation> reserve,
-                                         double turbining,
-                                         double pumping,
-                                         double cost):
-        capacityReservation(reserve),
-        maxTurbining(turbining),
-        maxPumping(pumping),
-        participationCost(cost)
-    {
-    }
-
-    LTStorageClusterReserveParticipation& operator=(
-      const LTStorageClusterReserveParticipation& other)
-    {
-        if (this != &other)
-        {
-            capacityReservation = other.capacityReservation;
-            maxTurbining = other.maxTurbining;
-            maxPumping = other.maxPumping;
-            participationCost = other.participationCost;
-        }
-        return *this;
-    }
-};
-
-#endif // __ANTARES_LIBS_STUDY_LINKS_H__
