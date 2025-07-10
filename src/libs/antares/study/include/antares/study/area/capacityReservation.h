@@ -27,25 +27,23 @@
 //! Name of a reserve
 using ReserveName = std::string;
 
+//! Name of a cluster
+using ClusterName = std::string;
+
 /// @brief Represents an area capacity reservation using it's name, it's failure cost and it's
 /// spillage cost
 struct CapacityReservation
 {
     CapacityReservation():
-        failureCost(0),
-        spillageCost(0),
-        need(timeseriesNumbers),
-        maxActivationRatio(0.),
-        maxEnergyActivationRatio(1.),
-        maxActivationHours(1.)
+        need(timeseriesNumbers)
     {
     }
 
-    double failureCost;
-    double spillageCost;
-    double maxActivationRatio;
-    double maxEnergyActivationRatio;
-    int maxActivationHours;
+    double failureCost = 0.;
+    double spillageCost = 0.;
+    double maxActivationRatio = 0.;
+    double maxEnergyActivationRatio = 1.;
+    int maxActivationHours = 1.;
     Antares::Data::TimeSeries need;
 
 private:
