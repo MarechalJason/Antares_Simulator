@@ -25,7 +25,7 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
             // R_{min,res} : max power participation ratio
             // R_up : max stock level
             {
-                float sign = isUpReserve ? -1. : 1.;
+                double sign = isUpReserve ? -1. : 1.;
 
                 RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation
                   = capacityReservation.AllLTStorageReservesParticipation[cluster];
