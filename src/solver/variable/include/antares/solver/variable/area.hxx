@@ -376,8 +376,7 @@ void Areas<NextT>::hourForEachArea(State& state, uint numSpace)
           // Initializing the state for the current area
           state.initFromAreaIndex(area.index, numSpace);
 
-          if (state.study.parameters.compatibility.reserves
-              == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+          if (state.study.parameters.compatibility.reservesEnabled)
           {
               state.initReserveParticipationIndexMaps();
           }
@@ -398,8 +397,7 @@ void Areas<NextT>::hourForEachArea(State& state, uint numSpace)
           state.initFromHydroStorage();
 
           // Calculation of reserve participation costs
-          if (state.study.parameters.compatibility.reserves
-              == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+          if (state.study.parameters.compatibility.reservesEnabled)
           {
               state.calculateReserveParticipationCosts();
           }

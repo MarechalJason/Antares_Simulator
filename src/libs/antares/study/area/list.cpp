@@ -921,8 +921,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
     }
 
     // Reserves
-    if (study.parameters.compatibility.reserves
-        == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+    if (study.parameters.compatibility.reservesEnabled)
     {
         loadReserves(study, area, buffer, ini, ret);
     }
@@ -992,8 +991,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                                                  study.usedByTheSolver);
 
         if (study.parameters.unitCommitment.ucMode != UnitCommitmentMode::ucHeuristicFast
-            && study.parameters.compatibility.reserves
-                 == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+            && study.parameters.compatibility.reservesEnabled)
         {
             fs::path reservesHydro = study.folderInput / "hydro" / "common"
                                      / area.id.to<std::string>() / "reserves.ini";
@@ -1032,8 +1030,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
             area.thermal.list.enableMustrunForEveryone();
         }
         if (study.parameters.unitCommitment.ucMode != UnitCommitmentMode::ucHeuristicFast
-            && study.parameters.compatibility.reserves
-                 == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+            && study.parameters.compatibility.reservesEnabled)
         {
             fs::path reservesThermal = study.folderInput / "thermal" / "clusters"
                                        / area.id.to<std::string>() / "reserves.ini";
@@ -1051,8 +1048,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
         ret = area.shortTermStorage.validate(studyVersion) && ret;
 
         if (study.parameters.unitCommitment.ucMode != UnitCommitmentMode::ucHeuristicFast
-            && study.parameters.compatibility.reserves
-                 == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+            && study.parameters.compatibility.reservesEnabled)
         {
             fs::path reservesPath = study.folderInput / "st-storage" / "clusters"
                                     / area.id.to<std::string>() / "reserves.ini";

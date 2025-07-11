@@ -112,8 +112,7 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the number of thermal reserveParticipations
-        pSize = study->parameters.compatibility.reserves
-                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+        pSize = study->parameters.compatibility.reservesEnabled
                   ? area->thermal.list.reserveParticipationsCount()
                   : 0;
 
@@ -240,8 +239,7 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         // Get end year calculations
-        if (state.study.parameters.compatibility.reserves
-              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+        if (state.study.parameters.compatibility.reservesEnabled
             && state.area->reserveParticipationIndexMaps().thermalClusters.size())
         {
             for (auto& [clusterName, _]:

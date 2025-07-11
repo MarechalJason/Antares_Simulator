@@ -33,8 +33,7 @@ inline void State::startANewYear()
 
     memset(thermalClusterProductionForYear, 0, sizeof(thermalClusterProductionForYear));
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
-    if (study.parameters.compatibility.reserves
-        == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+    if (study.parameters.compatibility.reservesEnabled)
     {
         reserveParticipationCostForYear.init();
         reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
@@ -63,8 +62,7 @@ inline void State::yearEndResetThermal()
 {
     memset(thermalClusterProductionForYear, 0, sizeof(thermalClusterProductionForYear));
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
-    if (study.parameters.compatibility.reserves
-        == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+    if (study.parameters.compatibility.reservesEnabled)
     {
         reserveParticipationCostForYear.init();
         reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
@@ -91,8 +89,7 @@ inline void State::initFromAreaIndex(const unsigned int areaIndex, uint numSpace
     thermalCluster = nullptr;
 
     if (unitCommitmentMode != Data::UnitCommitmentMode::ucHeuristicFast
-        && study.parameters.compatibility.reserves
-             == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+        && study.parameters.compatibility.reservesEnabled)
     {
         reserveParticipationCostForYear.init();
         reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);

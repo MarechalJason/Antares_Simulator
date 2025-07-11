@@ -241,34 +241,28 @@ bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax& mode,
     return false;
 }
 
-const char* CompatibilityReservesToCString(Parameters::Compatibility::Reserves mode)
+const char* CompatibilityReservesToCString(bool reservesEnabled)
 {
-    switch (mode)
+    if (reservesEnabled)
     {
-    case Parameters::Compatibility::Reserves::Disabled:
-        return "disabled";
-    case Parameters::Compatibility::Reserves::Enabled:
         return "enabled";
-    default:
-        return "Unknown";
+    }
+    else
+    {
+        return "disabled";
     }
 }
 
-bool StringToCompatibilityReserves(Parameters::Compatibility::Reserves& mode,
-                                   const std::string& text)
+bool StringToCompatibilityReserves(bool& reservesEnabled, const std::string& text)
 {
-    if (text.empty())
+    if (text.empty() || text == "disabled")
     {
-        return false;
-    }
-    if (text == "disabled")
-    {
-        mode = Parameters::Compatibility::Reserves::Disabled;
+        reservesEnabled = false;
         return true;
     }
-    if (text == "enabled")
+    else if (text == "enabled")
     {
-        mode = Parameters::Compatibility::Reserves::Enabled;
+        reservesEnabled = true;
         return true;
     }
     return false;
@@ -1133,7 +1127,7 @@ static bool SGDIntLoadFamily_Compatibility(Parameters& d,
     }
     else if (key == "reserves")
     {
-        return StringToCompatibilityReserves(d.compatibility.reserves, value);
+        return StringToCompatibilityReserves(d.compatibility.reservesEnabled, value);
     }
 
     return false;
@@ -2049,7 +2043,7 @@ void Parameters::saveToINI(IniFile& ini) const
     {
         auto* section = ini.addSection("compatibility");
         section->add("hydro-pmax", CompatibilityHydroPmaxToCString(compatibility.hydroPmax));
-        section->add("reserves", CompatibilityReservesToCString(compatibility.reserves));
+        section->add("reserves", CompatibilityReservesToCString(compatibility.reservesEnabled));
     }
 }
 

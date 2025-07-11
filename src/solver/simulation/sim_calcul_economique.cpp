@@ -167,9 +167,7 @@ static void importShortTermStorages(
             clusterGlobalIndex++;
         }
 
-        if (parameters.compatibility.reserves
-              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
-            && area->allCapacityReservations)
+        if (parameters.compatibility.reservesEnabled && area->allCapacityReservations)
         {
             auto& areaReserves = problem.allReserves()[areaIndex];
 
@@ -258,7 +256,8 @@ static void importLongTermStoragesReserves(AreaList& areas, PROBLEME_HEBDO& prob
                 int areaReserveIdx = 0;
                 for (const auto& [reserveName, _]: reserveDefs)
                 {
-                    if (ltStorage.reserveParticipationContainer().isParticipatingInReserve(reserveName))
+                    if (ltStorage.reserveParticipationContainer().isParticipatingInReserve(
+                          reserveName))
                     {
                         RESERVE_PARTICIPATION_LTSTORAGE reserveParticipation;
                         reserveParticipation.maxTurbining = ltStorage
@@ -461,7 +460,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
         problem.CoefficientEcretementPMaxHydraulique[i] = area.hydro.intraDailyModulation;
     }
 
-    if (parameters.compatibility.reserves == Parameters::Compatibility::Reserves::Enabled)
+    if (parameters.compatibility.reservesEnabled)
     {
         importCapacityReservations(study.areas, problem);
         importLongTermStoragesReserves(study.areas, problem);
@@ -569,9 +568,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
 
         if (study.parameters.unitCommitment.ucMode
               != Antares::Data::UnitCommitmentMode::ucHeuristicFast
-            && study.parameters.compatibility.reserves
-                 == Antares::Data::Parameters::Compatibility::Reserves::Enabled
-            && area.allCapacityReservations)
+            && study.parameters.compatibility.reservesEnabled && area.allCapacityReservations)
         {
             auto& areaReserves = problem.allReserves()[i];
 

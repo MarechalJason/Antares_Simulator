@@ -110,8 +110,7 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the area
-        pSize = study->parameters.compatibility.reserves
-                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+        pSize = study->parameters.compatibility.reservesEnabled
                   ? area->allCapacityReservations().areaCapacityReservationsUp.size() * 2
                       + area->allCapacityReservations().areaCapacityReservationsDown.size() * 2
                   : 0;
@@ -244,8 +243,7 @@ public:
         auto& area = state.area;
         int column = 0;
 
-        if (state.study.parameters.compatibility.reserves
-            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+        if (state.study.parameters.compatibility.reservesEnabled)
         {
             auto reserves = state.problemeHebdo->allReserves()[area->index];
             for (const auto& reserveUp: reserves.areaCapacityReservationsUp)

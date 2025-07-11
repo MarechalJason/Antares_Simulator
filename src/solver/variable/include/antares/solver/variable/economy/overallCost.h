@@ -259,8 +259,7 @@ public:
                 - state.area->hydro.pumpingEfficiency
                     * state.hourlyResults->HydroUsage[state.hourInTheWeek].PompageHoraire));
 
-        if (state.study.parameters.compatibility.reserves
-            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+        if (state.study.parameters.compatibility.reservesEnabled)
         {
             const auto& reserves = state.problemeHebdo->allReserves()[area->index];
             for (const auto& reserveUp: reserves.areaCapacityReservationsUp)

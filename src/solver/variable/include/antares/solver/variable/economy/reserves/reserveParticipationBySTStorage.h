@@ -111,8 +111,7 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the number of STStorage reserveParticipations
-        pSize = study->parameters.compatibility.reserves
-                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+        pSize = study->parameters.compatibility.reservesEnabled
                   ? area->shortTermStorage.reserveParticipationsCount()
                   : 0;
         if (pSize)
@@ -237,8 +236,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (state.study.parameters.compatibility.reserves
-              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+        if (state.study.parameters.compatibility.reservesEnabled
             && state.area->reserveParticipationIndexMaps().STStorageClusters.size())
         {
             for (auto& [clusterName, _]:

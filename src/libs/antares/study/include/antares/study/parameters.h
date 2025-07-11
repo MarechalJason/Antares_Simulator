@@ -399,12 +399,7 @@ public:
         };
         HydroPmax hydroPmax = HydroPmax::Daily;
 
-        enum class Reserves
-        {
-            Enabled,
-            Disabled
-        };
-        Reserves reserves = Reserves::Disabled;
+        bool reservesEnabled = false;
     };
 
     Compatibility compatibility;
@@ -528,8 +523,8 @@ bool StringToSimulationMode(SimulationMode& mode, Yuni::CString<20, false> text)
 const char* CompatibilityHydroPmaxToCString(const Parameters::Compatibility::HydroPmax);
 bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax&, const std::string& text);
 
-const char* CompatibilityReservesToCString(Parameters::Compatibility::Reserves);
-bool StringToCompatibilityReserves(Parameters::Compatibility::Reserves&, const std::string& text);
+const char* CompatibilityReservesToCString(bool reservesEnabled);
+bool StringToCompatibilityReserves(const std::string& text);
 
 } // namespace Antares::Data
 

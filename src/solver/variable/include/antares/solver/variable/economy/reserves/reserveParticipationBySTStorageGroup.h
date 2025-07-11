@@ -110,8 +110,7 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the number of potential group reserve participation
-        pSize = study->parameters.compatibility.reserves
-                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+        pSize = study->parameters.compatibility.reservesEnabled
                   ? area->allCapacityReservations().areaCapacityReservationsUp.size()
                         * Antares::Data::ShortTermStorage::groupMax
                       + area->allCapacityReservations().areaCapacityReservationsDown.size()
@@ -243,8 +242,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (state.study.parameters.compatibility.reserves
-            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+        if (state.study.parameters.compatibility.reservesEnabled)
         {
             auto& area = state.area;
             int column = 0;

@@ -93,8 +93,7 @@ static void StudyRuntimeInfosInitializeAllAreas(Study& study, StudyRuntimeInfos&
         r.thermalPlantTotalCount += area.thermal.list.enabledAndNotMustRunCount();
         r.thermalPlantTotalCountMustRun += area.thermal.list.enabledAndMustRunCount();
 
-        if (study.parameters.compatibility.reserves
-            == Antares::Data::Parameters::Compatibility::Reserves::Enabled)
+        if (study.parameters.compatibility.reservesEnabled)
         {
             r.reserveParticipationCount += area.thermal.list.reserveParticipationsCount();
             r.reserveParticipationCount += area.shortTermStorage.reserveParticipationsCount();

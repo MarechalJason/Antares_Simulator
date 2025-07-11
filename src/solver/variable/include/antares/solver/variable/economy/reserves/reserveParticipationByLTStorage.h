@@ -73,8 +73,7 @@ public:
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
         // Get the number of LTStorage reserveParticipations
-        pSize = study->parameters.compatibility.reserves
-                    == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+        pSize = study->parameters.compatibility.reservesEnabled
                   ? area->hydro.reserveParticipationsCount()
                   : 0;
         if (pSize)
@@ -184,8 +183,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (state.study.parameters.compatibility.reserves
-              == Antares::Data::Parameters::Compatibility::Reserves::Enabled
+        if (state.study.parameters.compatibility.reservesEnabled
             && state.area->reserveParticipationIndexMaps().LTStorage.size())
         {
             for (const auto& [reserveName, reserveParticipation]:
