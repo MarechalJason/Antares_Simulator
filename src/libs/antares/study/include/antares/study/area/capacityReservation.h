@@ -27,9 +27,6 @@
 //! Name of a reserve
 using ReserveName = std::string;
 
-//! Name of a cluster
-using ClusterName = std::string;
-
 /// @brief Represents an area capacity reservation using it's name, it's failure cost and it's
 /// spillage cost
 struct CapacityReservation
