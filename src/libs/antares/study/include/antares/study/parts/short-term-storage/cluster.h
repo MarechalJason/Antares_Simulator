@@ -21,6 +21,7 @@
 
 #pragma once
 #include <filesystem>
+#include <list>
 #include <memory>
 #include <string>
 
@@ -57,7 +58,7 @@ public:
 
     std::shared_ptr<Series> series = std::make_shared<Series>();
     mutable Properties properties;
-    std::vector<AdditionalConstraints> additionalConstraints;
+    std::vector<std::shared_ptr<AdditionalConstraints>> additionalConstraints;
 
     //! Reserve participation container to store the participation of the cluster in the reserves
     //! and the symmetries

@@ -15,7 +15,10 @@ add_subdirectory(reserves)
 
 add_boost_test(test-study
   SRC test_study.cpp
-  LIBS Antares::study)
+  LIBS
+  Antares::study
+  Antares::exception
+  )
 
 add_boost_test(test-duplicates
   SRC test_duplicates.cpp

@@ -91,6 +91,7 @@ enum MenusID
     mnIDStudyEditMapReverseSelection,
     mnIDStudyEditTitle,
     mnIDStudyEditAuthors,
+    mnIDStudyEditEditor,
     mnIDStudyEditCopy,
     mnIDStudyEditPaste,
     mnIDStudyEditPasteSpecial,
@@ -105,7 +106,6 @@ enum MenusID
     //@{
     mnIDRunTheSimulation,
     mnIDRunTheTSGenerators,
-    mnIDRunTheTSAnalyzer,
     mnIDRunTheConstraintsBuilder,
     mnIDOpenOutputInExplorer,
     //@}
@@ -169,7 +169,6 @@ enum MenusID
     mnUpdateInterfaceAfterLoadingAStudy,
     mnInternalLogMessage,
     mnRefreshGUI,
-    mnIDLaunchAnalyzer,
     mnIDLaunchConstraintsBuilder,
 
     //! \name Popup Menu Operator for selected cells on any grid

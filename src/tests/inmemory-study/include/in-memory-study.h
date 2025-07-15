@@ -43,9 +43,14 @@ public:
     {
     }
 
-    TimeSeriesConfigurer& setColumnCount(unsigned int columnCount,
-                                         unsigned rowCount = HOURS_PER_YEAR);
-    TimeSeriesConfigurer& fillColumnWith(unsigned int column, double value);
+    TimeSeriesConfigurer(TimeSeries& ts):
+        ts_(&ts.timeSeries)
+    {
+    }
+
+    TimeSeriesConfigurer& setDimensions(unsigned columnCount, unsigned rowCount = HOURS_PER_YEAR);
+    TimeSeriesConfigurer& fillColumnWith(unsigned column, double value);
+    TimeSeriesConfigurer& fillColumnWith(unsigned column, const std::vector<double>& values);
 
 private:
     Matrix<>* ts_ = nullptr;
@@ -54,20 +59,105 @@ private:
 class ThermalClusterConfig
 {
 public:
-    ThermalClusterConfig() = default;
-    ThermalClusterConfig(ThermalCluster* cluster);
+    ThermalClusterConfig() = delete;
+    explicit ThermalClusterConfig(std::shared_ptr<ThermalCluster> cluster);
     ThermalClusterConfig& setNominalCapacity(double nominalCapacity);
-    ThermalClusterConfig& setUnitCount(unsigned int unitCount);
+    ThermalClusterConfig& setUnitCount(unsigned unitCount);
     ThermalClusterConfig& setCosts(double cost);
-    ThermalClusterConfig& setAvailablePowerNumberOfTS(unsigned int columnCount);
-    ThermalClusterConfig& setAvailablePower(unsigned int column, double value);
+    ThermalClusterConfig& setAvailablePowerNumberOfTS(unsigned columnCount);
+    ThermalClusterConfig& setAvailablePower(unsigned column, double value);
 
 private:
-    ThermalCluster* cluster_ = nullptr;
+    std::shared_ptr<ThermalCluster> cluster_ = nullptr;
     TimeSeriesConfigurer tsAvailablePowerConfig_;
 };
 
+class ShortTermStorageAddConstraintConfig
+{
+public:
+    ShortTermStorageAddConstraintConfig() = delete;
+
+    ShortTermStorageAddConstraintConfig(Antares::Data::ShortTermStorage::STStorageCluster& storage):
+        storage(storage),
+        constraint(std::make_shared<Antares::Data::ShortTermStorage::AdditionalConstraints>())
+    {
+    }
+
+    ShortTermStorageAddConstraintConfig& setName(const std::string& name)
+    {
+        constraint->name = name;
+        return *this;
+    }
+
+    ShortTermStorageAddConstraintConfig& setVariable(const std::string& variable)
+    {
+        constraint->variable = variable;
+        return *this;
+    }
+
+    ShortTermStorageAddConstraintConfig& setOperatorType(const std::string& operatorType)
+    {
+        constraint->operatorType = operatorType;
+        return *this;
+    }
+
+    ShortTermStorageAddConstraintConfig& setHours(const std::vector<std::set<int>>& hourSets)
+    {
+        for (const auto& hourSet: hourSets)
+        {
+            constraint->constraints.push_back(
+              {.hours = hourSet, .globalIndex = 0, .localIndex = 0});
+        }
+        return *this;
+    }
+
+    std::shared_ptr<Antares::Data::ShortTermStorage::AdditionalConstraints> build()
+    {
+        storage.additionalConstraints.push_back(std::move(constraint));
+        // The ShortTermStorageAddConstraintConfig instance may be re-used
+        constraint = std::make_shared<Antares::Data::ShortTermStorage::AdditionalConstraints>();
+        return storage.additionalConstraints.back();
+    }
+
+private:
+    Antares::Data::ShortTermStorage::STStorageCluster& storage;
+    std::shared_ptr<Antares::Data::ShortTermStorage::AdditionalConstraints> constraint;
+};
+
+class ShortTermStorageConfig
+
+{
+public:
+    ShortTermStorageConfig() = delete;
+    explicit ShortTermStorageConfig(Antares::Data::ShortTermStorage::STStorageCluster& storage);
+    ShortTermStorageConfig& setInjectionNominalCapacity(double injectionNominalCapacity);
+    ShortTermStorageConfig& setWithdrawalNominalCapacity(double withdrawalNominalCapacity);
+    ShortTermStorageConfig& setReservoirCapacity(double reservoirCapacity);
+    ShortTermStorageConfig& setInitialLevel(double initialLevel);
+    ShortTermStorageConfig& setInitialLevelOptim(bool initialLevelOptim);
+    ShortTermStorageConfig& setInjectionEfficiency(double injectionEfficiency);
+    ShortTermStorageConfig& setWithdrawalEfficiency(double withdrawalEfficiency);
+    ShortTermStorageConfig& setGroupName(const std::string& groupName);
+    ShortTermStorageConfig& setName(const std::string& name);
+    ShortTermStorageConfig& setPenalizeVariationWithdrawal(bool penalizeVariationWithdrawal);
+    ShortTermStorageConfig& setPenalizeVariationInjection(bool penalizeVariationInjection);
+    ShortTermStorageConfig& setEnabled(bool enabled);
+
+    ShortTermStorageAddConstraintConfig& addConstraint()
+    {
+        return constraintConfig;
+    }
+
+private:
+    Antares::Data::ShortTermStorage::STStorageCluster& storage;
+    ShortTermStorageAddConstraintConfig constraintConfig;
+};
+
 std::shared_ptr<ThermalCluster> addClusterToArea(Area* area, const std::string& clusterName);
+
+Antares::Data::ShortTermStorage::STStorageCluster* addSTSToArea(Area* area,
+                                                                const std::string& stsName);
+
 void addScratchpadToEachArea(Data::Study& study);
 
 // -------------------------------
@@ -81,17 +171,32 @@ public:
     {
     }
 
-    double hour(unsigned int hour)
+    long double* hours()
+    {
+        return averageResults_.hourly.data();
+    }
+
+    double hour(unsigned hour)
     {
         return averageResults_.hourly[hour];
     }
 
-    double day(unsigned int day)
+    long double* days()
+    {
+        return averageResults_.daily.data();
+    }
+
+    double day(unsigned day)
     {
         return averageResults_.daily[day];
     }
 
-    double week(unsigned int week)
+    long double* weeks()
+    {
+        return averageResults_.weekly.data();
+    }
+
+    double week(unsigned week)
     {
         return averageResults_.weekly[week];
     }
@@ -109,7 +214,8 @@ public:
     }
 
     averageResults overallCost(Area* area);
-    averageResults levelForSTSgroup(Area* area, unsigned int groupNb);
+    averageResults levelForSTSgroup(Area* area, unsigned groupNb);
+    averageResults withdrawalForSTSgroup(Area* area, unsigned groupNb);
     averageResults load(Area* area);
     averageResults hydroStorage(Area* area);
     averageResults flow(AreaLink* link);
@@ -175,6 +281,12 @@ public:
         return rules_->hydro;
     }
 
+    // index = area index
+    std::vector<ShortTermAdditionalConstraintsTSNumberData>& stsAdditionalConstraints()
+    {
+        return rules_->shortTermStorageAdditionalConstraints;
+    }
+
 private:
     Rules::Ptr rules_;
 };
@@ -192,6 +304,10 @@ public:
     }
 
     ~SimulationHandler() = default;
+
+    SimulationHandler(const SimulationHandler&) = delete;
+    SimulationHandler& operator=(const SimulationHandler&) = delete;
+
     void create();
 
     void run()
@@ -221,15 +337,15 @@ struct StudyBuilder
 {
     StudyBuilder();
 
-    void simulationBetweenDays(const unsigned int firstDay, const unsigned int lastDay);
+    void simulationBetweenDays(const unsigned firstDay, const unsigned lastDay);
     Area* addAreaToStudy(const std::string& areaName);
-    void setNumberMCyears(unsigned int nbYears);
-    void playOnlyYear(unsigned int year);
-    void giveWeightToYear(float weight, unsigned int year);
+    void setNumberMCyears(unsigned nbYears);
+    void playOnlyYear(unsigned year);
+    void giveWeightToYear(float weight, unsigned year);
 
     // Data members
     std::unique_ptr<Data::Study> study;
-    std::shared_ptr<SimulationHandler> simulation;
+    SimulationHandler simulation;
 };
 
 std::shared_ptr<Antares::Data::BindingConstraint> addBindingConstraints(Antares::Data::Study& study,

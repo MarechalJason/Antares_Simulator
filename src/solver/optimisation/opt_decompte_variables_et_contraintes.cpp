@@ -249,7 +249,7 @@ int OPT_DecompteDesVariablesEtDesContraintesDuProblemeAOptimiser(PROBLEME_HEBDO*
                     for (const auto& additionalConstraints: storage.additionalConstraints)
                     {
                         ProblemeAResoudre->NombreDeContraintes += additionalConstraints
-                                                                    .enabledConstraints();
+                                                                    ->enabledConstraintsCount();
                     }
                 }
             }

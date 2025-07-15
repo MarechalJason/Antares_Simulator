@@ -74,6 +74,7 @@ public:
     uint reserveParticipationsCount() const;
 
     std::vector<STStorageCluster> storagesByIndex;
+    void resizeTimeseriesNumbers(unsigned int nbYears);
 
     /// Number cumulative - constraint
     std::size_t cumulativeConstraintCount() const;

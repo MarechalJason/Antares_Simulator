@@ -29,6 +29,10 @@ set(SRC_STUDY_SCENARIO_BUILDER
         scenario-builder/WindTSNumberData.cpp
         include/antares/study/scenario-builder/LoadTSNumberData.h
         scenario-builder/LoadTSNumberData.cpp
+        include/antares/study/scenario-builder/ShortTermInflowsTSNumberData.h
+        scenario-builder/ShortTermInflowsTSNumberData.cpp
+        include/antares/study/scenario-builder/ShortTermAdditionalConstraintsTSNumberData.h
+        scenario-builder/ShortTermAdditionalConstraintsTSNumberData.cpp
         include/antares/study/scenario-builder/applyToMatrix.hxx
 )
 source_group("study\\scenario builder" FILES ${SRC_MATRIX})
@@ -49,7 +53,6 @@ set(SRC_AREAS
         include/antares/study/area/links.h
         area/store-timeseries-numbers.cpp
         include/antares/study/area/store-timeseries-numbers.h
-        include/antares/study/area/store-timeseries-numbers.hxx
         area/list.cpp
 )
 source_group("study\\area" FILES ${SRC_AREAS})
@@ -113,9 +116,9 @@ set(SRC_STUDY_PART_SHORT_TERM_STORAGE
         include/antares/study/parts/short-term-storage/additionalConstraints.h
         parts/short-term-storage/cluster.cpp
         parts/short-term-storage/additionalConstraints.cpp
-		include/antares/study/parts/short-term-storage/makeGroupsOfHoursFromString.h
-		parts/short-term-storage/makeGroupsOfHoursFromString.cpp
-		include/antares/study/parts/short-term-storage/HoursCollectorVisitor.h
+        include/antares/study/parts/short-term-storage/makeGroupsOfHoursFromString.h
+        parts/short-term-storage/makeGroupsOfHoursFromString.cpp
+        include/antares/study/parts/short-term-storage/HoursCollectorVisitor.h
 )
 source_group("study\\part\\short-term-storage" FILES ${SRC_STUDY_PART_SHORT_TERM_SOTRAGE})
 
@@ -226,12 +229,11 @@ set(SRC_STUDY
         runtime/runtime.cpp
         include/antares/study/runtime.h
         include/antares/study/study.h
-        include/antares/study/study.hxx
         include/antares/study/fwd.h
         fwd.cpp
         include/antares/study/study.h
         study.cpp
-	duplicates.cpp
+        duplicates.cpp
         include/antares/study/duplicates.h
         include/antares/study/correlation-updater.hxx
         study.importprepro.cpp
@@ -318,8 +320,10 @@ target_link_libraries(study
         linear-problem-api
         Antares::load-modeler-files
         Antares::modeler-parameters
+        Antares::modeler-lib
         PRIVATE
         Antares::exception
+        PRIVATE
         Antares::benchmarking
         antares-solver-variable
         Antares::additional-constraint-rhs-antlr-interface

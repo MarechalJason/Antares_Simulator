@@ -136,11 +136,6 @@ public:
     void validateOptions(const StudyLoadOptions&);
 
     /*!
-    ** \brief Try to detect then fix refresh intervals
-    */
-    void fixRefreshIntervals();
-
-    /*!
     ** \brief Try to detect then fix TS generation/refresh parameters
     *         for NTC
     */
@@ -249,28 +244,6 @@ public:
     uint nbTimeSeriesThermal;
     //! Nb of timeSeries : Solar
     uint nbTimeSeriesSolar;
-    //@}
-
-    //! \name Time-series refresh
-    //@{
-    /*!
-    ** \brief Time series to refresh on-line
-    **
-    ** This value is a mask bits for timeSeries
-    ** \see TimeSeries
-    */
-    uint timeSeriesToRefresh;
-
-    //! Refresh interval (in years) for timeSeries : Load
-    uint refreshIntervalLoad;
-    //! Refresh interval (in years) for timeSeries : Hydro
-    uint refreshIntervalHydro;
-    //! Refresh interval (in years) for timeSeries : Wind
-    uint refreshIntervalWind;
-    //! Refresh interval (in years) for timeSeries : Thermal
-    uint refreshIntervalThermal;
-    //! Refresh interval (in years) for timeSeries : Solar
-    uint refreshIntervalSolar;
     //@}
 
     //! \name Archives
@@ -459,6 +432,10 @@ public:
         //! Hydro Pricing Mode
         HydroPricingMode hpMode;
     } hydroPricing;
+
+    // TODO VP: remove this comment
+    // This parameters does nothing right now, it will be implemented later in 9.3.x
+    bool accurateShavePeaksIncludeShortTermStorage = false;
 
     //! Transmission capacities
     GlobalTransmissionCapacities transmissionCapacities;
