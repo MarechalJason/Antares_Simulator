@@ -71,13 +71,11 @@ struct ReserveParticipationPerGroupForYear
 {
     //! Reserve Participation for all thermal group types (nuclear / coal / ...) for the whole
     //! year per reserve
-    std::map<Data::ThermalCluster::ThermalDispatchableGroup, std::map<ReserveName, double>>
-      thermalGroupsReserveParticipation;
+    std::map<std::string, std::map<ReserveName, double>> thermalGroupsReserveParticipation;
 
     //! Reserve Participation for all thermal Short Term storages types (PSP / Battery / ...)
     //! for the whole year per reserve
-    std::map<Data::ShortTermStorage::Group, std::map<ReserveName, double>>
-      shortTermStorageGroupsReserveParticipation;
+    std::map<std::string, std::map<ReserveName, double>> shortTermStorageGroupsReserveParticipation;
 };
 
 class State
@@ -255,15 +253,15 @@ public:
     };
 
     //! Reserve Participation for each thermal cluster per reserve
-    std::vector<std::map<Data::ClusterName, std::map<ReserveName, DetailledParticipation>>>
+    std::vector<std::map<std::string, std::map<ReserveName, DetailledParticipation>>>
       reserveParticipationPerThermalClusterForYear{HOURS_PER_YEAR};
 
     //! Reserve Participation for each STStorage cluster per reserve
-    std::vector<std::map<Data::ClusterName, std::map<ReserveName, double>>>
+    std::vector<std::map<std::string, std::map<ReserveName, double>>>
       reserveParticipationPerSTStorageClusterForYear{HOURS_PER_YEAR};
 
     //! Reserve Participation for each LTStorage cluster per reserve
-    std::vector<std::map<Data::ClusterName, std::map<ReserveName, double>>>
+    std::vector<std::map<std::string, std::map<ReserveName, double>>>
       reserveParticipationPerLTStorageClusterForYear{HOURS_PER_YEAR};
 
     //! Reserve Participation cost for the whole year

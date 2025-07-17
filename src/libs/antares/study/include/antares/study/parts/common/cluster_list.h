@@ -115,9 +115,8 @@ public:
     ** @param index Global index of the reserveParicipation
     ** @return the cluster and reserve names
     */
-    std::pair<Data::ClusterName, ReserveName> reserveParticipationClusterAt(
-      const Area* area,
-      unsigned int index) const;
+    std::pair<std::string, ReserveName> reserveParticipationClusterAt(const Area* area,
+                                                                      unsigned int index) const;
 
     /*!
     ** @brief Get the group and reserve names for a given index of reserveParticipation
@@ -125,8 +124,8 @@ public:
     ** @param index Global index of the reserveParicipation
     ** @return the group and reserve names
     */
-    std::pair<Data::ThermalCluster::ThermalDispatchableGroup, ReserveName>
-    reserveParticipationGroupAt(const Area* area, unsigned int index) const;
+    std::pair<std::string, ReserveName> reserveParticipationGroupAt(const Area* area,
+                                                                    unsigned int index) const;
 
     /*!
      ** @brief Get the reserve and spilled/unsupplied status and names for a given index of

@@ -223,9 +223,8 @@ public:
     {
         // Retrieving hourly water values of week simulation
         pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = state.hourlyResults
-                                                                         ->HydroUsage
-                                                                           [state.hourInTheWeek]
-                                                                         .valeurH2oHoraire;
+                                                                         ->valeurH2oHoraire
+                                                                           [state.hourInTheWeek];
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);

@@ -245,9 +245,9 @@ public:
         pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear]
           += state.problemeHebdo->CaracteristiquesHydrauliques[state.area->index]
                  .WeeklyWaterValueStateRegular
-               * (state.hourlyResults->HydroUsage[state.hourInTheWeek].TurbinageHoraire
+               * (state.hourlyResults->TurbinageHoraire[state.hourInTheWeek]
                   - area->hydro.pumpingEfficiency
-                      * state.hourlyResults->HydroUsage[state.hourInTheWeek].PompageHoraire)
+                      * state.hourlyResults->PompageHoraire[state.hourInTheWeek])
              + (state.STStorageClusterReserveParticipationCostForYear
                   ? state.STStorageClusterReserveParticipationCostForYear()[state.hourInTheYear]
                   : 0)

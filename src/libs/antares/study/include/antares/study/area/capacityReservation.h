@@ -21,6 +21,7 @@
 #pragma once
 
 #include <optional>
+#include <set>
 
 #include <antares/series/series.h>
 
@@ -54,6 +55,8 @@ struct AllCapacityReservations
     double maxGlobalEnergyActivationRatioDown = 1.;
     int maxGlobalActivationDurationUp = 1;
     int maxGlobalActivationDurationDown = 1;
+    std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
+      reserveGroupPart;
 
     std::map<ReserveName, CapacityReservation> areaCapacityReservationsUp;
     std::map<ReserveName, CapacityReservation> areaCapacityReservationsDown;

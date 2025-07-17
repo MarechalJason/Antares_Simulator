@@ -249,10 +249,10 @@ public:
           + (state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
              * state.area->thermal.spilledEnergyCost)
           // Current hydro storage and pumping generation costs
-          + (state.hourlyResults->HydroUsage[state.hourInTheWeek].valeurH2oHoraire
-             * (state.hourlyResults->HydroUsage[state.hourInTheWeek].TurbinageHoraire
+          + (state.hourlyResults->valeurH2oHoraire[state.hourInTheWeek]
+             * (state.hourlyResults->TurbinageHoraire[state.hourInTheWeek]
                 - state.area->hydro.pumpingEfficiency
-                    * state.hourlyResults->HydroUsage[state.hourInTheWeek].PompageHoraire));
+                    * state.hourlyResults->PompageHoraire[state.hourInTheWeek]));
 
         if (state.study.parameters.compatibility.reservesEnabled)
         {

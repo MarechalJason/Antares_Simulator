@@ -417,7 +417,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaire(PROBLEME_HEBDO* problemeHeb
                                   ProblemeAResoudre->SecondMembre,
                                   problemeHebdo->CorrespondanceCntNativesCntOptimHebdomadaires,
                                   weekFirstHour,
-                                  problemeHebdo->year););
+                                  problemeHebdo->year);
     if (problemeHebdo->OptimisationNotFastMode)
     {
         OPT_InitialiserLeSecondMembreDuProblemeLineaireCoutsDeDemarrage(problemeHebdo,

@@ -43,11 +43,7 @@ MaxMrgDataFactory::MaxMrgDataFactory(const State& state, unsigned int numSpace):
     numSpace_(numSpace),
     weeklyResults_(state.problemeHebdo->ResultatsHoraires[state.area->index])
 {
-    std::transform(weeklyResults_.HydroUsage.begin(),
-                   weeklyResults_.HydroUsage.end(),
-                   std::back_inserter(maxMRGinput_.hydroGeneration),
-                   [](const OPTIMAL_HYDRO_USAGE& s) { return s.TurbinageHoraire; });
-
+    maxMRGinput_.hydroGeneration = weeklyResults_.TurbinageHoraire.data();
     maxMRGinput_.maxHourlyGenPower = &state_.area->hydro.series->maxHourlyGenPower;
     maxMRGinput_.dtgMargin = state_.area->scratchpad[numSpace].dispatchableGenerationMargin;
     maxMRGinput_.hourInYear = state.hourInTheYear;

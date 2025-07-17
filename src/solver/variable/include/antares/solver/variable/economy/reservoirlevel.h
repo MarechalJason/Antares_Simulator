@@ -224,9 +224,8 @@ public:
     {
         // Retrieving hourly reservoir levels of week simulation
         pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = state.hourlyResults
-                                                                         ->HydroUsage
+                                                                         ->niveauxHoraires
                                                                            [state.hourInTheWeek]
-                                                                         .niveauxHoraires
                                                                        / pReservoirCapacity * 100.;
 
         // Next variable

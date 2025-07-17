@@ -720,11 +720,6 @@ void SIM_RenseignementProblemeHebdo(const Study& study,
 
         if (area.hydro.reservoirManagement)
         {
-<<<<<<< HEAD
-            problem.CaracteristiquesHydrauliques[k].GlobalHydroIndex = nbHydro++;
-            problem.CaracteristiquesHydrauliques[k].NiveauInitialReservoir
-              = problem.previousSimulationFinalLevel[k];
-=======
             double& nivInit = problem.CaracteristiquesHydrauliques[k].NiveauInitialReservoir;
             nivInit = problem.previousSimulationFinalLevel[k];
             if (not problem.CaracteristiquesHydrauliques[k].TurbinageEntreBornes)
@@ -733,7 +728,6 @@ void SIM_RenseignementProblemeHebdo(const Study& study,
                           * area.hydro.reservoirCapacity;
                 problem.previousSimulationFinalLevel[k] = nivInit;
             }
->>>>>>> develop
 
             if (nivInit < -LEVEL_TOLERANCE_MWH)
             {

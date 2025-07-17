@@ -109,14 +109,16 @@ public:
         pNbYearsParallel = study->maxNbYearsInParallel;
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
 
+        for (auto& [pair, index]: area->reserveParticipationIndexMaps().thermalClusters)
+        {
+            auto cluster = area->thermal.list.getClusterByName(pair.second)->get();
+            area->allCapacityReservations->reserveGroupPart[pair.first].insert(cluster->getGroup());
+        }
         // Get the number of potential group reserve participation
-        pSize = study->parameters.compatibility.reservesEnabled
-                  ? area->allCapacityReservations().areaCapacityReservationsUp.size()
-                        * Antares::Data::ShortTermStorage::groupMax
-                      + area->allCapacityReservations().areaCapacityReservationsDown.size()
-                          * Antares::Data::ShortTermStorage::groupMax
-                  : 0;
-
+        for (auto& [resName, setGroups]: area->allCapacityReservations->reserveGroupPart)
+        {
+            pSize += setGroups.size();
+        }
         if (pSize)
         {
             AncestorType::pResults.resize(pSize);
@@ -217,21 +219,16 @@ public:
         NextType::yearEnd(year, numSpace);
     }
 
-    void computeSummary(std::map<unsigned int, unsigned int>& numSpaceToYear,
-                        unsigned int nbYearsForCurrentSummary)
+    void computeSummary(unsigned int year, unsigned int numSpace)
     {
-        for (unsigned int numSpace = 0; numSpace < nbYearsForCurrentSummary; ++numSpace)
-        {
-            for (unsigned int i = 0; i < pSize; ++i)
-            {
-                // Merge all those values with the global results
-                AncestorType::pResults[i].merge(numSpaceToYear[numSpace],
-                                                pValuesForTheCurrentYear[numSpace][i]);
-            }
-        }
+        // Merge all those values with the global results
+
+        VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
+                                             AncestorType::pResults,
+                                             year);
 
         // Next variable
-        NextType::computeSummary(numSpaceToYear, nbYearsForCurrentSummary);
+        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
@@ -249,31 +246,26 @@ public:
             for (const auto& [reserveName, _]:
                  area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
-                     indexGroup++)
+                for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
                 {
                     pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
                       += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                           .shortTermStorageGroupsReserveParticipation[static_cast<
-                             Antares::Data::ShortTermStorage::Group>(indexGroup)][reserveName];
+                           .shortTermStorageGroupsReserveParticipation[group][reserveName];
                     column++;
                 }
             }
             for (const auto& [reserveName, _]:
                  area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
-                     indexGroup++)
+                for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
                 {
                     pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
                       += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                           .shortTermStorageGroupsReserveParticipation[static_cast<
-                             Antares::Data::ShortTermStorage::Group>(indexGroup)][reserveName];
+                           .shortTermStorageGroupsReserveParticipation[group][reserveName];
                     column++;
                 }
             }
         }
-
         // Next variable
         NextType::hourForEachArea(state, numSpace);
     }
@@ -296,20 +288,20 @@ public:
         if (AncestorType::isPrinted[0] && results.data.area->allCapacityReservations)
         {
             assert(NULL != results.data.area);
-
             // Write the data for the current year
             int column = 0;
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
-                     indexGroup++)
+                for (auto group = area->allCapacityReservations->reserveGroupPart.at(resName)
+                                    .begin();
+                     group != area->allCapacityReservations->reserveGroupPart.at(resName).end();
+                     group++)
                 {
                     // Write the data for the current year
+                    std::string tmp = *group;
                     Yuni::String caption = resName;
-                    caption << "_"
-                            << Antares::Data::ShortTermStorage::STStorageCluster::GroupName(
-                                 static_cast<Antares::Data::ShortTermStorage::Group>(indexGroup));
+                    caption << "_" << tmp;
                     results.variableCaption = caption; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
                     pValuesForTheCurrentYear[numSpace][column]
@@ -320,14 +312,14 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                for (int indexGroup = 0; indexGroup < Antares::Data::ShortTermStorage::groupMax;
-                     indexGroup++)
+                for (auto group = area->allCapacityReservations->reserveGroupPart.at(resName)
+                                    .begin();
+                     group != area->allCapacityReservations->reserveGroupPart.at(resName).end();
+                     group++)
                 {
                     // Write the data for the current year
                     Yuni::String caption = resName;
-                    caption << "_"
-                            << Antares::Data::ShortTermStorage::STStorageCluster::GroupName(
-                                 static_cast<Antares::Data::ShortTermStorage::Group>(indexGroup));
+                    caption << "_" << *group;
                     results.variableCaption = caption; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
                     pValuesForTheCurrentYear[numSpace][column]

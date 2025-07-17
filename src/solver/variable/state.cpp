@@ -224,8 +224,7 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
                  * STStorageCluster->reserveParticipationContainer().reserveCost(resName);
 
             reserveParticipationPerGroupForYear[hourInTheYear]
-              .shortTermStorageGroupsReserveParticipation[STStorageCluster->properties.getGroup()]
-                                                         [resName]
+              .shortTermStorageGroupsReserveParticipation[STStorageCluster->getGroup()][resName]
               += participation;
 
             reserveParticipationPerSTStorageClusterForYear[hourInTheYear][STStorageCluster->id]
@@ -372,7 +371,7 @@ void State::initFromThermalClusterIndexProduction(const uint clusterEnabledIndex
                          * thermalCluster->reserveParticipationContainer().reserveCostOff(res_name);
 
                 reserveParticipationPerGroupForYear[hourInTheYear]
-                  .thermalGroupsReserveParticipation[thermalCluster->groupID][res_name]
+                  .thermalGroupsReserveParticipation[thermalCluster->getGroup()][res_name]
                   += participationOn + participationOff;
 
                 DetailledParticipation participation;

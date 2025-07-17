@@ -28,22 +28,6 @@
 
 namespace Antares::Data::ShortTermStorage
 {
-enum Group
-{
-    PSP_open,
-    PSP_closed,
-    Pondage,
-    Battery,
-    Other1,
-    Other2,
-    Other3,
-    Other4,
-    Other5,
-    //! The highest value
-    groupMax
-};
-
-unsigned int groupIndex(Group group);
 
 class Properties
 {
@@ -51,7 +35,6 @@ public:
     bool validate();
     bool loadKey(const IniFile::Property* p);
     void save(IniFile& ini) const;
-    Group getGroup();
 
     /// Not optional   Injection nominal capacity, >= 0
     std::optional<double> injectionNominalCapacity;

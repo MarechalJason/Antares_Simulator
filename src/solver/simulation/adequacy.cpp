@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2007-2024, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
@@ -280,12 +281,17 @@ bool Adequacy::year(Progression::Task& progression,
                           hourlyResults.CoutsMarginauxHoraires.end(),
                           0);
 
-                for (auto& res: hourlyResults.HydroUsage)
-                {
-                    res.PompageHoraire = 0;
-                    res.debordementsHoraires = 0;
-                    res.niveauxHoraires = 0;
-                }
+                std::fill(hourlyResults.PompageHoraire.begin(),
+                          hourlyResults.PompageHoraire.end(),
+                          0);
+
+                std::fill(hourlyResults.debordementsHoraires.begin(),
+                          hourlyResults.debordementsHoraires.end(),
+                          0);
+
+                std::fill(hourlyResults.niveauxHoraires.begin(),
+                          hourlyResults.niveauxHoraires.end(),
+                          0);
             }
 
             uint indx = hourInTheYear;
@@ -301,10 +307,10 @@ bool Adequacy::year(Progression::Task& progression,
                     auto& hydroVentilation = hydroVentilationResults[k];
                     auto& hourlyResults = currentProblem.ResultatsHoraires[k];
 
-                    hourlyResults.HydroUsage[j].TurbinageHoraire = hydroVentilation
-                                                                     .HydrauliqueModulableQuotidien
-                                                                       [dayInTheYear]
-                                                                   / 24.;
+                    hourlyResults.TurbinageHoraire[j] = hydroVentilation
+                                                          .HydrauliqueModulableQuotidien
+                                                            [dayInTheYear]
+                                                        / 24.;
 
                     state.resSpilled[k][j] = +hydroVentilation
                                                  .HydrauliqueModulableQuotidien[dayInTheYear]

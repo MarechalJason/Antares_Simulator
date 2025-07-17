@@ -51,7 +51,7 @@ std::shared_ptr<ClusterT> ClusterList<ClusterT>::enabledClusterAt(unsigned int i
 }
 
 template<class ClusterT>
-std::pair<Data::ClusterName, ReserveName> ClusterList<ClusterT>::reserveParticipationClusterAt(
+std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationClusterAt(
   const Area* area,
   unsigned int index) const
 {
@@ -93,30 +93,29 @@ std::pair<Data::ClusterName, ReserveName> ClusterList<ClusterT>::reserveParticip
 }
 
 template<class ClusterT>
-std::pair<Data::ThermalCluster::ThermalDispatchableGroup, ReserveName>
-ClusterList<ClusterT>::reserveParticipationGroupAt(const Area* area, unsigned int index) const
+std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationGroupAt(
+  const Area* area,
+  unsigned int index) const
 {
     int column = 0;
-    for (auto [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
+    for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        for (int indexGroup = 0; indexGroup < Data::ThermalCluster::groupMax; indexGroup++)
+        for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
         {
             if (column == index)
             {
-                return {static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(indexGroup),
-                        reserveName};
+                return {group, reserveName};
             }
             column++;
         }
     }
-    for (auto [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
+    for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        for (int indexGroup = 0; indexGroup < Data::ThermalCluster::groupMax; indexGroup++)
+        for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
         {
             if (column == index)
             {
-                return {static_cast<Data::ThermalCluster::ThermalDispatchableGroup>(indexGroup),
-                        reserveName};
+                return {group, reserveName};
             }
             column++;
         }
@@ -497,6 +496,9 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
                 cluster.value()->reserveParticipationContainer().addReserveParticipation(
                   section.get().name,
                   tmpReserveParticipation);
+
+                area.allCapacityReservations->reserveGroupPart[section.get().name].insert(
+                  cluster->get()->getGroup());
             }
             else
             {
@@ -518,7 +520,6 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             }
         }
     }
-
     // Process symmetries
     for (const auto& section: symmetriesSections)
     {

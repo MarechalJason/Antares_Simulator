@@ -487,78 +487,7 @@ struct PRODUCTION_THERMIQUE_OPTIMALE
 
 struct OPTIMAL_HYDRO_USAGE
 {
-    double PompageHoraire;
-    double TurbinageHoraire;
-
-    double niveauxHoraires;
-    double valeurH2oHoraire;
-
-    double debordementsHoraires;
-
     ReserveOpt<std::vector<double>> reserveParticipationOfCluster; // MWh
-};
-
-class computeTimeStepLevel
-{
-private:
-    int step;
-    double level;
-
-    double capacity;
-    std::vector<double>& inflows;
-    std::vector<OPTIMAL_HYDRO_USAGE>& hydroUsage;
-    double pumpRatio;
-    double excessDown;
-
-public:
-    computeTimeStepLevel(const double& startLvl,
-                         std::vector<double>& infl,
-                         std::vector<OPTIMAL_HYDRO_USAGE>& hydroUsage,
-                         double pumpEff,
-                         double rc):
-        step(0),
-        level(startLvl),
-        inflows(infl),
-        hydroUsage(hydroUsage),
-        capacity(rc),
-        pumpRatio(pumpEff),
-        excessDown(0.)
-    {
-    }
-
-    void run()
-    {
-        excessDown = 0.;
-
-        auto& hydroUsageStep = hydroUsage[step];
-
-        level = level + inflows[step] - hydroUsageStep.TurbinageHoraire
-                + pumpRatio * hydroUsageStep.PompageHoraire;
-
-        if (level > capacity)
-        {
-            hydroUsageStep.debordementsHoraires = level - capacity;
-            level = capacity;
-        }
-
-        if (level < 0)
-        {
-            excessDown = -level;
-            level = 0.;
-            inflows[step] += excessDown;
-        }
-    }
-
-    void prepareNextStep()
-    {
-        step++;
-        inflows[step] -= excessDown;
-    }
-
-    double getLevel()
-    {
-        return level;
-    }
 };
 
 struct RESERVES
@@ -577,6 +506,14 @@ struct RESULTATS_HORAIRES
     std::vector<double> ValeursHorairesDtgMrgCsr;  // adq patch DTG MRG after CSR
 
     std::vector<double> ValeursHorairesDeDefaillanceNegative;
+
+    std::vector<double> PompageHoraire;
+    std::vector<double> TurbinageHoraire;
+
+    std::vector<double> niveauxHoraires;
+    std::vector<double> valeurH2oHoraire;
+
+    std::vector<double> debordementsHoraires;
 
     std::vector<double> CoutsMarginauxHoraires;
     std::vector<double> CoutsMarginauxHorairesCSR;

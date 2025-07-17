@@ -98,33 +98,6 @@ struct VCardReserveParticipationBySTStorageGroup
 
 }; // class VCard
 
-static std::string STStorageGroupToString(Data::ShortTermStorage::Group idx)
-{
-    using Group = Data::ShortTermStorage::Group; //"using enum" not supported by g++10
-    switch (idx)
-    {
-    case Group::PSP_open:
-        return "PSP_open";
-    case Group::PSP_closed:
-        return "PSP_closed";
-    case Group::Pondage:
-        return "Pondage";
-    case Group::Battery:
-        return "Battery";
-    case Group::Other1:
-        return "Other1";
-    case Group::Other2:
-        return "Other2";
-    case Group::Other3:
-        return "Other3";
-    case Group::Other4:
-        return "Other4";
-    case Group::Other5:
-        return "Other5";
-    default:
-        return "<unknown>";
-    }
-}
 } // namespace Economy
 } // namespace Variable
 } // namespace Solver

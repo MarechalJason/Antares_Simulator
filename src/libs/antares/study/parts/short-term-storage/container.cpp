@@ -418,7 +418,7 @@ uint STStorageInput::removeDisabledClusters()
     return std::erase_if(storagesByIndex, [](const auto& c) { return !c.enabled(); });
 }
 
-std::pair<Data::ClusterName, ReserveName> STStorageInput::reserveParticipationClusterAt(
+std::pair<std::string, ReserveName> STStorageInput::reserveParticipationClusterAt(
   const Area* area,
   unsigned int index) const
 {
@@ -459,29 +459,29 @@ std::pair<Data::ClusterName, ReserveName> STStorageInput::reserveParticipationCl
                             "the reserve participations");
 }
 
-std::pair<Data::ShortTermStorage::Group, ReserveName> STStorageInput::reserveParticipationGroupAt(
+std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
   const Area* area,
   unsigned int index) const
 {
     int column = 0;
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        for (int indexGroup = 0; indexGroup < Data::ShortTermStorage::groupMax; indexGroup++)
+        for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
         {
             if (column == index)
             {
-                return {static_cast<Data::ShortTermStorage::Group>(indexGroup), reserveName};
+                return {group, reserveName};
             }
             column++;
         }
     }
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        for (int indexGroup = 0; indexGroup < Data::ShortTermStorage::groupMax; indexGroup++)
+        for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
         {
             if (column == index)
             {
-                return {static_cast<Data::ShortTermStorage::Group>(indexGroup), reserveName};
+                return {group, reserveName};
             }
             column++;
         }

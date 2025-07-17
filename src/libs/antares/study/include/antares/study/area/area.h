@@ -299,8 +299,8 @@ public:
 
     struct ReserveIndexMap
     {
-        boost::bimap<std::pair<ReserveName, Data::ClusterName>, int> thermalClusters;
-        boost::bimap<std::pair<ReserveName, Data::ClusterName>, int> STStorageClusters;
+        boost::bimap<std::pair<ReserveName, std::string>, int> thermalClusters;
+        boost::bimap<std::pair<ReserveName, std::string>, int> STStorageClusters;
         boost::bimap<ReserveName, int> LTStorage;
     };
 
