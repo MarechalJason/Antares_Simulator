@@ -91,11 +91,12 @@ unsigned int ThermalClusterList::enabledAndMustRunCount() const
 
 unsigned int ThermalClusterList::reserveParticipationsCount() const
 {
-    return std::accumulate(allClusters_.begin(),
-                           allClusters_.end(),
-                           0,
-                           [](int total, const std::shared_ptr<ThermalCluster> cluster)
-                           { return total + cluster->reserveParticipationContainer().reserveParticipationsCount(); });
+    return std::accumulate(
+      allClusters_.begin(),
+      allClusters_.end(),
+      0,
+      [](int total, const std::shared_ptr<ThermalCluster> cluster)
+      { return total + cluster->reserveParticipationContainer().reserveParticipationsCount(); });
 }
 
 unsigned int ThermalClusterList::capacityReservationsCount() const
@@ -103,7 +104,8 @@ unsigned int ThermalClusterList::capacityReservationsCount() const
     std::set<const CapacityReservation*> uniqueReservations;
     for (auto& cluster: allClusters_)
     {
-        for (const auto& [_, reserveParticipation]: cluster->reserveParticipationContainer().reservesParticipations)
+        for (const auto& [_, reserveParticipation]:
+             cluster->reserveParticipationContainer().reservesParticipations)
         {
             const CapacityReservation* reservationPtr = &(
               reserveParticipation.capacityReservation.get());

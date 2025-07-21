@@ -77,7 +77,6 @@ double computeMarketBidCost(double fuelCost,
 class ThermalCluster final: public Cluster, public std::enable_shared_from_this<ThermalCluster>
 {
 public:
-
     enum UnsuppliedSpilled
     {
         //! Spilled

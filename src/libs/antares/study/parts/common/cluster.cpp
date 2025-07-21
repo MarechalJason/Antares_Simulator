@@ -117,7 +117,6 @@ bool Cluster::loadDataSeriesFromFolder(Study& s, const fs::path& folder)
 
 #undef SEP
 
-
 bool Cluster::isVisibleOnLayer(const size_t& layerID) const
 {
     return parentArea ? parentArea->isVisibleOnLayer(layerID) : false;

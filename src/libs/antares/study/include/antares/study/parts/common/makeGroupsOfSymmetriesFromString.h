@@ -51,4 +51,4 @@ public:
 
 std::vector<std::set<std::string>> makeGroupsOfSymmetries(const std::string& symmetriesField);
 
-} // namespace Antares::Data::ShortTermStorage
+} // namespace Antares::Data::Symmetries

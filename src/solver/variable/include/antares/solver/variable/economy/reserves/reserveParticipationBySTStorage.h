@@ -72,239 +72,237 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
+        enum
         {
-            enum
-            {
-                count = ((VCardType::categoryDataLevel & CDataLevel
-                          && VCardType::categoryFileLevel & CFile)
-                           ? (NextType::template Statistics<CDataLevel, CFile>::count
-                              + VCardType::columnCount * ResultsType::count)
-                           : NextType::template Statistics<CDataLevel, CFile>::count),
-            };
+            count = ((VCardType::categoryDataLevel & CDataLevel
+                      && VCardType::categoryFileLevel & CFile)
+                       ? (NextType::template Statistics<CDataLevel, CFile>::count
+                          + VCardType::columnCount * ResultsType::count)
+                       : NextType::template Statistics<CDataLevel, CFile>::count),
         };
+    };
 
-    public:
-        ReserveParticipationBySTStorage():
-            pValuesForTheCurrentYear(NULL),
-            pSize(0)
+public:
+    ReserveParticipationBySTStorage():
+        pValuesForTheCurrentYear(NULL),
+        pSize(0)
+
+    {
+    }
+
+    ~ReserveParticipationBySTStorage()
+    {
+        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
+            delete[] pValuesForTheCurrentYear[numSpace];
         }
+        delete[] pValuesForTheCurrentYear;
+    }
 
-        ~ReserveParticipationBySTStorage()
+    void initializeFromStudy(Data::Study& study)
+    {
+        // Next
+        NextType::initializeFromStudy(study);
+    }
+
+    void initializeFromArea(Data::Study* study, Data::Area* area)
+    {
+        // Get the number of years in parallel
+        pNbYearsParallel = study->maxNbYearsInParallel;
+        pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
+
+        // Get the number of STStorage reserveParticipations
+        pSize = study->parameters.compatibility.reservesEnabled
+                  ? area->shortTermStorage.reserveParticipationsCount()
+                  : 0;
+        if (pSize)
+        {
+            AncestorType::pResults.resize(pSize);
+            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            {
+                pValuesForTheCurrentYear[numSpace] = new VCardType::IntermediateValuesDeepType
+                  [pSize];
+            }
+
+            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            {
+                for (unsigned int i = 0; i != pSize; ++i)
+                {
+                    pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
+                }
+            }
+
+            for (unsigned int i = 0; i != pSize; ++i)
+            {
+                AncestorType::pResults[i].initializeFromStudy(*study);
+                AncestorType::pResults[i].reset();
+            }
+        }
+        else
         {
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
-                delete[] pValuesForTheCurrentYear[numSpace];
+                pValuesForTheCurrentYear[numSpace] = nullptr;
             }
-            delete[] pValuesForTheCurrentYear;
+
+            AncestorType::pResults.clear();
         }
 
-        void initializeFromStudy(Data::Study& study)
+        // Next
+        NextType::initializeFromArea(study, area);
+    }
+
+    size_t getMaxNumberColumns() const
+    {
+        return pSize * ResultsType::count;
+    }
+
+    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    {
+        // Next
+        NextType::initializeFromAreaLink(study, link);
+    }
+
+    void simulationBegin()
+    {
+        // Next
+        NextType::simulationBegin();
+    }
+
+    void simulationEnd()
+    {
+        NextType::simulationEnd();
+    }
+
+    void yearBegin(unsigned int year, unsigned int numSpace)
+    {
+        // Reset the values for the current year
+        for (unsigned int i = 0; i != pSize; ++i)
         {
-            // Next
-            NextType::initializeFromStudy(study);
+            pValuesForTheCurrentYear[numSpace][i].reset();
         }
 
-        void initializeFromArea(Data::Study* study, Data::Area* area)
-        {
-            // Get the number of years in parallel
-            pNbYearsParallel = study->maxNbYearsInParallel;
-            pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
+        // Next variable
+        NextType::yearBegin(year, numSpace);
+    }
 
-            // Get the number of STStorage reserveParticipations
-            pSize = study->parameters.compatibility.reservesEnabled
-                      ? area->shortTermStorage.reserveParticipationsCount()
-                      : 0;
-            if (pSize)
+    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
+    {
+        // Next variable
+        NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
+    }
+
+    void yearEndBuild(State& state, unsigned int year)
+    {
+        // Next variable
+        NextType::yearEndBuild(state, year);
+    }
+
+    void yearEnd(unsigned int year, unsigned int numSpace)
+    {
+        // Merge all results for all thermal clusters
+        {
+            for (unsigned int i = 0; i < pSize; ++i)
             {
-                AncestorType::pResults.resize(pSize);
-                for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-                {
-                    pValuesForTheCurrentYear[numSpace] = new VCardType::IntermediateValuesDeepType
-                      [pSize];
-                }
-
-                for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-                {
-                    for (unsigned int i = 0; i != pSize; ++i)
-                    {
-                        pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
-                    }
-                }
-
-                for (unsigned int i = 0; i != pSize; ++i)
-                {
-                    AncestorType::pResults[i].initializeFromStudy(*study);
-                    AncestorType::pResults[i].reset();
-                }
+                // Compute all statistics for the current year (daily,weekly,monthly)
+                pValuesForTheCurrentYear[numSpace][i].computeStatisticsForTheCurrentYear();
             }
-            else
+        }
+        // Next variable
+        NextType::yearEnd(year, numSpace);
+    }
+
+    void computeSummary(unsigned int year, unsigned int numSpace)
+    {
+        // Merge all those values with the global results
+
+        VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
+                                             AncestorType::pResults,
+                                             year);
+
+        // Next variable
+        NextType::computeSummary(year, numSpace);
+    }
+
+    void hourBegin(unsigned int hourInTheYear)
+    {
+        // Next variable
+        NextType::hourBegin(hourInTheYear);
+    }
+
+    void hourForEachArea(State& state, unsigned int numSpace)
+    {
+        if (state.study.parameters.compatibility.reservesEnabled
+            && state.area->reserveParticipationIndexMaps().STStorageClusters.size())
+        {
+            for (auto& [clusterName, _]:
+                 state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear])
             {
-                for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+                for (const auto& [reserveName, reserveParticipation]:
+                     state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
+                                                                         [clusterName])
                 {
-                    pValuesForTheCurrentYear[numSpace] = nullptr;
-                }
-
-                AncestorType::pResults.clear();
-            }
-
-            // Next
-            NextType::initializeFromArea(study, area);
-        }
-
-        size_t getMaxNumberColumns() const
-        {
-            return pSize * ResultsType::count;
-        }
-
-        void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-        {
-            // Next
-            NextType::initializeFromAreaLink(study, link);
-        }
-
-        void simulationBegin()
-        {
-            // Next
-            NextType::simulationBegin();
-        }
-
-        void simulationEnd()
-        {
-            NextType::simulationEnd();
-        }
-
-        void yearBegin(unsigned int year, unsigned int numSpace)
-        {
-            // Reset the values for the current year
-            for (unsigned int i = 0; i != pSize; ++i)
-            {
-                pValuesForTheCurrentYear[numSpace][i].reset();
-            }
-
-            // Next variable
-            NextType::yearBegin(year, numSpace);
-        }
-
-        void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
-        {
-            // Next variable
-            NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
-        }
-
-        void yearEndBuild(State& state, unsigned int year)
-        {
-            // Next variable
-            NextType::yearEndBuild(state, year);
-        }
-
-        void yearEnd(unsigned int year, unsigned int numSpace)
-        {
-            // Merge all results for all thermal clusters
-            {
-                for (unsigned int i = 0; i < pSize; ++i)
-                {
-                    // Compute all statistics for the current year (daily,weekly,monthly)
-                    pValuesForTheCurrentYear[numSpace][i].computeStatisticsForTheCurrentYear();
-                }
-            }
-            // Next variable
-            NextType::yearEnd(year, numSpace);
-        }
-
-        void computeSummary(unsigned int year, unsigned int numSpace)
-        {
-            // Merge all those values with the global results
-
-            VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
-                                                 AncestorType::pResults,
-                                                 year);
-
-            // Next variable
-            NextType::computeSummary(year, numSpace);
-        }
-
-        void hourBegin(unsigned int hourInTheYear)
-        {
-            // Next variable
-            NextType::hourBegin(hourInTheYear);
-        }
-
-        void hourForEachArea(State& state, unsigned int numSpace)
-        {
-            if (state.study.parameters.compatibility.reservesEnabled
-                && state.area->reserveParticipationIndexMaps().STStorageClusters.size())
-            {
-                for (auto& [clusterName, _]:
-                     state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear])
-                {
-                    for (const auto& [reserveName, reserveParticipation]:
-                         state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
-                                                                             [clusterName])
-                    {
-                        pValuesForTheCurrentYear[numSpace]
-                                                [state.area->reserveParticipationIndexMaps()
-                                                   .STStorageClusters.left.at(
-                                                     std::make_pair(reserveName, clusterName))]
-                                                  .hour[state.hourInTheYear]
-                          = reserveParticipation;
-                    }
-                }
-            }
-
-            // Next variable
-            NextType::hourForEachArea(state, numSpace);
-        }
-
-        Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-          unsigned int,
-          unsigned int numSpace) const
-        {
-            return pValuesForTheCurrentYear[numSpace]->hour;
-        }
-
-        void localBuildAnnualSurveyReport(SurveyResults& results,
-                                          int fileLevel,
-                                          int precision,
-                                          unsigned int numSpace) const
-        {
-            // Initializing external pointer on current variable non applicable status
-            results.isCurrentVarNA = AncestorType::isNonApplicable;
-
-            if (AncestorType::isPrinted[0])
-            {
-                assert(NULL != results.data.area);
-
-                // Write the data for the current year
-                for (uint i = 0; i < pSize; ++i)
-                {
-                    if (results.data.area->reserveParticipationIndexMaps
-                        && results.data.area->reserveParticipationIndexMaps()
-                             .STStorageClusters.size()) // Bimap is not empty
-                    {
-                        auto [reserveName, clusterName] = results.data.area
-                                                            ->reserveParticipationIndexMaps()
-                                                            .STStorageClusters.right.at(i);
-                        // Write the data for the current year
-                        results.variableCaption = reserveName + "_"
-                                                  + clusterName; // VCardType::Caption();
-                        results.variableUnit = VCardType::Unit();
-                        pValuesForTheCurrentYear[numSpace][i]
-                          .template buildAnnualSurveyReport<VCardType>(results,
-                                                                       fileLevel,
-                                                                       precision);
-                    }
+                    pValuesForTheCurrentYear[numSpace]
+                                            [state.area->reserveParticipationIndexMaps()
+                                               .STStorageClusters.left.at(
+                                                 std::make_pair(reserveName, clusterName))]
+                                              .hour[state.hourInTheYear]
+                      = reserveParticipation;
                 }
             }
         }
 
-    private:
-        //! Intermediate values for each year
-        typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-        size_t pSize;
-        unsigned int pNbYearsParallel;
+        // Next variable
+        NextType::hourForEachArea(state, numSpace);
+    }
 
-    }; // class ReserveParticipationBySTStorage
+    Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+      unsigned int,
+      unsigned int numSpace) const
+    {
+        return pValuesForTheCurrentYear[numSpace]->hour;
+    }
+
+    void localBuildAnnualSurveyReport(SurveyResults& results,
+                                      int fileLevel,
+                                      int precision,
+                                      unsigned int numSpace) const
+    {
+        // Initializing external pointer on current variable non applicable status
+        results.isCurrentVarNA = AncestorType::isNonApplicable;
+
+        if (AncestorType::isPrinted[0])
+        {
+            assert(NULL != results.data.area);
+
+            // Write the data for the current year
+            for (uint i = 0; i < pSize; ++i)
+            {
+                if (results.data.area->reserveParticipationIndexMaps
+                    && results.data.area->reserveParticipationIndexMaps()
+                         .STStorageClusters.size()) // Bimap is not empty
+                {
+                    auto [reserveName, clusterName] = results.data.area
+                                                        ->reserveParticipationIndexMaps()
+                                                        .STStorageClusters.right.at(i);
+                    // Write the data for the current year
+                    results.variableCaption = reserveName + "_"
+                                              + clusterName; // VCardType::Caption();
+                    results.variableUnit = VCardType::Unit();
+                    pValuesForTheCurrentYear[numSpace][i]
+                      .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
+                }
+            }
+        }
+    }
+
+private:
+    //! Intermediate values for each year
+    typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
+    size_t pSize;
+    unsigned int pNbYearsParallel;
+
+}; // class ReserveParticipationBySTStorage
 
 } // namespace Economy
 } // namespace Variable

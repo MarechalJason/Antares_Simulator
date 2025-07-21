@@ -293,9 +293,12 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                for (auto group = area->allCapacityReservations->reserveGroupPart.at(resName)
+                for (auto group = results.data.area->allCapacityReservations->reserveGroupPart
+                                    .at(resName)
                                     .begin();
-                     group != area->allCapacityReservations->reserveGroupPart.at(resName).end();
+                     group
+                     != results.data.area->allCapacityReservations->reserveGroupPart.at(resName)
+                          .end();
                      group++)
                 {
                     // Write the data for the current year
@@ -312,9 +315,12 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                for (auto group = area->allCapacityReservations->reserveGroupPart.at(resName)
+                for (auto group = results.data.area->allCapacityReservations->reserveGroupPart
+                                    .at(resName)
                                     .begin();
-                     group != area->allCapacityReservations->reserveGroupPart.at(resName).end();
+                     group
+                     != results.data.area->allCapacityReservations->reserveGroupPart.at(resName)
+                          .end();
                      group++)
                 {
                     // Write the data for the current year
