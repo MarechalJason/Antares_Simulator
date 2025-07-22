@@ -99,9 +99,7 @@ struct VCardReserveParticipationCost
     };
 
     typedef IntermediateValues IntermediateValuesBaseType;
-    typedef IntermediateValues* IntermediateValuesType;
-
-    typedef IntermediateValuesBaseType* IntermediateValuesTypeForSpatialAg;
+    typedef std::vector<IntermediateValuesBaseType> IntermediateValuesType;
 
 }; // class VCard
 
@@ -147,18 +145,13 @@ public:
     };
 
 public:
-    ~ReserveParticipationCost()
-    {
-        delete[] pValuesForTheCurrentYear;
-    }
-
     void initializeFromStudy(Data::Study& study)
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
 
         InitializeResultsFromStudy(AncestorType::pResults, study);
 
-        pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
@@ -279,7 +272,7 @@ public:
 private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    unsigned int pNbYearsParallel;
+    unsigned int pNbYearsParallel = 0;
 
 }; // class RampingCost
 

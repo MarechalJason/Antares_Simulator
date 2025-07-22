@@ -84,32 +84,13 @@ public:
     };
 
 public:
-    ReserveParticipationByDispatchableOnUnitsPlant():
-        pValuesForTheCurrentYear(NULL),
-        pSize(0)
-    {
-    }
-
-    ~ReserveParticipationByDispatchableOnUnitsPlant()
-    {
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-        {
-            delete[] pValuesForTheCurrentYear[numSpace];
-        }
-        delete[] pValuesForTheCurrentYear;
-    }
-
-    void initializeFromStudy(Data::Study& study)
-    {
-        // Next
-        NextType::initializeFromStudy(study);
-    }
+    ReserveParticipationByDispatchableOnUnitsPlant() = default;
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
-        pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the number of thermal reserveParticipations
         pSize = study->parameters.compatibility.reservesEnabled
@@ -121,8 +102,7 @@ public:
             AncestorType::pResults.resize(pSize);
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
-                pValuesForTheCurrentYear[numSpace] = new VCardType::IntermediateValuesDeepType
-                  [pSize];
+                pValuesForTheCurrentYear[numSpace].resize(pSize);
             }
 
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
@@ -141,11 +121,6 @@ public:
         }
         else
         {
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-            {
-                pValuesForTheCurrentYear[numSpace] = nullptr;
-            }
-
             AncestorType::pResults.clear();
         }
 
@@ -301,8 +276,8 @@ public:
 private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    size_t pSize;
-    unsigned int pNbYearsParallel;
+    size_t pSize = 0;
+    unsigned int pNbYearsParallel = 0;
 
 }; // class ReserveParticipationByDispatchableOnUnitsPlant
 

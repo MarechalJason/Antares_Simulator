@@ -47,30 +47,12 @@ public:
     };
 
 public:
-    ReserveParticipationByLTStorage():
-        pValuesForTheCurrentYear(NULL),
-        pSize(0)
-    {
-    }
-
-    ~ReserveParticipationByLTStorage()
-    {
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-        {
-            delete[] pValuesForTheCurrentYear[numSpace];
-        }
-        delete[] pValuesForTheCurrentYear;
-    }
-
-    void initializeFromStudy(Data::Study& study)
-    {
-        NextType::initializeFromStudy(study);
-    }
+    ReserveParticipationByLTStorage() = default;
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         pNbYearsParallel = study->maxNbYearsInParallel;
-        pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the number of LTStorage reserveParticipations
         pSize = study->parameters.compatibility.reservesEnabled
@@ -81,8 +63,7 @@ public:
             AncestorType::pResults.resize(pSize);
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
-                pValuesForTheCurrentYear[numSpace] = new VCardType::IntermediateValuesDeepType
-                  [pSize];
+                pValuesForTheCurrentYear[numSpace].resize(pSize);
             }
 
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
@@ -101,11 +82,6 @@ public:
         }
         else
         {
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-            {
-                pValuesForTheCurrentYear[numSpace] = nullptr;
-            }
-
             AncestorType::pResults.clear();
         }
 
@@ -233,8 +209,8 @@ public:
 
 private:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    size_t pSize;
-    unsigned int pNbYearsParallel;
+    size_t pSize = 0;
+    unsigned int pNbYearsParallel = 0;
 
 }; // class ReserveParticipationByLTStorage
 

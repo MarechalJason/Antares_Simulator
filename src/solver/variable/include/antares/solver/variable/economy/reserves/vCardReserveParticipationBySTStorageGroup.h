@@ -91,8 +91,8 @@ struct VCardReserveParticipationBySTStorageGroup
     };
 
     typedef IntermediateValues IntermediateValuesDeepType;
-    typedef IntermediateValues* IntermediateValuesBaseType;
-    typedef IntermediateValuesBaseType* IntermediateValuesType;
+    typedef std::vector<IntermediateValues> IntermediateValuesBaseType;
+    typedef std::vector<IntermediateValuesBaseType> IntermediateValuesType;
 
     // typedef IntermediateValues IntermediateValuesType;
 

@@ -82,32 +82,13 @@ public:
     };
 
 public:
-    ReserveParticipationMarginalCost():
-        pValuesForTheCurrentYear(NULL),
-        pSize(0)
-    {
-    }
-
-    ~ReserveParticipationMarginalCost()
-    {
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-        {
-            delete[] pValuesForTheCurrentYear[numSpace];
-        }
-        delete[] pValuesForTheCurrentYear;
-    }
-
-    void initializeFromStudy(Data::Study& study)
-    {
-        // Next
-        NextType::initializeFromStudy(study);
-    }
+    ReserveParticipationMarginalCost() = default;
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
-        pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the area
         pSize = study->parameters.compatibility.reservesEnabled
@@ -120,8 +101,7 @@ public:
 
             for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
-                pValuesForTheCurrentYear[numSpace] = new VCardType::IntermediateValuesDeepType
-                  [pSize];
+                pValuesForTheCurrentYear[numSpace].resize(pSize);
             }
 
             // Minimum power values of the cluster for the whole year - from the solver in the
@@ -144,10 +124,6 @@ public:
         }
         else
         {
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-            {
-                pValuesForTheCurrentYear[numSpace] = nullptr;
-            }
             AncestorType::pResults.clear();
         }
         // Next
@@ -306,8 +282,8 @@ public:
 private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    size_t pSize;
-    unsigned int pNbYearsParallel;
+    size_t pSize = 0;
+    unsigned int pNbYearsParallel = 0;
 
 }; // class ReserveParticipationMarginalCost
 
