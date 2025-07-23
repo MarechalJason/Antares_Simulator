@@ -90,11 +90,6 @@ public:
         pNbYearsParallel = study->maxNbYearsInParallel;
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
-        for (auto& [pair, index]: area->reserveParticipationIndexMaps().thermalClusters)
-        {
-            auto cluster = area->thermal.list.getClusterByName(pair.second)->get();
-            area->allCapacityReservations->reserveGroupPart[pair.first].insert(cluster->getGroup());
-        }
         // Get the number of potential group reserve participation
         for (auto& [resName, setGroups]: area->allCapacityReservations->reserveGroupPart)
         {
