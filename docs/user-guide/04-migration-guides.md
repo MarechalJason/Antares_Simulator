@@ -21,6 +21,12 @@ The following properties were removed from **settings/generaldata.ini**.
 If the user provides a value for key refreshtimeseries the simulation will fail with a warning.
 Values for the refresh intervals will be ignored.
 
+#### Thermal and renewable clusters groups
+
+Thermal and renewable groups in input are now "dynamic": group names are no longer fixed by code, user is free to define these groups.
+The default group name is "OTHER" for both types of clusters.
+Adding `DISPATCH. GEN.` and `RENEWABLE GEN.` in the thematic trimming section allows to enable/disable variables for all groups.
+
 In **settings/generaldata.ini**, in section `variables selection`, the following variables were removed:
 
 - NUCLEAR
@@ -49,7 +55,7 @@ The following variables were removed:
 - RENW. 3
 - RENW. 4
 
-They're replaced by the dynamic variable `RENEWABLE GEN."`
+They're replaced by the dynamic variable `RENEWABLE GEN.`
 
 ####  Short term storage / scenario-builder
 
@@ -82,6 +88,9 @@ If the user provides any of the key/values below:
 - `other preferences/initial-reservoir-levels = hot start`
 - 
 the simulation will fail with a warning. We recommend removing these properties from `settings/generaldata.ini`. Other values (e.g `adequacy patch/enable-first-step = false`) will be ignored.
+
+#### Export raw solutions
+In existing file `settings/generaldata.ini`, in section `optimization`, add property `include-export-solutions` (bool, default value `false`). If set to true, export files containing raw solutions from the optimization problems, which can be useful for analysis & debugging.
 
 #### Hydraulic reservoirs / long-term storage
 - In existing file `input/hydro/hydro.ini`, add property `overflow spilled cost difference` for each area (double, default value = 1.). This value describes the additionnal cost of overflow relative to the cost of spillage for the area.
@@ -118,12 +127,14 @@ cluster = cluster-11
 variable = withdrawal
 operator = equal
 hours = [1,3,5], [120,121,122,123,124,125,126,127,128]
+enabled = true
 
 [netting-1]
 cluster = cluster-11
 variable = netting
 operator = less
 hours = [1, 168]
+enabled = false
 ```
 
 Possible values:
@@ -132,10 +143,13 @@ Possible values:
 - `variable`: `withdrawal`, `injection`, `netting`
 - `operator`: `less`, `equal`, `greater`
 - `hours`: not empty, any number of lists `[h_1, ..., h_n]` with n>=1, and coefficients from 1 to 168 included.
+- `enabled`: Boolean, default=`true`. Ignore the additional constraint if `enabled=false`.
 
 Note that all fields are mandatory.
 
 For each constraint, the corresponding RHS time-series must be located at `input/st-storage/constraints/<area id>/rhs_<constraint id>.txt`. The time-series must contain a single column and 8760 rows, empty files are also accepted.
+
+To avoid filename conflicts, each constraint name must be unique within a given area.
 
 ####  Hydro final levels / scenario-builder
 

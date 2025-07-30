@@ -60,3 +60,5 @@ __pycache__
 venv/
 /src/tests/cucumber/behave.ini
 vcpkg_installed
+
+src/CMakeUserPresets.json

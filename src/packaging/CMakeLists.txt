@@ -106,6 +106,8 @@ set(TARGET_LIBS #No alias
         expressions-iterators
         additional-constraint-rhs-antlr-interface
         resserves-parsing-antlr-interface
+        scenario-builder-antlr
+        scenario-group-parser
 )
 
 install(TARGETS ${TARGET_LIBS}

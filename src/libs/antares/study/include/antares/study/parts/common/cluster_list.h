@@ -172,8 +172,9 @@ public:
     bool loadReserveParticipations(Area& area, const std::filesystem::path& file);
 
     bool saveDataSeriesToFolder(const AnyString& folder) const;
-
+#ifdef BUILD_UI
     virtual bool saveToFolder(const AnyString& folder) const = 0;
+#endif
     ///@}
 
     /*!
