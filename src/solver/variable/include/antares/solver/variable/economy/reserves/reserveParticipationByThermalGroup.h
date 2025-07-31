@@ -91,9 +91,12 @@ public:
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the number of potential group reserve participation
-        for (auto& [resName, setGroups]: area->allCapacityReservations->reserveGroupPart)
+        if (study->parameters.compatibility.reservesEnabled)
         {
-            pSize += setGroups.size();
+            for (auto& [resName, setGroups]: area->allCapacityReservations->reserveGroupPartThermal)
+            {
+                pSize += setGroups.size();
+            }
         }
         if (pSize)
         {
@@ -218,7 +221,8 @@ public:
             for (const auto& [reserveName, _]:
                  area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
+                for (auto group:
+                     area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
                 {
                     pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
                       += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
@@ -229,7 +233,8 @@ public:
             for (const auto& [reserveName, _]:
                  area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
+                for (auto group:
+                     area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
                 {
                     pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
                       += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
@@ -265,11 +270,12 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                for (auto group = results.data.area->allCapacityReservations->reserveGroupPart
-                                    .at(resName)
+                for (auto group = results.data.area->allCapacityReservations
+                                    ->reserveGroupPartThermal.at(resName)
                                     .begin();
                      group
-                     != results.data.area->allCapacityReservations->reserveGroupPart.at(resName)
+                     != results.data.area->allCapacityReservations->reserveGroupPartThermal
+                          .at(resName)
                           .end();
                      group++)
                 {
@@ -286,11 +292,12 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                for (auto group = results.data.area->allCapacityReservations->reserveGroupPart
-                                    .at(resName)
+                for (auto group = results.data.area->allCapacityReservations
+                                    ->reserveGroupPartThermal.at(resName)
                                     .begin();
                      group
-                     != results.data.area->allCapacityReservations->reserveGroupPart.at(resName)
+                     != results.data.area->allCapacityReservations->reserveGroupPartThermal
+                          .at(resName)
                           .end();
                      group++)
                 {

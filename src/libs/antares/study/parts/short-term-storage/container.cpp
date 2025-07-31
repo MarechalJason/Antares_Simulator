@@ -308,6 +308,8 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
             cluster.value().get().reserveParticipationContainer().addReserveParticipation(
               section.get().name,
               tmpReserveParticipation);
+            area.allCapacityReservations->reserveGroupPartSTS[section.get().name].insert(
+              cluster->get().getGroup());
         }
         else
         {
@@ -466,7 +468,7 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
     int column = 0;
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
+        for (auto group: area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
         {
             if (column == index)
             {
@@ -477,7 +479,7 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
     }
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        for (auto group: area->allCapacityReservations->reserveGroupPart.at(reserveName))
+        for (auto group: area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
         {
             if (column == index)
             {

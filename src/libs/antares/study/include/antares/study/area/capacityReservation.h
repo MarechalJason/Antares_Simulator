@@ -56,7 +56,9 @@ struct AllCapacityReservations
     int maxGlobalActivationDurationUp = 1;
     int maxGlobalActivationDurationDown = 1;
     std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
-      reserveGroupPart;
+      reserveGroupPartThermal;
+    std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
+      reserveGroupPartSTS;
 
     std::map<ReserveName, CapacityReservation> areaCapacityReservationsUp;
     std::map<ReserveName, CapacityReservation> areaCapacityReservationsDown;
