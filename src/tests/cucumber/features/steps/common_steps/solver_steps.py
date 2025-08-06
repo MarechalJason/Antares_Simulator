@@ -357,21 +357,9 @@ def check_thermal_cluster_min_gen_for_hour(context, area, cluster_name, hour, ye
     actual_value = context.soh.min_gen_for_thermal_cluster_at_hour(area, year, hour, cluster_name)
     assert_double_close(expected_value, actual_value, 0.001)
 
-@then('in area "{area}", the units of "{prod_name}" produce between {min_p:g} and {max_p:g} MWh hourly')
-def check_pmin_pmax(context, area, prod_name, min_p, max_p):
-    for year in range(1, context.nbyears + 1):
-        actual_hourly_prod = context.soh.get_hourly_prod_mwh(area, year, prod_name)
-        actual_n_dispatched_units = context.soh.get_hourly_n_dispatched_units(area, year, prod_name)
-        assert (actual_hourly_prod <= actual_n_dispatched_units.apply(
-            lambda n: n * max_p)).all(), f"max_p constraint not respected during year {year}"
-        assert (actual_hourly_prod >= actual_n_dispatched_units.apply(
-            lambda n: n * min_p)).all(), f"min_p constraint not respected during year {year}"
-
-
 @then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", total reserve participation power is {res_part:g} MWh')
 def check_res_participation_for_specific_year_and_cluster_yearly(context, area, year, res, cluster, res_part):
     assert_double_close(res_part, context.soh.get_reserve_total_participation_for_year_and_cluster(area, year, res,cluster), 1e-6)
-
 
 @then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", reserve participation power is always {comparator_and_res_part} MWh')
 def check_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, comparator_and_res_part):
