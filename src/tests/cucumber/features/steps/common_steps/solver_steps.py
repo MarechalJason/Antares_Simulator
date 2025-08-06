@@ -357,10 +357,6 @@ def check_thermal_cluster_min_gen_for_hour(context, area, cluster_name, hour, ye
     actual_value = context.soh.min_gen_for_thermal_cluster_at_hour(area, year, hour, cluster_name)
     assert_double_close(expected_value, actual_value, 0.001)
 
-@step('in area "{area}", during year {year:d}, total non-proportional cost is {np_cost:g}')
-def check_np_cost_for_specific_year(context, area, year, np_cost):
-    assert_double_close(np_cost, context.soh.get_non_proportional_cost(area, year), 1e-6)
-
 @then('in area "{area}", the units of "{prod_name}" produce between {min_p:g} and {max_p:g} MWh hourly')
 def check_pmin_pmax(context, area, prod_name, min_p, max_p):
     for year in range(1, context.nbyears + 1):
