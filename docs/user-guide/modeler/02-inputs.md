@@ -296,7 +296,7 @@ You can aggregate incoming ports using the following operator:
 Examples:
 
 ~~~yaml
-expression: sum(dc_port.flow) = 0
+expression: sum_connections(dc_port.flow) = 0
 ~~~
 
 ## System file
@@ -426,7 +426,8 @@ studies, [see the relevant documentation](../solver/08-hybrid-studies.md#connect
 The **input/data-series** directory contains all data-series needed by the [system description](#system-file) to define
 component parameter values.
 
-Currently, Antares modeler supports defining data-series using tab-seperated-values files. Values must be separated
+Currently, Antares modeler supports defining data-series using either tab or space seperated values files. Values must
+be separated
 using tabs, and the character `.` represents the floating point.
 
 ### Naming
