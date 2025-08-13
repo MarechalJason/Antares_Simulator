@@ -219,23 +219,31 @@ public:
             for (const auto& [reserveName, _]:
                  area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                for (auto group: area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
+                if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
                 {
-                    pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                      += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                           .shortTermStorageGroupsReserveParticipation[group][reserveName];
-                    column++;
+                    for (auto group:
+                         area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
+                    {
+                        pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
+                          += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                               .shortTermStorageGroupsReserveParticipation[group][reserveName];
+                        column++;
+                    }
                 }
             }
             for (const auto& [reserveName, _]:
                  area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                for (auto group: area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
+                if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
                 {
-                    pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                      += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                           .shortTermStorageGroupsReserveParticipation[group][reserveName];
-                    column++;
+                    for (auto group:
+                         area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
+                    {
+                        pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
+                          += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                               .shortTermStorageGroupsReserveParticipation[group][reserveName];
+                        column++;
+                    }
                 }
             }
         }
@@ -266,44 +274,56 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                for (auto group = results.data.area->allCapacityReservations->reserveGroupPartSTS
-                                    .at(resName)
-                                    .begin();
-                     group
-                     != results.data.area->allCapacityReservations->reserveGroupPartSTS.at(resName)
-                          .end();
-                     group++)
+                if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(resName))
                 {
-                    // Write the data for the current year
-                    std::string tmp = *group;
-                    Yuni::String caption = resName;
-                    caption << "_" << tmp;
-                    results.variableCaption = caption; // VCardType::Caption();
-                    results.variableUnit = VCardType::Unit();
-                    pValuesForTheCurrentYear[numSpace][column]
-                      .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-                    column++;
+                    for (auto group = results.data.area->allCapacityReservations
+                                        ->reserveGroupPartSTS.at(resName)
+                                        .begin();
+                         group
+                         != results.data.area->allCapacityReservations->reserveGroupPartSTS
+                              .at(resName)
+                              .end();
+                         group++)
+                    {
+                        // Write the data for the current year
+                        std::string tmp = *group;
+                        Yuni::String caption = resName;
+                        caption << "_" << tmp;
+                        results.variableCaption = caption; // VCardType::Caption();
+                        results.variableUnit = VCardType::Unit();
+                        pValuesForTheCurrentYear[numSpace][column]
+                          .template buildAnnualSurveyReport<VCardType>(results,
+                                                                       fileLevel,
+                                                                       precision);
+                        column++;
+                    }
                 }
             }
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                for (auto group = results.data.area->allCapacityReservations->reserveGroupPartSTS
-                                    .at(resName)
-                                    .begin();
-                     group
-                     != results.data.area->allCapacityReservations->reserveGroupPartSTS.at(resName)
-                          .end();
-                     group++)
+                if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(resName))
                 {
-                    // Write the data for the current year
-                    Yuni::String caption = resName;
-                    caption << "_" << *group;
-                    results.variableCaption = caption; // VCardType::Caption();
-                    results.variableUnit = VCardType::Unit();
-                    pValuesForTheCurrentYear[numSpace][column]
-                      .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-                    column++;
+                    for (auto group = results.data.area->allCapacityReservations
+                                        ->reserveGroupPartSTS.at(resName)
+                                        .begin();
+                         group
+                         != results.data.area->allCapacityReservations->reserveGroupPartSTS
+                              .at(resName)
+                              .end();
+                         group++)
+                    {
+                        // Write the data for the current year
+                        Yuni::String caption = resName;
+                        caption << "_" << *group;
+                        results.variableCaption = caption; // VCardType::Caption();
+                        results.variableUnit = VCardType::Unit();
+                        pValuesForTheCurrentYear[numSpace][column]
+                          .template buildAnnualSurveyReport<VCardType>(results,
+                                                                       fileLevel,
+                                                                       precision);
+                        column++;
+                    }
                 }
             }
         }

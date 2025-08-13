@@ -100,24 +100,30 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationG
     int column = 0;
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        for (auto group: area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
+        if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
         {
-            if (column == index)
+            for (auto group: area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
             {
-                return {group, reserveName};
+                if (column == index)
+                {
+                    return {group, reserveName};
+                }
+                column++;
             }
-            column++;
         }
     }
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        for (auto group: area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
+        if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
         {
-            if (column == index)
+            for (auto group: area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
             {
-                return {group, reserveName};
+                if (column == index)
+                {
+                    return {group, reserveName};
+                }
+                column++;
             }
-            column++;
         }
     }
     throw std::out_of_range("This group reserve participation index has not been found in all the "
