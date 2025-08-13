@@ -96,7 +96,16 @@ unsigned int ThermalClusterList::reserveParticipationsCount() const
       allClusters_.end(),
       0,
       [](int total, const std::shared_ptr<ThermalCluster> cluster)
-      { return total + cluster->reserveParticipationContainer().reserveParticipationsCount(); });
+      {
+          if (cluster->reserveParticipationContainer.has_value())
+          {
+              return total + cluster->reserveParticipationContainer().reserveParticipationsCount();
+          }
+          else
+          {
+              return (uint)total;
+          }
+      });
 }
 
 unsigned int ThermalClusterList::capacityReservationsCount() const
