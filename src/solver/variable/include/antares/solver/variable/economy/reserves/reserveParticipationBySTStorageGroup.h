@@ -274,7 +274,8 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsUp)
             {
-                if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(resName))
+                if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(
+                      resName))
                 {
                     for (auto group = results.data.area->allCapacityReservations
                                         ->reserveGroupPartSTS.at(resName)
@@ -302,7 +303,8 @@ public:
             for (const auto& [resName, _]:
                  results.data.area->allCapacityReservations().areaCapacityReservationsDown)
             {
-                if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(resName))
+                if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(
+                      resName))
                 {
                     for (auto group = results.data.area->allCapacityReservations
                                         ->reserveGroupPartSTS.at(resName)
