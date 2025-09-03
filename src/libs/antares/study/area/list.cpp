@@ -1254,7 +1254,7 @@ void loadReserves(Antares::Data::Study& study,
 
                       if (tmp == "failure-cost")
                       {
-                          if (!p->value.to<double>(tmpCapacityReservation.failureCost))
+                          if (!p->value.to<double>(tmpCapacityReservation.unsuppliedCost))
                           {
                               logs.warning() << area.name << ": invalid failure cost for reserve "
                                              << section.name;

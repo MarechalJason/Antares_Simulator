@@ -355,7 +355,7 @@ struct CAPACITY_RESERVATION
       AllSTStorageReservesParticipation;
     std::vector<RESERVE_PARTICIPATION_LTSTORAGE> AllLTStorageReservesParticipation;
     std::vector<int> need; //!< Vector size is number of hours in year
-    double failureCost = 0;
+    double unsuppliedCost = 0;
     double spillageCost = 0;
     double maxActivationRatio = 0;
     double maxEnergyActivationRatio = 1;

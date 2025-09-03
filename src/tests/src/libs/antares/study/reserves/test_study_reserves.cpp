@@ -40,12 +40,12 @@ struct OneProblemWithReserves
         CAPACITY_RESERVATION areaCapacityReservationsUp;
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
-        tmpCapacityReservationUp.failureCost = 1;
+        tmpCapacityReservationUp.unsuppliedCost = 1;
         tmpCapacityReservationUp.maxActivationHours = 2;
         tmpCapacityReservationUp.maxActivationRatio = 3;
         tmpCapacityReservationUp.maxEnergyActivationRatio = 4;
 
-        tmpCapacityReservationDown.failureCost = 5;
+        tmpCapacityReservationDown.unsuppliedCost = 5;
         tmpCapacityReservationDown.maxActivationHours = 6;
         tmpCapacityReservationDown.maxActivationRatio = 7;
         tmpCapacityReservationDown.maxEnergyActivationRatio = 8;
@@ -71,14 +71,14 @@ BOOST_AUTO_TEST_CASE(reserve_add)
     auto study = std::make_unique<Study>();
     const auto areaA = study->areaAdd("A");
     CapacityReservation tmpCapacityReservationUp;
-    tmpCapacityReservationUp.failureCost = 0;
+    tmpCapacityReservationUp.unsuppliedCost = 0;
     areaA->allCapacityReservations = AllCapacityReservations();
     areaA->allCapacityReservations().areaCapacityReservationsUp.emplace("ReserveUp",
                                                                         tmpCapacityReservationUp);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations().size(), 1);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations().contains("ReserveUp"), true);
     BOOST_CHECK_EQUAL(
-      areaA->allCapacityReservations().areaCapacityReservationsUp.at("ReserveUp").failureCost,
+      areaA->allCapacityReservations().areaCapacityReservationsUp.at("ReserveUp").unsuppliedCost,
       0);
 }
 
@@ -88,7 +88,7 @@ BOOST_FIXTURE_TEST_CASE(reserve_up, OneProblemWithReserves)
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations().areaCapacityReservationsDown.size(), 1);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations().areaCapacityReservationsUp.size(), 1);
     BOOST_CHECK_EQUAL(
-      areaA->allCapacityReservations().areaCapacityReservationsUp.at("ReserveUp").failureCost,
+      areaA->allCapacityReservations().areaCapacityReservationsUp.at("ReserveUp").unsuppliedCost,
       1);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations()
                         .areaCapacityReservationsUp.at("ReserveUp")
@@ -103,9 +103,10 @@ BOOST_FIXTURE_TEST_CASE(reserve_up, OneProblemWithReserves)
                         .maxEnergyActivationRatio,
                       4);
 
-    BOOST_CHECK_EQUAL(
-      areaA->allCapacityReservations().areaCapacityReservationsDown.at("ReserveDown").failureCost,
-      5);
+    BOOST_CHECK_EQUAL(areaA->allCapacityReservations()
+                        .areaCapacityReservationsDown.at("ReserveDown")
+                        .unsuppliedCost,
+                      5);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations()
                         .areaCapacityReservationsDown.at("ReserveDown")
                         .maxActivationHours,

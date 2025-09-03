@@ -64,7 +64,7 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
             var = variableManager.InternalUnsatisfiedReserve(reserve.globalReserveIndex, pdtHebdo);
             if (var >= 0 && var < ProblemeAResoudre->NombreDeVariables)
             {
-                CoutLineaire[var] = reserve.failureCost;
+                CoutLineaire[var] = reserve.unsuppliedCost;
             }
         }
 

@@ -262,7 +262,7 @@ public:
                 costForSpilledOrUnsuppliedEnergy
                   += state.hourlyResults->Reserves()[state.hourInTheWeek]
                          .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex]
-                       * reserveUp.failureCost
+                       * reserveUp.unsuppliedCost
                      + state.hourlyResults->Reserves()[state.hourInTheWeek]
                            .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex]
                          * reserveUp.spillageCost;
@@ -272,7 +272,7 @@ public:
                 costForSpilledOrUnsuppliedEnergy
                   += state.hourlyResults->Reserves()[state.hourInTheWeek]
                          .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex]
-                       * reserveDown.failureCost
+                       * reserveDown.unsuppliedCost
                      + state.hourlyResults->Reserves()[state.hourInTheWeek]
                            .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex]
                          * reserveDown.spillageCost;

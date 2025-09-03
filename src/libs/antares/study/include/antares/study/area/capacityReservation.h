@@ -37,7 +37,7 @@ struct CapacityReservation
     {
     }
 
-    double failureCost = 0.;
+    double unsuppliedCost = 0.;
     double spillageCost = 0.;
     double maxActivationRatio = 0.;
     double maxEnergyActivationRatio = 1.;
