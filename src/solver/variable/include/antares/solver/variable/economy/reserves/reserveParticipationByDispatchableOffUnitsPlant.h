@@ -93,9 +93,8 @@ public:
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the number of thermal reserveParticipations
-        pSize = study->parameters.compatibility.reservesEnabled
-                  ? area->thermal.list.reserveParticipationsCount()
-                  : 0;
+        pSize = study->parameters.reservesEnabled ? area->thermal.list.reserveParticipationsCount()
+                                                  : 0;
 
         if (pSize)
         {
@@ -209,7 +208,7 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         // Get end year calculations
-        if (state.study.parameters.compatibility.reservesEnabled
+        if (state.study.parameters.reservesEnabled
             && state.area->reserveParticipationIndexMaps().thermalClusters.size())
         {
             for (auto& [clusterName, _]:

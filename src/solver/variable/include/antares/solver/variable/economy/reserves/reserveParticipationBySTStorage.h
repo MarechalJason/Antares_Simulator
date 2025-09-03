@@ -92,7 +92,7 @@ public:
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the number of STStorage reserveParticipations
-        pSize = study->parameters.compatibility.reservesEnabled
+        pSize = study->parameters.reservesEnabled
                   ? area->shortTermStorage.reserveParticipationsCount()
                   : 0;
         if (pSize)
@@ -206,7 +206,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (state.study.parameters.compatibility.reservesEnabled
+        if (state.study.parameters.reservesEnabled
             && state.area->reserveParticipationIndexMaps().STStorageClusters.size())
         {
             for (auto& [clusterName, _]:

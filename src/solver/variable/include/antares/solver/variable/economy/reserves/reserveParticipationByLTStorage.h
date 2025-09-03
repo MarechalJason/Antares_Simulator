@@ -55,9 +55,7 @@ public:
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the number of LTStorage reserveParticipations
-        pSize = study->parameters.compatibility.reservesEnabled
-                  ? area->hydro.reserveParticipationsCount()
-                  : 0;
+        pSize = study->parameters.reservesEnabled ? area->hydro.reserveParticipationsCount() : 0;
         if (pSize)
         {
             AncestorType::pResults.resize(pSize);
@@ -156,7 +154,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (state.study.parameters.compatibility.reservesEnabled
+        if (state.study.parameters.reservesEnabled
             && state.area->reserveParticipationIndexMaps().LTStorage.size())
         {
             for (const auto& [reserveName, reserveParticipation]:

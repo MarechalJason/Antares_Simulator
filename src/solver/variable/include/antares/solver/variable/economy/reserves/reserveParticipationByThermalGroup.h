@@ -91,7 +91,7 @@ public:
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the number of potential group reserve participation
-        if (study->parameters.compatibility.reservesEnabled)
+        if (study->parameters.reservesEnabled)
         {
             for (auto& [resName, setGroups]: area->allCapacityReservations->reserveGroupPartThermal)
             {
@@ -213,7 +213,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (state.study.parameters.compatibility.reservesEnabled)
+        if (state.study.parameters.reservesEnabled)
         {
             auto& area = state.area;
             auto& thermal = state.thermal;

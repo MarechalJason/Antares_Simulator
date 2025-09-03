@@ -254,7 +254,7 @@ public:
                 - state.area->hydro.pumpingEfficiency
                     * state.hourlyResults->PompageHoraire[state.hourInTheWeek]));
 
-        if (state.study.parameters.compatibility.reservesEnabled)
+        if (state.study.parameters.reservesEnabled)
         {
             const auto& reserves = state.problemeHebdo->allReserves()[area->index];
             for (const auto& reserveUp: reserves.areaCapacityReservationsUp)

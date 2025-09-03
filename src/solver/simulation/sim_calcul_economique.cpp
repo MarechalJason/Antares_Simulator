@@ -167,7 +167,7 @@ static void importShortTermStorages(
             clusterGlobalIndex++;
         }
 
-        if (parameters.compatibility.reservesEnabled && area->allCapacityReservations)
+        if (parameters.reservesEnabled && area->allCapacityReservations)
         {
             auto& areaReserves = problem.allReserves()[areaIndex];
 
@@ -460,7 +460,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
         problem.CoefficientEcretementPMaxHydraulique[i] = area.hydro.intraDailyModulation;
     }
 
-    if (parameters.compatibility.reservesEnabled)
+    if (parameters.reservesEnabled)
     {
         importCapacityReservations(study.areas, problem);
         importLongTermStoragesReserves(study.areas, problem);
@@ -567,7 +567,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
 
         if (study.parameters.unitCommitment.ucMode
               != Antares::Data::UnitCommitmentMode::ucHeuristicFast
-            && study.parameters.compatibility.reservesEnabled && area.allCapacityReservations)
+            && study.parameters.reservesEnabled && area.allCapacityReservations)
         {
             auto& areaReserves = problem.allReserves()[i];
 

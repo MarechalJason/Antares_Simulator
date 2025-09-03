@@ -208,8 +208,7 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
 
     // Reserves
     if (unitCommitmentMode != Antares::Data::UnitCommitmentMode::ucHeuristicFast
-        && study.parameters.compatibility.reservesEnabled
-        && STStorageCluster->reserveParticipationContainer)
+        && study.parameters.reservesEnabled && STStorageCluster->reserveParticipationContainer)
     {
         for (const auto& [resName, resParticipation]:
              STStorageCluster->reserveParticipationContainer().reservesParticipations)
@@ -242,8 +241,7 @@ void State::initFromHydroStorage()
     auto& LTStorage = area->hydro;
 
     if (unitCommitmentMode != Antares::Data::UnitCommitmentMode::ucHeuristicFast
-        && study.parameters.compatibility.reservesEnabled
-        && LTStorage.reserveParticipationContainer)
+        && study.parameters.reservesEnabled && LTStorage.reserveParticipationContainer)
     {
         // reserveParticipationPerLTStorageClusterForYear[hourInTheYear].clear();
         for (const auto& [resName, resParticipation]:
@@ -340,7 +338,7 @@ void State::initFromThermalClusterIndexProduction(const uint clusterEnabledIndex
 
     // Reserves
     if (unitCommitmentMode != Antares::Data::UnitCommitmentMode::ucHeuristicFast
-        && study.parameters.compatibility.reservesEnabled)
+        && study.parameters.reservesEnabled)
     {
         if (thermalCluster->reserveParticipationContainer.has_value())
         {

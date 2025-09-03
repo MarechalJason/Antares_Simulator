@@ -33,7 +33,7 @@ inline void State::startANewYear()
 
     memset(thermalClusterProductionForYear, 0, sizeof(thermalClusterProductionForYear));
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
-    if (study.parameters.compatibility.reservesEnabled)
+    if (study.parameters.reservesEnabled)
     {
         reserveParticipationCostForYear.init();
         reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
@@ -62,7 +62,7 @@ inline void State::yearEndResetThermal()
 {
     memset(thermalClusterProductionForYear, 0, sizeof(thermalClusterProductionForYear));
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
-    if (study.parameters.compatibility.reservesEnabled)
+    if (study.parameters.reservesEnabled)
     {
         reserveParticipationCostForYear.init();
         reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
@@ -89,7 +89,7 @@ inline void State::initFromAreaIndex(const unsigned int areaIndex, uint numSpace
     thermalCluster = nullptr;
 
     if (unitCommitmentMode != Data::UnitCommitmentMode::ucHeuristicFast
-        && study.parameters.compatibility.reservesEnabled)
+        && study.parameters.reservesEnabled)
     {
         reserveParticipationCostForYear.init();
         reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);

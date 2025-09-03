@@ -312,6 +312,11 @@ public:
     */
     bool readonly;
 
+    /*!
+    ** \brief Activation of the reserves
+    */
+    bool reservesEnabled = false;
+
     //! Write the simulation synthesis into the output
     bool synthesis;
 
@@ -371,8 +376,6 @@ public:
             Hourly
         };
         HydroPmax hydroPmax = HydroPmax::Daily;
-
-        bool reservesEnabled = false;
     };
 
     Compatibility compatibility;
@@ -500,7 +503,7 @@ bool StringToSimulationMode(SimulationMode& mode, Yuni::CString<20, false> text)
 const char* CompatibilityHydroPmaxToCString(const Parameters::Compatibility::HydroPmax);
 bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax&, const std::string& text);
 
-const char* CompatibilityReservesToCString(bool reservesEnabled);
+const char* ReservesToCString(bool reservesEnabled);
 bool StringToCompatibilityReserves(const std::string& text);
 
 } // namespace Antares::Data

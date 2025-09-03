@@ -237,7 +237,7 @@ bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax& mode,
     return false;
 }
 
-const char* CompatibilityReservesToCString(bool reservesEnabled)
+const char* ReservesToCString(bool reservesEnabled)
 {
     if (reservesEnabled)
     {
@@ -1094,7 +1094,7 @@ static bool SGDIntLoadFamily_Compatibility(Parameters& d,
     }
     else if (key == "reserves")
     {
-        return StringToCompatibilityReserves(d.compatibility.reservesEnabled, value);
+        return StringToCompatibilityReserves(d.reservesEnabled, value);
     }
 
     return false;
@@ -1759,6 +1759,9 @@ void Parameters::saveToINI(IniFile& ini) const
 
         // Readonly
         section->add("readonly", readonly);
+
+        // Reserves activation
+        section->add("reserves", ReservesToCString(reservesEnabled));
     }
 
     // input
@@ -1939,7 +1942,6 @@ void Parameters::saveToINI(IniFile& ini) const
     {
         auto* section = ini.addSection("compatibility");
         section->add("hydro-pmax", CompatibilityHydroPmaxToCString(compatibility.hydroPmax));
-        section->add("reserves", CompatibilityReservesToCString(compatibility.reservesEnabled));
     }
 }
 
