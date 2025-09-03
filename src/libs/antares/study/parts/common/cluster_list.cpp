@@ -228,15 +228,13 @@ void ClusterList<ClusterT>::storeTimeseriesNumbers(Solver::IResultWriter& writer
 }
 
 template<class ClusterT>
-std::optional<std::shared_ptr<ClusterT>> ClusterList<ClusterT>::getClusterByName(
-  std::string clusterName) const
+ClusterT* ClusterList<ClusterT>::getClusterByName(std::string clusterName)
 {
     auto it = std::find_if(allClusters_.begin(),
                            allClusters_.end(),
                            [&](const auto& cluster) { return cluster->id() == clusterName; });
 
-    return (it != allClusters_.end()) ? std::optional<std::shared_ptr<ClusterT>>(*it)
-                                      : std::nullopt;
+    return (it != allClusters_.end()) ? it->get() : nullptr;
 }
 
 template<class ClusterT>
@@ -481,7 +479,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             bool isClusterMustRun = false;
             for (const auto& clusterMustRun: area.thermal.list.each_mustrun_and_enabled())
             {
-                if (clusterMustRun->id() == cluster.value().get()->id())
+                if (clusterMustRun->id() == cluster->id())
                 {
                     isClusterMustRun = true;
                     break;
@@ -489,22 +487,21 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             }
             if (!isClusterMustRun)
             {
-                ThermalClusterReserveParticipation tmpReserveParticipation{reserve.value(),
+                ThermalClusterReserveParticipation tmpReserveParticipation{reserve,
                                                                            tmpMaxPower,
                                                                            tmpParticipationCost,
                                                                            tmpMaxPowerOff,
                                                                            tmpParticipationCostOff};
-                if (!cluster.value()->reserveParticipationContainer)
+                if (!cluster->reserveParticipationContainer)
                 {
-                    cluster.value()->reserveParticipationContainer = ReserveParticipationContainer<
+                    cluster->reserveParticipationContainer = ReserveParticipationContainer<
                       ThermalClusterReserveParticipation>();
                 }
-                cluster.value()->reserveParticipationContainer().addReserveParticipation(
-                  section.get().name,
-                  tmpReserveParticipation);
+                cluster->reserveParticipationContainer()
+                  .addReserveParticipation(section.get().name, tmpReserveParticipation);
 
                 area.allCapacityReservations->reserveGroupPartThermal[section.get().name].insert(
-                  cluster->get()->getGroup());
+                  cluster->getGroup());
             }
             else
             {
@@ -540,9 +537,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
                 auto cluster = area.thermal.list.getClusterByName(tmpClusterName);
                 if (cluster)
                 {
-                    cluster.value()
-                      ->reserveParticipationContainer()
-                      .addReserveParticipationSymmetry(sym);
+                    cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
                 }
                 else
                 {

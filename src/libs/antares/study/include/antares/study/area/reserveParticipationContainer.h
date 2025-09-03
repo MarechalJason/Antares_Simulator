@@ -33,7 +33,7 @@ class ReserveParticipationContainerBase
 {
     struct ReserveParticipationWithName
     {
-        std::reference_wrapper<T> reserveParticipation;
+        T* reserveParticipation;
         ReserveName reserveName;
     };
 
@@ -60,7 +60,7 @@ public:
             if (reservesParticipations.contains(name))
             {
                 symmetryRes.push_back(
-                  ReserveParticipationWithName{reservesParticipations.at(name), name});
+                  ReserveParticipationWithName{&reservesParticipations.at(name), name});
             }
             else
             {

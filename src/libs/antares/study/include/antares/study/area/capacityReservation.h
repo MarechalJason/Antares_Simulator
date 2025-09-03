@@ -74,20 +74,18 @@ struct AllCapacityReservations
 
     /// @brief Get a capacity reservation from both the up and down reserves using its name
     /// @param name
-    /// @return an optional of the capacity reservation reference if the reserve was found, and a
-    /// nullopt otherwise
-    std::optional<std::reference_wrapper<const CapacityReservation>> getReserveByName(
-      std::string name) const
+    /// @return the capacity reservation reference if the reserve was found, and a nullptr otherwise
+    const CapacityReservation* getReserveByName(std::string name) const
     {
         if (areaCapacityReservationsUp.contains(name))
         {
-            return areaCapacityReservationsUp.at(name);
+            return &areaCapacityReservationsUp.at(name);
         }
         else if (areaCapacityReservationsDown.contains(name))
         {
-            return areaCapacityReservationsDown.at(name);
+            return &areaCapacityReservationsDown.at(name);
         }
-        return std::nullopt;
+        return nullptr;
     }
 
     /// @brief Get the number of capacityReservations in the area

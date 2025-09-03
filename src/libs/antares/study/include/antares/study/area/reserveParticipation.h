@@ -25,7 +25,7 @@
 /// @brief Base struct for reserve participation
 struct ReserveParticipationBase
 {
-    std::reference_wrapper<const CapacityReservation> capacityReservation;
+    const CapacityReservation* capacityReservation;
 };
 
 /// @brief Represents the thermal cluster reserve participation to a given reserve

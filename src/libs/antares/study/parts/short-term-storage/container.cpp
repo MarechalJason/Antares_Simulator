@@ -310,20 +310,19 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
         if (reserve && cluster)
         {
             const STStorageClusterReserveParticipation tmpReserveParticipation{
-              reserve.value(),
+              reserve,
               tmpMaxTurbining,
               tmpMaxPumping,
               tmpParticipationCost};
-            if (!cluster.value().get().reserveParticipationContainer)
+            if (!cluster->reserveParticipationContainer)
             {
-                cluster.value().get().reserveParticipationContainer = ReserveParticipationContainer<
+                cluster->reserveParticipationContainer = ReserveParticipationContainer<
                   STStorageClusterReserveParticipation>();
             }
-            cluster.value().get().reserveParticipationContainer().addReserveParticipation(
-              section.get().name,
-              tmpReserveParticipation);
+            cluster->reserveParticipationContainer()
+              .addReserveParticipation(section.get().name, tmpReserveParticipation);
             area.allCapacityReservations->reserveGroupPartSTS[section.get().name].insert(
-              cluster->get().getGroup());
+              cluster->getGroup());
         }
         else
         {
@@ -353,10 +352,7 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
                 auto cluster = area.shortTermStorage.getClusterByName(tmpClusterName);
                 if (cluster)
                 {
-                    cluster.value()
-                      .get()
-                      .reserveParticipationContainer()
-                      .addReserveParticipationSymmetry(sym);
+                    cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
                 }
                 else
                 {
@@ -512,19 +508,18 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
                             "reserve participations");
 }
 
-std::optional<std::reference_wrapper<STStorageCluster>> STStorageInput::getClusterByName(
-  const std::string& name)
+STStorageCluster* STStorageInput::getClusterByName(const std::string& name)
 {
     auto it = std::find_if(storagesByIndex.begin(),
                            storagesByIndex.end(),
                            [&name](STStorageCluster& cluster) { return cluster.id == name; });
     if (it != storagesByIndex.end())
     {
-        return std::ref(*it);
+        return &(*it);
     }
     else
     {
-        return std::nullopt;
+        return nullptr;
     }
 }
 

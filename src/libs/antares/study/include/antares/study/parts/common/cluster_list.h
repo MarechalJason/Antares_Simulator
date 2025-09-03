@@ -195,8 +195,8 @@ public:
     void sortCompleteList();
     /// @brief Get the cluster from the vector allClusters_ using it's name
     /// @param clusterName
-    /// @return nullopt if no clusters found else a pointer to the cluster
-    std::optional<std::shared_ptr<ClusterT>> getClusterByName(std::string clusterName) const;
+    /// @return nullptr if no clusters found else a pointer to the cluster
+    ClusterT* getClusterByName(std::string clusterName);
 
 protected:
     std::vector<std::shared_ptr<ClusterT>> allClusters_;

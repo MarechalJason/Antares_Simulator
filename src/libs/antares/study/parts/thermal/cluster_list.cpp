@@ -116,8 +116,7 @@ unsigned int ThermalClusterList::capacityReservationsCount() const
         for (const auto& [_, reserveParticipation]:
              cluster->reserveParticipationContainer().reservesParticipations)
         {
-            const CapacityReservation* reservationPtr = &(
-              reserveParticipation.capacityReservation.get());
+            const CapacityReservation* reservationPtr = reserveParticipation.capacityReservation;
             uniqueReservations.insert(reservationPtr);
         }
     }
