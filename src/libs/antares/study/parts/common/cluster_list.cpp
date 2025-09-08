@@ -100,7 +100,7 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationG
     int column = 0;
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
     {
-        if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
+        if (area->allCapacityReservations->reserveGroupPartThermal.contains(reserveName))
         {
             for (auto group: area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
             {
@@ -114,7 +114,7 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationG
     }
     for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
     {
-        if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
+        if (area->allCapacityReservations->reserveGroupPartThermal.contains(reserveName))
         {
             for (auto group: area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
             {
