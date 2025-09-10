@@ -600,9 +600,6 @@ void SIM_InitialisationProblemeHebdo(Study& study,
                               = globalThermalClusterParticipationIndex;
                             reserveParticipation.areaIndexClusterParticipation
                               = areaClusterParticipationIndex;
-                            areaReserves.areaCapacityReservationsUp[areaReserveIdx]
-                              .AllThermalReservesParticipation.emplace(cluster->index,
-                                                                       reserveParticipation);
 
                             targetMap[areaReserveIdx].AllThermalReservesParticipation.emplace(
                               cluster->index,
