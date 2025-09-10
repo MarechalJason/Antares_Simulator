@@ -235,13 +235,17 @@ public:
                 for (const auto& [reserveName, _]:
                      area->allCapacityReservations().areaCapacityReservationsDown)
                 {
-                    for (auto group:
-                         area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
+                    if (area->allCapacityReservations->reserveGroupPartThermal.contains(
+                          reserveName))
                     {
-                        pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                          += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                               .thermalGroupsReserveParticipation[group][reserveName];
-                        column++;
+                        for (auto group:
+                             area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
+                        {
+                            pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
+                              += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                                   .thermalGroupsReserveParticipation[group][reserveName];
+                            column++;
+                        }
                     }
                 }
             }
