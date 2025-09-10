@@ -10,7 +10,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, hourly production of "thermal_all_cheap" is always equal to 100 MWh
     And in area "AREA", during year 1, hourly production of "thermal_expensive_prod" is always equal to 0 MWh
     And in area "AREA", during year 1, hourly production of "thermal_expensive_res_part" is always equal to 100 MWh
-    And the annual system cost is 6.787e+07
+    And the annual system cost is 6.7872e+07
 
 @fast @short
 # Lot 1
@@ -25,7 +25,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_1", reserve participation power is always equal to 20 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_1", reserve participation power is always equal to 20 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_1", reserve participation power is always equal to 0 MWh
-    And the annual system cost is 7.049e+07
+    And the annual system cost is 7.04995e+07
 
 @fast @short
 # Lot 1
@@ -40,7 +40,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_1", reserve participation power is always equal to 20 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_1", reserve participation power is always equal to 0 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_1", reserve participation power is always equal to 0 MWh
-    And the annual system cost is 7.089e+07
+    And the annual system cost is 7.08994e+07
 
 @fast @short
 # Lot 1
@@ -58,7 +58,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_down", reserve participation power is always equal to 20 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_down", reserve participation power is always equal to 0 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_down", reserve participation power is always equal to 0 MWh
-    And the annual system cost is 7.352e+07
+    And the annual system cost is 7.35269e+07
 
 @fast @short
 # Lot 2 : Intégration de la participation du thermique éteint et des stockage CT et LT
@@ -71,7 +71,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "thermal1" and reserve "Res_1", participation of off units to the reserve is always equal to 40 MWh
     # OV. Cost = 20 *50+1*40+500*50+3000*10 euros (Prod cluster + Surcoûts réserves + défaillance EOD + défaillance réserves)
     And in area "AREA", overall cost on "1 JAN 06:00" of year 1 is of 56040 Euro 
-    And the annual system cost is 9.414e+06
+    And the annual system cost is 9.41472e+06
 
 @fast @short
 # Lot 2
@@ -88,7 +88,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for reserve "Res_2", reserve unsupplied power is always equal to 0 MWh
     And in area "AREA", overall cost on "1 JAN 06:00" of year 1 is of 80050 Euro 
     And in area "AREA", unsupplied energy on "2 JAN 09:00" of year 1 is of 100 MW
-    And the annual system cost is 1.345e+07
+    And the annual system cost is 1.34484e+07
 
 @fast @short
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
