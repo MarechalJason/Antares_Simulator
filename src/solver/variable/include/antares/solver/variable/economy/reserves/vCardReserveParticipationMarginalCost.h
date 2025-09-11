@@ -77,7 +77,7 @@ struct VCardReserveParticipationMarginalCost
         //! Indentation (GUI)
         nodeDepthForGUI = +0,
         //! Decimal precision
-        decimal = 4,
+        decimal = 0,
         //! Number of columns used by the variable
         columnCount = Category::dynamicColumns,
         //! The Spatial aggregation
