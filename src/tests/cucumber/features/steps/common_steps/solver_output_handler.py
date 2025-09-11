@@ -94,7 +94,7 @@ class solver_output_handler:
         return self.__if_none_then_parse(result_type.DETAILS, area.lower(), year, "details-hourly.txt")
         
     def __get_details_st_storage_hourly(self, area: str, year: int):
-        return self.__if_none_then_parse(result_type.DETAILS_ST_STORAGE, area.lower(), year, "details-STstorage-hourly.txt")
+        return self.__if_none_then_parse(result_type.DETAILS_STS, area.lower(), year, "details-STstorage-hourly.txt")
         
     def __get_details_st_storage_hourly_for_specific_hour(self, area: str, year: int, datetime: str):
         df = self.__get_details_st_storage_hourly(area, year)
