@@ -47,10 +47,10 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
         auto area = areas[areaIndex];
         auto& areaReserves = problem.allReserves()[areaIndex];
 
-        areaReserves.maxGlobalActivationDurationDown = area->allCapacityReservations()
-                                                         .maxGlobalActivationDurationDown;
-        areaReserves.maxGlobalActivationDurationUp = area->allCapacityReservations()
-                                                       .maxGlobalActivationDurationUp;
+        areaReserves.referenceGlobalActivationDurationDown
+          = area->allCapacityReservations().referenceGlobalActivationDurationDown;
+        areaReserves.referenceGlobalActivationDurationUp = area->allCapacityReservations()
+                                                             .referenceGlobalActivationDurationUp;
         areaReserves.maxGlobalEnergyActivationRatioDown = area->allCapacityReservations()
                                                             .maxGlobalEnergyActivationRatioDown;
         areaReserves.maxGlobalEnergyActivationRatioUp = area->allCapacityReservations()
@@ -62,10 +62,11 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
             CAPACITY_RESERVATION areaCapacityReservationsUp;
             areaCapacityReservationsUp.unsuppliedCost = reserveCapacity.unsuppliedCost;
             areaCapacityReservationsUp.spillageCost = reserveCapacity.spillageCost;
-            areaCapacityReservationsUp.maxActivationRatio = reserveCapacity.maxActivationRatio;
-            areaCapacityReservationsUp.maxEnergyActivationRatio = reserveCapacity
-                                                                    .maxEnergyActivationRatio;
-            areaCapacityReservationsUp.maxActivationDuration = reserveCapacity.maxActivationHours;
+            areaCapacityReservationsUp.powerActivationRatio = reserveCapacity.powerActivationRatio;
+            areaCapacityReservationsUp.energyActivationRatio = reserveCapacity
+                                                                 .energyActivationRatio;
+            areaCapacityReservationsUp.maxActivationDuration = reserveCapacity
+                                                                 .referenceActivationHours;
             areaCapacityReservationsUp.reserveName = reserveName;
             areaCapacityReservationsUp.globalReserveIndex = globalReserveIndex;
             areaCapacityReservationsUp.areaReserveIndex = areaReserveIndex;
@@ -89,10 +90,12 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
             CAPACITY_RESERVATION areaCapacityReservationsDown;
             areaCapacityReservationsDown.unsuppliedCost = reserveCapacity.unsuppliedCost;
             areaCapacityReservationsDown.spillageCost = reserveCapacity.spillageCost;
-            areaCapacityReservationsDown.maxActivationRatio = reserveCapacity.maxActivationRatio;
-            areaCapacityReservationsDown.maxActivationDuration = reserveCapacity.maxActivationHours;
-            areaCapacityReservationsDown.maxEnergyActivationRatio = reserveCapacity
-                                                                      .maxEnergyActivationRatio;
+            areaCapacityReservationsDown.powerActivationRatio = reserveCapacity
+                                                                  .powerActivationRatio;
+            areaCapacityReservationsDown.maxActivationDuration = reserveCapacity
+                                                                   .referenceActivationHours;
+            areaCapacityReservationsDown.energyActivationRatio = reserveCapacity
+                                                                   .energyActivationRatio;
             areaCapacityReservationsDown.reserveName = reserveName;
             areaCapacityReservationsDown.globalReserveIndex = globalReserveIndex;
             areaCapacityReservationsDown.areaReserveIndex = areaReserveIndex;

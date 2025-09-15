@@ -38,7 +38,7 @@ void STStockEnergyLevelReserveParticipation::add(int pays,
                     {
                         builder.STStorageClusterReserveUpParticipation(
                           reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.maxActivationRatio,
+                          capacityReservation.powerActivationRatio,
                           t,
                           builder.data.NombreDePasDeTempsPourUneOptimisation);
                     }
@@ -46,13 +46,13 @@ void STStockEnergyLevelReserveParticipation::add(int pays,
                     {
                         builder.STStorageClusterReserveDownParticipation(
                           reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.maxActivationRatio,
+                          capacityReservation.powerActivationRatio,
                           t,
                           builder.data.NombreDePasDeTempsPourUneOptimisation);
                     }
                     builder.ShortTermStorageLevel(
                       globalClusterIdx,
-                      sign * capacityReservation.maxEnergyActivationRatio,
+                      sign * capacityReservation.energyActivationRatio,
                       t,
                       builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }

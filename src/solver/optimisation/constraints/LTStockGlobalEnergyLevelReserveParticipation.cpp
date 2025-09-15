@@ -18,7 +18,7 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (int t = 0; t < data.areaReserves[pays].maxGlobalActivationDurationDown; t++)
+            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationDown; t++)
             {
                 for (auto& capacityReservation:
                      data.areaReserves[pays].areaCapacityReservationsDown)
@@ -29,7 +29,7 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                           = capacityReservation.AllLTStorageReservesParticipation[cluster];
                         builder.LTStorageClusterReserveDownParticipation(
                           reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.maxActivationRatio,
+                          capacityReservation.powerActivationRatio,
                           t,
                           builder.data.NombreDePasDeTempsPourUneOptimisation);
                     }
@@ -67,7 +67,7 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (int t = 0; t < data.areaReserves[pays].maxGlobalActivationDurationUp; t++)
+            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationUp; t++)
             {
                 for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsUp)
                 {
@@ -77,7 +77,7 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                           = capacityReservation.AllLTStorageReservesParticipation[cluster];
                         builder.LTStorageClusterReserveUpParticipation(
                           reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.maxActivationRatio,
+                          capacityReservation.powerActivationRatio,
                           t,
                           builder.data.NombreDePasDeTempsPourUneOptimisation);
                     }
@@ -127,10 +127,10 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
 
         int nbTermsUp = countReservesParticipations(
           data.areaReserves[pays].areaCapacityReservationsUp,
-          data.areaReserves[pays].maxGlobalActivationDurationUp);
+          data.areaReserves[pays].referenceGlobalActivationDurationUp);
         int nbTermsDown = countReservesParticipations(
           data.areaReserves[pays].areaCapacityReservationsDown,
-          data.areaReserves[pays].maxGlobalActivationDurationDown);
+          data.areaReserves[pays].referenceGlobalActivationDurationDown);
 
         builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);
     }

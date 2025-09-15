@@ -38,7 +38,7 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
                     {
                         builder.LTStorageClusterReserveUpParticipation(
                           reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.maxActivationRatio,
+                          capacityReservation.powerActivationRatio,
                           t,
                           builder.data.NombreDePasDeTempsPourUneOptimisation);
                     }
@@ -46,12 +46,12 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
                     {
                         builder.LTStorageClusterReserveDownParticipation(
                           reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.maxActivationRatio,
+                          capacityReservation.powerActivationRatio,
                           t,
                           builder.data.NombreDePasDeTempsPourUneOptimisation);
                     }
                     builder.HydroLevel(globalClusterIdx,
-                                       sign * capacityReservation.maxEnergyActivationRatio,
+                                       sign * capacityReservation.energyActivationRatio,
                                        t,
                                        builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }

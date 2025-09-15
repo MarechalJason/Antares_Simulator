@@ -357,8 +357,8 @@ struct CAPACITY_RESERVATION
     std::vector<int> need; //!< Vector size is number of hours in year
     double unsuppliedCost = 0;
     double spillageCost = 0;
-    double maxActivationRatio = 0;
-    double maxEnergyActivationRatio = 1;
+    double powerActivationRatio = 0;
+    double energyActivationRatio = 1;
     int maxActivationDuration = 0;
     std::string reserveName;
     int globalReserveIndex;
@@ -377,8 +377,8 @@ struct AREA_RESERVES_VECTOR
 {
     double maxGlobalEnergyActivationRatioUp = 1.;
     double maxGlobalEnergyActivationRatioDown = 1.;
-    int maxGlobalActivationDurationUp = 0;
-    int maxGlobalActivationDurationDown = 0;
+    int referenceGlobalActivationDurationUp = 0;
+    int referenceGlobalActivationDurationDown = 0;
     std::vector<CAPACITY_RESERVATION> areaCapacityReservationsUp;
     std::vector<CAPACITY_RESERVATION> areaCapacityReservationsDown;
     std::map<

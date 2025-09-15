@@ -24,7 +24,7 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                       = capacityReservation.AllLTStorageReservesParticipation[cluster];
                     builder.LTStorageClusterReserveDownParticipation(
                       reserveParticipations.globalIndexClusterParticipation,
-                      capacityReservation.maxActivationRatio);
+                      capacityReservation.powerActivationRatio);
                 }
             }
             if (builder.NumberOfVariables() > 0)
@@ -63,7 +63,7 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                       = capacityReservation.AllLTStorageReservesParticipation[cluster];
                     builder.LTStorageClusterReserveUpParticipation(
                       reserveParticipations.globalIndexClusterParticipation,
-                      capacityReservation.maxActivationRatio);
+                      capacityReservation.powerActivationRatio);
                 }
             }
             if (builder.NumberOfVariables() > 0)

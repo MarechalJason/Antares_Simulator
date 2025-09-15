@@ -39,9 +39,9 @@ struct CapacityReservation
 
     double unsuppliedCost = 0.;
     double spillageCost = 0.;
-    double maxActivationRatio = 0.;
-    double maxEnergyActivationRatio = 1.;
-    int maxActivationHours = 1.;
+    double powerActivationRatio = 0.;
+    double energyActivationRatio = 1.;
+    int referenceActivationHours = 1.;
     Antares::Data::TimeSeries need;
 
 private:
@@ -53,8 +53,8 @@ struct AllCapacityReservations
 {
     double maxGlobalEnergyActivationRatioUp = 1.;
     double maxGlobalEnergyActivationRatioDown = 1.;
-    int maxGlobalActivationDurationUp = 1;
-    int maxGlobalActivationDurationDown = 1;
+    int referenceGlobalActivationDurationUp = 1;
+    int referenceGlobalActivationDurationDown = 1;
     std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
       reserveGroupPartThermal;
     std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>

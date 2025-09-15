@@ -1194,7 +1194,7 @@ void loadReserves(Antares::Data::Study& study,
                       tmp = p->key;
                       tmp.toLower();
 
-                      if (tmp == "max-energy-activation-ratio-up")
+                      if (tmp == "energy-activation-ratio-up")
                       {
                           if (!p->value.to<double>(
                                 area.allCapacityReservations().maxGlobalEnergyActivationRatioUp))
@@ -1204,7 +1204,7 @@ void loadReserves(Antares::Data::Study& study,
                                 << ": invalid maximum energy activation ratio for UP reserves";
                           }
                       }
-                      else if (tmp == "max-energy-activation-ratio-down")
+                      else if (tmp == "energy-activation-ratio-down")
                       {
                           if (!p->value.to<double>(
                                 area.allCapacityReservations().maxGlobalEnergyActivationRatioDown))
@@ -1214,23 +1214,23 @@ void loadReserves(Antares::Data::Study& study,
                                                 "DOWN reserves";
                           }
                       }
-                      else if (tmp == "max-activation-duration-up")
+                      else if (tmp == "reference-activation-duration-up")
                       {
                           if (!p->value.to<int>(
-                                area.allCapacityReservations().maxGlobalActivationDurationUp))
+                                area.allCapacityReservations().referenceGlobalActivationDurationUp))
                           {
                               logs.warning() << area.name
-                                             << ": invalid maximum energy activation duration "
+                                             << ": invalid reference energy activation duration "
                                                 "for UP reserves";
                           }
                       }
-                      else if (tmp == "max-activation-duration-down")
+                      else if (tmp == "reference-activation-duration-down")
                       {
-                          if (!p->value.to<int>(
-                                area.allCapacityReservations().maxGlobalActivationDurationDown))
+                          if (!p->value.to<int>(area.allCapacityReservations()
+                                                  .referenceGlobalActivationDurationDown))
                           {
                               logs.warning() << area.name
-                                             << ": invalid maximum energy activation duration "
+                                             << ": invalid reference energy activation duration "
                                                 "for DOWN reserves";
                           }
                       }
@@ -1268,31 +1268,31 @@ void loadReserves(Antares::Data::Study& study,
                                              << section.name;
                           }
                       }
-                      else if (tmp == "max-power-activation-ratio")
+                      else if (tmp == "power-activation-ratio")
                       {
-                          if (!p->value.to<double>(tmpCapacityReservation.maxActivationRatio))
+                          if (!p->value.to<double>(tmpCapacityReservation.powerActivationRatio))
                           {
                               logs.warning()
                                 << area.name << ": invalid maximum activation ratio for reserve "
                                 << section.name;
                           }
                       }
-                      else if (tmp == "max-energy-activation-ratio")
+                      else if (tmp == "energy-activation-ratio")
                       {
-                          if (!p->value.to<double>(tmpCapacityReservation.maxEnergyActivationRatio))
+                          if (!p->value.to<double>(tmpCapacityReservation.energyActivationRatio))
                           {
                               logs.warning()
-                                << area.name
-                                << ": invalid maximum energy activation ratio for reserve "
+                                << area.name << ": invalid energy activation ratio for reserve "
                                 << section.name;
                           }
                       }
-                      else if (tmp == "max-activation-duration")
+                      else if (tmp == "reference-activation-duration")
                       {
-                          if (!p->value.to<int>(tmpCapacityReservation.maxActivationHours))
+                          if (!p->value.to<int>(tmpCapacityReservation.referenceActivationHours))
                           {
                               logs.warning()
-                                << area.name << ": invalid maximum activation duration for reserve "
+                                << area.name
+                                << ": invalid reference activation duration for reserve "
                                 << section.name;
                           }
                       }
