@@ -22,6 +22,7 @@
 #define __ANTARES_LIBS_STUDY_RESERVE_OPT_H__
 
 #include <optional>
+#include <iostream>
 
 /// \brief A wrapper around std::optional to allow access to the value using the () operator
 // The objects using this type are used if the reserves are enabled in the study
@@ -33,11 +34,23 @@ public:
 
     T& operator()() &
     {
+        if (!this->has_value())
+        {
+            std::string tname = typeid(T).name();
+            std::cerr << "Bad optionnal access inside " << tname << "\n";
+            throw std::bad_optional_access();
+        }
         return this->value();
     }
 
     const T& operator()() const&
     {
+        if (!this->has_value())
+        {
+            std::string tname = typeid(T).name();
+            std::cerr << "Bad optionnal access inside : " << tname << "\n";
+            throw std::bad_optional_access();
+        }
         return this->value();
     }
 

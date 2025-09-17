@@ -1315,7 +1315,7 @@ void loadReserves(Antares::Data::Study& study,
                       else
                       {
                           logs.warning()
-                            << area.name << ": invalid key " << tmp << " in file " << buffer;
+                            << area.name << ": invalid key " << tmp << " in file " << reservesIni;
                       }
                   }
                   fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()

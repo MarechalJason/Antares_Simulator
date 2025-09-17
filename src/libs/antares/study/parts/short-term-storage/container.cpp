@@ -440,7 +440,9 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationClusterA
     {
         for (auto& cluster: storagesByIndex)
         {
-            if (cluster.reserveParticipationContainer().isParticipatingInReserve(reserveUpName))
+
+            if (cluster.reserveParticipationContainer && cluster.reserveParticipationContainer()
+                  .isParticipatingInReserve(reserveUpName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -456,7 +458,9 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationClusterA
     {
         for (auto& cluster: storagesByIndex)
         {
-            if (cluster.reserveParticipationContainer().isParticipatingInReserve(reserveDownName))
+            if (cluster.reserveParticipationContainer
+                && cluster.reserveParticipationContainer().isParticipatingInReserve(
+                  reserveDownName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -545,6 +549,9 @@ uint STStorageInput::reserveParticipationsCount() const
       storagesByIndex.end(),
       0,
       [](int total, const STStorageCluster& cluster)
-      { return total + cluster.reserveParticipationContainer().reserveParticipationsCount(); });
+      {
+          return cluster.reserveParticipationContainer ? total
+                 + cluster.reserveParticipationContainer().reserveParticipationsCount() : total;
+      });
 }
 } // namespace Antares::Data::ShortTermStorage
