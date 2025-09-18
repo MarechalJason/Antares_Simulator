@@ -13,4 +13,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: |
-        gh cache delete ${{ env.os }}-${{ github.event.pull_request.head.ref }}
+        gh cache delete ubuntu-22.04-${{ github.event.pull_request.head.ref }}
