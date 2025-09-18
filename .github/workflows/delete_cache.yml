@@ -8,10 +8,17 @@ on:
 
 env:
   GH_TOKEN: ${{ github.token }}
+  GH_REPO: ${{ github.repository }}
+  BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge
 
 # Later, in the jobs section of your actions.yml file.
 jobs:
   if_merged:
+    permissions:
+      # `actions:write` permission is required to delete caches
+      #   See also: https://docs.github.com/en/rest/actions/cache?apiVersion=2022-11-28#delete-a-github-actions-cache-for-a-repository-using-a-cache-id
+      actions: write
+      contents: read
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
