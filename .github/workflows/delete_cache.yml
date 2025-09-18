@@ -5,6 +5,8 @@ on:
     - develop
     types:
     - closed
+  env:
+    GH_TOKEN: ${{ github.token }}
 
 # Later, in the jobs section of your actions.yml file.
 jobs:
