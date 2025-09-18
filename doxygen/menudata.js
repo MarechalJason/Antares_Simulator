@@ -25,14 +25,14 @@
 var menudata={children:[
 {text:"Main Page",url:"index.html"},
 {text:"Related Pages",url:"pages.html"},
-{text:"Topics",url:"topics.html"},
+{text:"Modules",url:"modules.html"},
 {text:"Namespaces",url:"namespaces.html",children:[
 {text:"Namespace List",url:"namespaces.html"},
 {text:"Namespace Members",url:"namespacemembers.html",children:[
 {text:"All",url:"namespacemembers.html"},
 {text:"Functions",url:"namespacemembers_func.html"},
+{text:"Variables",url:"namespacemembers_vars.html"},
 {text:"Typedefs",url:"namespacemembers_type.html"}]}]},
-{text:"Concepts",url:"concepts.html"},
 {text:"Classes",url:"annotated.html",children:[
 {text:"Class List",url:"annotated.html"},
 {text:"Class Index",url:"classes.html"},
@@ -151,9 +151,8 @@ var menudata={children:[
 {text:"n",url:"functions_eval.html#index_n"},
 {text:"o",url:"functions_eval.html#index_o"},
 {text:"p",url:"functions_eval.html#index_p"},
-{text:"r",url:"functions_eval.html#index_r"},
 {text:"s",url:"functions_eval.html#index_s"},
-{text:"t",url:"functions_eval.html#index_t"},
-{text:"w",url:"functions_eval.html#index_w"}]}]}]},
+{text:"t",url:"functions_eval.html#index_t"}]}]}]},
 {text:"Files",url:"files.html",children:[
-{text:"File List",url:"files.html"}]}]}
+{text:"File List",url:"files.html"}]},
+{text:"Examples",url:"examples.html"}]}
