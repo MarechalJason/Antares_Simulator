@@ -13,4 +13,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: |
-        echo The PR was successfully merged.
+        run: >
+        gh cache delete ${{ env.os }}-${{ github.event.pull_request.head.ref }}
