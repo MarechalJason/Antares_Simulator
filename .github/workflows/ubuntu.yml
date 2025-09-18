@@ -434,3 +434,9 @@ jobs:
       with:
         path: ${{ github.workspace }}/.ccache_ubuntu
         key: ${{ env.os }}-${{ github.ref_name }}
+
+    - name: Commande à exécuter lors d’une fusion
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+      run: >
+        gh cache delete vcpkg-cache-ubuntu-${{ hashFiles('src/vcpkg.json', '.git/modules/vcpkg/HEAD') }}
+        gh cache delete ${{ env.os }}-${{ github.event.pull_request.head.ref }}
