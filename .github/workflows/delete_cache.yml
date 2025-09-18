@@ -1,0 +1,16 @@
+name: delete_cache.yml
+on:
+  pull_request:
+    branches:
+    - develop
+    types:
+    - closed
+
+# Later, in the jobs section of your actions.yml file.
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo The PR was successfully merged.
