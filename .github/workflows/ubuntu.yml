@@ -154,6 +154,7 @@ jobs:
         echo ${{ github.event_name }}
         echo ${{ github.event.action }}
         echo ${{ github.event.pull_request.merged }}
+        echo ${{ toJson(github.event) }}
 
     - name: Commande à exécuter lors d’une fusion
       if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
