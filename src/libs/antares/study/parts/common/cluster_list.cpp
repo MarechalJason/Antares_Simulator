@@ -61,7 +61,8 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationC
     {
         for (auto& cluster: allClusters_)
         {
-            if (cluster->reserveParticipationContainer().isParticipatingInReserve(reserveUpName))
+            if (cluster->reserveParticipationContainer
+                && cluster->reserveParticipationContainer().isParticipatingInReserve(reserveUpName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -77,7 +78,9 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationC
     {
         for (auto& cluster: allClusters_)
         {
-            if (cluster->reserveParticipationContainer().isParticipatingInReserve(reserveDownName))
+            if (cluster->reserveParticipationContainer
+                && cluster->reserveParticipationContainer().isParticipatingInReserve(
+                  reserveDownName))
             {
                 if (globalReserveParticipationIdx == index)
                 {

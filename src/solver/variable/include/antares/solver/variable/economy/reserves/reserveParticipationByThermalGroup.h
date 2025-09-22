@@ -213,7 +213,8 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (state.study.parameters.reservesEnabled)
+        if (state.study.parameters.reservesEnabled
+            && state.area->allCapacityReservations.has_value())
         {
             auto& area = state.area;
             auto& thermal = state.thermal;
@@ -232,20 +233,19 @@ public:
                         column++;
                     }
                 }
-                for (const auto& [reserveName, _]:
-                     area->allCapacityReservations().areaCapacityReservationsDown)
+            }
+            for (const auto& [reserveName, _]:
+                 area->allCapacityReservations().areaCapacityReservationsDown)
+            {
+                if (area->allCapacityReservations->reserveGroupPartThermal.contains(reserveName))
                 {
-                    if (area->allCapacityReservations->reserveGroupPartThermal.contains(
-                          reserveName))
+                    for (auto group:
+                         area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
                     {
-                        for (auto group:
-                             area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
-                        {
-                            pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                              += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                                   .thermalGroupsReserveParticipation[group][reserveName];
-                            column++;
-                        }
+                        pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
+                          += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                               .thermalGroupsReserveParticipation[group][reserveName];
+                        column++;
                     }
                 }
             }
