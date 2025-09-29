@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -131,16 +131,6 @@ bool CompareVisitor::visit(const Nodes::PortFieldNode* node, const Nodes::Node* 
 }
 
 bool CompareVisitor::visit(const Nodes::PortFieldSumNode* node, const Nodes::Node* other)
-{
-    return compareEqualOperator(node, other);
-}
-
-bool CompareVisitor::visit(const Nodes::ComponentVariableNode* node, const Nodes::Node* other)
-{
-    return compareEqualOperator(node, other);
-}
-
-bool CompareVisitor::visit(const Nodes::ComponentParameterNode* node, const Nodes::Node* other)
 {
     return compareEqualOperator(node, other);
 }

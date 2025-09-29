@@ -14,6 +14,7 @@ from common_steps.solver_input_handler import solver_input_handler
 from common_steps.solver_output_handler import solver_output_handler
 
 from features.steps.common_steps.assertions import assert_double_close
+from features.steps.common_steps.modeler_output_handler import modeler_output_handler
 
 NB_HOURS_IN_WEEK = 168
 NB_DAYS_IN_WEEK = 7
@@ -259,6 +260,12 @@ def check_annual_results(context):
             check_unsupplied_energy_value(context, area, year, float(row["unsupplied energy"]))
 
 
+@then("simulation tables match the references")
+def check_simulation_tables(context):
+    assert context.sih.get_optim1_simulation_table() == context.soh.get_optim1_simulation_table(), "first optimisation simulation table does not match the reference"
+    ref_simulation_table2 = context.sih.get_optim2_simulation_table()
+    if ref_simulation_table2:
+        assert ref_simulation_table2 == context.soh.get_optim2_simulation_table(), "second simulation table does not match the reference"
 def should_check(row, key):
     return key in row.headings and len(row[key]) > 0
 
@@ -266,7 +273,7 @@ def should_check(row, key):
 def run_simulation(context):
     command = build_antares_solver_command(context)
     print(f"Running command: {command}")
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = process.communicate()
     try:
         if out:
@@ -289,6 +296,10 @@ def run_simulation(context):
     context.output_path = parse_output_folder_from_logs(out)
     context.return_code = process.returncode
     context.soh = solver_output_handler(context.output_path, context.mode)
+    # for hybrid studies:
+    simulation_table = Path(context.output_path) / "simulation_table--optim-nb-1.csv"
+    if simulation_table.exists():
+        context.moh = modeler_output_handler(simulation_table)
 
 
 def init_simulation(context):
@@ -392,6 +403,14 @@ def check_thermal_cluster_min_gen_for_hour(context, area, cluster_name, hour, ye
 @then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", total reserve participation power is {res_part:g} MWh')
 def check_res_participation_for_specific_year_and_cluster_yearly(context, area, year, res, cluster, res_part):
     assert_double_close(res_part, context.soh.get_reserve_total_participation_for_year_and_cluster(area, year, res,cluster), 1e-6)
+
+
+@step('the message "{log}" is reported in the logs')
+def ckeck_log_exists(context, log):
+    for log_line in context.logs_err.splitlines():
+        if log in log_line:
+            return
+    raise AssertionError(f"Log '{log}' is not reported in the logs")
 
 @then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", reserve participation power is always {comparator_and_res_part} MWh')
 def check_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, comparator_and_res_part):

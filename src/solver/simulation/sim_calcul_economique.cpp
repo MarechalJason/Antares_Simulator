@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -125,29 +125,37 @@ static void importShortTermStorages(
     int constraintGlobalIndex = 0;
     int globalReserveIndex = 0;
     int globalSTStorageClusterParticipationIndex = 0;
+
     for (uint areaIndex = 0; areaIndex != areas.size(); areaIndex++)
     {
         int areaReserveIndex = 0;
         int areaClusterParticipationIndex = 0;
-        auto area = areas[areaIndex];
+        const auto* area = areas[areaIndex];
         ShortTermStorageOut[areaIndex].resize(area->shortTermStorage.count());
         int storageIndex = 0;
-
-        for (auto& st: area->shortTermStorage.storagesByIndex)
+        for (const auto& st: area->shortTermStorage.storagesByIndex)
         {
             ::ShortTermStorage::PROPERTIES& toInsert = ShortTermStorageOut[areaIndex][storageIndex];
             toInsert.clusterGlobalIndex = clusterGlobalIndex;
 
-            // Properties
+            // capacities
             toInsert.reservoirCapacity = st.properties.reservoirCapacity.value();
             toInsert.injectionEfficiency = st.properties.injectionEfficiency;
             toInsert.withdrawalEfficiency = st.properties.withdrawalEfficiency;
             toInsert.injectionNominalCapacity = st.properties.injectionNominalCapacity.value();
             toInsert.withdrawalNominalCapacity = st.properties.withdrawalNominalCapacity.value();
+            // initial level
             toInsert.initialLevel = st.properties.initialLevel;
             toInsert.initialLevelOptim = st.properties.initialLevelOptim;
+
+            // optional penalization
             toInsert.penalizeVariationInjection = st.properties.penalizeVariationInjection;
             toInsert.penalizeVariationWithdrawal = st.properties.penalizeVariationWithdrawal;
+            // optional overflow
+            toInsert.allowOverflow = st.properties.allowOverflow;
+            toInsert.overflowCost = area->thermal.spilledEnergyCost
+                                    + area->hydro.overflowSpilledCostDifference;
+
             toInsert.name = st.properties.name;
             for (const auto& constraint: st.additionalConstraints)
             {
@@ -323,9 +331,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
     auto& parameters = study.parameters;
 
     // For hybrid studies
-    problem.modelerSystem = study.getModelerSystem();
-    problem.linear_problem_data_ = study.getModelerData();
-    problem.scenarioGroupRepository = study.getScenarioGroupRepository();
+    problem.modelerData = study.getModelerData();
 
     problem.Expansion = (parameters.mode == Data::SimulationMode::Expansion);
 

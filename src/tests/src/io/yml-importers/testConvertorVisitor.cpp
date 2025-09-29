@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -82,7 +82,8 @@ BOOST_AUTO_TEST_CASE(identifier)
       .port_field_definitions = {},
       .constraints = {},
       .binding_constraints = {},
-      .objective = "objectives"};
+      .objective = "objectives",
+      .extra_outputs = {}};
     ExpressionToNodeConvertorEmptyModel converter(std::move(model));
 
     {
@@ -116,7 +117,8 @@ BOOST_AUTO_TEST_CASE(identifierNotFound)
       .port_field_definitions = {},
       .constraints = {},
       .binding_constraints = {},
-      .objective = "objectives"};
+      .objective = "objectives",
+      .extra_outputs = {}};
 
     std::string expression = "abc"; // not a param or var
     BOOST_CHECK_EXCEPTION(ModelConverter::convertExpressionToNode(expression, model),
@@ -135,6 +137,25 @@ BOOST_FIXTURE_TEST_CASE(addTwoLiterals, ExpressionToNodeConvertorEmptyModel)
     const auto& operands = nodeSum->getOperands();
     BOOST_CHECK_EQUAL(toLiteral(operands[0])->value(), 1);
     BOOST_CHECK_EQUAL(toLiteral(operands[1])->value(), 2);
+}
+
+BOOST_FIXTURE_TEST_CASE(addThreeLiterals, ExpressionToNodeConvertorEmptyModel)
+{
+    /*
+      Desired behavior
+      "1+2+3" -> SumNode(1,2,3)
+    */
+
+    const std::string expression = "1 + 2 + 3";
+    auto expr = run(expression);
+
+    auto* nodeSum = dynamic_cast<Nodes::SumNode*>(expr.node);
+    BOOST_REQUIRE(nodeSum);
+    const auto& operands = nodeSum->getOperands();
+    BOOST_REQUIRE_EQUAL(operands.size(), 3);
+    BOOST_CHECK_EQUAL(toLiteral(operands[0])->value(), 1);
+    BOOST_CHECK_EQUAL(toLiteral(operands[1])->value(), 2);
+    BOOST_CHECK_EQUAL(toLiteral(operands[2])->value(), 3);
 }
 
 BOOST_FIXTURE_TEST_CASE(subtractTwoLiterals, ExpressionToNodeConvertorEmptyModel)
@@ -203,7 +224,8 @@ BOOST_AUTO_TEST_CASE(portfield)
                           .port_field_definitions = {{"port1", "field1", ""}},
                           .constraints = {},
                           .binding_constraints = {},
-                          .objective = "objectives"};
+                          .objective = "objectives",
+                          .extra_outputs = {}};
 
     ExpressionToNodeConvertorEmptyModel converter(std::move(model));
     std::string expression = "port1.field1";
@@ -225,7 +247,8 @@ BOOST_AUTO_TEST_CASE(portfieldSum)
                           .port_field_definitions = {{"port1", "field1", ""}},
                           .constraints = {},
                           .binding_constraints = {},
-                          .objective = "objectives"};
+                          .objective = "objectives",
+                          .extra_outputs = {}};
 
     ExpressionToNodeConvertorEmptyModel converter(std::move(model));
     std::string expression = "sum_connections(port1.field1)";
@@ -251,7 +274,8 @@ ExpressionToNodeConvertorEmptyModel createMediumExpression()
       .port_field_definitions = {},
       .constraints = {},
       .binding_constraints = {},
-      .objective = "objectives"};
+      .objective = "objectives",
+      .extra_outputs = {}};
 
     return {std::move(model)};
 }
@@ -268,9 +292,8 @@ std::pair<std::string, Nodes::Node*> expected_expression(Registry<Nodes::Node>& 
     auto* sub = registry.create<Nodes::SubtractionNode>(l4, l1);
     auto* mult = registry.create<Nodes::MultiplicationNode>(l12, sub);
     auto* sum1 = registry.create<Nodes::SumNode>(mult, param);
-    auto* sum2 = registry.create<Nodes::SumNode>(l42, l3);
-    auto* sum3 = registry.create<Nodes::SumNode>(sum2, var);
-    auto* neg = registry.create<Nodes::NegationNode>(sum3);
+    auto* sum2 = registry.create<Nodes::SumNode>(l42, l3, var);
+    auto* neg = registry.create<Nodes::NegationNode>(sum2);
     auto* div = registry.create<Nodes::DivisionNode>(sum1, neg);
     return {"(12 * (4 - 1) + param1) / -(42 + 3 + varP)", div};
 }

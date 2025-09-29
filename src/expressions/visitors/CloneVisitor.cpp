@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -104,20 +104,6 @@ Nodes::Node* CloneVisitor::visit(const Nodes::PortFieldSumNode* portfieldSumNode
 {
     return registry_.create<Nodes::PortFieldSumNode>(portfieldSumNode->getPortName(),
                                                      portfieldSumNode->getFieldName());
-}
-
-Nodes::Node* CloneVisitor::visit(const Nodes::ComponentVariableNode* component_variable_node)
-{
-    return registry_.create<Nodes::ComponentVariableNode>(
-      component_variable_node->getComponentId(),
-      component_variable_node->getComponentName());
-}
-
-Nodes::Node* CloneVisitor::visit(const Nodes::ComponentParameterNode* component_parameter_node)
-{
-    return registry_.create<Nodes::ComponentParameterNode>(
-      component_parameter_node->getComponentId(),
-      component_parameter_node->getComponentName());
 }
 
 Nodes::Node* CloneVisitor::visit(const Nodes::TimeShiftNode* node)

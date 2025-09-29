@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -1029,7 +1029,7 @@ bool Study::checkForFilenameLimits(bool output, const String& chfolder) const
         String areaname;
 
         areas.each(
-          [&output, &linkname, &areaname](const Area& area)
+          [&linkname, &areaname](const Area& area)
           {
               if (areaname.size() < area.id.size())
               {

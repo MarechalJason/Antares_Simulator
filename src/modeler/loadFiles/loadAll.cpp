@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -42,7 +42,7 @@ Modeler::Data loadAll(const std::filesystem::path& studyPath)
     data.dataSeries = loadDataSeries(studyPath);
     logs.info() << "Timeseries loaded";
 
-    data.scenario_group_repository = loadScenarioGroupRepository(studyPath);
+    data.scenarioGroupRepository = loadScenarioGroupRepository(studyPath);
     logs.info() << "Scenario groups loaded";
 
     return data;

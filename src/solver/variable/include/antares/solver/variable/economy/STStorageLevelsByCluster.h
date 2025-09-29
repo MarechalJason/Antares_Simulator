@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -215,7 +215,7 @@ public:
         {
             // ST storage levels for the current cluster and this hour
             pValuesForTheCurrentYear[numSpace][clusterIndex].hour[state.hourInTheYear]
-              = state.hourlyResults->ShortTermStorage[state.hourInTheWeek].level[clusterIndex];
+              = state.hourlyResults->ShortTermStorage[clusterIndex].level[state.hourInTheWeek];
         }
 
         // Next variable

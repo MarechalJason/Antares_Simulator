@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -85,12 +85,13 @@ struct convert<Antares::IO::Inputs::YmlSystem::Connection>
 {
     static bool decode(const Node& node, Antares::IO::Inputs::YmlSystem::Connection& rhs)
     {
-        if (!node.IsMap() && node.size() != 4)
+        if (!node.IsMap() || node.size() != 4)
         {
             return false;
         }
         rhs.firstEntry.componentId = node["component1"].as<std::string>();
         rhs.firstEntry.portId = node["port1"].as<std::string>();
+
         rhs.secondEntry.componentId = node["component2"].as<std::string>();
         rhs.secondEntry.portId = node["port2"].as<std::string>();
         return true;
@@ -102,7 +103,7 @@ struct convert<Antares::IO::Inputs::YmlSystem::AreaConnection>
 {
     static bool decode(const Node& node, Antares::IO::Inputs::YmlSystem::AreaConnection& rhs)
     {
-        if (!node.IsMap() && node.size() != 4)
+        if (!node.IsMap() || node.size() != 3)
         {
             return false;
         }

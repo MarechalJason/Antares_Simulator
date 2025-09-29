@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -22,7 +22,6 @@
 #pragma once
 
 #include <map>
-#include <string>
 
 #include <antares/solver/optim-model-filler/LinearExpression.h>
 #include "antares/optimisation/linear-problem-api/ILinearProblemData.h"
@@ -32,7 +31,7 @@ namespace Antares::Optimization
 using LinearExpressionMap = std::map<unsigned int, LinearExpression>;
 
 // time dependent parameter
-class TimeDependentLinearExpression
+class TimeDependentLinearExpression final
 {
 public:
     explicit TimeDependentLinearExpression(
@@ -42,15 +41,17 @@ public:
     explicit TimeDependentLinearExpression(
       const Optimisation::LinearProblemApi::FillContext& fillContext,
       const LinearExpression& linearExpression);
+
     explicit TimeDependentLinearExpression(
       const Optimisation::LinearProblemApi::FillContext& fillContext,
       LinearExpressionMap linearExpressions);
+
     explicit TimeDependentLinearExpression(
       const TimeDependentLinearExpression& timeDependentLinearExpression)
       = default;
 
     TimeDependentLinearExpression(TimeDependentLinearExpression&& other) noexcept = default;
-    TimeDependentLinearExpression& operator=(TimeDependentLinearExpression&& other) = default;
+    TimeDependentLinearExpression& operator=(TimeDependentLinearExpression&& other) = delete;
 
     /// Sum two linear expressions
     [[deprecated("Will make a potentially expensive copy of a TimeDependentLinearExpression. Use "

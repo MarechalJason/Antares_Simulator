@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -29,6 +29,8 @@
 #include <antares/logs/logs.h>
 #include <antares/study/study.h>
 #include "antares/study/simulation.h"
+
+class ISimulationTable;
 
 namespace Antares::Solver::Simulation
 {
@@ -90,12 +92,7 @@ static void RecalculDesEchangesMoyens(Data::Study& study,
 
     try
     {
-        NullResultWriter resultWriter;
-        NullSimulationObserver simulationObserver;
-        OPT_OptimisationHebdomadaire(study.parameters.optOptions,
-                                     &problem,
-                                     resultWriter,
-                                     simulationObserver);
+        OPT_OptimisationHebdomadaireQuadratique(study.parameters.optOptions, &problem);
     }
     catch (Data::UnfeasibleProblemError&)
     {
@@ -151,7 +148,6 @@ void ComputeFlowQuad(Data::Study& study,
     {
         logs.info() << "Post-processing... (quadratic optimisation)";
 
-        problem.TypeDOptimisation = OPTIMISATION_QUADRATIQUE;
         problem.LeProblemeADejaEteInstancie = false;
         for (uint w = 0; w != nbWeeks; ++w)
         {

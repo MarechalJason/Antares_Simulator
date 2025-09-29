@@ -44,7 +44,7 @@ struct IntegerInterval
     unsigned int initialTime = 0;
     unsigned int finalTime = 0;
 
-    class Iterator
+    class Iterator final
     {
     public:
         explicit Iterator(unsigned int current);
@@ -72,7 +72,7 @@ struct IntegerInterval
     }
 };
 
-class Dimensions
+class Dimensions final
 {
 public:
     Dimensions() = default;
@@ -89,11 +89,11 @@ private:
     std::optional<IntegerInterval> timeInterval;
 };
 
-class VariableDictionary
+class VariableDictionary final
 {
-    using Value = Antares::Optimisation::LinearProblemApi::IMipVariable*;
+    using Value = Optimisation::LinearProblemApi::IMipVariable*;
 
-    class VectorWithOffset
+    class VectorWithOffset final
     {
     public:
         VectorWithOffset() = default;
@@ -137,5 +137,8 @@ public:
     Value operator()(const FullKey& fullKey) const;
 
     Value& operator()(const FullKey& fullKey);
+    static std::string buildVariableName(const PartialKey& key,
+                                         std::optional<MCYearAndTime::MCYear> mcyear,
+                                         std::optional<unsigned int> timestep);
 };
 } // namespace Antares::Optimization

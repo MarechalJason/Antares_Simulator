@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -231,6 +231,8 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
             variablesMapping.reservesIndices()
               .internalExcess.assign(study.runtime.capacityReservationCount, 0);
         }
+
+        variablesMapping.SIM_ShortTermStorage.OverflowVariable.assign(shortTermStorageCount, 0);
 
         problem.CorrespondanceCntNativesCntOptim[k].NumeroDeContrainteDesBilansPays.assign(nbPays,
                                                                                            0);
@@ -670,23 +672,23 @@ void SIM_AllocateAreas(PROBLEME_HEBDO& problem,
         }
         // Short term storage results
         const unsigned long nbShortTermStorage = study.areas.byIndex[k]->shortTermStorage.count();
-        problem.ResultatsHoraires[k].ShortTermStorage.resize(NombreDePasDeTemps);
-        for (uint pdt = 0; pdt < NombreDePasDeTemps; pdt++)
+        problem.ResultatsHoraires[k].ShortTermStorage.resize(nbShortTermStorage);
+        for (uint sts = 0; sts < nbShortTermStorage; sts++)
         {
-            problem.ResultatsHoraires[k].ShortTermStorage[pdt].injection.resize(nbShortTermStorage);
-            problem.ResultatsHoraires[k].ShortTermStorage[pdt].withdrawal.resize(
-              nbShortTermStorage);
-            problem.ResultatsHoraires[k].ShortTermStorage[pdt].level.resize(nbShortTermStorage);
+            problem.ResultatsHoraires[k].ShortTermStorage[sts].injection.resize(NombreDePasDeTemps);
+            problem.ResultatsHoraires[k].ShortTermStorage[sts].withdrawal.resize(
+              NombreDePasDeTemps);
+            problem.ResultatsHoraires[k].ShortTermStorage[sts].level.resize(NombreDePasDeTemps);
             if (resEnabled)
             {
                 problem.ResultatsHoraires[k]
-                  .ShortTermStorage[pdt]
+                  .ShortTermStorage[sts]
                   .reserveParticipationOfCluster.init();
                 problem.ResultatsHoraires[k]
-                  .ShortTermStorage[pdt]
+                  .ShortTermStorage[sts]
                   .reserveParticipationOfCluster()
-                  .assign(nbSTStorageReserveParticipations, 0.);
-            }
+                  .assign(NombreDePasDeTemps, 0.);
+            }        
         }
     }
 }

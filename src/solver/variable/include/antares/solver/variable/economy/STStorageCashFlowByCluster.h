@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -211,13 +211,12 @@ public:
         for (uint clusterIndex = 0; clusterIndex != state.area->shortTermStorage.count();
              ++clusterIndex)
         {
-            const auto& stsHourlyResults = state.hourlyResults
-                                             ->ShortTermStorage[state.hourInTheWeek];
+            const auto& stsHourlyResults = state.hourlyResults->ShortTermStorage[clusterIndex];
             // ST storage injection for the current cluster and this hour
             // CashFlow[h] = (withdrawal - injection) * MRG. PRICE
             pValuesForTheCurrentYear[numSpace][clusterIndex].hour[hourInYear]
-              = (stsHourlyResults.withdrawal[clusterIndex]
-                 - stsHourlyResults.injection[clusterIndex])
+              = (stsHourlyResults.withdrawal[state.hourInTheWeek]
+                 - stsHourlyResults.injection[state.hourInTheWeek])
                 * (-state.hourlyResults->CoutsMarginauxHoraires[state.hourInTheWeek]);
             // Note: The marginal price provided by the solver is negative (naming convention).
         }

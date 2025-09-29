@@ -23,6 +23,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "antares/exception/RuntimeError.hpp"
 #include "antares/expressions/nodes/ExpressionsNodes.h"
 #include "antares/expressions/visitors/TimeIndex.h"
 #include "antares/optimisation/linear-problem-api/linearProblemBuilder.h"
@@ -98,17 +99,6 @@ BOOST_AUTO_TEST_CASE(var_with_wrong_parameter_lb__exception_is_raised)
     createModel("my-model",
                 {},
                 {{"variable", ValueType::FLOAT, parameter("parameter-not-in-model"), literal(10)}},
-                {});
-    createComponent("my-model", "my-component");
-    // TODO : improve exception message in eval visitor
-    BOOST_CHECK_THROW(buildLinearProblem(), out_of_range);
-}
-
-BOOST_AUTO_TEST_CASE(var_with_wrong_variable_ub__exception_is_raised)
-{
-    createModel("my-model",
-                {},
-                {{"variable", ValueType::FLOAT, literal(10), variable("variable")}},
                 {});
     createComponent("my-model", "my-component");
     // TODO : improve exception message in eval visitor
@@ -554,11 +544,11 @@ BOOST_AUTO_TEST_CASE(ct_one_var_with_coef_pb_contains_the_ct)
     buildLinearProblem();
 
     BOOST_CHECK_EQUAL(pb->variableCount(), 1);
-    BOOST_CHECK_NO_THROW(pb->lookupVariable("componentTata.var__1"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupVariable("componentTata.var__1"));
     auto var = pb->lookupVariable("componentTata.var__1");
     BOOST_REQUIRE(var);
     BOOST_CHECK_EQUAL(pb->constraintCount(), 1);
-    BOOST_CHECK_NO_THROW(pb->lookupConstraint("componentTata.ct_1"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupConstraint("componentTata.ct_1"));
     auto ct = pb->lookupConstraint("componentTata.ct_1");
     BOOST_CHECK(ct);
     BOOST_CHECK_EQUAL(ct->getLb(), 5);
@@ -605,7 +595,7 @@ BOOST_AUTO_TEST_CASE(ct_with_two_vars)
 
     BOOST_CHECK_EQUAL(pb->variableCount(), 2);
     BOOST_CHECK_EQUAL(pb->constraintCount(), 1);
-    BOOST_CHECK_NO_THROW(pb->lookupConstraint("my_component.constraint1"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupConstraint("my_component.constraint1"));
     auto ct = pb->lookupConstraint("my_component.constraint1");
     BOOST_CHECK(ct);
     BOOST_CHECK_EQUAL(ct->getLb(), 77);
@@ -646,7 +636,7 @@ BOOST_AUTO_TEST_CASE(two_constraints__they_are_created)
     BOOST_CHECK_EQUAL(pb->variableCount(), 2);
     BOOST_CHECK_EQUAL(pb->constraintCount(), 2);
 
-    BOOST_CHECK_NO_THROW(pb->lookupConstraint("my_component.ct1"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupConstraint("my_component.ct1"));
     auto ct1 = pb->lookupConstraint("my_component.ct1");
     BOOST_CHECK(ct1);
     BOOST_CHECK_EQUAL(ct1->getLb(), -numeric_limits<float>::infinity());
@@ -660,7 +650,7 @@ BOOST_AUTO_TEST_CASE(two_constraints__they_are_created)
         BOOST_CHECK_EQUAL(ct1->getCoefficient(cv2), -1);
     }
 
-    BOOST_CHECK_NO_THROW(pb->lookupConstraint("my_component.ct2"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupConstraint("my_component.ct2"));
     auto ct2 = pb->lookupConstraint("my_component.ct2");
     BOOST_REQUIRE(ct2);
     BOOST_CHECK_EQUAL(ct2->getLb(), -numeric_limits<float>::infinity());
@@ -689,7 +679,7 @@ BOOST_AUTO_TEST_CASE(one_var_with_objective)
     buildLinearProblem();
 
     BOOST_CHECK_EQUAL(pb->variableCount(), 1);
-    BOOST_CHECK_NO_THROW(pb->lookupVariable("componentA.x"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupVariable("componentA.x"));
     BOOST_CHECK_EQUAL(pb->getObjectiveCoefficient(pb->lookupVariable("componentA.x")), 1);
 }
 
@@ -709,7 +699,7 @@ BOOST_AUTO_TEST_CASE(one_time_dependent_var_with_objective)
     for (unsigned i = 0; i < nb_var; i++)
     {
         const auto var_name = "componentA.x_s0_t" + to_string(i);
-        BOOST_CHECK_NO_THROW(pb->lookupVariable(var_name));
+        BOOST_CHECK_NO_THROW((void)pb->lookupVariable(var_name));
         BOOST_CHECK_EQUAL(pb->getObjectiveCoefficient(pb->lookupVariable(var_name)), 1);
     }
 }
@@ -725,8 +715,8 @@ BOOST_AUTO_TEST_CASE(two_vars_but_only_one_in_objective)
     buildLinearProblem();
 
     BOOST_CHECK_EQUAL(pb->variableCount(), 2);
-    BOOST_CHECK_NO_THROW(pb->lookupVariable("componentA.v1"));
-    BOOST_CHECK_NO_THROW(pb->lookupVariable("componentA.v2"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupVariable("componentA.v1"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupVariable("componentA.v2"));
     BOOST_CHECK_EQUAL(pb->getObjectiveCoefficient(pb->lookupVariable("componentA.v1")), 0);
     BOOST_CHECK_EQUAL(pb->getObjectiveCoefficient(pb->lookupVariable("componentA.v2")), 37);
 }
@@ -741,7 +731,7 @@ BOOST_AUTO_TEST_CASE(one_var_with_param_objective)
     buildLinearProblem();
 
     BOOST_CHECK_EQUAL(pb->variableCount(), 1);
-    BOOST_CHECK_NO_THROW(pb->lookupVariable("componentA.x"));
+    BOOST_CHECK_NO_THROW((void)pb->lookupVariable("componentA.x"));
     BOOST_CHECK_EQUAL(pb->getObjectiveCoefficient(pb->lookupVariable("componentA.x")), -25);
 }
 
@@ -757,7 +747,7 @@ BOOST_AUTO_TEST_CASE(offset_in_objective__throws_exception)
 }
 
 // Mock classes
-class MockMipVariable: public IMipVariable
+class MockMipVariable final: public IMipVariable
 {
 public:
     MockMipVariable(double lb, double ub, bool integer, const std::string& name):
@@ -804,6 +794,16 @@ public:
         return name_;
     }
 
+    MipBasisStatus getMipBasisStatus() const override
+    {
+        return MipBasisStatus::FREE;
+    }
+
+    double solutionValue() const override
+    {
+        return 0.;
+    }
+
 private:
     double lb_;
     double ub_;
@@ -811,7 +811,7 @@ private:
     std::string name_;
 };
 
-class MockLinearProblem: public ILinearProblem
+class MockLinearProblem final: public ILinearProblem
 {
 public:
     std::vector<std::unique_ptr<MockMipVariable>> variables_;
@@ -825,6 +825,7 @@ public:
     MockMipVariable* addIntVariable(double lb, double ub, const std::string& name) override
     {
         variables_.emplace_back(std::make_unique<MockMipVariable>(lb, ub, true, name));
+        isLP_ = false;
         return variables_.back().get();
     }
 
@@ -918,6 +919,13 @@ public:
     {
         return 1e20;
     }
+
+    bool isLP() const override
+    {
+        return isLP_;
+    }
+
+    bool isLP_ = true;
 };
 
 BOOST_AUTO_TEST_CASE(Constructor_ValidIndices)

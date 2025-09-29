@@ -145,7 +145,7 @@ public:
     /// @brief Returns the cost of participation in a reserve
     /// @param name name of the reserve
     /// @return the cost of participation in the reserve
-    double reserveCost(ReserveName name)
+    double reserveCost(ReserveName name) const
     {
         return this->getValue(name, ReserveParticipationTraits<T>::participationCost);
     }
@@ -153,7 +153,7 @@ public:
     /// @brief Returns the cost of participation in a reserve when the cluster is off
     /// @param name name of the reserve
     /// @return the cost of participation in the reserve when the cluster is off
-    double reserveCostOff(ReserveName name)
+    double reserveCostOff(ReserveName name) const
     {
         return this->getValue(name, ReserveParticipationTraits<T>::participationCostOff);
     }
@@ -161,7 +161,7 @@ public:
     /// @brief Returns the maximum power that can be reserved when the cluster is off
     /// @param name name of the reserve
     /// @return the maximum power that can be reserved when the cluster is off
-    double reserveMaxPowerOff(ReserveName name)
+    double reserveMaxPowerOff(ReserveName name) const
     {
         return this->getValue(name, ReserveParticipationTraits<T>::maxPowerOff);
     }
@@ -169,7 +169,7 @@ public:
     /// @brief Returns the maximum power that can be reserved
     /// @param name name of the reserve
     /// @return the maximum power that can be reserved
-    double reserveMaxPower(ReserveName name)
+    double reserveMaxPower(ReserveName name) const
     {
         return this->getValue(name, ReserveParticipationTraits<T>::maxPower);
     }
@@ -177,7 +177,7 @@ public:
     /// @brief Returns the maximum turbining power that can be reserved
     /// @param name name of the reserve
     /// @return the maximum turbining power that can be reserved
-    double reserveMaxTurbining(ReserveName name)
+    double reserveMaxTurbining(ReserveName name) const
     {
         return this->getValue(name, ReserveParticipationTraits<T>::maxTurbining);
     }
@@ -185,7 +185,7 @@ public:
     /// @brief Returns the maximum pumping power that can be reserved
     /// @param name name of the reserve
     /// @return the maximum pumping power that can be reserved
-    double reserveMaxPumping(ReserveName name)
+    double reserveMaxPumping(ReserveName name) const
     {
         return this->getValue(name, ReserveParticipationTraits<T>::maxPumping);
     }

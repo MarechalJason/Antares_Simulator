@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -213,11 +213,12 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
         for (const auto& [resName, resParticipation]:
              STStorageCluster->reserveParticipationContainer().reservesParticipations)
         {
-            double participation = hourlyResults->ShortTermStorage[hourInTheWeek]
-                                     .reserveParticipationOfCluster()
+            double participation = hourlyResults
+                                     ->ShortTermStorage
                                        [area->reserveParticipationIndexMaps()
                                           .STStorageClusters.left.at(
-                                            std::make_pair(resName, STStorageCluster->id))];
+                                            std::make_pair(resName, STStorageCluster->id))]
+                                     .reserveParticipationOfCluster()[hourInTheWeek];
             STStorageClusterReserveParticipationCostForYear()[hourInTheYear]
               += participation
                  * STStorageCluster->reserveParticipationContainer().reserveCost(resName);

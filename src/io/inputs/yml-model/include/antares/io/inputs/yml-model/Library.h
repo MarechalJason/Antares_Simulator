@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -87,6 +87,12 @@ struct Constraint
     std::string expression;
 };
 
+struct ExtraOutput
+{
+    std::string id;
+    std::string expression;
+};
+
 struct Model
 {
     std::string id;
@@ -98,6 +104,7 @@ struct Model
     std::vector<Constraint> constraints;
     std::vector<Constraint> binding_constraints;
     std::string objective;
+    std::vector<ExtraOutput> extra_outputs;
 };
 
 struct PortType

@@ -5,31 +5,28 @@
 namespace Antares::Optimisation::LinearProblemApi
 {
 
-class OneConstraintFiller: public LinearProblemFiller
+class OneConstraintFiller final: public LinearProblemFiller
 {
 public:
     explicit OneConstraintFiller() = default;
-    void addVariables(ILinearProblem& pb, ILinearProblemData& data, FillContext& ctx) override;
-    void addConstraints(ILinearProblem& pb, ILinearProblemData& data, FillContext& ctx) override;
-    void addObjective(ILinearProblem& pb, ILinearProblemData& data, FillContext& ctx) override;
+    void addVariables(ILinearProblem& pb, const FillContext& ctx) override;
+    void addConstraints(ILinearProblem& pb, const FillContext& ctx) override;
+    void addObjective(ILinearProblem& pb, const FillContext& ctx) override;
 };
 
 void OneConstraintFiller::addVariables([[maybe_unused]] ILinearProblem& pb,
-                                       [[maybe_unused]] ILinearProblemData& data,
-                                       [[maybe_unused]] FillContext& ctx)
+                                       [[maybe_unused]] const FillContext& ctx)
 {
 }
 
 void OneConstraintFiller::addConstraints(ILinearProblem& pb,
-                                         [[maybe_unused]] ILinearProblemData& data,
-                                         [[maybe_unused]] FillContext& ctx)
+                                         [[maybe_unused]] const FillContext& ctx)
 {
     pb.addConstraint(1, 2, "constraint-by-OneConstraintFiller");
 }
 
 void OneConstraintFiller::addObjective([[maybe_unused]] ILinearProblem& pb,
-                                       [[maybe_unused]] ILinearProblemData& data,
-                                       [[maybe_unused]] FillContext& ctx)
+                                       [[maybe_unused]] const FillContext& ctx)
 {
 }
 

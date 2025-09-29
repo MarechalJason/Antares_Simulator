@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -86,10 +86,6 @@ BOOST_FIXTURE_TEST_CASE(nodes_name, Registry<Node>)
       {create<LessThanOrEqualNode>(literalNode, literalNode), "LessThanOrEqualNode"},
       {create<GreaterThanOrEqualNode>(literalNode, literalNode), "GreaterThanOrEqualNode"},
       {create<NegationNode>(literalNode), "NegationNode"},
-      {create<ComponentVariableNode>(literalNode->name(), literalNode->name()),
-       "ComponentVariableNode"},
-      {create<ComponentParameterNode>(literalNode->name(), literalNode->name()),
-       "ComponentParameterNode"},
       {create<ParameterNode>(literalNode->name()), "ParameterNode"},
       {create<VariableNode>(literalNode->name()), "VariableNode"},
       {create<PortFieldNode>(literalNode->name(), literalNode->name()), "PortFieldNode"},

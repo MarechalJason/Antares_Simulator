@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -162,14 +162,14 @@ static void setBoundsForShortTermStorage(PROBLEME_HEBDO* problemeHebdo,
             {
                 const int clusterGlobalIndex = storage.clusterGlobalIndex;
                 auto& STSResult = problemeHebdo->ResultatsHoraires[areaIndex]
-                                    .ShortTermStorage[pdtHebdo];
+                                    .ShortTermStorage[storageIndex];
                 // 1. Injection
                 int varInjection = variableManager.ShortTermStorageInjection(clusterGlobalIndex,
                                                                              pdtJour);
                 Xmin[varInjection] = 0.;
                 Xmax[varInjection] = storage.injectionNominalCapacity
                                      * storage.series->maxInjectionModulation[hourInTheYear];
-                AddressForVars[varInjection] = &STSResult.injection[storageIndex];
+                AddressForVars[varInjection] = &STSResult.injection[pdtHebdo];
 
                 // 2. Withdrwal
                 int varWithdrawal = variableManager.ShortTermStorageWithdrawal(clusterGlobalIndex,
@@ -177,7 +177,7 @@ static void setBoundsForShortTermStorage(PROBLEME_HEBDO* problemeHebdo,
                 Xmin[varWithdrawal] = 0.;
                 Xmax[varWithdrawal] = storage.withdrawalNominalCapacity
                                       * storage.series->maxWithdrawalModulation[hourInTheYear];
-                AddressForVars[varWithdrawal] = &STSResult.withdrawal[storageIndex];
+                AddressForVars[varWithdrawal] = &STSResult.withdrawal[pdtHebdo];
 
                 // 3. Levels
                 int varLevel = variableManager.ShortTermStorageLevel(clusterGlobalIndex, pdtJour);
@@ -193,7 +193,7 @@ static void setBoundsForShortTermStorage(PROBLEME_HEBDO* problemeHebdo,
                     Xmax[varLevel] = storage.reservoirCapacity
                                      * storage.series->upperRuleCurve[hourInTheYear];
                 }
-                AddressForVars[varLevel] = &STSResult.level[storageIndex];
+                AddressForVars[varLevel] = &STSResult.level[pdtHebdo];
                 // 4. Cost Variation Injection
 
                 // is this necessary?
@@ -217,6 +217,12 @@ static void setBoundsForShortTermStorage(PROBLEME_HEBDO* problemeHebdo,
                     Xmin[varCostVariationWithdrawal] = 0.;
                 }
                 storageIndex++;
+                if (storage.allowOverflow)
+                {
+                    int var = variableManager.ShortTermStorageOverflow(clusterGlobalIndex, pdtJour);
+                    Xmin[var] = 0;
+                    Xmax[var] = LINFINI_ANTARES;
+                }
             }
         }
     }

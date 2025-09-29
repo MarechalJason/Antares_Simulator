@@ -52,7 +52,7 @@ private:
     double value_{0.};
 };
 
-class EmptyDataSeries: public ConstantDataSeries
+class EmptyDataSeries final: public ConstantDataSeries
 {
 public:
     EmptyDataSeries():
@@ -74,7 +74,7 @@ Antares::ModelerStudy::SystemModel::Component copyComponent(
       .build();
 }
 
-class DefaultScenario: public Antares::Optimisation::LinearProblemApi::IScenario
+class DefaultScenario final: public Antares::Optimisation::LinearProblemApi::IScenario
 {
 public:
     using IScenario::IScenario;
@@ -88,7 +88,7 @@ public:
 using Models = std::unordered_map<std::string, Antares::ModelerStudy::SystemModel::Model>;
 
 template<class Fixture>
-class InMemoryLoader: public Antares::Solver::ILoader
+class InMemoryLoader final: public Antares::Solver::ILoader
 {
 public:
     Antares::Solver::ModelerParameters loadParameters() override
@@ -141,15 +141,13 @@ public:
                 .system = std::make_unique<Antares::ModelerStudy::SystemModel::System>(
                   std::move(system)),
                 .dataSeries = std::move(data),
-                .scenario_group_repository = std::move(scenarioGroupRepository)};
+                .scenarioGroupRepository = std::move(scenarioGroupRepository)};
     }
 
-    void setComponents(const std::span<Antares::ModelerStudy::SystemModel::Component>& vector)
+    void setComponents(
+      const std::unordered_map<std::string, Antares::ModelerStudy::SystemModel::Component>& compos)
     {
-        for (const auto& component: vector)
-        {
-            components.emplace(component.Id(), copyComponent(component));
-        }
+        components = compos;
     }
 
     void setModels(Models&& map)
@@ -199,26 +197,30 @@ struct Solution
     double objectiveValue{0.0};
 };
 
-class InMemoryWriter: public Antares::Solver::IWriter
+class InMemoryWriter final: public Antares::Solver::IWriter
 {
 public:
-    Solution solution_{};
+    mutable Solution solution_{};
 
-    void init(bool) override
+    void init(bool, const std::string&) override
     {
         // No initialization needed for in-memory writer
     }
 
-    void writeSolution(
-      const Antares::Optimisation::LinearProblemApi::IMipSolution& solution) override
-    {
-        solution_.objectiveValue = solution.getObjectiveValue();
-        // No output to write for in-memory writer
-    }
-
     void writeProblem(
       [[maybe_unused]] const Antares::Optimisation::LinearProblemMpsolverImpl::OrtoolsLinearProblem&
-        problem) override {};
+        problem) override
+    {
+    }
+
+    void writeSimulationTable(
+      const Antares::Optimisation::LinearProblemApi::ILinearProblem& linearProblem,
+      const Antares::Optimisation::LinearProblemApi::IMipSolution& solution,
+      const Antares::Modeler::Data& modelerData,
+      const Antares::Optimisation::LinearProblemApi::FillContext& fillContext) const override
+    {
+        solution_.objectiveValue = solution.getObjectiveValue();
+    }
 };
 
 BOOST_AUTO_TEST_CASE(Minimal_system_minimize_to_0)

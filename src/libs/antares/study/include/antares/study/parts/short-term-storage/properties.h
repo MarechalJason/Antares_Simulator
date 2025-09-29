@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -20,7 +20,6 @@
 */
 #pragma once
 
-#include <map>
 #include <optional>
 #include <string>
 
@@ -28,8 +27,7 @@
 
 namespace Antares::Data::ShortTermStorage
 {
-
-class Properties
+class Properties final
 {
 public:
     bool validate();
@@ -53,7 +51,7 @@ public:
     /// Efficiency factor for withdrawal between 0 and 1
     double withdrawalEfficiency = 1;
 
-    // Used to sort outputs
+    /// Used to sort outputs
     std::string groupName = "OTHER1";
     /// cluster name
     std::string name;
@@ -61,11 +59,13 @@ public:
     bool penalizeVariationWithdrawal = false;
     bool penalizeVariationInjection = false;
 
-    /// Cluster gloval index (across areas)
+    /// Cluster global index (across areas)
     int clusterGlobalIndex;
 
     /// Enabled ?
     bool enabled = true;
+
+    bool allowOverflow = false;
 
 private:
     static constexpr double initiallevelDefault = .5;

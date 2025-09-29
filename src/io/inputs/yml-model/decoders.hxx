@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -160,6 +160,21 @@ struct convert<Antares::IO::Inputs::YmlModel::Constraint>
 };
 
 template<>
+struct convert<Antares::IO::Inputs::YmlModel::ExtraOutput>
+{
+    static bool decode(const Node& node, Antares::IO::Inputs::YmlModel::ExtraOutput& rhs)
+    {
+        if (!node.IsMap())
+        {
+            return false;
+        }
+        rhs.id = node["id"].as<std::string>();
+        rhs.expression = node["expression"].as<std::string>();
+        return true;
+    }
+};
+
+template<>
 struct convert<Antares::IO::Inputs::YmlModel::Model>
 {
     static bool decode(const Node& node, Antares::IO::Inputs::YmlModel::Model& rhs)
@@ -184,6 +199,8 @@ struct convert<Antares::IO::Inputs::YmlModel::Model>
         rhs.binding_constraints = as_fallback_default<
           std::vector<Antares::IO::Inputs::YmlModel::Constraint>>(node["binding-constraints"]);
         rhs.objective = node["objective"].as<std::string>("");
+        rhs.extra_outputs = as_fallback_default<
+          std::vector<Antares::IO::Inputs::YmlModel::ExtraOutput>>(node["extra-outputs"]);
         return true;
     }
 };

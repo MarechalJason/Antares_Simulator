@@ -175,8 +175,8 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmax[var] = LINFINI_ANTARES;
             double* adresseDuResultat = &(
               problemeHebdo->ResultatsHoraires[pays]
-                .ShortTermStorage[pdtHebdo]
-                .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
+                .ShortTermStorage[clusterParticipationIdInArea]
+                .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
             var = CorrespondanceVarNativesVarOptim.reservesIndices()
@@ -184,8 +184,8 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
             adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorage[pdtHebdo]
-                                    .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
+                                    .ShortTermStorage[clusterParticipationIdInArea]
+                                    .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
             var = CorrespondanceVarNativesVarOptim.reservesIndices()
@@ -193,8 +193,8 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
             adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorage[pdtHebdo]
-                                    .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
+                                    .ShortTermStorage[clusterParticipationIdInArea]
+                                    .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
         }
 
@@ -211,8 +211,8 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmax[var] = LINFINI_ANTARES;
             double* adresseDuResultat = &(
               problemeHebdo->ResultatsHoraires[pays]
-                .ShortTermStorage[pdtHebdo]
-                .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
+                .ShortTermStorage[clusterParticipationIdInArea]
+                                            .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
             var = CorrespondanceVarNativesVarOptim.reservesIndices()
@@ -220,8 +220,8 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
             adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorage[pdtHebdo]
-                                    .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
+                                    .ShortTermStorage[clusterParticipationIdInArea]
+                                    .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
             var = CorrespondanceVarNativesVarOptim.reservesIndices()
@@ -229,8 +229,8 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
             adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorage[pdtHebdo]
-                                    .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
+                                    .ShortTermStorage[clusterParticipationIdInArea]
+                                    .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
         }
 

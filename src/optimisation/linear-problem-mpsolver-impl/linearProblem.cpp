@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -35,6 +35,7 @@ OrtoolsLinearProblem::OrtoolsLinearProblem(bool isMip, const std::string& solver
 {
     mpSolver_ = MPSolverFactory(isMip, solverName);
     objective_ = mpSolver_->MutableObjective();
+    isLP_ = !isMip; // we don't care about pure integer prob
 }
 
 OrtoolsMipVariable* OrtoolsLinearProblem::addVariable(double lb,
@@ -49,7 +50,7 @@ OrtoolsMipVariable* OrtoolsLinearProblem::addVariable(double lb,
         throw std::invalid_argument(os.str());
     }
     auto* mpVar = mpSolver_->MakeVar(lb, ub, integer, name);
-
+    isLP_ = isLP_ && !integer;
     if (!mpVar)
     {
         logs.error() << "Couldn't add variable to Ortools MPSolver: " << name;
@@ -206,6 +207,11 @@ OrtoolsMipSolution* OrtoolsLinearProblem::solve(bool verboseSolver)
 double OrtoolsLinearProblem::infinity() const
 {
     return MPSolver::infinity();
+}
+
+bool OrtoolsLinearProblem::isLP() const
+{
+    return isLP_;
 }
 
 } // namespace Antares::Optimisation::LinearProblemMpsolverImpl

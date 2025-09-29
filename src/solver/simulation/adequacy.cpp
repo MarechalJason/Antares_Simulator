@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -24,6 +24,7 @@
 
 #include <antares/exception/AssertionError.hpp>
 #include <antares/exception/UnfeasibleProblemError.hpp>
+#include "antares/io/outputs/ISimulationTable.h"
 
 using namespace Yuni;
 using Antares::Constants::nbHoursInAWeek;
@@ -35,7 +36,8 @@ Adequacy::Adequacy(Data::Study& study,
                    Simulation::ISimulationObserver& simulationObserver):
     study(study),
     resultWriter(resultWriter),
-    simulationObserver_(simulationObserver)
+    simulationObserver_(simulationObserver),
+    simulationTables_(study.maxNbYearsInParallel)
 {
 }
 
@@ -62,6 +64,20 @@ void Adequacy::initializeState(Variable::State& state, uint numSpace)
     state.numSpace = numSpace;
 }
 
+OptimisationsSimulationTable& Adequacy::getSimulationTable(uint numSpace)
+{
+    return simulationTables_[numSpace];
+}
+
+std::string Adequacy::getSimulationTableHeader() const
+{
+    if (!simulationTables_.empty())
+    {
+        return simulationTables_.at(0).getHeader();
+    }
+    return "";
+}
+
 // valGen maybe_unused to match simulationBegin() declaration in economy.cpp
 bool Adequacy::simulationBegin()
 {
@@ -75,11 +91,6 @@ bool Adequacy::simulationBegin()
                                             nbHoursInAWeek,
                                             numSpace);
         }
-    }
-
-    for (auto& pb: pProblemesHebdo)
-    {
-        pb.TypeDOptimisation = OPTIMISATION_LINEAIRE;
     }
 
     pStartTime = study.calendar.days[study.parameters.simulationDays.first].hours.first;
@@ -203,15 +214,17 @@ bool Adequacy::year(Progression::Task& progression,
 
             try
             {
-                OPT_OptimisationHebdomadaire(study.parameters.optOptions,
-                                             &currentProblem,
-                                             resultWriter,
-                                             simulationObserver_.get());
+                auto& currentSimTable = simulationTables_[numSpace];
+                OPT_OptimisationHebdomadaireLineaire(study.parameters.optOptions,
+                                                     &currentProblem,
+                                                     resultWriter,
+                                                     simulationObserver_.get(),
+                                                     currentSimTable);
+                currentSimTable.write();
 
                 RemixHydroForAllAreas(study.areas,
                                       currentProblem,
-                                      study.parameters.shedding.policy,
-                                      study.parameters.simplexOptimizationRange,
+                                      study.parameters,
                                       numSpace,
                                       hourInTheYear);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2024, RTE (https://www.rte-france.com)
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -21,16 +21,13 @@
 
 #pragma once
 
-#include <functional>
-#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <antares/solver/optim-model-filler/FullKey.h>
 
 namespace Antares::Optimization
 {
-
-using FullKeyMap = std::unordered_map<FullKey, double, FullKeyHash>;
 
 /**
  * @brief Element-wise sum of two maps, with an optional transformation applied to the values of the
@@ -116,6 +113,8 @@ void add_maps(MapType& left, const MapType& right, UnaryOp op = std::identity{})
     }
 }
 
+using FullKeyMap = std::unordered_map<FullKey, double, FullKeyHash>;
+
 /**
  * Element-wise multiplication of a map by a scale.
  * For every key: final_value = scale * initial_value
@@ -125,6 +124,8 @@ void add_maps(MapType& left, const MapType& right, UnaryOp op = std::identity{})
  */
 FullKeyMap scale_map(const FullKeyMap& map, double scale);
 
+using RawTerm = std::pair<FullKey, double>;
+
 /**
  * Linear Expression
  * Represents an expression that is linear in regard to an optimization problem's variables.
@@ -132,7 +133,7 @@ FullKeyMap scale_map(const FullKeyMap& map, double scale);
  * - the non-zero coefficients of the variables
  * - a scalar offset
  */
-class LinearExpression
+class LinearExpression final
 {
 public:
     /// Build a linear expression with zero offset and zero coefficients
@@ -153,7 +154,6 @@ public:
     LinearExpression operator/(const LinearExpression& other) const;
     /// Multiply linear expression by -1
     LinearExpression operator-() const;
-
     /// Get the offset
     double offset() const;
 
@@ -163,8 +163,17 @@ public:
     LinearExpression& operator+=(const LinearExpression& value);
 
 private:
-    double offset_ = 0;
-    FullKeyMap coef_per_var_;
-};
+    /// Construction paresseuse de cache_ si nécessaire
+    void materialize() const;
 
+    void invalidate()
+    {
+        am_I_valid_ = false;
+    }
+
+    double offset_ = 0;
+    mutable FullKeyMap unique_terms_; // aggregated unique sums
+    std::vector<RawTerm> terms_;      // may contain duplicates
+    mutable bool am_I_valid_ = false;
+};
 } // namespace Antares::Optimization

@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2024, RTE (https://www.rte-france.com)
+** Copyright 2007-2025, RTE (https://www.rte-france.com)
 ** See AUTHORS.txt
 ** SPDX-License-Identifier: MPL-2.0
 ** This file is part of Antares-Simulator,
@@ -769,7 +769,7 @@ bool AreaList::saveToFolder(const AnyString& folder) const
 
     // Save all areas
     each(
-      [&ret, &buffer, &folder, this](const Data::Area& area)
+      [&ret, &folder, this](const Data::Area& area)
       {
           logs.info() << "Exporting the area " << (area.index + 1) << '/' << areas.size() << ": "
                       << area.name;
