@@ -380,10 +380,10 @@ jobs:
         feature: "features/solver-features/hybrid_studies.feature"
 
     - name: Run cucumber on hybrid studies
-        if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
-        uses: ./.github/workflows/cucumber-tests
-        with:
-          feature: "features/solver-features/hybrid_studies.feature"
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      uses: ./.github/workflows/cucumber-tests
+      with:
+        feature: "features/solver-features/hybrid_studies.feature"
 
 
     - name: Barrier
