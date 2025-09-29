@@ -21,8 +21,8 @@
 #ifndef __ANTARES_LIBS_STUDY_RESERVE_OPT_H__
 #define __ANTARES_LIBS_STUDY_RESERVE_OPT_H__
 
-#include <optional>
 #include <iostream>
+#include <optional>
 
 /// \brief A wrapper around std::optional to allow access to the value using the () operator
 // The objects using this type are used if the reserves are enabled in the study

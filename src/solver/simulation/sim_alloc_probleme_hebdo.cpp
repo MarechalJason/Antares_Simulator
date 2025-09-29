@@ -688,7 +688,7 @@ void SIM_AllocateAreas(PROBLEME_HEBDO& problem,
                   .ShortTermStorage[sts]
                   .reserveParticipationOfCluster()
                   .assign(NombreDePasDeTemps, 0.);
-            }        
+            }
         }
     }
 }

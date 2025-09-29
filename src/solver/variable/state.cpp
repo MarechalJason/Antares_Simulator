@@ -214,10 +214,10 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
              STStorageCluster->reserveParticipationContainer().reservesParticipations)
         {
             double participation = hourlyResults
-                                     ->ShortTermStorage
-                                       [area->reserveParticipationIndexMaps()
-                                          .STStorageClusters.left.at(
-                                            std::make_pair(resName, STStorageCluster->id))]
+                                     ->ShortTermStorage[area->reserveParticipationIndexMaps()
+                                                          .STStorageClusters.left.at(
+                                                            std::make_pair(resName,
+                                                                           STStorageCluster->id))]
                                      .reserveParticipationOfCluster()[hourInTheWeek];
             STStorageClusterReserveParticipationCostForYear()[hourInTheYear]
               += participation
