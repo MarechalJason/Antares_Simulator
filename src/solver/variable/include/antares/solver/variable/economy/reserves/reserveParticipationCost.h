@@ -85,7 +85,7 @@ struct VCardReserveParticipationCost
         //! Indentation (GUI)
         nodeDepthForGUI = +0,
         //! Decimal precision
-        decimal = 0,
+        decimal = 2,
         //! Number of columns used by the variable (One ResultsType per column)
         columnCount = 1,
         //! The Spatial aggregation

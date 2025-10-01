@@ -39,7 +39,7 @@ struct VCardReserveParticipationByLTStorage
         categoryFileLevel = ResultsType::categoryFile & (Category::FileLevel::de),
         precision = Category::all,
         nodeDepthForGUI = +0,
-        decimal = 0,
+        decimal = 2,
         columnCount = Category::dynamicColumns,
         spatialAggregate = Category::spatialAggregateSum,
         spatialAggregateMode = Category::spatialAggregateEachYear,
