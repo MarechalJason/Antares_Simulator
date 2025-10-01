@@ -249,9 +249,14 @@ using AREA_INPUT = std::vector<::ShortTermStorage::PROPERTIES>; // index is loca
 struct RESULTS
 {
     // Index is the number of the STS in the area
-    std::vector<double> level;                                     // MWh
-    std::vector<double> injection;                                 // MWh
-    std::vector<double> withdrawal;                                // MWh
+    std::vector<double> level;      // MWh
+    std::vector<double> injection;  // MWh
+    std::vector<double> withdrawal; // MWh
+};
+
+struct RESULTSRESERVES
+{
+    // Index is the number of the STS reserves participations in the area
     ReserveOpt<std::vector<double>> reserveParticipationOfCluster; // MWh
 };
 } // namespace ShortTermStorage
@@ -526,6 +531,7 @@ struct RESULTATS_HORAIRES
 
     std::vector<::ShortTermStorage::RESULTS> ShortTermStorage;
 
+    ReserveOpt<std::vector<::ShortTermStorage::RESULTSRESERVES>> ShortTermStorageReserves;
     ReserveOpt<std::vector<RESERVES>> Reserves;
 };
 

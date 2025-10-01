@@ -671,20 +671,29 @@ void SIM_AllocateAreas(PROBLEME_HEBDO& problem,
             }
         }
         // Short term storage results
-        problem.ResultatsHoraires[k].ShortTermStorage.resize(nbSTStorageReserveParticipations);
-        for (uint sts = 0; sts < nbSTStorageReserveParticipations; sts++)
+
+        const unsigned long nbShortTermStorage = study.areas.byIndex[k]->shortTermStorage.count();
+        problem.ResultatsHoraires[k].ShortTermStorage.resize(nbShortTermStorage);
+        for (uint sts = 0; sts < nbShortTermStorage; sts++)
         {
             problem.ResultatsHoraires[k].ShortTermStorage[sts].injection.resize(NombreDePasDeTemps);
             problem.ResultatsHoraires[k].ShortTermStorage[sts].withdrawal.resize(
               NombreDePasDeTemps);
             problem.ResultatsHoraires[k].ShortTermStorage[sts].level.resize(NombreDePasDeTemps);
-            if (resEnabled)
+        }
+
+        if (resEnabled)
+        {
+            problem.ResultatsHoraires[k].ShortTermStorageReserves.init();
+            problem.ResultatsHoraires[k].ShortTermStorageReserves().resize(
+              nbSTStorageReserveParticipations);
+            for (uint stsRes = 0; stsRes < nbSTStorageReserveParticipations; stsRes++)
             {
                 problem.ResultatsHoraires[k]
-                  .ShortTermStorage[sts]
+                  .ShortTermStorageReserves()[stsRes]
                   .reserveParticipationOfCluster.init();
                 problem.ResultatsHoraires[k]
-                  .ShortTermStorage[sts]
+                  .ShortTermStorageReserves()[stsRes]
                   .reserveParticipationOfCluster()
                   .assign(NombreDePasDeTemps, 0.);
             }

@@ -173,9 +173,10 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
                         .STStorageTurbiningClusterParticipation[clusterParticipationId];
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
-            double* adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                            .ShortTermStorage[clusterParticipationIdInArea]
-                                            .reserveParticipationOfCluster()[pdtHebdo]);
+            double* adresseDuResultat = &(
+              problemeHebdo->ResultatsHoraires[pays]
+                .ShortTermStorageReserves()[clusterParticipationIdInArea]
+                .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
             var = CorrespondanceVarNativesVarOptim.reservesIndices()
@@ -183,7 +184,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
             adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorage[clusterParticipationIdInArea]
+                                    .ShortTermStorageReserves()[clusterParticipationIdInArea]
                                     .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
@@ -192,7 +193,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
             adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorage[clusterParticipationIdInArea]
+                                    .ShortTermStorageReserves()[clusterParticipationIdInArea]
                                     .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
         }
@@ -208,9 +209,10 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
                         .STStorageTurbiningClusterParticipation[clusterParticipationId];
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
-            double* adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                            .ShortTermStorage[clusterParticipationIdInArea]
-                                            .reserveParticipationOfCluster()[pdtHebdo]);
+            double* adresseDuResultat = &(
+              problemeHebdo->ResultatsHoraires[pays]
+                .ShortTermStorageReserves()[clusterParticipationIdInArea]
+                .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
             var = CorrespondanceVarNativesVarOptim.reservesIndices()
@@ -218,7 +220,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
             adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorage[clusterParticipationIdInArea]
+                                    .ShortTermStorageReserves()[clusterParticipationIdInArea]
                                     .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
@@ -227,7 +229,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
             Xmin[var] = 0;
             Xmax[var] = LINFINI_ANTARES;
             adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorage[clusterParticipationIdInArea]
+                                    .ShortTermStorageReserves()[clusterParticipationIdInArea]
                                     .reserveParticipationOfCluster()[pdtHebdo]);
             AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
         }

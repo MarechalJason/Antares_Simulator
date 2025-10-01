@@ -214,10 +214,10 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
              STStorageCluster->reserveParticipationContainer().reservesParticipations)
         {
             double participation = hourlyResults
-                                     ->ShortTermStorage[area->reserveParticipationIndexMaps()
-                                                          .STStorageClusters.left.at(
-                                                            std::make_pair(resName,
-                                                                           STStorageCluster->id))]
+                                     ->ShortTermStorageReserves()
+                                       [area->reserveParticipationIndexMaps()
+                                          .STStorageClusters.left.at(
+                                            std::make_pair(resName, STStorageCluster->id))]
                                      .reserveParticipationOfCluster()[hourInTheWeek];
             STStorageClusterReserveParticipationCostForYear()[hourInTheYear]
               += participation
@@ -244,7 +244,6 @@ void State::initFromHydroStorage()
     if (unitCommitmentMode != Antares::Data::UnitCommitmentMode::ucHeuristicFast
         && study.parameters.reservesEnabled && LTStorage.reserveParticipationContainer)
     {
-        // reserveParticipationPerLTStorageClusterForYear[hourInTheYear].clear();
         for (const auto& [resName, resParticipation]:
              LTStorage.reserveParticipationContainer().reservesParticipations)
         {
