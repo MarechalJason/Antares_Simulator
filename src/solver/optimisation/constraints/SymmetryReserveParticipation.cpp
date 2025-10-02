@@ -45,45 +45,51 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
 
     if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_THERMAL>)
     {
-        builder
-          .ThermalClusterReserveParticipation(
-            refIndex,
-            1 / reserveParticipationRefWithName.reserveParticipation.get().maxPower)
-          .ThermalClusterReserveParticipation(
-            targetIndex,
-            -1 / reserveParticipationWithName.reserveParticipation.get().maxPower);
+        auto refMaxPower = reserveParticipationRefWithName.reserveParticipation.get().maxPower;
+        auto targetMaxPower = reserveParticipationWithName.reserveParticipation.get().maxPower;
+        if (refMaxPower != 0 && targetMaxPower != 0)
+        {
+            builder.ThermalClusterReserveParticipation(refIndex, 1 / refMaxPower)
+              .ThermalClusterReserveParticipation(targetIndex, -1 / targetMaxPower);
+        }
     }
     else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_STSTORAGE>)
     {
-        builder
-          .STStorageTurbiningClusterReserveParticipation(
-            refIndex,
-            1 / reserveParticipationRefWithName.reserveParticipation.get().maxTurbining)
-          .STStorageTurbiningClusterReserveParticipation(
-            targetIndex,
-            -1 / reserveParticipationWithName.reserveParticipation.get().maxTurbining)
-          .STStoragePumpingClusterReserveParticipation(
-            refIndex,
-            1 / reserveParticipationRefWithName.reserveParticipation.get().maxPumping)
-          .STStoragePumpingClusterReserveParticipation(
-            targetIndex,
-            -1 / reserveParticipationWithName.reserveParticipation.get().maxPumping);
+        auto refMaxTurbining = reserveParticipationRefWithName.reserveParticipation.get()
+                                 .maxTurbining;
+        auto targetMaxTurbining = reserveParticipationWithName.reserveParticipation.get()
+                                    .maxTurbining;
+        auto refMaxPumping = reserveParticipationRefWithName.reserveParticipation.get().maxPumping;
+        auto targetMaxPumping = reserveParticipationWithName.reserveParticipation.get().maxPumping;
+        if (refMaxTurbining != 0 && targetMaxTurbining != 0)
+        {
+            builder.STStorageTurbiningClusterReserveParticipation(refIndex, 1 / refMaxTurbining)
+              .STStorageTurbiningClusterReserveParticipation(targetIndex, -1 / targetMaxTurbining);
+        }
+        if (refMaxPumping != 0 && targetMaxPumping != 0)
+        {
+            builder.STStoragePumpingClusterReserveParticipation(refIndex, 1 / refMaxPumping)
+              .STStoragePumpingClusterReserveParticipation(targetIndex, -1 / targetMaxPumping);
+        }
     }
     else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_LTSTORAGE>)
     {
-        builder
-          .LTStorageTurbiningClusterReserveParticipation(
-            refIndex,
-            1 / reserveParticipationRefWithName.reserveParticipation.get().maxTurbining)
-          .LTStorageTurbiningClusterReserveParticipation(
-            targetIndex,
-            -1 / reserveParticipationWithName.reserveParticipation.get().maxTurbining)
-          .LTStoragePumpingClusterReserveParticipation(
-            refIndex,
-            1 / reserveParticipationRefWithName.reserveParticipation.get().maxPumping)
-          .LTStoragePumpingClusterReserveParticipation(
-            targetIndex,
-            -1 / reserveParticipationWithName.reserveParticipation.get().maxPumping);
+        auto refMaxTurbining = reserveParticipationRefWithName.reserveParticipation.get()
+                                 .maxTurbining;
+        auto targetMaxTurbining = reserveParticipationWithName.reserveParticipation.get()
+                                    .maxTurbining;
+        auto refMaxPumping = reserveParticipationRefWithName.reserveParticipation.get().maxPumping;
+        auto targetMaxPumping = reserveParticipationWithName.reserveParticipation.get().maxPumping;
+        if (refMaxTurbining != 0 && targetMaxTurbining != 0)
+        {
+            builder.LTStorageTurbiningClusterReserveParticipation(refIndex, 1 / refMaxTurbining)
+              .LTStorageTurbiningClusterReserveParticipation(targetIndex, -1 / targetMaxTurbining);
+        }
+        if (refMaxPumping != 0 && targetMaxPumping != 0)
+        {
+            builder.LTStoragePumpingClusterReserveParticipation(refIndex, 1 / refMaxPumping)
+              .LTStoragePumpingClusterReserveParticipation(targetIndex, -1 / targetMaxPumping);
+        }
     }
 }
 
