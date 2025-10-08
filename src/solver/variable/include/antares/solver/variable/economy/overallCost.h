@@ -21,13 +21,6 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_OverallCost_H__
 #define __SOLVER_VARIABLE_ECONOMY_OverallCost_H__
 
-#include <filesystem>
-#include <iomanip>
-#include <sstream>
-
-#include <yuni/io/directory.h>
-#include <yuni/io/file.h>
-
 #include "antares/solver/variable/variable.h"
 
 namespace Antares::Solver::Variable::Economy

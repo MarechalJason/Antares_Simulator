@@ -1196,7 +1196,13 @@ bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area, Antare
               {
                   CapacityReservation tmpCapacityReservation;
                   std::string file_name = AllCapacityReservations::toFilename(section.name);
-                  int type = -1;
+                  enum tristate : uint8_t
+                  {
+                      False = 0,
+                      True = 1,
+                      Undefined = 2
+                  };
+                  tristate isReserveUp = Undefined;
                   for (auto* p = section.firstProperty; p; p = p->next)
                   {
                       CString<30, false> tmp;
@@ -1251,11 +1257,11 @@ bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area, Antare
                       {
                           if (p->value == "up")
                           {
-                              type = 0;
+                              isReserveUp = True;
                           }
                           else if (p->value == "down")
                           {
-                              type = 1;
+                              isReserveUp = False;
                           }
                           else
                           {
@@ -1272,12 +1278,12 @@ bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area, Antare
                   fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()
                                       / (file_name + ".txt");
                   ret = tmpCapacityReservation.need.loadFromFile(filePath, false);
-                  if (type == 0)
+                  if (isReserveUp == True)
                   {
                       area.allCapacityReservations()
                         .areaCapacityReservationsUp.emplace(section.name, tmpCapacityReservation);
                   }
-                  else if (type == 1)
+                  else if (isReserveUp == False)
                   {
                       area.allCapacityReservations()
                         .areaCapacityReservationsDown.emplace(section.name, tmpCapacityReservation);

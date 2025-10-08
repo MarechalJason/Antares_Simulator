@@ -22,13 +22,6 @@
 #include "antares/solver/variable/state.h"
 
 #include <cmath>
-#include <filesystem>
-#include <iomanip>
-#include <sstream>
-
-#include <yuni/io/directory.h>
-#include <yuni/io/file.h>
-#include <yuni/string.h>
 
 #include <antares/study/study.h>
 #include "antares/solver/variable/variable.h"
