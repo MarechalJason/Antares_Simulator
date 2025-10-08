@@ -327,7 +327,7 @@ target_link_libraries(study
         Antares::benchmarking
         antares-solver-variable
         Antares::additional-constraint-rhs-antlr-interface
-        Antares::resserves-parsing-antlr-interface
+        Antares::reserves-parsing-antlr-interface
 )
 
 target_include_directories(study
