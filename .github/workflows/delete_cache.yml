@@ -23,4 +23,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: |
-        gh cache delete ubuntu-22.04-${{ github.event.pull_request.head.ref }}
+        gh cache list --json id,key,ref | jq -r '.[] | select(.ref == "refs/heads/${{ github.event.pull_request.head.ref }}") | .id' | xargs -I {} gh cache delete {}
