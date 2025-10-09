@@ -165,11 +165,13 @@ void openReservesFileParameterByProperty(Antares::Data::Area& area,
     }
 }
 
-bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area, Antares::IniFile& ini)
+bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area)
 {
     bool ret = true;
     fs::path reservesIni = study.folderInput / "reserves" / area.id.to<std::string>()
                            / "reserves.ini";
+    IniFile ini;
+
     area.allCapacityReservations = AllCapacityReservations();
     if (ini.open(reservesIni, false))
     {
@@ -1124,7 +1126,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
     // Reserves
     if (study.parameters.reservesEnabled)
     {
-        ret = loadReserves(study, area, ini) && ret;
+        ret = loadReserves(study, area) && ret;
     }
 
     // Solar

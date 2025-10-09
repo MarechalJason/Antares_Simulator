@@ -237,16 +237,9 @@ bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax& mode,
     return false;
 }
 
-const char* ReservesToCString(bool reservesEnabled)
+const std::string ReservesToString(bool reservesEnabled)
 {
-    if (reservesEnabled)
-    {
-        return "enabled";
-    }
-    else
-    {
-        return "disabled";
-    }
+    return reservesEnabled ? "enabled" : "disabled";
 }
 
 bool StringToCompatibilityReserves(bool& reservesEnabled, const std::string& text)
@@ -1766,7 +1759,7 @@ void Parameters::saveToINI(IniFile& ini) const
         section->add("readonly", readonly);
 
         // Reserves activation
-        section->add("reserves", ReservesToCString(reservesEnabled));
+        section->add("reserves", ReservesToString(reservesEnabled));
     }
 
     // input
