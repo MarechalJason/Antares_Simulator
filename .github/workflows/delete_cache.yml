@@ -23,4 +23,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: |
+        exit 0
         gh cache delete ubuntu-22.04-${{ github.event.pull_request.head.ref }}
