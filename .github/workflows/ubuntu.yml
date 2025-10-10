@@ -1,8 +1,7 @@
 name: Ubuntu CI (push and/or release)
 
 on:
-  push:
-    pull_request:
+  pull_request:
   schedule:
   - cron: '21 2 * * *'
   workflow_call:
