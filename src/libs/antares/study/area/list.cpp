@@ -53,115 +53,149 @@ enum tristate : uint8_t
     Undefined = 2
 };
 
-void openReservesGlobalParameterByProperty(Antares::Data::Area& area, Antares::IniFile::Property* p)
+void openReservesGlobalParameter(Antares::Data::Area& area, const IniFile::Section& section)
 {
-    CString<32, false> tmp;
-    tmp = p->key;
-    tmp.toLower();
+    for (auto* p = section.firstProperty; p; p = p->next)
+    {
+        CString<32, false> tmp;
+        tmp = p->key;
+        tmp.toLower();
 
-    if (tmp == "energy-activation-ratio-up")
-    {
-        if (!p->value.to<double>(area.allCapacityReservations().maxGlobalEnergyActivationRatioUp))
+        if (tmp == "energy-activation-ratio-up")
         {
-            logs.warning() << area.name
-                           << ": invalid maximum energy activation ratio for UP reserves";
+            if (!p->value.to<double>(
+                  area.allCapacityReservations().maxGlobalEnergyActivationRatioUp))
+            {
+                logs.warning() << area.name
+                               << ": invalid maximum energy activation ratio for UP reserves";
+            }
         }
-    }
-    else if (tmp == "energy-activation-ratio-down")
-    {
-        if (!p->value.to<double>(area.allCapacityReservations().maxGlobalEnergyActivationRatioDown))
+        else if (tmp == "energy-activation-ratio-down")
         {
-            logs.warning() << area.name
-                           << ": invalid maximum energy activation ratio for "
-                              "DOWN reserves";
+            if (!p->value.to<double>(
+                  area.allCapacityReservations().maxGlobalEnergyActivationRatioDown))
+            {
+                logs.warning() << area.name
+                               << ": invalid maximum energy activation ratio for "
+                                  "DOWN reserves";
+            }
         }
-    }
-    else if (tmp == "reference-activation-duration-up")
-    {
-        if (!p->value.to<int>(area.allCapacityReservations().referenceGlobalActivationDurationUp))
+        else if (tmp == "reference-activation-duration-up")
         {
-            logs.warning() << area.name
-                           << ": invalid reference energy activation duration "
-                              "for UP reserves";
+            if (!p->value.to<int>(
+                  area.allCapacityReservations().referenceGlobalActivationDurationUp))
+            {
+                logs.warning() << area.name
+                               << ": invalid reference energy activation duration "
+                                  "for UP reserves";
+            }
         }
-    }
-    else if (tmp == "reference-activation-duration-down")
-    {
-        if (!p->value.to<int>(area.allCapacityReservations().referenceGlobalActivationDurationDown))
+        else if (tmp == "reference-activation-duration-down")
         {
-            logs.warning() << area.name
-                           << ": invalid reference energy activation duration "
-                              "for DOWN reserves";
+            if (!p->value.to<int>(
+                  area.allCapacityReservations().referenceGlobalActivationDurationDown))
+            {
+                logs.warning() << area.name
+                               << ": invalid reference energy activation duration "
+                                  "for DOWN reserves";
+            }
         }
     }
 }
 
-void openReservesFileParameterByProperty(Antares::Data::Area& area,
-                                         CapacityReservation* tmpCapacityReservationPt,
-                                         Antares::IniFile::Property* p,
-                                         Yuni::ShortString256 sectionName,
-                                         tristate* isReserveUp)
+void openReservesFileParameters(Antares::Data::Study& study,
+                                Antares::Data::Area& area,
+                                const IniFile::Section& section,
+                                bool* ret)
 {
-    CString<30, false> tmp;
-    tmp = p->key;
-    tmp.toLower();
+    CapacityReservation tmpCapacityReservation;
+    std::string file_name = AllCapacityReservations::toFilename(section.name);
 
-    if (tmp == "failure-cost")
+    tristate isReserveUp = Undefined;
+    for (auto* p = section.firstProperty; p; p = p->next)
     {
-        if (!p->value.to<double>(tmpCapacityReservationPt->unsuppliedCost))
+        CString<30, false> tmp;
+        tmp = p->key;
+        tmp.toLower();
+
+        if (tmp == "failure-cost")
         {
-            logs.warning() << area.name << ": invalid failure cost for reserve " << sectionName;
+            if (!p->value.to<double>(tmpCapacityReservation.unsuppliedCost))
+            {
+                logs.warning() << area.name << ": invalid failure cost for reserve "
+                               << section.name;
+            }
         }
-    }
-    else if (tmp == "spillage-cost")
-    {
-        if (!p->value.to<double>(tmpCapacityReservationPt->spillageCost))
+        else if (tmp == "spillage-cost")
         {
-            logs.warning() << area.name << ": invalid spillage cost for reserve " << sectionName;
+            if (!p->value.to<double>(tmpCapacityReservation.spillageCost))
+            {
+                logs.warning() << area.name << ": invalid spillage cost for reserve "
+                               << section.name;
+            }
         }
-    }
-    else if (tmp == "power-activation-ratio")
-    {
-        if (!p->value.to<double>(tmpCapacityReservationPt->powerActivationRatio))
+        else if (tmp == "power-activation-ratio")
         {
-            logs.warning() << area.name << ": invalid maximum activation ratio for reserve "
-                           << sectionName;
+            if (!p->value.to<double>(tmpCapacityReservation.powerActivationRatio))
+            {
+                logs.warning() << area.name << ": invalid maximum activation ratio for reserve "
+                               << section.name;
+            }
         }
-    }
-    else if (tmp == "energy-activation-ratio")
-    {
-        if (!p->value.to<double>(tmpCapacityReservationPt->energyActivationRatio))
+        else if (tmp == "energy-activation-ratio")
         {
-            logs.warning() << area.name << ": invalid energy activation ratio for reserve "
-                           << sectionName;
+            if (!p->value.to<double>(tmpCapacityReservation.energyActivationRatio))
+            {
+                logs.warning() << area.name << ": invalid energy activation ratio for reserve "
+                               << section.name;
+            }
         }
-    }
-    else if (tmp == "reference-activation-duration")
-    {
-        if (!p->value.to<int>(tmpCapacityReservationPt->referenceActivationHours))
+        else if (tmp == "reference-activation-duration")
         {
-            logs.warning() << area.name << ": invalid reference activation duration for reserve "
-                           << sectionName;
+            if (!p->value.to<int>(tmpCapacityReservation.referenceActivationHours))
+            {
+                logs.warning() << area.name
+                               << ": invalid reference activation duration for reserve "
+                               << section.name;
+            }
         }
-    }
-    else if (tmp == "type")
-    {
-        if (p->value == "up")
+        else if (tmp == "type")
         {
-            *isReserveUp = True;
-        }
-        else if (p->value == "down")
-        {
-            *isReserveUp = False;
+            if (p->value == "up")
+            {
+                isReserveUp = True;
+            }
+            else if (p->value == "down")
+            {
+                isReserveUp = False;
+            }
+            else
+            {
+                logs.warning() << area.name << ": invalid type for reserve " << section.name;
+            }
         }
         else
         {
-            logs.warning() << area.name << ": invalid type for reserve " << sectionName;
+            logs.warning() << area.name << ": invalid key " << tmp << " in file " << section.name;
         }
+        
+    }
+    fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()
+                        / (file_name + ".txt");
+    *ret = tmpCapacityReservation.need.loadFromFile(filePath, false);
+    if (isReserveUp == True)
+    {
+        area.allCapacityReservations().areaCapacityReservationsUp.emplace(section.name,
+                                                                          tmpCapacityReservation);
+    }
+    else if (isReserveUp == False)
+    {
+        area.allCapacityReservations().areaCapacityReservationsDown.emplace(section.name,
+                                                                            tmpCapacityReservation);
     }
     else
     {
-        logs.warning() << area.name << ": invalid key " << tmp << " in file " << sectionName;
+        logs.warning() << area.name << ": invalid type for reserve " << section.name;
     }
 }
 
@@ -180,10 +214,7 @@ bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area)
           {
               if (section.name == "globalparameters" && section.firstProperty)
               {
-                  for (auto* p = section.firstProperty; p; p = p->next)
-                  {
-                      openReservesGlobalParameterByProperty(area, p);
-                  }
+                  openReservesGlobalParameter(area, section);
               }
               else if (area.allCapacityReservations().contains(section.name))
               {
@@ -192,35 +223,10 @@ bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area)
               }
               else
               {
-                  CapacityReservation tmpCapacityReservation;
-                  std::string file_name = AllCapacityReservations::toFilename(section.name);
-
-                  tristate isReserveUp = Undefined;
-                  for (auto* p = section.firstProperty; p; p = p->next)
-                  {
-                      openReservesFileParameterByProperty(area,
-                                                          &tmpCapacityReservation,
-                                                          p,
-                                                          section.name,
-                                                          &isReserveUp);
-                  }
-                  fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()
-                                      / (file_name + ".txt");
-                  ret = tmpCapacityReservation.need.loadFromFile(filePath, false);
-                  if (isReserveUp == True)
-                  {
-                      area.allCapacityReservations()
-                        .areaCapacityReservationsUp.emplace(section.name, tmpCapacityReservation);
-                  }
-                  else if (isReserveUp == False)
-                  {
-                      area.allCapacityReservations()
-                        .areaCapacityReservationsDown.emplace(section.name, tmpCapacityReservation);
-                  }
-                  else
-                  {
-                      logs.warning() << area.name << ": invalid type for reserve " << section.name;
-                  }
+                  openReservesFileParameters(study,
+                                             area,
+                                             section,
+                                             &ret);
               }
           });
     }

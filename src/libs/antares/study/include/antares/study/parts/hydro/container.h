@@ -108,7 +108,7 @@ public:
 
     struct LTStorageReserveParticipationWithName
     {
-        std::reference_wrapper<LTStorageClusterReserveParticipation> reserveParticipation;
+        std::reference_wrapper<StorageClusterReserveParticipation> reserveParticipation;
         std::string reserveName;
     };
 
@@ -246,7 +246,7 @@ public:
 
     //! Reserve participation container to store the participation of the cluster in the reserves
     //! and the symmetries
-    ReserveOpt<ReserveParticipationContainer<LTStorageClusterReserveParticipation>>
+    ReserveOpt<ReserveParticipationContainer<StorageClusterReserveParticipation>>
       reserveParticipationContainer;
 
     double overflowSpilledCostDifference = 1.;

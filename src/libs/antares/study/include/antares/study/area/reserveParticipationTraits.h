@@ -40,22 +40,12 @@ struct ReserveParticipationTraits<ThermalClusterReserveParticipation>
     static constexpr auto maxPower = &ThermalClusterReserveParticipation::maxPower;
 };
 
-/// @brief  Traits for ST storage cluster reserve participation
+/// @brief  Traits for storage cluster or hydro reserve participation
 template<>
-struct ReserveParticipationTraits<STStorageClusterReserveParticipation>
+struct ReserveParticipationTraits<StorageClusterReserveParticipation>
 {
-    static constexpr auto participationCost = &STStorageClusterReserveParticipation::
+    static constexpr auto participationCost = &StorageClusterReserveParticipation::
                                                 participationCost;
-    static constexpr auto maxTurbining = &STStorageClusterReserveParticipation::maxTurbining;
-    static constexpr auto maxPumping = &STStorageClusterReserveParticipation::maxPumping;
-};
-
-/// @brief  Traits for LT storage cluster reserve participation
-template<>
-struct ReserveParticipationTraits<LTStorageClusterReserveParticipation>
-{
-    static constexpr auto participationCost = &LTStorageClusterReserveParticipation::
-                                                participationCost;
-    static constexpr auto maxTurbining = &LTStorageClusterReserveParticipation::maxTurbining;
-    static constexpr auto maxPumping = &LTStorageClusterReserveParticipation::maxPumping;
+    static constexpr auto maxTurbining = &StorageClusterReserveParticipation::maxTurbining;
+    static constexpr auto maxPumping = &StorageClusterReserveParticipation::maxPumping;
 };

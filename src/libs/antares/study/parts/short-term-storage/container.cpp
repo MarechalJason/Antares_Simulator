@@ -309,15 +309,14 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
         auto cluster = getClusterByName(tmpClusterName);
         if (reserve && cluster)
         {
-            const STStorageClusterReserveParticipation tmpReserveParticipation{
-              reserve,
-              tmpMaxTurbining,
-              tmpMaxPumping,
-              tmpParticipationCost};
+            const StorageClusterReserveParticipation tmpReserveParticipation{reserve,
+                                                                             tmpMaxTurbining,
+                                                                             tmpMaxPumping,
+                                                                             tmpParticipationCost};
             if (!cluster->reserveParticipationContainer)
             {
                 cluster->reserveParticipationContainer = ReserveParticipationContainer<
-                  STStorageClusterReserveParticipation>();
+                  StorageClusterReserveParticipation>();
             }
             cluster->reserveParticipationContainer()
               .addReserveParticipation(section.get().name, tmpReserveParticipation);

@@ -65,7 +65,7 @@ public:
 
     //! Reserve participation container to store the participation of the cluster in the reserves
     //! and the symmetries
-    ReserveOpt<ReserveParticipationContainer<STStorageClusterReserveParticipation>>
+    ReserveOpt<ReserveParticipationContainer<StorageClusterReserveParticipation>>
       reserveParticipationContainer;
 };
 } // namespace Antares::Data::ShortTermStorage

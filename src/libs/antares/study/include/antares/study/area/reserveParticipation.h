@@ -37,16 +37,9 @@ struct ThermalClusterReserveParticipation: ReserveParticipationBase
     double participationCostOff = 0;
 };
 
-/// @brief Represents the Short Term Storage cluster reserve participation to a given reserve
-struct STStorageClusterReserveParticipation: ReserveParticipationBase
-{
-    double maxTurbining = 0;
-    double maxPumping = 0;
-    double participationCost = 0;
-};
-
-/// @brief Represents the Long Term Storage cluster reserve participation to a given reserve
-struct LTStorageClusterReserveParticipation: ReserveParticipationBase
+/// @brief Represents the Short Term Storage cluster or hydro reserve participation to a given
+/// reserve
+struct StorageClusterReserveParticipation: ReserveParticipationBase
 {
     double maxTurbining = 0;
     double maxPumping = 0;
