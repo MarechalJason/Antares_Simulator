@@ -1,5 +1,4 @@
-#ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByLTStorage_H__
-#define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByLTStorage_H__
+#pragma once
 
 #include "../../variable.h"
 #include "./vCardReserveParticipationByLTStorage.h"
@@ -216,5 +215,3 @@ private:
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
-
-#endif // __SOLVER_VARIABLE_ECONOMY_ReserveParticipationByLTStorage_H__

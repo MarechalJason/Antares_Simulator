@@ -24,8 +24,7 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationMarginalCost_H__
-#define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationMarginalCost_H__
+#pragma once
 
 #include "../../variable.h"
 #include "./vCardReserveParticipationMarginalCost.h"
@@ -292,4 +291,3 @@ private:
 } // namespace Solver
 } // namespace Antares
 
-#endif // __SOLVER_VARIABLE_ECONOMY_MarginalCost_H__

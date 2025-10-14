@@ -24,8 +24,7 @@
 **
 ** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
 */
-#ifndef __SOLVER_VARIABLE_ECONOMY_ReserveParticipationBySTStorageGroup_H__
-#define __SOLVER_VARIABLE_ECONOMY_ReserveParticipationBySTStorageGroup_H__
+#pragma once
 
 #include "../../variable.h"
 #include "./vCardReserveParticipationBySTStorageGroup.h"
@@ -343,5 +342,3 @@ private:
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
-
-#endif // __SOLVER_VARIABLE_ECONOMY_ReserveParticipationBySTStorageGroup_H__

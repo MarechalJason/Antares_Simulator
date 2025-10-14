@@ -1,6 +1,5 @@
 
-#ifndef __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByLTStorage_H__
-#define __SOLVER_VARIABLE_ECONOMY_VCardReserveParticipationByLTStorage_H__
+#pragma once
 
 #include "../../storage/results.h"
 
@@ -58,4 +57,3 @@ struct VCardReserveParticipationByLTStorage
 } // namespace Solver
 } // namespace Antares
 
-#endif
