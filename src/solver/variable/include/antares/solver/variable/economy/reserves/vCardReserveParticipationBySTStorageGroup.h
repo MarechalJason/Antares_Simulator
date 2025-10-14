@@ -101,4 +101,3 @@ struct VCardReserveParticipationBySTStorageGroup
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
-

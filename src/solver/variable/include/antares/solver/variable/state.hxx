@@ -114,7 +114,6 @@ inline void State::initFromAreaIndex(const unsigned int areaIndex, uint numSpace
         reserveParticipationPerLTStorageClusterForYear.resize(HOURS_PER_YEAR);
         reserveParticipationPerThermalClusterForYear.clear();
         reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
-
     }
     switch (simulationMode)
     {

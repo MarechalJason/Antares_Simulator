@@ -178,7 +178,6 @@ void openReservesFileParameters(Antares::Data::Study& study,
         {
             logs.warning() << area.name << ": invalid key " << tmp << " in file " << section.name;
         }
-        
     }
     fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()
                         / (file_name + ".txt");
@@ -223,10 +222,7 @@ bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area)
               }
               else
               {
-                  openReservesFileParameters(study,
-                                             area,
-                                             section,
-                                             &ret);
+                  openReservesFileParameters(study, area, section, &ret);
               }
           });
     }
@@ -1202,9 +1198,9 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
         if (study.parameters.unitCommitment.ucMode != UnitCommitmentMode::ucHeuristicFast
             && study.parameters.reservesEnabled)
         {
-            fs::path reservesHydro = study.folderInput / "hydro" / "common"
+            fs::path reservesHydroIniPath = study.folderInput / "hydro" / "common"
                                      / area.id.to<std::string>() / "reserves.ini";
-            area.hydro.loadReserveParticipations(area, reservesHydro);
+            area.hydro.loadReserveParticipations(area, reservesHydroIniPath);
         }
     }
 
@@ -1259,9 +1255,9 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
         if (study.parameters.unitCommitment.ucMode != UnitCommitmentMode::ucHeuristicFast
             && study.parameters.reservesEnabled)
         {
-            fs::path reservesPath = study.folderInput / "st-storage" / "clusters"
+            fs::path reservesIniFilePath = study.folderInput / "st-storage" / "clusters"
                                     / area.id.to<std::string>() / "reserves.ini";
-            area.shortTermStorage.loadReserveParticipations(area, reservesPath);
+            area.shortTermStorage.loadReserveParticipations(area, reservesIniFilePath);
         }
     }
 

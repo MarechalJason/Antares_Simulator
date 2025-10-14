@@ -99,4 +99,3 @@ struct VCardReserveParticipationByDispatchableOnUnitsPlant
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
-

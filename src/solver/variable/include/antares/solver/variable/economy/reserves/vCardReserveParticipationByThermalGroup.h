@@ -101,4 +101,3 @@ struct VCardReserveParticipationByThermalGroup
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
-

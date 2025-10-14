@@ -114,4 +114,3 @@ static std::string unsuppliedSpilledToString(Data::ThermalCluster::UnsuppliedSpi
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
-

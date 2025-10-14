@@ -106,4 +106,3 @@ static std::string marginalCostToString()
 } // namespace Variable
 } // namespace Solver
 } // namespace Antares
-
