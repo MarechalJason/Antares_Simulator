@@ -231,16 +231,6 @@ void ClusterList<ClusterT>::storeTimeseriesNumbers(Solver::IResultWriter& writer
 }
 
 template<class ClusterT>
-ClusterT* ClusterList<ClusterT>::getClusterByName(std::string clusterName)
-{
-    auto it = std::find_if(allClusters_.begin(),
-                           allClusters_.end(),
-                           [&](const auto& cluster) { return cluster->id() == clusterName; });
-
-    return (it != allClusters_.end()) ? it->get() : nullptr;
-}
-
-template<class ClusterT>
 bool ClusterList<ClusterT>::alreadyInAllClusters(std::string clusterId)
 {
     return std::ranges::any_of(allClusters_,
@@ -475,7 +465,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             }
         }
 
-        auto cluster = area.thermal.list.getClusterByName(tmpClusterName);
+        auto cluster = area.thermal.list.findInAll(tmpClusterName);
         auto reserve = area.allCapacityReservations().getReserveByName(section.get().name);
         if (reserve && cluster)
         {
@@ -537,7 +527,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
             for (auto& sym: symmetries)
             {
-                auto cluster = area.thermal.list.getClusterByName(tmpClusterName);
+                auto cluster = area.thermal.list.findInAll(tmpClusterName);
                 if (cluster)
                 {
                     cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);

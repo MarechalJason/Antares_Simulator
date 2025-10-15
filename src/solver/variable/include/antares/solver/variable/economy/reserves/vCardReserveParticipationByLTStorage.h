@@ -16,7 +16,7 @@ struct VCardReserveParticipationByLTStorage
 {
     static std::string Caption()
     {
-        return "LT STORAGE PARTICIPATION TO RESERVE";
+        return "HYDRO RESERVE PARTICIPATION";
     }
 
     static std::string Unit()

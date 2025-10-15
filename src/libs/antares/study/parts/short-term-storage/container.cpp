@@ -306,7 +306,7 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
         }
 
         auto reserve = area.allCapacityReservations().getReserveByName(section.get().name);
-        auto cluster = getClusterByName(tmpClusterName);
+        auto cluster = findInAll(tmpClusterName);
         if (reserve && cluster)
         {
             const StorageClusterReserveParticipation tmpReserveParticipation{reserve,
@@ -348,7 +348,7 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
             auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
             for (auto& sym: symmetries)
             {
-                auto cluster = area.shortTermStorage.getClusterByName(tmpClusterName);
+                auto cluster = area.shortTermStorage.findInAll(tmpClusterName);
                 if (cluster)
                 {
                     cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
@@ -510,7 +510,7 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
                             "reserve participations");
 }
 
-STStorageCluster* STStorageInput::getClusterByName(const std::string& name)
+STStorageCluster* STStorageInput::findInAll(const std::string& name)
 {
     auto it = std::find_if(storagesByIndex.begin(),
                            storagesByIndex.end(),

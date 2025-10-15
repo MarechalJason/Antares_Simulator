@@ -57,11 +57,11 @@ void openReservesGlobalParameter(Antares::Data::Area& area, const IniFile::Secti
 {
     for (auto* p = section.firstProperty; p; p = p->next)
     {
-        CString<32, false> tmp;
-        tmp = p->key;
-        tmp.toLower();
+        CString<32, false> key;
+        key = p->key;
+        key.toLower();
 
-        if (tmp == "energy-activation-ratio-up")
+        if (key == "energy-activation-ratio-up")
         {
             if (!p->value.to<double>(
                   area.allCapacityReservations().maxGlobalEnergyActivationRatioUp))
@@ -70,7 +70,7 @@ void openReservesGlobalParameter(Antares::Data::Area& area, const IniFile::Secti
                                << ": invalid maximum energy activation ratio for UP reserves";
             }
         }
-        else if (tmp == "energy-activation-ratio-down")
+        else if (key == "energy-activation-ratio-down")
         {
             if (!p->value.to<double>(
                   area.allCapacityReservations().maxGlobalEnergyActivationRatioDown))
@@ -80,7 +80,7 @@ void openReservesGlobalParameter(Antares::Data::Area& area, const IniFile::Secti
                                   "DOWN reserves";
             }
         }
-        else if (tmp == "reference-activation-duration-up")
+        else if (key == "reference-activation-duration-up")
         {
             if (!p->value.to<int>(
                   area.allCapacityReservations().referenceGlobalActivationDurationUp))
@@ -90,7 +90,7 @@ void openReservesGlobalParameter(Antares::Data::Area& area, const IniFile::Secti
                                   "for UP reserves";
             }
         }
-        else if (tmp == "reference-activation-duration-down")
+        else if (key == "reference-activation-duration-down")
         {
             if (!p->value.to<int>(
                   area.allCapacityReservations().referenceGlobalActivationDurationDown))
@@ -114,11 +114,11 @@ void openReservesFileParameters(Antares::Data::Study& study,
     tristate isReserveUp = Undefined;
     for (auto* p = section.firstProperty; p; p = p->next)
     {
-        CString<30, false> tmp;
-        tmp = p->key;
-        tmp.toLower();
+        CString<30, false> key;
+        key = p->key;
+        key.toLower();
 
-        if (tmp == "failure-cost")
+        if (key == "failure-cost")
         {
             if (!p->value.to<double>(tmpCapacityReservation.unsuppliedCost))
             {
@@ -126,7 +126,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
                                << section.name;
             }
         }
-        else if (tmp == "spillage-cost")
+        else if (key == "spillage-cost")
         {
             if (!p->value.to<double>(tmpCapacityReservation.spillageCost))
             {
@@ -134,7 +134,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
                                << section.name;
             }
         }
-        else if (tmp == "power-activation-ratio")
+        else if (key == "power-activation-ratio")
         {
             if (!p->value.to<double>(tmpCapacityReservation.powerActivationRatio))
             {
@@ -142,7 +142,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
                                << section.name;
             }
         }
-        else if (tmp == "energy-activation-ratio")
+        else if (key == "energy-activation-ratio")
         {
             if (!p->value.to<double>(tmpCapacityReservation.energyActivationRatio))
             {
@@ -150,7 +150,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
                                << section.name;
             }
         }
-        else if (tmp == "reference-activation-duration")
+        else if (key == "reference-activation-duration")
         {
             if (!p->value.to<int>(tmpCapacityReservation.referenceActivationHours))
             {
@@ -159,7 +159,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
                                << section.name;
             }
         }
-        else if (tmp == "type")
+        else if (key == "type")
         {
             if (p->value == "up")
             {
@@ -176,7 +176,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
         }
         else
         {
-            logs.warning() << area.name << ": invalid key " << tmp << " in file " << section.name;
+            logs.warning() << area.name << ": invalid key " << key << " in file " << section.name;
         }
     }
     fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()
@@ -984,10 +984,10 @@ static void readAdqPatchMode(Study& study, Area& area)
         auto* section = ini.find("adequacy-patch");
         for (auto* p = section->firstProperty; p; p = p->next)
         {
-            CString<30, false> tmp;
-            tmp = p->key;
-            tmp.toLower();
-            if (tmp == "adequacy-patch-mode")
+            CString<30, false> key;
+            key = p->key;
+            key.toLower();
+            if (key == "adequacy-patch-mode")
             {
                 auto value = (p->value).toLower();
 
@@ -1199,7 +1199,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
             && study.parameters.reservesEnabled)
         {
             fs::path reservesHydroIniPath = study.folderInput / "hydro" / "common"
-                                     / area.id.to<std::string>() / "reserves.ini";
+                                            / area.id.to<std::string>() / "reserves.ini";
             area.hydro.loadReserveParticipations(area, reservesHydroIniPath);
         }
     }
@@ -1256,7 +1256,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
             && study.parameters.reservesEnabled)
         {
             fs::path reservesIniFilePath = study.folderInput / "st-storage" / "clusters"
-                                    / area.id.to<std::string>() / "reserves.ini";
+                                           / area.id.to<std::string>() / "reserves.ini";
             area.shortTermStorage.loadReserveParticipations(area, reservesIniFilePath);
         }
     }
@@ -1286,10 +1286,10 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
           for (auto* p = section.firstProperty; p; p = p->next)
           {
               bool value = p->value.to<bool>();
-              CString<30, false> tmp;
-              tmp = p->key;
-              tmp.toLower();
-              if (tmp == "non-dispatchable-power")
+              CString<30, false> key;
+              key = p->key;
+              key.toLower();
+              if (key == "non-dispatchable-power")
               {
                   if (value)
                   {
@@ -1297,7 +1297,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                   }
                   continue;
               }
-              if (tmp == "dispatchable-hydro-power")
+              if (key == "dispatchable-hydro-power")
               {
                   if (value)
                   {
@@ -1305,7 +1305,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                   }
                   continue;
               }
-              if (tmp == "other-dispatchable-power")
+              if (key == "other-dispatchable-power")
               {
                   if (value)
                   {
@@ -1313,17 +1313,17 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                   }
                   continue;
               }
-              if (tmp == "filter-synthesis")
+              if (key == "filter-synthesis")
               {
                   area.filterSynthesis = stringIntoDatePrecision(p->value);
                   continue;
               }
-              if (tmp == "filter-year-by-year")
+              if (key == "filter-year-by-year")
               {
                   area.filterYearByYear = stringIntoDatePrecision(p->value);
                   continue;
               }
-              if (tmp == "spread-unsupplied-energy-cost")
+              if (key == "spread-unsupplied-energy-cost")
               {
                   if (!p->value.to<double>(area.spreadUnsuppliedEnergyCost))
                   {
@@ -1332,7 +1332,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
                   }
                   continue;
               }
-              if (tmp == "spread-spilled-energy-cost")
+              if (key == "spread-spilled-energy-cost")
               {
                   if (!p->value.to<double>(area.spreadSpilledEnergyCost))
                   {

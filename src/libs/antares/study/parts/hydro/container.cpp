@@ -823,7 +823,7 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
           }
       });
 
-    // Process clusters reserves participations
+    // Process hydro reserves participations
     for (const auto& section: participationsSections)
     {
         logs.info() << "Processing section: " << section.get().name;

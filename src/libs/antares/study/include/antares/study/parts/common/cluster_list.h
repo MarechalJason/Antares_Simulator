@@ -191,10 +191,6 @@ public:
     unsigned int allClustersCount() const;
     void addToCompleteList(std::shared_ptr<ClusterT> cluster);
     void sortCompleteList();
-    /// @brief Get the cluster from the vector allClusters_ using it's name
-    /// @param clusterName
-    /// @return nullptr if no clusters found else a pointer to the cluster
-    ClusterT* getClusterByName(std::string clusterName);
 
 protected:
     std::vector<std::shared_ptr<ClusterT>> allClusters_;

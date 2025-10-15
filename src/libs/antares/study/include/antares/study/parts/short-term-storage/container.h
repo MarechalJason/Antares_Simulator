@@ -63,7 +63,7 @@ public:
 
     bool saveDataSeriesToFolder(const std::string& folder) const;
 
-    STStorageCluster* getClusterByName(const std::string& name);
+    STStorageCluster* findInAll(const std::string& name);
 
     size_t getClusterIdx(STStorageCluster& cluster) const;
 
