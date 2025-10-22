@@ -95,7 +95,7 @@ unsigned int ThermalClusterList::reserveParticipationsCount() const
       0,
       [](int total, const std::shared_ptr<ThermalCluster> cluster)
       {
-          if (cluster->reserveParticipationContainer.has_value())
+          if (cluster->reserveParticipationContainer.has_value() && cluster->isEnabled())
           {
               return total + cluster->reserveParticipationContainer().reserveParticipationsCount();
           }

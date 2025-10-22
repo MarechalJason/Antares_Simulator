@@ -589,7 +589,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
                     {
                         if (cluster->reserveParticipationContainer
                             && cluster->reserveParticipationContainer().isParticipatingInReserve(
-                              reserveName))
+                              reserveName) && cluster->isEnabled())
                         {
                             RESERVE_PARTICIPATION_THERMAL reserveParticipation;
                             reserveParticipation.maxPower = cluster->reserveParticipationContainer()
