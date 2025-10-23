@@ -134,15 +134,11 @@ public:
                                                                    int offset = 0,
                                                                    int delta = 0);
 
-    ConstraintBuilder& LTStorageClusterReserveUpParticipation(unsigned int index,
-                                                              double coeff,
-                                                              int offset = 0,
-                                                              int delta = 0);
-
-    ConstraintBuilder& LTStorageClusterReserveDownParticipation(unsigned int index,
-                                                                double coeff,
-                                                                int offset = 0,
-                                                                int delta = 0);
+    ConstraintBuilder& LTStorageClusterReserveParticipation(bool isUpReserve,
+                                                            unsigned int index,
+                                                            double coeff,
+                                                            int offset = 0,
+                                                            int delta = 0);
 
     ConstraintBuilder& LTStorageTurbiningClusterReserveParticipation(unsigned int index,
                                                                      double coeff,

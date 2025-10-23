@@ -112,21 +112,13 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
             CoutLineaire[var] = reserveParticipation.participationCost;
         }
 
-        // Init costs for a LongTerm cluster participation to a reserve up
-        void initLTStorageReserveUpParticipationCosts(
+        // Init costs for a LongTerm cluster participation to a reserve
+        void initLTStorageReserveParticipationCosts(
+          bool isUpReserve,
           const RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation)
         {
-            int var = variableManager.LTStorageClusterReserveUpParticipation(
-              reserveParticipation.globalIndexClusterParticipation,
-              pdtHebdo);
-            CoutLineaire[var] = reserveParticipation.participationCost;
-        }
-
-        // Init costs for a LongTerm cluster participation to a reserve down
-        void initLTStorageReserveDownParticipationCosts(
-          const RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation)
-        {
-            int var = variableManager.LTStorageClusterReserveDownParticipation(
+            int var = variableManager.LTStorageClusterReserveParticipation(
+              isUpReserve,
               reserveParticipation.globalIndexClusterParticipation,
               pdtHebdo);
             CoutLineaire[var] = reserveParticipation.participationCost;
@@ -166,7 +158,8 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                 for (const auto& clusterReserveParticipation:
                      areaReserveUp.AllLTStorageReservesParticipation)
                 {
-                    reserveCostsInitializer.initLTStorageReserveUpParticipationCosts(
+                    reserveCostsInitializer.initLTStorageReserveParticipationCosts(
+                      thisReserveIsUp,
                       clusterReserveParticipation);
                 }
             }
@@ -195,7 +188,8 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                 for (const auto& clusterReserveParticipation:
                      areaReserveDown.AllLTStorageReservesParticipation)
                 {
-                    reserveCostsInitializer.initLTStorageReserveDownParticipationCosts(
+                    reserveCostsInitializer.initLTStorageReserveParticipationCosts(
+                      thisReserveIsDown,
                       clusterReserveParticipation);
                 }
             }

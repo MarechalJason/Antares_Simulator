@@ -27,7 +27,8 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                     {
                         RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation
                           = capacityReservation.AllLTStorageReservesParticipation[cluster];
-                        builder.LTStorageClusterReserveDownParticipation(
+                        builder.LTStorageClusterReserveParticipation(
+                          thisReserveIsDown,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,
@@ -75,7 +76,8 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                     {
                         RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation
                           = capacityReservation.AllLTStorageReservesParticipation[cluster];
-                        builder.LTStorageClusterReserveUpParticipation(
+                        builder.LTStorageClusterReserveParticipation(
+                          thisReserveIsUp,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,

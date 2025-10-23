@@ -127,26 +127,19 @@ int& VariableManager::STStoragePumpingClusterReserveParticipation(unsigned int i
       .STStoragePumpingClusterParticipation[index];
 }
 
-int& VariableManager::LTStorageClusterReserveUpParticipation(unsigned int index,
-                                                             unsigned int hourInWeek,
-                                                             int offset,
-                                                             int delta)
+int& VariableManager::LTStorageClusterReserveParticipation(bool isUpReserve,
+                                                           unsigned int index,
+                                                           unsigned int hourInWeek,
+                                                           int offset,
+                                                           int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
-    return CorrespondanceVarNativesVarOptim_[pdt]
-      .reservesIndices()
-      .LTStorageClusterParticipationUp[index];
-}
-
-int& VariableManager::LTStorageClusterReserveDownParticipation(unsigned int index,
-                                                               unsigned int hourInWeek,
-                                                               int offset,
-                                                               int delta)
-{
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
-    return CorrespondanceVarNativesVarOptim_[pdt]
-      .reservesIndices()
-      .LTStorageClusterParticipationDown[index];
+    return isUpReserve ? CorrespondanceVarNativesVarOptim_[pdt]
+                           .reservesIndices()
+                           .LTStorageClusterParticipationUp[index]
+                       : CorrespondanceVarNativesVarOptim_[pdt]
+                           .reservesIndices()
+                           .LTStorageClusterParticipationDown[index];
 }
 
 int& VariableManager::LTStorageTurbiningClusterReserveParticipation(unsigned int index,

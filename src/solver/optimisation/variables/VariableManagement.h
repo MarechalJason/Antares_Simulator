@@ -56,15 +56,11 @@ public:
                                                      int offset = 0,
                                                      int delta = 0);
 
-    int& LTStorageClusterReserveUpParticipation(unsigned int index,
-                                                unsigned int hourInWeek,
-                                                int offset = 0,
-                                                int delta = 0);
-
-    int& LTStorageClusterReserveDownParticipation(unsigned int index,
-                                                  unsigned int hourInWeek,
-                                                  int offset = 0,
-                                                  int delta = 0);
+    int& LTStorageClusterReserveParticipation(bool isUpReserve,
+                                              unsigned int index,
+                                              unsigned int hourInWeek,
+                                              int offset = 0,
+                                              int delta = 0);
 
     int& LTStorageTurbiningClusterReserveParticipation(unsigned int index,
                                                        unsigned int hourInWeek,

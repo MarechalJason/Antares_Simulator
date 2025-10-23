@@ -23,6 +23,25 @@
 
 namespace Antares::Solver::Variable
 {
+
+inline void State::initReserveVectors()
+{
+    reserveParticipationCostForYear.init();
+    reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+    thermalClusterReserveParticipationCostForYear.init();
+    thermalClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+    STStorageClusterReserveParticipationCostForYear.init();
+    STStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+    LTStorageClusterReserveParticipationCostForYear.init();
+    LTStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+    reserveParticipationPerSTStorageClusterForYear.clear();
+    reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
+    reserveParticipationPerLTStorageClusterForYear.clear();
+    reserveParticipationPerLTStorageClusterForYear.resize(HOURS_PER_YEAR);
+    reserveParticipationPerThermalClusterForYear.clear();
+    reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
+}
+
 inline void State::startANewYear()
 {
     hourInTheSimulation = 0u;
@@ -31,20 +50,7 @@ inline void State::startANewYear()
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
     if (study.parameters.reservesEnabled)
     {
-        reserveParticipationCostForYear.init();
-        reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        thermalClusterReserveParticipationCostForYear.init();
-        thermalClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        STStorageClusterReserveParticipationCostForYear.init();
-        STStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        LTStorageClusterReserveParticipationCostForYear.init();
-        LTStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        reserveParticipationPerSTStorageClusterForYear.clear();
-        reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
-        reserveParticipationPerLTStorageClusterForYear.clear();
-        reserveParticipationPerLTStorageClusterForYear.resize(HOURS_PER_YEAR);
-        reserveParticipationPerThermalClusterForYear.clear();
-        reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
+        initReserveVectors();
     }
     memset(thermalClusterPMinOfTheClusterForYear, 0, sizeof(thermalClusterPMinOfTheClusterForYear));
     memset(thermalClusterDispatchedUnitsCountForYear,
@@ -66,20 +72,7 @@ inline void State::yearEndResetThermal()
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
     if (study.parameters.reservesEnabled)
     {
-        reserveParticipationCostForYear.init();
-        reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        thermalClusterReserveParticipationCostForYear.init();
-        thermalClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        STStorageClusterReserveParticipationCostForYear.init();
-        STStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        LTStorageClusterReserveParticipationCostForYear.init();
-        LTStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        reserveParticipationPerSTStorageClusterForYear.clear();
-        reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
-        reserveParticipationPerLTStorageClusterForYear.clear();
-        reserveParticipationPerLTStorageClusterForYear.resize(HOURS_PER_YEAR);
-        reserveParticipationPerThermalClusterForYear.clear();
-        reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
+        initReserveVectors();
     }
     memset(thermalClusterNonProportionalCostForYear,
            0,
@@ -99,21 +92,7 @@ inline void State::initFromAreaIndex(const unsigned int areaIndex, uint numSpace
     if (unitCommitmentMode != Data::UnitCommitmentMode::ucHeuristicFast
         && study.parameters.reservesEnabled)
     {
-        reserveParticipationCostForYear.init();
-        reserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        thermalClusterReserveParticipationCostForYear.init();
-        thermalClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        STStorageClusterReserveParticipationCostForYear.init();
-        STStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-        LTStorageClusterReserveParticipationCostForYear.init();
-        LTStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-
-        reserveParticipationPerSTStorageClusterForYear.clear();
-        reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
-        reserveParticipationPerLTStorageClusterForYear.clear();
-        reserveParticipationPerLTStorageClusterForYear.resize(HOURS_PER_YEAR);
-        reserveParticipationPerThermalClusterForYear.clear();
-        reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
+        initReserveVectors();
     }
     switch (simulationMode)
     {

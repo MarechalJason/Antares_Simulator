@@ -36,7 +36,8 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
                 {
                     if (isUpReserve)
                     {
-                        builder.LTStorageClusterReserveUpParticipation(
+                        builder.LTStorageClusterReserveParticipation(
+                          isUpReserve,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,
@@ -44,7 +45,8 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
                     }
                     else
                     {
-                        builder.LTStorageClusterReserveDownParticipation(
+                        builder.LTStorageClusterReserveParticipation(
+                          isUpReserve,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,

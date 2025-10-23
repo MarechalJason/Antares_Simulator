@@ -25,7 +25,8 @@ void LTReserveUpParticipation::add(int pays, int reserve, int cluster, int pdt)
           .LTStoragePumpingClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
             -1.0)
-          .LTStorageClusterReserveUpParticipation(
+          .LTStorageClusterReserveParticipation(
+            thisReserveIsUp,
             reserveParticipation.globalIndexClusterParticipation,
             1.0)
           .equalTo();

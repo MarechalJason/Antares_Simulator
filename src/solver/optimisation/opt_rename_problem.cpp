@@ -269,24 +269,26 @@ void VariableNamer::ParticipationOfLTStoragePumpingToReserve(unsigned int variab
                                              reserveName);
 }
 
-void VariableNamer::ParticipationOfLTStorageToUpReserve(unsigned int variable,
-                                                        const std::string& clusterName,
-                                                        const std::string& reserveName)
+void VariableNamer::ParticipationOfLTStorageToReserve(bool isUpReserve,
+                                                      unsigned int variable,
+                                                      const std::string& clusterName,
+                                                      const std::string& reserveName)
 {
-    SetLTStorageClusterAndReserveElementName(variable,
-                                             "ParticipationOfLTStorageToUpReserve",
-                                             clusterName,
-                                             reserveName);
-}
+    if (isUpReserve)
+    {
+        SetLTStorageClusterAndReserveElementName(variable,
+                                                 "ParticipationOfLTStorageToUpReserve",
+                                                 clusterName,
+                                                 reserveName);
+    }
 
-void VariableNamer::ParticipationOfLTStorageToDownReserve(unsigned int variable,
-                                                          const std::string& clusterName,
-                                                          const std::string& reserveName)
-{
-    SetLTStorageClusterAndReserveElementName(variable,
-                                             "ParticipationOfSTStorageToDownReserve",
-                                             clusterName,
-                                             reserveName);
+    else
+    {
+        SetLTStorageClusterAndReserveElementName(variable,
+                                                 "ParticipationOfSTStorageToDownReserve",
+                                                 clusterName,
+                                                 reserveName);
+    }
 }
 
 void VariableNamer::ParticipationOfRunningUnitsToReserve(unsigned int variable,

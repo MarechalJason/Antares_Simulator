@@ -56,18 +56,10 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
             // Long Term Storage clusters reserve participation
             for (auto& reserveParticipation: capacityReservation.AllLTStorageReservesParticipation)
             {
-                if (isUpReserve)
-                {
-                    builder.LTStorageClusterReserveUpParticipation(
-                      reserveParticipation.globalIndexClusterParticipation,
-                      1);
-                }
-                else
-                {
-                    builder.LTStorageClusterReserveDownParticipation(
-                      reserveParticipation.globalIndexClusterParticipation,
-                      1);
-                }
+                builder.LTStorageClusterReserveParticipation(
+                  isUpReserve,
+                  reserveParticipation.globalIndexClusterParticipation,
+                  1);
             }
 
             builder.InternalUnsatisfiedReserve(capacityReservation.globalReserveIndex, 1)

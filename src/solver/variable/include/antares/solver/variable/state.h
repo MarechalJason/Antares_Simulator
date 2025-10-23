@@ -169,6 +169,11 @@ private:
     */
     void yearEndSmoothDispatchedUnitsCount(const unsigned int clusterEnabledIndex, uint numSpace);
 
+    /*!
+    ** \brief Initialises the reserve vectors
+    */
+    void initReserveVectors();
+
 public:
     /*!
     ** \brief Reset internal data

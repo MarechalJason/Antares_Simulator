@@ -130,12 +130,10 @@ public:
     void ParticipationOfLTStoragePumpingToReserve(unsigned int variable,
                                                   const std::string& clusterName,
                                                   const std::string& reserveName);
-    void ParticipationOfLTStorageToUpReserve(unsigned int variable,
-                                             const std::string& clusterName,
-                                             const std::string& reserveName);
-    void ParticipationOfLTStorageToDownReserve(unsigned int variable,
-                                               const std::string& clusterName,
-                                               const std::string& reserveName);
+    void ParticipationOfLTStorageToReserve(bool isUpReserve,
+                                           unsigned int variable,
+                                           const std::string& clusterName,
+                                           const std::string& reserveName);
     void ParticipationOfRunningUnitsToReserve(unsigned int variable,
                                               const std::string& clusterName,
                                               const std::string& reserveName);
