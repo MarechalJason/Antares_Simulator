@@ -124,14 +124,14 @@ public:
     bool saveToFolder(const AnyString& folder) const override;
 #endif
 
-    unsigned int enabledAndMustRunCount() const;
-    unsigned int enabledAndNotMustRunCount() const;
+    std::size_t enabledAndMustRunCount() const;
+    std::size_t enabledAndNotMustRunCount() const;
 
     // returns the number of reserve participations of all clusters
-    unsigned int reserveParticipationsCount() const;
+    std::size_t reserveParticipationsCount() const;
     // returns the number of capacity reserves that all the clusters are participating to
     // (count only capacity resarvations once)
-    unsigned int capacityReservationsCount() const;
+    std::size_t capacityReservationsCount() const;
 
 private:
     // Give a special index to enbled and not must-run THERMAL clusters

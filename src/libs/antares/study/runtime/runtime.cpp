@@ -90,24 +90,24 @@ static void StudyRuntimeInfosInitializeAllAreas(Study& study, StudyRuntimeInfos&
         }
 
         // statistics
-        r.thermalPlantTotalCount += area.thermal.list.enabledAndNotMustRunCount();
-        r.thermalPlantTotalCountMustRun += area.thermal.list.enabledAndMustRunCount();
+        r.counts.thermalPlants += area.thermal.list.enabledAndNotMustRunCount();
+        r.counts.thermalPlantsMustRun += area.thermal.list.enabledAndMustRunCount();
 
         if (study.parameters.reservesEnabled)
         {
-            r.reserveParticipationCount += area.thermal.list.reserveParticipationsCount();
-            r.reserveParticipationCount += area.shortTermStorage.reserveParticipationsCount();
-            r.reserveParticipationCount += area.hydro.reserveParticipationsCount();
-            r.capacityReservationCount += area.allCapacityReservations()
-                                            .areaCapacityReservationsUp.size();
-            r.capacityReservationCount += area.allCapacityReservations()
-                                            .areaCapacityReservationsDown.size();
+            r.counts.reserveParticipations += area.thermal.list.reserveParticipationsCount();
+            r.counts.reserveParticipations += area.shortTermStorage.reserveParticipationsCount();
+            r.counts.reserveParticipations += area.hydro.reserveParticipationsCount();
+            r.counts.capacityReservations += area.allCapacityReservations()
+                                               .areaCapacityReservationsUp.size();
+            r.counts.capacityReservations += area.allCapacityReservations()
+                                               .areaCapacityReservationsDown.size();
         }
 
-        r.shortTermStorageCount += area.shortTermStorage.count();
-        r.shortTermStorageCumulativeConstraintCount += area.shortTermStorage
-                                                         .cumulativeConstraintCount();
-        r.longTermStorageCount += area.hydro.count();
+        r.counts.shortTermStorages += area.shortTermStorage.count();
+        r.counts.shortTermStorageCumulativeConstraints += area.shortTermStorage
+                                                            .cumulativeConstraintCount();
+        r.counts.longTermStorages += area.hydro.count();
     }
 }
 
@@ -272,10 +272,6 @@ void StudyRuntimeInfos::initializeRangeLimits(const Study& study, StudyRangeLimi
 
 StudyRuntimeInfos::StudyRuntimeInfos():
     nbYears(0),
-    thermalPlantTotalCount(0),
-    thermalPlantTotalCountMustRun(0),
-    shortTermStorageCount(0),
-    longTermStorageCount(0),
     quadraticOptimizationHasFailed(false)
 {
 }
@@ -315,8 +311,6 @@ bool StudyRuntimeInfos::loadFromStudy(Study& study)
 
     nbYears = gd.nbYears;
     mode = gd.mode;
-    thermalPlantTotalCount = 0;
-    thermalPlantTotalCountMustRun = 0;
     // Calendar
     logs.info() << "Generating calendar informations";
     if (study.usedByTheSolver)
@@ -376,13 +370,13 @@ bool StudyRuntimeInfos::loadFromStudy(Study& study)
     logs.info() << "Summary";
     logs.info() << "     areas: " << study.areas.size();
     logs.info() << "     links: " << interconnectionsCount();
-    logs.info() << "     thermal clusters: " << thermalPlantTotalCount;
-    logs.info() << "     thermal clusters (must-run): " << thermalPlantTotalCountMustRun;
-    logs.info() << "     short-term storages: " << shortTermStorageCount;
+    logs.info() << "     thermal clusters: " << counts.thermalPlants;
+    logs.info() << "     thermal clusters (must-run): " << counts.thermalPlantsMustRun;
+    logs.info() << "     short-term storages: " << counts.shortTermStorages;
     logs.info() << "     short-term storage cumulative constraints count: "
-                << shortTermStorageCumulativeConstraintCount;
-    logs.info() << "     long-term storages: " << longTermStorageCount;
-    logs.info() << "     reserve participations: " << reserveParticipationCount;
+                << counts.shortTermStorageCumulativeConstraints;
+    logs.info() << "     long-term storages: " << counts.longTermStorages;
+    logs.info() << "     reserve participations: " << counts.reserveParticipations;
     logs.info() << "     binding constraints: "
                 << study.bindingConstraints.activeConstraints().size();
     logs.info() << "     geographic trimming:" << (gd.geographicTrimming ? "true" : "false");

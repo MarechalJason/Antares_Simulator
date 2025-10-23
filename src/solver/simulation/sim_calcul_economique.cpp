@@ -341,8 +341,8 @@ void SIM_InitialisationProblemeHebdo(Study& study,
 
     problem.NombreDInterconnexions = study.runtime.interconnectionsCount();
 
-    problem.NumberOfShortTermStorages = study.runtime.shortTermStorageCount;
-    problem.NumberOfLongTermStorages = study.runtime.longTermStorageCount;
+    problem.NumberOfShortTermStorages = study.runtime.counts.shortTermStorages;
+    problem.NumberOfLongTermStorages = study.runtime.counts.longTermStorages;
 
     auto activeConstraints = study.bindingConstraints.activeConstraints();
     problem.NombreDeContraintesCouplantes = activeConstraints.size();

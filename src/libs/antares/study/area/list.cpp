@@ -108,7 +108,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
                                 const IniFile::Section& section,
                                 bool* ret)
 {
-    CapacityReservation tmpCapacityReservation;
+    CapacityReservation tmpCapacityReservation{};
     std::string file_name = AllCapacityReservations::toFilename(section.name);
 
     tristate isReserveUp = Undefined;
