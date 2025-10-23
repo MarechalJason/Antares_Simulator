@@ -181,7 +181,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
     }
     fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()
                         / (file_name + ".txt");
-    *ret = tmpCapacityReservation.need.loadFromFile(filePath, false);
+    tmpCapacityReservation.loadNeedFromFile(filePath);
     if (isReserveUp == True)
     {
         area.allCapacityReservations().areaCapacityReservationsUp.emplace(section.name,
