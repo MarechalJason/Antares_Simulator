@@ -41,7 +41,7 @@ struct CapacityReservation
     double powerActivationRatio = 0.;
     double energyActivationRatio = 1.;
     int referenceActivationHours = 1.;
-    std::vector<double> need;
+    std::vector<double> need = {};
 
     void loadNeedFromFile(const fs::path& path)
     {
