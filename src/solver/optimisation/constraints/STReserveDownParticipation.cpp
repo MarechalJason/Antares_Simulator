@@ -27,7 +27,8 @@ void STReserveDownParticipation::add(int pays, int reserve, int cluster, int pdt
           .STStoragePumpingClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
             1.0)
-          .STStorageClusterReserveDownParticipation(
+          .STStorageClusterReserveParticipation(
+            thisReserveIsDown,
             reserveParticipation.globalIndexClusterParticipation,
             -1.0)
           .equalTo();

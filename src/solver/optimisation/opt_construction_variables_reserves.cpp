@@ -219,28 +219,16 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                 NombreDeVariables++;
 
                 // For Short Term Storage participation to the up reserves
-                if (isUpReserve)
-                {
-                    variableManager.STStorageClusterReserveUpParticipation(
-                      clusterReserveParticipation.globalIndexClusterParticipation,
-                      pdt)
-                      = NombreDeVariables;
+                variableManager.STStorageClusterReserveParticipation(
+                  isUpReserve,
+                  clusterReserveParticipation.globalIndexClusterParticipation,
+                  pdt)
+                  = NombreDeVariables;
 
-                    variableNamer.ParticipationOfSTStorageToUpReserve(NombreDeVariables,
-                                                                      clusterName,
-                                                                      reserveName);
-                }
-                else
-                {
-                    variableManager.STStorageClusterReserveDownParticipation(
-                      clusterReserveParticipation.globalIndexClusterParticipation,
-                      pdt)
-                      = NombreDeVariables;
-
-                    variableNamer.ParticipationOfSTStorageToDownReserve(NombreDeVariables,
-                                                                        clusterName,
-                                                                        reserveName);
-                }
+                variableNamer.ParticipationOfSTStorageToReserve(isUpReserve,
+                                                                NombreDeVariables,
+                                                                clusterName,
+                                                                reserveName);
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
                 NombreDeVariables++;

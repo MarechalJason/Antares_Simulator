@@ -34,22 +34,13 @@ void STStockEnergyLevelReserveParticipation::add(int pays,
 
                 for (int t = 0; t < capacityReservation.maxActivationDuration; t++)
                 {
-                    if (isUpReserve)
-                    {
-                        builder.STStorageClusterReserveUpParticipation(
-                          reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.powerActivationRatio,
-                          t,
-                          builder.data.NombreDePasDeTempsPourUneOptimisation);
-                    }
-                    else
-                    {
-                        builder.STStorageClusterReserveDownParticipation(
-                          reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.powerActivationRatio,
-                          t,
-                          builder.data.NombreDePasDeTempsPourUneOptimisation);
-                    }
+                    builder.STStorageClusterReserveParticipation(
+                      isUpReserve,
+                      reserveParticipation.globalIndexClusterParticipation,
+                      capacityReservation.powerActivationRatio,
+                      t,
+                      builder.data.NombreDePasDeTempsPourUneOptimisation);
+
                     builder.ShortTermStorageLevel(
                       globalClusterIdx,
                       sign * capacityReservation.energyActivationRatio,

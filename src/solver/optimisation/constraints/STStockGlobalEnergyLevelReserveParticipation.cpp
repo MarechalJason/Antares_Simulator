@@ -27,7 +27,8 @@ void STStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                     {
                         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
                           = capacityReservation.AllSTStorageReservesParticipation[cluster];
-                        builder.STStorageClusterReserveDownParticipation(
+                        builder.STStorageClusterReserveParticipation(
+                          thisReserveIsDown,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,
@@ -76,7 +77,8 @@ void STStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                     {
                         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
                           = capacityReservation.AllSTStorageReservesParticipation[cluster];
-                        builder.STStorageClusterReserveUpParticipation(
+                        builder.STStorageClusterReserveParticipation(
+                          thisReserveIsUp,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,

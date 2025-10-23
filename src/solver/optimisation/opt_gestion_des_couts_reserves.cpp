@@ -69,44 +69,30 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
         }
 
         // Init costs for a Thermal cluster participation to a reserve up
-        void initThermalReserveUpParticipationCosts(
+        void initThermalReserveParticipationCosts(
+          bool isUpReserve,
           const RESERVE_PARTICIPATION_THERMAL& reserveParticipation)
         {
             int var = variableManager.RunningThermalClusterReserveParticipation(
               reserveParticipation.globalIndexClusterParticipation,
               pdtHebdo);
             CoutLineaire[var] = reserveParticipation.participationCost;
-            var = variableManager.OffThermalClusterReserveParticipation(
-              reserveParticipation.globalIndexClusterParticipation,
-              pdtHebdo);
-            CoutLineaire[var] = reserveParticipation.participationCostOff;
-        }
-
-        // Init costs for a Thermal cluster participation to a reserve down
-        void initThermalReserveDownParticipationCosts(
-          const RESERVE_PARTICIPATION_THERMAL& reserveParticipation)
-        {
-            int var = variableManager.RunningThermalClusterReserveParticipation(
-              reserveParticipation.globalIndexClusterParticipation,
-              pdtHebdo);
-            CoutLineaire[var] = reserveParticipation.participationCost;
+            if (isUpReserve)
+            {
+                var = variableManager.OffThermalClusterReserveParticipation(
+                  reserveParticipation.globalIndexClusterParticipation,
+                  pdtHebdo);
+                CoutLineaire[var] = reserveParticipation.participationCostOff;
+            }
         }
 
         // Init costs for a ShortTerm cluster participation to a reserve up
-        void initSTStorageReserveUpParticipationCosts(
+        void initSTStorageReserveParticipationCosts(
+          bool isUpReserve,
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation)
         {
-            int var = variableManager.STStorageClusterReserveUpParticipation(
-              reserveParticipation.globalIndexClusterParticipation,
-              pdtHebdo);
-            CoutLineaire[var] = reserveParticipation.participationCost;
-        }
-
-        // Init costs for a ShortTerm cluster participation to a reserve down
-        void initSTStorageReserveDownParticipationCosts(
-          const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation)
-        {
-            int var = variableManager.STStorageClusterReserveDownParticipation(
+            int var = variableManager.STStorageClusterReserveParticipation(
+              isUpReserve,
               reserveParticipation.globalIndexClusterParticipation,
               pdtHebdo);
             CoutLineaire[var] = reserveParticipation.participationCost;
@@ -142,7 +128,8 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                 for (const auto& [clusterId, clusterReserveParticipation]:
                      areaReserveUp.AllThermalReservesParticipation)
                 {
-                    reserveCostsInitializer.initThermalReserveUpParticipationCosts(
+                    reserveCostsInitializer.initThermalReserveParticipationCosts(
+                      thisReserveIsUp,
                       clusterReserveParticipation);
                 }
 
@@ -150,7 +137,8 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                 for (const auto& [clusterId, clusterReserveParticipation]:
                      areaReserveUp.AllSTStorageReservesParticipation)
                 {
-                    reserveCostsInitializer.initSTStorageReserveUpParticipationCosts(
+                    reserveCostsInitializer.initSTStorageReserveParticipationCosts(
+                      thisReserveIsUp,
                       clusterReserveParticipation);
                 }
 
@@ -172,7 +160,8 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                 for (const auto& [clusterId, clusterReserveParticipation]:
                      areaReserveDown.AllThermalReservesParticipation)
                 {
-                    reserveCostsInitializer.initThermalReserveDownParticipationCosts(
+                    reserveCostsInitializer.initThermalReserveParticipationCosts(
+                      thisReserveIsDown,
                       clusterReserveParticipation);
                 }
 
@@ -180,7 +169,8 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                 for (const auto& [clusterId, clusterReserveParticipation]:
                      areaReserveDown.AllSTStorageReservesParticipation)
                 {
-                    reserveCostsInitializer.initSTStorageReserveDownParticipationCosts(
+                    reserveCostsInitializer.initSTStorageReserveParticipationCosts(
+                      thisReserveIsDown,
                       clusterReserveParticipation);
                 }
 

@@ -165,10 +165,8 @@ set(RTESOLVER_OPT
 		constraints/LTTurbiningMaxReserve.cpp
 		include/antares/solver/optimisation/constraints/LTPumpingMaxReserve.h
 		constraints/LTPumpingMaxReserve.cpp
-		include/antares/solver/optimisation/constraints/LTReserveUpParticipation.h
-		constraints/LTReserveUpParticipation.cpp
-		include/antares/solver/optimisation/constraints/LTReserveDownParticipation.h
-		constraints/LTReserveDownParticipation.cpp
+		include/antares/solver/optimisation/constraints/LTReserveParticipation.h
+		constraints/LTReserveParticipation.cpp
 		include/antares/solver/optimisation/constraints/LTTurbiningCapacityThreasholds.h
 		constraints/LTTurbiningCapacityThreasholds.cpp
 		include/antares/solver/optimisation/constraints/LTPumpingCapacityThreasholds.h

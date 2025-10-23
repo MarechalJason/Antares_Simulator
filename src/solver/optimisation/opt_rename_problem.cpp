@@ -229,22 +229,14 @@ void VariableNamer::ParticipationOfSTStoragePumpingToReserve(unsigned int variab
                                              reserveName);
 }
 
-void VariableNamer::ParticipationOfSTStorageToUpReserve(unsigned int variable,
-                                                        const std::string& clusterName,
-                                                        const std::string& reserveName)
+void VariableNamer::ParticipationOfSTStorageToReserve(bool isUpReserve,
+                                                      unsigned int variable,
+                                                      const std::string& clusterName,
+                                                      const std::string& reserveName)
 {
     SetSTStorageClusterAndReserveElementName(variable,
-                                             "ParticipationOfSTStorageToUpReserve",
-                                             clusterName,
-                                             reserveName);
-}
-
-void VariableNamer::ParticipationOfSTStorageToDownReserve(unsigned int variable,
-                                                          const std::string& clusterName,
-                                                          const std::string& reserveName)
-{
-    SetSTStorageClusterAndReserveElementName(variable,
-                                             "ParticipationOfSTStorageToDownReserve",
+                                             isUpReserve ? "ParticipationOfSTStorageToUpReserve"
+                                                         : "ParticipationOfSTStorageToDownReserve",
                                              clusterName,
                                              reserveName);
 }
@@ -764,22 +756,14 @@ void ConstraintNamer::STGlobalEnergyStockLevelReserveParticipationUp(unsigned in
                                    clusterName);
 }
 
-void ConstraintNamer::LTReserveUpParticipation(unsigned int constraint,
-                                               const std::string& clusterName,
-                                               const std::string& reserveName)
+void ConstraintNamer::LTReserveParticipation(bool isUpReserve,
+                                             unsigned int constraint,
+                                             const std::string& clusterName,
+                                             const std::string& reserveName)
 {
     SetLTStorageClusterAndReserveElementName(constraint,
-                                             "LTReserveUpParticipation",
-                                             clusterName,
-                                             reserveName);
-}
-
-void ConstraintNamer::LTReserveDownParticipation(unsigned int constraint,
-                                                 const std::string& clusterName,
-                                                 const std::string& reserveName)
-{
-    SetLTStorageClusterAndReserveElementName(constraint,
-                                             "LTReserveDownParticipation",
+                                             isUpReserve ? "LTReserveUpParticipation"
+                                                         : "LTReserveDownParticipation",
                                              clusterName,
                                              reserveName);
 }
@@ -828,16 +812,14 @@ void ConstraintNamer::LTPumpingCapacityThreasholdsDown(unsigned int constraint,
     SetLTStorageClusterElementName(constraint, "LTPumpingCapacityThreasholdsDown", clusterName);
 }
 
-void ConstraintNamer::LTStockLevelReserveParticipationUp(unsigned int constraint,
-                                                         const std::string& clusterName)
+void ConstraintNamer::LTStockLevelReserveParticipation(bool isUpReserve,
+                                                       unsigned int constraint,
+                                                       const std::string& clusterName)
 {
-    SetLTStorageClusterElementName(constraint, "LTStockLevelReserveParticipationUp", clusterName);
-}
-
-void ConstraintNamer::LTStockLevelReserveParticipationDown(unsigned int constraint,
-                                                           const std::string& clusterName)
-{
-    SetLTStorageClusterElementName(constraint, "LTStockLevelReserveParticipationDown", clusterName);
+    SetLTStorageClusterElementName(constraint,
+                                   isUpReserve ? "LTStockLevelReserveParticipationUp"
+                                               : "LTStockLevelReserveParticipationDown",
+                                   clusterName);
 }
 
 void ConstraintNamer::LTEnergyStockLevelReserveParticipation(unsigned int constraint,

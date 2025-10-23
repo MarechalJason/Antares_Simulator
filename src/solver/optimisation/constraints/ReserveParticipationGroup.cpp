@@ -24,8 +24,7 @@
 #include "antares/solver/optimisation/constraints/ConstraintGroup.h"
 #include "antares/solver/optimisation/constraints/LTPumpingCapacityThreasholds.h"
 #include "antares/solver/optimisation/constraints/LTPumpingMaxReserve.h"
-#include "antares/solver/optimisation/constraints/LTReserveDownParticipation.h"
-#include "antares/solver/optimisation/constraints/LTReserveUpParticipation.h"
+#include "antares/solver/optimisation/constraints/LTReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/LTStockEnergyLevelReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/LTStockGlobalEnergyLevelReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/LTStockLevelReserveParticipation.h"
@@ -91,8 +90,7 @@ void ReserveParticipationGroup::BuildConstraints()
                                                                                       data);
         LTTurbiningMaxReserve LTTurbiningMaxReserve(builder_, data);
         LTPumpingMaxReserve LTPumpingMaxReserve(builder_, data);
-        LTReserveUpParticipation LTReserveUpParticipation(builder_, data);
-        LTReserveDownParticipation LTReserveDownParticipation(builder_, data);
+        LTReserveParticipation LTReserveParticipation(builder_, data);
 
         SymmetryReserveParticipation symmetryReserveParticipation(builder_, data);
 
@@ -278,8 +276,11 @@ void ReserveParticipationGroup::BuildConstraints()
                                                     pdt,
                                                     true);
                             // 15 (e)
-                            LTReserveUpParticipation
-                              .add(pays, reserve, clusterReserveParticipation.clusterIdInArea, pdt);
+                            LTReserveParticipation.add(pays,
+                                                       reserve,
+                                                       clusterReserveParticipation.clusterIdInArea,
+                                                       pdt,
+                                                       thisReserveIsUp);
 
                             // 15 (s)
                             LTStockEnergyLevelReserveParticipation.add(
@@ -312,8 +313,11 @@ void ReserveParticipationGroup::BuildConstraints()
                                                     pdt,
                                                     false);
                             // 15 (f)
-                            LTReserveDownParticipation
-                              .add(pays, reserve, clusterReserveParticipation.clusterIdInArea, pdt);
+                            LTReserveParticipation.add(pays,
+                                                       reserve,
+                                                       clusterReserveParticipation.clusterIdInArea,
+                                                       pdt,
+                                                       thisReserveIsDown);
 
                             // 15 (s)
                             LTStockEnergyLevelReserveParticipation.add(
