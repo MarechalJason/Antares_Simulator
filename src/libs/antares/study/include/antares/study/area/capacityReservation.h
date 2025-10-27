@@ -20,10 +20,14 @@
 */
 #pragma once
 
+#include <filesystem>
+#include <fstream>
+#include <map>
 #include <optional>
 #include <set>
+#include <vector>
 
-#include <antares/series/series.h>
+namespace fs = std::filesystem;
 
 //! Name of a reserve
 using ReserveName = std::string;
@@ -32,20 +36,27 @@ using ReserveName = std::string;
 /// spillage cost
 struct CapacityReservation
 {
-    CapacityReservation():
-        need(timeseriesNumbers)
-    {
-    }
-
     double unsuppliedCost = 0.;
     double spillageCost = 0.;
     double powerActivationRatio = 0.;
     double energyActivationRatio = 1.;
     int referenceActivationHours = 1.;
-    Antares::Data::TimeSeries need;
+    std::vector<double> need = {};
 
-private:
-    Data::TimeSeriesNumbers timeseriesNumbers;
+    void loadNeedFromFile(const fs::path& path)
+    {
+        std::ifstream file(path);
+        if (!file.is_open())
+        {
+            throw std::runtime_error("Could not open " + path.string());
+        }
+        double x;
+
+        while (file >> x)
+        {
+            need.push_back(x);
+        }
+    }
 };
 
 /// @brief Stores all the Capacity reservations in two maps for the up and down reserves
@@ -63,7 +74,8 @@ struct AllCapacityReservations
     std::map<ReserveName, CapacityReservation> areaCapacityReservationsUp;
     std::map<ReserveName, CapacityReservation> areaCapacityReservationsDown;
 
-    /// @brief Check if the capacity reservation name already exist in both the up and down reserves
+    /// @brief Check if the capacity reservation name already exist in both the up and down
+    /// reserves
     /// @param name
     /// @return true if the capacity reservation already existed
     bool contains(ReserveName name) const
@@ -74,7 +86,8 @@ struct AllCapacityReservations
 
     /// @brief Get a capacity reservation from both the up and down reserves using its name
     /// @param name
-    /// @return the capacity reservation reference if the reserve was found, and a nullptr otherwise
+    /// @return the capacity reservation reference if the reserve was found, and a nullptr
+    /// otherwise
     const CapacityReservation* getReserveByName(std::string name) const
     {
         if (areaCapacityReservationsUp.contains(name))

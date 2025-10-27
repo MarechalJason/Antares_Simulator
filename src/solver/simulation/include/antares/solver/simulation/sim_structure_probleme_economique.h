@@ -361,7 +361,7 @@ struct CAPACITY_RESERVATION
     std::map</*area_clusterId*/ int, RESERVE_PARTICIPATION_STSTORAGE>
       AllSTStorageReservesParticipation;
     std::vector<RESERVE_PARTICIPATION_LTSTORAGE> AllLTStorageReservesParticipation;
-    std::vector<int> need; //!< Vector size is number of hours in year
+    std::vector<double> need; //!< Vector size is number of hours in year
     double unsuppliedCost = 0;
     double spillageCost = 0;
     double powerActivationRatio = 0;

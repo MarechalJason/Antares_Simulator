@@ -75,25 +75,25 @@ void ThermalClusterList::rebuildIndex() const
     }
 }
 
-unsigned int ThermalClusterList::enabledAndNotMustRunCount() const
+std::size_t ThermalClusterList::enabledAndNotMustRunCount() const
 {
     return std::ranges::count_if(allClusters_,
                                  [](auto c) { return c->isEnabled() && !c->isMustRun(); });
 }
 
-unsigned int ThermalClusterList::enabledAndMustRunCount() const
+std::size_t ThermalClusterList::enabledAndMustRunCount() const
 {
     return std::ranges::count_if(allClusters_,
                                  [](auto c) { return c->isEnabled() && c->isMustRun(); });
 }
 
-unsigned int ThermalClusterList::reserveParticipationsCount() const
+std::size_t ThermalClusterList::reserveParticipationsCount() const
 {
     return std::accumulate(
       allClusters_.begin(),
       allClusters_.end(),
       0,
-      [](int total, const std::shared_ptr<ThermalCluster> cluster)
+      [](std::size_t total, const std::shared_ptr<ThermalCluster> cluster)
       {
           if (cluster->reserveParticipationContainer.has_value() && cluster->isEnabled())
           {
@@ -101,12 +101,12 @@ unsigned int ThermalClusterList::reserveParticipationsCount() const
           }
           else
           {
-              return (uint)total;
+              return total;
           }
       });
 }
 
-unsigned int ThermalClusterList::capacityReservationsCount() const
+std::size_t ThermalClusterList::capacityReservationsCount() const
 {
     std::set<const CapacityReservation*> uniqueReservations;
     for (auto& cluster: allClusters_)

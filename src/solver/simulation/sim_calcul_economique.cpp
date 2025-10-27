@@ -72,15 +72,7 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
             areaCapacityReservationsUp.areaReserveIndex = areaReserveIndex;
             globalReserveIndex++;
             areaReserveIndex++;
-            if (reserveCapacity.need.timeSeries.width > 0)
-            {
-                for (int indexSeries = 0; indexSeries < reserveCapacity.need.timeSeries.height;
-                     indexSeries++)
-                {
-                    areaCapacityReservationsUp.need.push_back(
-                      reserveCapacity.need.timeSeries.entry[0][indexSeries]);
-                }
-            }
+            areaCapacityReservationsUp.need = reserveCapacity.need;
 
             areaReserves.areaCapacityReservationsUp.emplace_back(areaCapacityReservationsUp);
         }
@@ -101,15 +93,8 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
             areaCapacityReservationsDown.areaReserveIndex = areaReserveIndex;
             globalReserveIndex++;
             areaReserveIndex++;
-            if (reserveCapacity.need.timeSeries.width > 0)
-            {
-                for (int indexSeries = 0; indexSeries < reserveCapacity.need.timeSeries.height;
-                     indexSeries++)
-                {
-                    areaCapacityReservationsDown.need.push_back(
-                      reserveCapacity.need.timeSeries.entry[0][indexSeries]);
-                }
-            }
+            areaCapacityReservationsDown.need = reserveCapacity.need;
+
             areaReserves.areaCapacityReservationsDown.emplace_back(areaCapacityReservationsDown);
         }
     }
@@ -356,8 +341,8 @@ void SIM_InitialisationProblemeHebdo(Study& study,
 
     problem.NombreDInterconnexions = study.runtime.interconnectionsCount();
 
-    problem.NumberOfShortTermStorages = study.runtime.shortTermStorageCount;
-    problem.NumberOfLongTermStorages = study.runtime.longTermStorageCount;
+    problem.NumberOfShortTermStorages = study.runtime.counts.shortTermStorages;
+    problem.NumberOfLongTermStorages = study.runtime.counts.longTermStorages;
 
     auto activeConstraints = study.bindingConstraints.activeConstraints();
     problem.NombreDeContraintesCouplantes = activeConstraints.size();
@@ -589,7 +574,8 @@ void SIM_InitialisationProblemeHebdo(Study& study,
                     {
                         if (cluster->reserveParticipationContainer
                             && cluster->reserveParticipationContainer().isParticipatingInReserve(
-                              reserveName) && cluster->isEnabled())
+                              reserveName)
+                            && cluster->isEnabled())
                         {
                             RESERVE_PARTICIPATION_THERMAL reserveParticipation;
                             reserveParticipation.maxPower = cluster->reserveParticipationContainer()

@@ -106,14 +106,16 @@ public:
     MersenneTwister random[seedMax];
 
     //! Total
-    uint thermalPlantTotalCount;
-    uint thermalPlantTotalCountMustRun;
-    uint reserveParticipationCount = 0; //! Total number of reserve participations
-    uint capacityReservationCount = 0;  //! Total number of capacity reservations
-
-    uint shortTermStorageCount = 0;
-    uint shortTermStorageCumulativeConstraintCount = 0;
-    uint longTermStorageCount = 0;
+    struct Counts
+    {
+        uint thermalPlants = 0;
+        uint thermalPlantsMustRun = 0;
+        uint reserveParticipations = 0; //! Total number of reserve participations
+        uint capacityReservations = 0;  //! Total number of capacity reservations
+        uint shortTermStorages = 0;
+        uint shortTermStorageCumulativeConstraints = 0;
+        uint longTermStorages = 0;
+    } counts;
 
     //! Override enable/disable TS generation per cluster
     bool thermalTSRefresh = false;

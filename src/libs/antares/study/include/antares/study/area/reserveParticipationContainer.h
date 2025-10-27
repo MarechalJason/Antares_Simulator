@@ -98,7 +98,7 @@ public:
     }
 
     /// @brief Returns the number of reserves participations in the container
-    uint reserveParticipationsCount() const
+    std::size_t reserveParticipationsCount() const
     {
         return reservesParticipations.size();
     }
@@ -117,7 +117,7 @@ protected:
     /// @param name name of the reserve
     /// @param member member of the reserve participation struct
     /// @return the value of the member
-    double getValue(ReserveName name, double T::*member) const
+    double getValue(ReserveName name, double T::* member) const
     {
         if (isParticipatingInReserve(name))
         {
