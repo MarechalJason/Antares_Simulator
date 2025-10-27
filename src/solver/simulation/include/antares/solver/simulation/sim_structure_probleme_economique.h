@@ -60,7 +60,7 @@ struct CORRESPONDANCES_DES_VARIABLES
 
     std::vector<int> NumeroDeVariablesVariationHydALaHausse;
 
-    std::vector<int> nbOnGroupUnitsInThermalClusterIndex;
+    std::vector<int> NumeroDeVariableDuNombreDeGroupesEnMarcheDuPalierThermique;
     std::vector<int> NumeroDeVariableDuNombreDeGroupesQuiDemarrentDuPalierThermique;
     std::vector<int> NumeroDeVariableDuNombreDeGroupesQuiSArretentDuPalierThermique;
     std::vector<int> NumeroDeVariableDuNombreDeGroupesQuiTombentEnPanneDuPalierThermique;
@@ -571,6 +571,7 @@ struct PROBLEME_HEBDO
     char TypeDeLissageHydraulique = PAS_DE_LISSAGE_HYDRAULIQUE;
     bool WaterValueAccurate = false;
     bool OptimisationNotFastMode = false;
+    bool OptimisationAvecCoutsDeDemarrage = false;
     bool OptimisationAvecVariablesEntieres = false;
     uint32_t NombreDePays = 0;
     std::vector<const char*> NomsDesPays;

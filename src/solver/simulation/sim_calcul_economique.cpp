@@ -328,9 +328,6 @@ void SIM_InitialisationProblemeHebdo(Study& study,
           study.runtime.areaLink);
     }
 
-    problem.WaterValueAccurate = (study.parameters.hydroPricing.hpMode
-                                  == Antares::Data::HydroPricingMode::hpMILP);
-
     SIM_AllocationProblemeHebdo(study, problem, NombreDePasDeTemps);
 
     problem.NombreDePasDeTemps = NombreDePasDeTemps;
@@ -428,7 +425,8 @@ void SIM_InitialisationProblemeHebdo(Study& study,
 
         problem.CaracteristiquesHydrauliques[i].DirectLevelAccess = false;
         problem.CaracteristiquesHydrauliques[i].AccurateWaterValue = false;
-        if (problem.WaterValueAccurate && area.hydro.useWaterValue)
+        if (study.parameters.hydroPricing.hpMode == Antares::Data::HydroPricingMode::hpMILP
+            && area.hydro.useWaterValue)
         {
             problem.CaracteristiquesHydrauliques[i].AccurateWaterValue = true;
             problem.CaracteristiquesHydrauliques[i].DirectLevelAccess = true;
@@ -654,6 +652,7 @@ void SIM_RenseignementProblemeHebdo(const Study& study,
     const size_t pasDeTempsSizeDouble = problem.NombreDePasDeTemps * sizeof(double);
 
     const uint weekFirstDay = study.calendar.hours[PasDeTempsDebut].dayYear;
+    const unsigned weekLastDay = weekFirstDay + 6;
 
     for (int opt = 0; opt < 7; opt++)
     {
@@ -756,7 +755,7 @@ void SIM_RenseignementProblemeHebdo(const Study& study,
                 problem.CaracteristiquesHydrauliques[k].WeeklyWaterValueStateRegular
                   = getWaterValue(nivInit * 100 / area.hydro.reservoirCapacity,
                                   area.hydro.waterValues,
-                                  weekFirstDay);
+                                  weekLastDay);
             }
 
             if (problem.CaracteristiquesHydrauliques[k].PresenceDHydrauliqueModulable)
@@ -806,9 +805,7 @@ void SIM_RenseignementProblemeHebdo(const Study& study,
                 for (uint layerindex = 0; layerindex < 100; layerindex++)
                 {
                     problem.CaracteristiquesHydrauliques[k].WaterLayerValues[layerindex]
-                      = 0.5
-                        * (area.hydro.waterValues[layerindex][weekFirstDay + 7]
-                           + area.hydro.waterValues[layerindex + 1][weekFirstDay + 7]);
+                      = area.hydro.waterValues[layerindex][weekLastDay];
                 }
             }
         }

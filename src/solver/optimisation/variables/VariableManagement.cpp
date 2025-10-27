@@ -182,7 +182,8 @@ int& VariableManager::NumberOfDispatchableUnits(unsigned int index,
                                                 int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
-    return CorrespondanceVarNativesVarOptim_[pdt].nbOnGroupUnitsInThermalClusterIndex[index];
+    return CorrespondanceVarNativesVarOptim_[pdt]
+      .NumeroDeVariableDuNombreDeGroupesEnMarcheDuPalierThermique[index];
 }
 
 int& VariableManager::PowerOfOffUnitsParticipatingToReserve(unsigned int index,
