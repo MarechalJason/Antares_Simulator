@@ -227,12 +227,10 @@ public:
     void POutCapacityThreasholdSup(unsigned int constraint, const std::string& clusterName);
     void POutBoundMin(unsigned int constraint, const std::string& clusterName);
     void POutBoundMax(unsigned int constraint, const std::string& clusterName);
-    void STReserveUpParticipation(unsigned int constraint,
-                                  const std::string& clusterName,
-                                  const std::string& reserveName);
-    void STReserveDownParticipation(unsigned int constraint,
-                                    const std::string& clusterName,
-                                    const std::string& reserveName);
+    void STReserveParticipation(unsigned int constraint,
+                                const std::string& clusterName,
+                                const std::string& reserveName,
+                                bool isUpReserve);
     void STTurbiningMaxReserve(unsigned int constraint,
                                const std::string& clusterName,
                                const std::string& reserveName);

@@ -653,22 +653,14 @@ void ConstraintNamer::POutBoundMax(unsigned int constraint, const std::string& c
     SetThermalClusterElementName(constraint, "POutBoundMax", clusterName);
 }
 
-void ConstraintNamer::STReserveUpParticipation(unsigned int constraint,
-                                               const std::string& clusterName,
-                                               const std::string& reserveName)
+void ConstraintNamer::STReserveParticipation(unsigned int constraint,
+                                             const std::string& clusterName,
+                                             const std::string& reserveName,
+                                             bool isUpReserve)
 {
     SetSTStorageClusterAndReserveElementName(constraint,
-                                             "STReserveUpParticipation",
-                                             clusterName,
-                                             reserveName);
-}
-
-void ConstraintNamer::STReserveDownParticipation(unsigned int constraint,
-                                                 const std::string& clusterName,
-                                                 const std::string& reserveName)
-{
-    SetSTStorageClusterAndReserveElementName(constraint,
-                                             "STReserveDownParticipation",
+                                             isUpReserve ? "STReserveUpParticipation"
+                                                         : "STReserveDownParticipation",
                                              clusterName,
                                              reserveName);
 }

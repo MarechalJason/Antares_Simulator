@@ -2,12 +2,12 @@
 #include "ConstraintBuilder.h"
 
 /*!
- * represent 'STReserveUpParticipation' Constraint type
+ * represent 'STReserveParticipation' Constraint type
  */
-class STReserveUpParticipation: private ConstraintFactory
+class STReserveParticipation: private ConstraintFactory
 {
 public:
-    STReserveUpParticipation(ConstraintBuilder& builder, ReserveData& data):
+    STReserveParticipation(ConstraintBuilder& builder, ReserveData& data):
         ConstraintFactory(builder),
         data(data)
     {
@@ -20,7 +20,7 @@ public:
      * @param cluster : local index of the cluster
      * @param pdt : timestep
      */
-    void add(int pays, int reserve, int cluster, int pdt);
+    void add(int pays, int reserve, int cluster, int pdt, bool isUpReserve);
 
 private:
     ReserveData& data;

@@ -1,18 +1,21 @@
-#include "antares/solver/optimisation/constraints/STReserveUpParticipation.h"
+#include "antares/solver/optimisation/constraints/STReserveParticipation.h"
 
-void STReserveUpParticipation::add(int pays, int reserve, int cluster, int pdt)
+void STReserveParticipation::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
 {
     if (!data.Simulation)
     {
-        // 15 (o)
+        // 15 (o & p)
         // Participation to the up reserve is the sum of the turbining and pumping participation
         // constraint : P_res = H_res + Π_res
         // H : Turbining participation to reserve
         // Π : Pumping participation to reserve
         // P : Up Reserve Participation
 
-        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
-                                                      .areaCapacityReservationsUp[reserve];
+        CAPACITY_RESERVATION& capacityReservation = isUpReserve
+                                                      ? data.areaReserves[pays]
+                                                          .areaCapacityReservationsUp[reserve]
+                                                      : data.areaReserves[pays]
+                                                          .areaCapacityReservationsDown[reserve];
 
         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation = capacityReservation
                                                                   .AllSTStorageReservesParticipation
@@ -23,22 +26,24 @@ void STReserveUpParticipation::add(int pays, int reserve, int cluster, int pdt)
         builder.updateHourWithinWeek(pdt)
           .STStorageTurbiningClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            -1.0)
+            isUpReserve ? -1.0 : 1.0)
           .STStoragePumpingClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            -1.0)
-          .STStorageClusterReserveParticipation(thisReserveIsUp,
+            isUpReserve ? -1.0 : 1.0)
+          .STStorageClusterReserveParticipation(
+            isUpReserve,
             reserveParticipation.globalIndexClusterParticipation,
-            1.0)
+            isUpReserve ? 1.0 : -1.0)
           .equalTo();
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
         const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
         namer.UpdateTimeStep(hourInTheYear);
         namer.UpdateArea(builder.data.NomsDesPays[pays]);
-        namer.STReserveUpParticipation(builder.data.nombreDeContraintes,
-                                       reserveParticipation.clusterName,
-                                       capacityReservation.reserveName);
+        namer.STReserveParticipation(builder.data.nombreDeContraintes,
+                                     reserveParticipation.clusterName,
+                                     capacityReservation.reserveName,
+                                     isUpReserve);
         builder.build();
     }
     else
