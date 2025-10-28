@@ -186,8 +186,8 @@ void ReserveParticipationGroup::BuildConstraints()
                         uint32_t reserve = 0;
                         for (const auto& areaReserve: areaReserves)
                         {
-                            for (const auto& clusterReserveParticipation:
-                                 areaReserve.AllLTStorageReservesParticipation)
+                            for (const auto& [clusterId, clusterReserveParticipation]:
+                                 areaReserve.AllSTStorageReservesParticipation)
                             {
                                 // 15 (k)
                                 STTurbiningMaxReserve.add(

@@ -40,8 +40,9 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTStockLevelReserveParticipation(thisReserveIsDown,builder.data.nombreDeContraintes,
-                                                           "LongTermStorage");
+                namer.LTStockLevelReserveParticipation(thisReserveIsDown,
+                                                       builder.data.nombreDeContraintes,
+                                                       "LongTermStorage");
                 builder.build();
             }
         }
@@ -80,8 +81,9 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTStockLevelReserveParticipation(thisReserveIsUp,builder.data.nombreDeContraintes,
-                                                         "LongTermStorage");
+                namer.LTStockLevelReserveParticipation(thisReserveIsUp,
+                                                       builder.data.nombreDeContraintes,
+                                                       "LongTermStorage");
                 builder.build();
             }
         }
