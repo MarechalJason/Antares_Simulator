@@ -47,7 +47,8 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
     {
         auto refMaxPower = reserveParticipationRefWithName.reserveParticipation.get().maxPower;
         auto targetMaxPower = reserveParticipationWithName.reserveParticipation.get().maxPower;
-        if (refMaxPower != 0 && targetMaxPower != 0)
+        if (abs(refMaxPower) > 10e-4
+            && abs(targetMaxPower) > 10e-4) // disableing symetries in case of zero division
         {
             builder.ThermalClusterReserveParticipation(refIndex, 1 / refMaxPower)
               .ThermalClusterReserveParticipation(targetIndex, -1 / targetMaxPower);
@@ -61,12 +62,12 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
                                     .maxTurbining;
         auto refMaxPumping = reserveParticipationRefWithName.reserveParticipation.get().maxPumping;
         auto targetMaxPumping = reserveParticipationWithName.reserveParticipation.get().maxPumping;
-        if (refMaxTurbining != 0 && targetMaxTurbining != 0)
+        if (abs(refMaxTurbining) > 10e-4 && abs(targetMaxTurbining) > 10e-4)
         {
             builder.STStorageTurbiningClusterReserveParticipation(refIndex, 1 / refMaxTurbining)
               .STStorageTurbiningClusterReserveParticipation(targetIndex, -1 / targetMaxTurbining);
         }
-        if (refMaxPumping != 0 && targetMaxPumping != 0)
+        if (abs(refMaxPumping) > 10e-4 && abs(targetMaxPumping) > 10e-4)
         {
             builder.STStoragePumpingClusterReserveParticipation(refIndex, 1 / refMaxPumping)
               .STStoragePumpingClusterReserveParticipation(targetIndex, -1 / targetMaxPumping);
