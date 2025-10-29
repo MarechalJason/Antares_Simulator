@@ -23,7 +23,7 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                     RESERVE_PARTICIPATION_LTSTORAGE reserveParticipations
                       = capacityReservation.AllLTStorageReservesParticipation[cluster];
                     builder.LTStorageClusterReserveParticipation(
-                      thisReserveIsDown,
+                      reserveIsDown,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }
@@ -40,7 +40,7 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTStockLevelReserveParticipation(thisReserveIsDown,
+                namer.LTStockLevelReserveParticipation(reserveIsDown,
                                                        builder.data.nombreDeContraintes,
                                                        "LongTermStorage");
                 builder.build();
@@ -64,7 +64,7 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                     RESERVE_PARTICIPATION_LTSTORAGE reserveParticipations
                       = capacityReservation.AllLTStorageReservesParticipation[cluster];
                     builder.LTStorageClusterReserveParticipation(
-                      thisReserveIsUp,
+                      reserveIsUp,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }
@@ -81,7 +81,7 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTStockLevelReserveParticipation(thisReserveIsUp,
+                namer.LTStockLevelReserveParticipation(reserveIsUp,
                                                        builder.data.nombreDeContraintes,
                                                        "LongTermStorage");
                 builder.build();

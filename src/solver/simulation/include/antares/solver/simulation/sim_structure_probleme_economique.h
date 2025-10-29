@@ -379,8 +379,8 @@ struct RESERVE_PARTICIPATION_WITH_RESERVE_NAME
     std::reference_wrapper<T> reserveParticipation;
 };
 
-constexpr bool thisReserveIsUp = true;
-constexpr bool thisReserveIsDown = false;
+constexpr bool reserveIsUp = true;
+constexpr bool reserveIsDown = false;
 
 // Vector size is number of reserves up or down
 struct AREA_RESERVES_VECTOR
