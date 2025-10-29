@@ -14,21 +14,25 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
 
-        // DOWN reserves
+        for (bool isUpReserve: {reserveIsUp, reserveIsDown})
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationDown; t++)
+            for (int t = 0;
+                 t < isUpReserve ? data.areaReserves[pays].referenceGlobalActivationDurationUp
+                                 : data.areaReserves[pays].referenceGlobalActivationDurationDown;
+                 t++)
             {
                 for (auto& capacityReservation:
-                     data.areaReserves[pays].areaCapacityReservationsDown)
+                     isUpReserve ? data.areaReserves[pays].areaCapacityReservationsUp
+                                 : data.areaReserves[pays].areaCapacityReservationsDown)
                 {
                     if (capacityReservation.AllLTStorageReservesParticipation.size())
                     {
                         RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation
                           = capacityReservation.AllLTStorageReservesParticipation[cluster];
                         builder.LTStorageClusterReserveParticipation(
-                          reserveIsDown,
+                          isUpReserve,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,
@@ -37,10 +41,12 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 }
                 if (builder.NumberOfVariables() > 0)
                 {
-                    builder.HydroLevel(globalClusterIdx,
-                                       data.areaReserves[pays].maxGlobalEnergyActivationRatioDown,
-                                       t,
-                                       builder.data.NombreDePasDeTempsPourUneOptimisation);
+                    builder.HydroLevel(
+                      globalClusterIdx,
+                      isUpReserve ? data.areaReserves[pays].maxGlobalEnergyActivationRatioUp
+                                  : data.areaReserves[pays].maxGlobalEnergyActivationRatioDown,
+                      t,
+                      builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }
             }
 
@@ -48,67 +54,31 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
             {
                 builder.lessThan();
 
-                data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
-                  .LTStorageGlobalStockEnergyReserveParticipationDown[globalClusterIdx]
-                  = builder.data.nombreDeContraintes;
+                if (isUpReserve)
+                {
+                    data.CorrespondanceCntNativesCntOptim[pdt]
+                      .reservesIndices()
+                      .LTStorageGlobalStockEnergyLevelParticipationUp[globalClusterIdx]
+                      = builder.data.nombreDeContraintes;
+                }
+                else
+                {
+                    data.CorrespondanceCntNativesCntOptim[pdt]
+                      .reservesIndices()
+                      .LTStorageGlobalStockEnergyLevelParticipationDown[globalClusterIdx]
+                      = builder.data.nombreDeContraintes;
+                }
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTGlobalEnergyStockLevelReserveParticipationDown(
-                  builder.data.nombreDeContraintes,
-                  "LongTermStorage");
-                builder.build();
-            }
-        }
-
-        // UP reserves
-        {
-            builder.updateHourWithinWeek(pdt);
-
-            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationUp; t++)
-            {
-                for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsUp)
-                {
-                    if (capacityReservation.AllLTStorageReservesParticipation.size())
-                    {
-                        RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation
-                          = capacityReservation.AllLTStorageReservesParticipation[cluster];
-                        builder.LTStorageClusterReserveParticipation(
-                          reserveIsUp,
-                          reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.powerActivationRatio,
-                          t,
-                          builder.data.NombreDePasDeTempsPourUneOptimisation);
-                    }
-                }
-                if (builder.NumberOfVariables() > 0)
-                {
-                    builder.HydroLevel(globalClusterIdx,
-                                       -data.areaReserves[pays].maxGlobalEnergyActivationRatioUp,
-                                       t,
-                                       builder.data.NombreDePasDeTempsPourUneOptimisation);
-                }
-            }
-
-            if (builder.NumberOfVariables() > 0)
-            {
-                builder.lessThan();
-
-                data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
-                  .LTStorageGlobalStockEnergyLevelParticipationUp[globalClusterIdx]
-                  = builder.data.nombreDeContraintes;
-
-                ConstraintNamer namer(builder.data.NomDesContraintes);
-                const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
-                namer.UpdateTimeStep(hourInTheYear);
-                namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTGlobalEnergyStockLevelReserveParticipationUp(
-                  builder.data.nombreDeContraintes,
-                  "LongTermStorage");
+                isUpReserve ? namer.LTGlobalEnergyStockLevelReserveParticipationUp(
+                                builder.data.nombreDeContraintes,
+                                "LongTermStorage")
+                            : namer.LTGlobalEnergyStockLevelReserveParticipationDown(
+                                builder.data.nombreDeContraintes,
+                                "LongTermStorage");
                 builder.build();
             }
         }

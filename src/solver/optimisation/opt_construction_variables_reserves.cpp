@@ -271,21 +271,20 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
             variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
             auto areaReserves = problemeHebdo->allReserves()[pays];
 
-            auto initAllReserves =
-              [pays, pdt](auto areaReserves, auto* reserveVariablesInitializer, bool isUpReserve)
+            for (bool isUpReserve: {reserveIsUp, reserveIsDown})
             {
                 for (auto& areaReserve: isUpReserve ? areaReserves.areaCapacityReservationsUp
                                                     : areaReserves.areaCapacityReservationsDown)
                 {
-                    reserveVariablesInitializer->initReserve(pdt,
-                                                             areaReserve.globalReserveIndex,
-                                                             areaReserve.reserveName);
+                    reserveVariablesInitializer.initReserve(pdt,
+                                                            areaReserve.globalReserveIndex,
+                                                            areaReserve.reserveName);
 
                     // Thermal Clusters
                     for (auto& [clusterId, clusterReserveParticipation]:
                          areaReserve.AllThermalReservesParticipation)
                     {
-                        reserveVariablesInitializer->initThermalReserveParticipation(
+                        reserveVariablesInitializer.initThermalReserveParticipation(
                           pdt,
                           clusterReserveParticipation,
                           areaReserve.reserveName,
@@ -296,7 +295,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                     for (auto& [clusterId, clusterReserveParticipation]:
                          areaReserve.AllSTStorageReservesParticipation)
                     {
-                        reserveVariablesInitializer->initSTStorageReserveParticipation(
+                        reserveVariablesInitializer.initSTStorageReserveParticipation(
                           isUpReserve,
                           pdt,
                           clusterReserveParticipation,
@@ -307,16 +306,14 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                     for (auto& clusterReserveParticipation:
                          areaReserve.AllLTStorageReservesParticipation)
                     {
-                        reserveVariablesInitializer->initLTStorageReserveParticipation(
+                        reserveVariablesInitializer.initLTStorageReserveParticipation(
                           isUpReserve,
                           pdt,
                           clusterReserveParticipation,
                           areaReserve.reserveName);
                     }
                 }
-            };
-            initAllReserves(areaReserves, &reserveVariablesInitializer, reserveIsUp);
-            initAllReserves(areaReserves, &reserveVariablesInitializer, reserveIsDown);
+            }
         }
     }
 }

@@ -386,7 +386,7 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               .assign(study.runtime.counts.longTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageGlobalStockEnergyReserveParticipationDown
+              .LTStorageGlobalStockEnergyLevelParticipationDown
               .assign(study.runtime.counts.longTermStorages, -1);
         }
     }

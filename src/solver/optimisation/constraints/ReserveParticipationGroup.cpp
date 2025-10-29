@@ -110,12 +110,7 @@ void ReserveParticipationGroup::BuildConstraints()
                         // 16 quater
                         pOffUnits.add(pays, cluster, pdt);
                     }
-                    auto ThermalAddReservesParticipations =
-                      [pays, data, pdt](bool isUpReserve,
-                                        auto* reserveSatisfaction,
-                                        auto* pMaxReserve,
-                                        auto* offUnitsThermalParticipatingToReserves,
-                                        auto* thermalReserveParticipation)
+                    for (bool isUpReserve: {reserveIsUp, reserveIsDown})
                     {
                         uint32_t reserve = 0;
                         auto& areaReserves = isUpReserve
@@ -125,43 +120,33 @@ void ReserveParticipationGroup::BuildConstraints()
                         for (const auto& areaReserve: areaReserves)
                         {
                             // 24
-                            reserveSatisfaction->add(pays, reserve, pdt, isUpReserve);
+                            reserveSatisfaction.add(pays, reserve, pdt, isUpReserve);
 
                             for (const auto& [clusterId, clusterReserveParticipation]:
                                  areaReserve.AllThermalReservesParticipation)
                             {
                                 // 16 bis
-                                pMaxReserve->add(pays, reserve, clusterId, pdt, isUpReserve);
+                                pMaxReserve.add(pays, reserve, clusterId, pdt, isUpReserve);
 
                                 if (isUpReserve && clusterReserveParticipation.maxPowerOff > 0)
                                 {
                                     // 16 ter
-                                    offUnitsThermalParticipatingToReserves->add(pays,
-                                                                                reserve,
-                                                                                clusterId,
-                                                                                pdt);
+                                    offUnitsThermalParticipatingToReserves.add(pays,
+                                                                               reserve,
+                                                                               clusterId,
+                                                                               pdt);
                                 }
 
                                 // 17 quinquies & sexies
-                                thermalReserveParticipation->add(pays,
-                                                                 reserve,
-                                                                 clusterId,
-                                                                 pdt,
-                                                                 isUpReserve);
+                                thermalReserveParticipation.add(pays,
+                                                                reserve,
+                                                                clusterId,
+                                                                pdt,
+                                                                isUpReserve);
                             }
                             reserve++;
                         }
-                    };
-                    ThermalAddReservesParticipations(reserveIsUp,
-                                                     &reserveSatisfaction,
-                                                     &pMaxReserve,
-                                                     &offUnitsThermalParticipatingToReserves,
-                                                     &thermalReserveParticipation);
-                    ThermalAddReservesParticipations(reserveIsDown,
-                                                     &reserveSatisfaction,
-                                                     &pMaxReserve,
-                                                     &offUnitsThermalParticipatingToReserves,
-                                                     &thermalReserveParticipation);
+                    }
 
                     // Thermal cluster Symmetries
                     for (const auto& [clusterId, symmetries]:
@@ -178,12 +163,7 @@ void ReserveParticipationGroup::BuildConstraints()
 
                 // ShortTerm Storage reserve participations
                 {
-                    auto STSAddReservesParticipations =
-                      [pays, data, pdt](bool isUpReserve,
-                                        auto* STTurbiningMaxReserve,
-                                        auto* STPumpingMaxReserve,
-                                        auto* STReserveParticipation,
-                                        auto* STStockEnergyLevelReserveParticipation)
+                    for (bool isUpReserve: {reserveIsUp, reserveIsDown})
                     {
                         auto& areaReserves = isUpReserve
                                                ? data.areaReserves[pays].areaCapacityReservationsUp
@@ -196,21 +176,20 @@ void ReserveParticipationGroup::BuildConstraints()
                                  areaReserve.AllSTStorageReservesParticipation)
                             {
                                 // 15 (k)
-                                STTurbiningMaxReserve->add(
+                                STTurbiningMaxReserve.add(
                                   pays,
                                   reserve,
                                   clusterReserveParticipation.clusterIdInArea,
                                   pdt,
                                   isUpReserve);
                                 // 15 (l)
-                                STPumpingMaxReserve->add(
-                                  pays,
-                                  reserve,
-                                  clusterReserveParticipation.clusterIdInArea,
-                                  pdt,
-                                  isUpReserve);
+                                STPumpingMaxReserve.add(pays,
+                                                        reserve,
+                                                        clusterReserveParticipation.clusterIdInArea,
+                                                        pdt,
+                                                        isUpReserve);
                                 // 15 (o & p)
-                                STReserveParticipation->add(
+                                STReserveParticipation.add(
                                   pays,
                                   reserve,
                                   clusterReserveParticipation.clusterIdInArea,
@@ -218,7 +197,7 @@ void ReserveParticipationGroup::BuildConstraints()
                                   isUpReserve);
 
                                 // 15 (h)
-                                STStockEnergyLevelReserveParticipation->add(
+                                STStockEnergyLevelReserveParticipation.add(
                                   pays,
                                   clusterReserveParticipation.clusterIdInArea,
                                   reserve,
@@ -227,17 +206,7 @@ void ReserveParticipationGroup::BuildConstraints()
                             }
                             reserve++;
                         }
-                    };
-                    STSAddReservesParticipations(reserveIsUp,
-                                                 &STTurbiningMaxReserve,
-                                                 &STPumpingMaxReserve,
-                                                 &STReserveParticipation,
-                                                 &STStockEnergyLevelReserveParticipation);
-                    STSAddReservesParticipations(reserveIsDown,
-                                                 &STTurbiningMaxReserve,
-                                                 &STPumpingMaxReserve,
-                                                 &STReserveParticipation,
-                                                 &STStockEnergyLevelReserveParticipation);
+                    }
 
                     // ShortTerm Storage cluster Symmetries
                     for (const auto& [clusterId, symmetries]:
@@ -253,12 +222,7 @@ void ReserveParticipationGroup::BuildConstraints()
 
                 // LongTerm Storage reserve participations
                 {
-                    auto LTSAddReservesParticipations =
-                      [pays, data, pdt](bool isUpReserve,
-                                        auto* LTTurbiningMaxReserve,
-                                        auto* LTPumpingMaxReserve,
-                                        auto* LTReserveParticipation,
-                                        auto* LTStockEnergyLevelReserveParticipation)
+                    for (bool isUpReserve: {reserveIsUp, reserveIsDown})
                     {
                         auto& areaReserves = isUpReserve
                                                ? data.areaReserves[pays].areaCapacityReservationsUp
@@ -271,21 +235,20 @@ void ReserveParticipationGroup::BuildConstraints()
                                  areaReserve.AllLTStorageReservesParticipation)
                             {
                                 // 15 (a)
-                                LTTurbiningMaxReserve->add(
+                                LTTurbiningMaxReserve.add(
                                   pays,
                                   reserve,
                                   clusterReserveParticipation.clusterIdInArea,
                                   pdt,
                                   isUpReserve);
                                 // 15 (b)
-                                LTPumpingMaxReserve->add(
-                                  pays,
-                                  reserve,
-                                  clusterReserveParticipation.clusterIdInArea,
-                                  pdt,
-                                  isUpReserve);
+                                LTPumpingMaxReserve.add(pays,
+                                                        reserve,
+                                                        clusterReserveParticipation.clusterIdInArea,
+                                                        pdt,
+                                                        isUpReserve);
                                 // 15 (e & f)
-                                LTReserveParticipation->add(
+                                LTReserveParticipation.add(
                                   pays,
                                   reserve,
                                   clusterReserveParticipation.clusterIdInArea,
@@ -293,7 +256,7 @@ void ReserveParticipationGroup::BuildConstraints()
                                   isUpReserve);
 
                                 // 15 (s)
-                                LTStockEnergyLevelReserveParticipation->add(
+                                LTStockEnergyLevelReserveParticipation.add(
                                   pays,
                                   clusterReserveParticipation.clusterIdInArea,
                                   reserve,
@@ -302,17 +265,7 @@ void ReserveParticipationGroup::BuildConstraints()
                             }
                             reserve++;
                         }
-                    };
-                    LTSAddReservesParticipations(reserveIsUp,
-                                                 &LTTurbiningMaxReserve,
-                                                 &LTPumpingMaxReserve,
-                                                 &LTReserveParticipation,
-                                                 &LTStockEnergyLevelReserveParticipation);
-                    LTSAddReservesParticipations(reserveIsDown,
-                                                 &LTTurbiningMaxReserve,
-                                                 &LTPumpingMaxReserve,
-                                                 &LTReserveParticipation,
-                                                 &LTStockEnergyLevelReserveParticipation);
+                    }
 
                     // LongTerm Storage Symmetries
                     for (const auto& symmetry:

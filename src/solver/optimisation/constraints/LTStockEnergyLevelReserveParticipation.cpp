@@ -34,24 +34,13 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
 
                 for (int t = 0; t < capacityReservation.maxActivationDuration; t++)
                 {
-                    if (isUpReserve)
-                    {
-                        builder.LTStorageClusterReserveParticipation(
-                          isUpReserve,
-                          reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.powerActivationRatio,
-                          t,
-                          builder.data.NombreDePasDeTempsPourUneOptimisation);
-                    }
-                    else
-                    {
-                        builder.LTStorageClusterReserveParticipation(
-                          isUpReserve,
-                          reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.powerActivationRatio,
-                          t,
-                          builder.data.NombreDePasDeTempsPourUneOptimisation);
-                    }
+                    builder.LTStorageClusterReserveParticipation(
+                      isUpReserve,
+                      reserveParticipation.globalIndexClusterParticipation,
+                      capacityReservation.powerActivationRatio,
+                      t,
+                      builder.data.NombreDePasDeTempsPourUneOptimisation);
+
                     builder.HydroLevel(globalClusterIdx,
                                        sign * capacityReservation.energyActivationRatio,
                                        t,

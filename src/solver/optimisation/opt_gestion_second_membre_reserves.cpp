@@ -367,7 +367,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageGlobalStockEnergyReserveParticipationDown[globalClusterIdx];
+                    .LTStorageGlobalStockEnergyLevelParticipationDown[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = reserves.referenceGlobalActivationDurationDown

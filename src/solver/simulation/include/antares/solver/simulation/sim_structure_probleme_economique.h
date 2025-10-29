@@ -145,7 +145,7 @@ struct CORRESPONDANCES_DES_CONTRAINTES
         std::vector<int> LTStorageLevelParticipationDown;
         std::vector<int> LTStorageEnergyLevelParticipation;
         std::vector<int> LTStorageGlobalStockEnergyLevelParticipationUp;
-        std::vector<int> LTStorageGlobalStockEnergyReserveParticipationDown;
+        std::vector<int> LTStorageGlobalStockEnergyLevelParticipationDown;
         std::vector<int> LTStorageClusterMaxTurbiningParticipation;
         std::vector<int> LTStorageClusterMaxPumpingParticipation;
         std::vector<int> LTStorageClusterTurbiningCapacityThreasholdsMax;
