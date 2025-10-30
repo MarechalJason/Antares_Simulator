@@ -87,7 +87,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
             const auto& clusterName = clusterReserveParticipation.clusterName;
             if (Simulation)
             {
-                NombreDeVariables += isUpReserve ? 4 : 2; // 4 for up reserves, 2 for down
+                NombreDeVariables += (isUpReserve ? 4 : 2); // 4 for up reserves, 2 for down
             }
             else
             {

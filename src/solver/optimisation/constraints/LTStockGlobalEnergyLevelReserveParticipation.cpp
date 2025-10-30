@@ -14,13 +14,13 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
 
-        for (bool isUpReserve: {reserveIsUp, reserveIsDown})
+        for (bool isUpReserve: {reserveIsDown, reserveIsUp})
         {
             builder.updateHourWithinWeek(pdt);
 
             for (int t = 0;
-                 t < isUpReserve ? data.areaReserves[pays].referenceGlobalActivationDurationUp
-                                 : data.areaReserves[pays].referenceGlobalActivationDurationDown;
+                 t < (isUpReserve ? data.areaReserves[pays].referenceGlobalActivationDurationUp
+                                  : data.areaReserves[pays].referenceGlobalActivationDurationDown);
                  t++)
             {
                 for (auto& capacityReservation:
@@ -43,7 +43,7 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
                 {
                     builder.HydroLevel(
                       globalClusterIdx,
-                      isUpReserve ? data.areaReserves[pays].maxGlobalEnergyActivationRatioUp
+                      isUpReserve ? -data.areaReserves[pays].maxGlobalEnergyActivationRatioUp
                                   : data.areaReserves[pays].maxGlobalEnergyActivationRatioDown,
                       t,
                       builder.data.NombreDePasDeTempsPourUneOptimisation);
