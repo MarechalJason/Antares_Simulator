@@ -855,10 +855,12 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
         auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
         if (reserve)
         {
-            const StorageClusterReserveParticipation tmpReserveParticipation{reserve,
-                                                                             maxTurbining,
-                                                                             maxPumping,
-                                                                             participationCost};
+            const StorageClusterReserveParticipation tmpReserveParticipation{
+              reserve,
+              participationCost,
+              maxTurbining,
+              maxPumping,
+            };
 
             if (!reserveParticipationContainer)
             {
