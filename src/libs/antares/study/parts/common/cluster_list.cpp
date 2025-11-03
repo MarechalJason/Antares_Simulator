@@ -481,8 +481,8 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             if (!isClusterMustRun)
             {
                 ThermalClusterReserveParticipation tmpReserveParticipation{reserve,
-                                                                           tmpMaxPower,
                                                                            tmpParticipationCost,
+                                                                           tmpMaxPower,
                                                                            tmpMaxPowerOff,
                                                                            tmpParticipationCostOff};
                 if (!cluster->reserveParticipationContainer)
