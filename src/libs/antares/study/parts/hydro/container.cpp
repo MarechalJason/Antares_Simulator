@@ -106,7 +106,7 @@ template<class T>
 static bool loadProperties(Study& study,
                            IniFile::Property* property,
                            const fs::path& filename,
-                           T PartHydro::*ptr)
+                           T PartHydro::* ptr)
 {
     if (!property)
     {
@@ -828,47 +828,37 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
     {
         logs.info() << "Processing section: " << section.get().name;
         std::string reserveName = section.get().name.c_str();
-        double maxTurbining = 0;
-        double maxPumping = 0;
-        double participationCost = 0;
+        StorageClusterReserveParticipation reserveParticipation;
 
         section.get().each(
           [&](const IniFile::Property& property)
           {
-              CString<30, false> key = property.key;
-              key.toLower();
-              if (key == "max-turbining")
+              if (property.key == "max-turbining")
               {
-                  property.value.to<double>(maxTurbining);
+                  property.value.to<double>(reserveParticipation.maxTurbining);
               }
-              else if (key == "max-pumping")
+              else if (property.key == "max-pumping")
               {
-                  property.value.to<double>(maxPumping);
+                  property.value.to<double>(reserveParticipation.maxPumping);
               }
-              else if (key == "participation-cost")
+              else if (property.key == "participation-cost")
               {
-                  property.value.to<double>(participationCost);
+                  property.value.to<double>(reserveParticipation.participationCost);
               }
-              logs.info() << "Property: " << key << " = " << property.value;
+              logs.info() << "Property: " << property.key << " = " << property.value;
           });
 
         auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
         if (reserve)
         {
-            const StorageClusterReserveParticipation tmpReserveParticipation{
-              reserve,
-              participationCost,
-              maxTurbining,
-              maxPumping,
-            };
-
+            reserveParticipation.capacityReservation = reserve;
             if (!reserveParticipationContainer)
             {
                 reserveParticipationContainer = ReserveParticipationContainer<
                   StorageClusterReserveParticipation>();
             }
             reserveParticipationContainer().addReserveParticipation(section.get().name,
-                                                                    tmpReserveParticipation);
+                                                                    reserveParticipation);
         }
         else
         {

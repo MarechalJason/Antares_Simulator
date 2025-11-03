@@ -416,48 +416,41 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
     for (const auto& section: clustersSections)
     {
         std::string tmpClusterName;
-        double tmpMaxPower = 0;
-        double tmpMaxPowerOff = 0;
-        double tmpParticipationCost = 0;
-        double tmpParticipationCostOff = 0;
+        ThermalClusterReserveParticipation reserveParticipation;
 
         for (auto* p = section.get().firstProperty; p; p = p->next)
         {
-            CString<30, false> tmp;
-            tmp = p->key;
-            tmp.toLower();
-
-            if (tmp == "cluster-name")
+            if (p->key == "cluster-name")
             {
                 TransformNameIntoID(p->value, tmpClusterName);
             }
-            else if (tmp == "max-power")
+            else if (p->key == "max-power")
             {
-                if (!p->value.to<double>(tmpMaxPower))
+                if (!p->value.to<double>(reserveParticipation.maxPower))
                 {
                     logs.warning()
                       << area.name << ": invalid max power for reserve " << section.get().name;
                 }
             }
-            else if (tmp == "participation-cost")
+            else if (p->key == "participation-cost")
             {
-                if (!p->value.to<double>(tmpParticipationCost))
+                if (!p->value.to<double>(reserveParticipation.participationCost))
                 {
                     logs.warning() << area.name << ": invalid participation cost for reserve "
                                    << section.get().name;
                 }
             }
-            else if (tmp == "max-power-off")
+            else if (p->key == "max-power-off")
             {
-                if (!p->value.to<double>(tmpMaxPowerOff))
+                if (!p->value.to<double>(reserveParticipation.maxPowerOff))
                 {
                     logs.warning()
                       << area.name << ": invalid max power off for reserve " << section.get().name;
                 }
             }
-            else if (tmp == "participation-cost-off")
+            else if (p->key == "participation-cost-off")
             {
-                if (!p->value.to<double>(tmpParticipationCostOff))
+                if (!p->value.to<double>(reserveParticipation.participationCostOff))
                 {
                     logs.warning() << area.name << ": invalid participation cost off for reserve "
                                    << section.get().name;
@@ -469,6 +462,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
         auto reserve = area.allCapacityReservations().getReserveByName(section.get().name);
         if (reserve && cluster)
         {
+            reserveParticipation.capacityReservation = reserve;
             bool isClusterMustRun = false;
             for (const auto& clusterMustRun: area.thermal.list.each_mustrun_and_enabled())
             {
@@ -480,18 +474,13 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
             }
             if (!isClusterMustRun)
             {
-                ThermalClusterReserveParticipation tmpReserveParticipation{reserve,
-                                                                           tmpParticipationCost,
-                                                                           tmpMaxPower,
-                                                                           tmpMaxPowerOff,
-                                                                           tmpParticipationCostOff};
                 if (!cluster->reserveParticipationContainer)
                 {
                     cluster->reserveParticipationContainer = ReserveParticipationContainer<
                       ThermalClusterReserveParticipation>();
                 }
                 cluster->reserveParticipationContainer()
-                  .addReserveParticipation(section.get().name, tmpReserveParticipation);
+                  .addReserveParticipation(section.get().name, reserveParticipation);
 
                 area.allCapacityReservations->reserveGroupPartThermal[section.get().name].insert(
                   cluster->getGroup());
