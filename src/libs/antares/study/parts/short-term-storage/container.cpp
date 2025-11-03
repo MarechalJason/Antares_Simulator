@@ -265,18 +265,20 @@ void STStorageInput::readSymmetrySection(Area& area, const IniFile::Section& sec
     {
         std::string clusterName;
         TransformNameIntoID(p->key, clusterName);
-        auto cluster = findInAll(clusterName);
-        if (cluster)
+
+        auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
+        for (auto& sym: symmetries)
         {
-            auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
-            for (auto& sym: symmetries)
+            auto cluster = area.shortTermStorage.findInAll(clusterName);
+            if (cluster)
             {
                 cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
             }
-        }
-        else
-        {
-            logs.warning() << area.name << ": does not contain this cluster " << clusterName;
+            else
+            {
+                logs.warning() << "Short-term storage cluster " << clusterName
+                               << " is not participating to reserves of area " << area.name;
+            }
         }
     }
 }
