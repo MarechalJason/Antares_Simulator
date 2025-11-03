@@ -23,6 +23,7 @@
 
 #include <optional>
 
+#include <antares/inifile/inifile.h>
 #include <antares/study/area/ReserveOpt.h>
 #include <antares/study/area/reserveParticipationContainer.h>
 
@@ -176,6 +177,10 @@ public:
     uint count() const;
 
     bool loadReserveParticipations(Area& area, const std::filesystem::path& file);
+
+private:
+    void readSymmetrySection(Area& area, const IniFile::Section& section);
+    void readCapacityReservationSection(Area& area, const IniFile::Section& section);
 
 public:
     //! Inter-daily breakdown (previously called Smoothing Factor or alpha)

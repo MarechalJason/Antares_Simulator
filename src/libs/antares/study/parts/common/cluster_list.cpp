@@ -390,147 +390,142 @@ template<class ClusterT>
 bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::filesystem::path& file)
 {
     IniFile ini;
-    if (!ini.open(file, false))
+    if (!ini.open(file))
     {
         return false;
     }
 
-    std::vector<std::reference_wrapper<const IniFile::Section>> clustersSections;
-    std::vector<std::reference_wrapper<const IniFile::Section>> symmetriesSections;
-
-    // Collect sections into clustersSections and symmetriesSections
     ini.each(
       [&](const IniFile::Section& section)
       {
           if (section.name == "symmetries")
           {
-              symmetriesSections.emplace_back(section);
+              readSymmetrySection(area, section);
           }
           else
           {
-              clustersSections.emplace_back(section);
+              readCapacityReservationSection(area, section);
           }
       });
+    return true;
+}
 
-    // Process clusters reserves participations
-    for (const auto& section: clustersSections)
+template<class ClusterT>
+void ClusterList<ClusterT>::readSymmetrySection(Area& area, const IniFile::Section& section)
+{
+    for (auto* p = section.firstProperty; p; p = p->next)
     {
-        std::string tmpClusterName;
-        ThermalClusterReserveParticipation reserveParticipation;
+        std::string clusterName;
+        TransformNameIntoID(p->key, clusterName);
 
-        for (auto* p = section.get().firstProperty; p; p = p->next)
+        auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
+        for (auto& sym: symmetries)
         {
-            if (p->key == "cluster-name")
+            auto cluster = area.thermal.list.findInAll(clusterName);
+            if (cluster)
             {
-                TransformNameIntoID(p->value, tmpClusterName);
-            }
-            else if (p->key == "max-power")
-            {
-                if (!p->value.to<double>(reserveParticipation.maxPower))
-                {
-                    logs.warning()
-                      << area.name << ": invalid max power for reserve " << section.get().name;
-                }
-            }
-            else if (p->key == "participation-cost")
-            {
-                if (!p->value.to<double>(reserveParticipation.participationCost))
-                {
-                    logs.warning() << area.name << ": invalid participation cost for reserve "
-                                   << section.get().name;
-                }
-            }
-            else if (p->key == "max-power-off")
-            {
-                if (!p->value.to<double>(reserveParticipation.maxPowerOff))
-                {
-                    logs.warning()
-                      << area.name << ": invalid max power off for reserve " << section.get().name;
-                }
-            }
-            else if (p->key == "participation-cost-off")
-            {
-                if (!p->value.to<double>(reserveParticipation.participationCostOff))
-                {
-                    logs.warning() << area.name << ": invalid participation cost off for reserve "
-                                   << section.get().name;
-                }
-            }
-        }
-
-        auto cluster = area.thermal.list.findInAll(tmpClusterName);
-        auto reserve = area.allCapacityReservations().getReserveByName(section.get().name);
-        if (reserve && cluster)
-        {
-            reserveParticipation.capacityReservation = reserve;
-            bool isClusterMustRun = false;
-            for (const auto& clusterMustRun: area.thermal.list.each_mustrun_and_enabled())
-            {
-                if (clusterMustRun->id() == cluster->id())
-                {
-                    isClusterMustRun = true;
-                    break;
-                }
-            }
-            if (!isClusterMustRun)
-            {
-                if (!cluster->reserveParticipationContainer)
-                {
-                    cluster->reserveParticipationContainer = ReserveParticipationContainer<
-                      ThermalClusterReserveParticipation>();
-                }
-                cluster->reserveParticipationContainer()
-                  .addReserveParticipation(section.get().name, reserveParticipation);
-
-                area.allCapacityReservations->reserveGroupPartThermal[section.get().name].insert(
-                  cluster->getGroup());
+                cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
             }
             else
             {
-                logs.warning() << area.name << " : " << tmpClusterName
-                               << " is mustrun and is participating in capacity reservation "
-                               << section.get().name << ", ignored.";
+                logs.warning() << "Thermal cluster " << clusterName
+                               << " is not participating to reserves of area " << area.name;
             }
+        }
+    }
+}
+
+template<class ClusterT>
+void ClusterList<ClusterT>::readCapacityReservationSection(Area& area,
+                                                           const IniFile::Section& section)
+{
+    std::string clusterName;
+    ThermalClusterReserveParticipation reserveParticipation;
+
+    for (auto* p = section.firstProperty; p; p = p->next)
+    {
+        if (p->key == "cluster-name")
+        {
+            TransformNameIntoID(p->value, clusterName);
+        }
+        else if (p->key == "max-power")
+        {
+            if (!p->value.to<double>(reserveParticipation.maxPower))
+            {
+                logs.warning() << area.name << ": invalid max power for reserve " << section.name;
+            }
+        }
+        else if (p->key == "participation-cost")
+        {
+            if (!p->value.to<double>(reserveParticipation.participationCost))
+            {
+                logs.warning() << area.name << ": invalid participation cost for reserve "
+                               << section.name;
+            }
+        }
+        else if (p->key == "max-power-off")
+        {
+            if (!p->value.to<double>(reserveParticipation.maxPowerOff))
+            {
+                logs.warning() << area.name << ": invalid max power off for reserve "
+                               << section.name;
+            }
+        }
+        else if (p->key == "participation-cost-off")
+        {
+            if (!p->value.to<double>(reserveParticipation.participationCostOff))
+            {
+                logs.warning() << area.name << ": invalid participation cost off for reserve "
+                               << section.name;
+            }
+        }
+    }
+
+    auto cluster = area.thermal.list.findInAll(clusterName);
+    auto reserve = area.allCapacityReservations().getReserveByName(section.name);
+    if (reserve && cluster)
+    {
+        reserveParticipation.capacityReservation = reserve;
+        bool isClusterMustRun = false;
+        for (const auto& clusterMustRun: area.thermal.list.each_mustrun_and_enabled())
+        {
+            if (clusterMustRun->id() == cluster->id())
+            {
+                isClusterMustRun = true;
+                break;
+            }
+        }
+        if (!isClusterMustRun)
+        {
+            if (!cluster->reserveParticipationContainer)
+            {
+                cluster->reserveParticipationContainer = ReserveParticipationContainer<
+                  ThermalClusterReserveParticipation>();
+            }
+            cluster->reserveParticipationContainer().addReserveParticipation(section.name,
+                                                                             reserveParticipation);
+
+            area.allCapacityReservations->reserveGroupPartThermal[section.name].insert(
+              cluster->getGroup());
         }
         else
         {
-            if (!reserve)
-            {
-                logs.warning() << area.name << ": does not contain this reserve "
-                               << section.get().name;
-            }
-            if (!cluster)
-            {
-                logs.warning() << area.name << ": does not contain this cluster " << tmpClusterName;
-            }
+            logs.warning() << area.name << " : " << clusterName
+                           << " is mustrun and is participating in capacity reservation "
+                           << section.name << ", ignored.";
         }
     }
-    // Process symmetries
-    for (const auto& section: symmetriesSections)
+    else
     {
-        for (auto* p = section.get().firstProperty; p; p = p->next)
+        if (!reserve)
         {
-            std::string tmpClusterName;
-            TransformNameIntoID(p->key, tmpClusterName);
-
-            auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
-            for (auto& sym: symmetries)
-            {
-                auto cluster = area.thermal.list.findInAll(tmpClusterName);
-                if (cluster)
-                {
-                    cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
-                }
-                else
-                {
-                    logs.warning() << "Thermal cluster " << tmpClusterName
-                                   << " is not participating to reserves of area " << area.name;
-                }
-            }
+            logs.warning() << area.name << ": does not contain this reserve " << section.name;
+        }
+        if (!cluster)
+        {
+            logs.warning() << area.name << ": does not contain this cluster " << clusterName;
         }
     }
-
-    return true;
 }
 
 template<class ClusterT>

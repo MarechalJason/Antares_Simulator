@@ -21,7 +21,6 @@
 
 #include "antares/study/parts/hydro/container.h"
 
-#include <antares/inifile/inifile.h>
 #include <antares/study/area/capacityReservation.h>
 #include <antares/study/parts/common/makeGroupsOfSymmetriesFromString.h>
 #include "antares/study/parts/hydro/hydromaxtimeseriesreader.h"
@@ -801,87 +800,79 @@ bool PartHydro::CheckDailyMaxEnergy(const AnyString& areaName)
 bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::path& file)
 {
     IniFile ini;
-    if (!ini.open(file, false))
+    if (!ini.open(file))
     {
         return false;
     }
 
-    std::vector<std::reference_wrapper<const IniFile::Section>> participationsSections;
-    std::vector<std::reference_wrapper<const IniFile::Section>> symmetriesSections;
-
-    // Collect sections into participationsSections and symmetriesSections
     ini.each(
       [&](const IniFile::Section& section)
       {
           if (section.name == "symmetries")
           {
-              symmetriesSections.emplace_back(section);
+              readSymmetrySection(area, section);
           }
           else
           {
-              participationsSections.emplace_back(section);
+              readCapacityReservationSection(area, section);
           }
       });
-
-    // Process hydro reserves participations
-    for (const auto& section: participationsSections)
-    {
-        logs.info() << "Processing section: " << section.get().name;
-        std::string reserveName = section.get().name.c_str();
-        StorageClusterReserveParticipation reserveParticipation;
-
-        section.get().each(
-          [&](const IniFile::Property& property)
-          {
-              if (property.key == "max-turbining")
-              {
-                  property.value.to<double>(reserveParticipation.maxTurbining);
-              }
-              else if (property.key == "max-pumping")
-              {
-                  property.value.to<double>(reserveParticipation.maxPumping);
-              }
-              else if (property.key == "participation-cost")
-              {
-                  property.value.to<double>(reserveParticipation.participationCost);
-              }
-              logs.info() << "Property: " << property.key << " = " << property.value;
-          });
-
-        auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
-        if (reserve)
-        {
-            reserveParticipation.capacityReservation = reserve;
-            if (!reserveParticipationContainer)
-            {
-                reserveParticipationContainer = ReserveParticipationContainer<
-                  StorageClusterReserveParticipation>();
-            }
-            reserveParticipationContainer().addReserveParticipation(section.get().name,
-                                                                    reserveParticipation);
-        }
-        else
-        {
-            logs.info() << area.name << ": does not contain this reserve " << reserveName;
-        }
-    }
-
-    // Process symmetries
-    for (const auto& section: symmetriesSections)
-    {
-        for (auto* p = section.get().firstProperty; p; p = p->next)
-        {
-            std::string tmpClusterName;
-            TransformNameIntoID(p->key, tmpClusterName);
-            auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
-            for (auto& sym: symmetries)
-            {
-                reserveParticipationContainer().addReserveParticipationSymmetry(sym);
-            }
-        }
-    }
-
     return true;
+}
+
+void PartHydro::readSymmetrySection(Area& area, const IniFile::Section& section)
+{
+    for (auto* p = section.firstProperty; p; p = p->next)
+    {
+        std::string clusterName;
+        TransformNameIntoID(p->key, clusterName);
+        auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
+        for (auto& sym: symmetries)
+        {
+            reserveParticipationContainer().addReserveParticipationSymmetry(sym);
+        }
+    }
+}
+
+void PartHydro::readCapacityReservationSection(Area& area, const IniFile::Section& section)
+{
+    logs.info() << "Processing section: " << section.name;
+    std::string reserveName = section.name.c_str();
+    StorageClusterReserveParticipation reserveParticipation;
+
+    section.each(
+      [&](const IniFile::Property& property)
+      {
+          if (property.key == "max-turbining")
+          {
+              property.value.to<double>(reserveParticipation.maxTurbining);
+          }
+          else if (property.key == "max-pumping")
+          {
+              property.value.to<double>(reserveParticipation.maxPumping);
+          }
+          else if (property.key == "participation-cost")
+          {
+              property.value.to<double>(reserveParticipation.participationCost);
+          }
+          logs.info() << "Property: " << property.key << " = " << property.value;
+      });
+
+    auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
+    if (reserve)
+    {
+        reserveParticipation.capacityReservation = reserve;
+        if (!reserveParticipationContainer)
+        {
+            reserveParticipationContainer = ReserveParticipationContainer<
+              StorageClusterReserveParticipation>();
+        }
+        reserveParticipationContainer().addReserveParticipation(section.name, reserveParticipation);
+    }
+    else
+    {
+        logs.info() << area.name << ": does not contain this reserve " << reserveName;
+    }
 }
 
 uint PartHydro::reserveParticipationsCount() const

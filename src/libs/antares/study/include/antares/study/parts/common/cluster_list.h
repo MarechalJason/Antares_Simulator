@@ -26,6 +26,7 @@
 #include <ranges>
 #include <vector>
 
+#include <antares/inifile/inifile.h>
 #include <antares/logs/logs.h>
 #include <antares/study/area/capacityReservation.h>
 #include <antares/study/parts/common/cluster.h>
@@ -202,6 +203,8 @@ protected:
 
 private:
     bool alreadyInAllClusters(std::string clusterName);
+    void readSymmetrySection(Area& area, const IniFile::Section& section);
+    void readCapacityReservationSection(Area& area, const IniFile::Section& section);
 
 }; // class ClusterList
 } // namespace Antares::Data
