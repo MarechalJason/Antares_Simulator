@@ -204,7 +204,7 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
         && study.parameters.reservesEnabled && STStorageCluster->reserveParticipationContainer)
     {
         for (const auto& [resName, resParticipation]:
-             STStorageCluster->reserveParticipationContainer().reservesParticipations)
+             STStorageCluster->reserveParticipationContainer().getReservesParticipations())
         {
             double participation = hourlyResults
                                      ->ShortTermStorageReserves()
@@ -238,7 +238,7 @@ void State::initFromHydroStorage()
         && study.parameters.reservesEnabled && LTStorage.reserveParticipationContainer)
     {
         for (const auto& [resName, resParticipation]:
-             LTStorage.reserveParticipationContainer().reservesParticipations)
+             LTStorage.reserveParticipationContainer().getReservesParticipations())
         {
             double participation = hourlyResults->HydroUsage[hourInTheWeek]
                                      .reserveParticipationOfCluster()
@@ -336,7 +336,7 @@ void State::initFromThermalClusterIndexProduction(const uint clusterEnabledIndex
         if (thermalCluster->reserveParticipationContainer.has_value())
         {
             for (const auto& [res_name, _]:
-                 thermalCluster->reserveParticipationContainer().reservesParticipations)
+                 thermalCluster->reserveParticipationContainer().getReservesParticipations())
             {
                 int reserveParticipationIdx = area->reserveParticipationIndexMaps()
                                                 .thermalClusters.left.at(

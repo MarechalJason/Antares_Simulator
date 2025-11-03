@@ -26,13 +26,13 @@
 struct ReserveParticipationBase
 {
     const CapacityReservation* capacityReservation;
+    double participationCost = 0;
 };
 
 /// @brief Represents the thermal cluster reserve participation to a given reserve
 struct ThermalClusterReserveParticipation: ReserveParticipationBase
 {
     double maxPower = 0;
-    double participationCost = 0;
     double maxPowerOff = 0;
     double participationCostOff = 0;
 };
@@ -43,5 +43,4 @@ struct StorageClusterReserveParticipation: ReserveParticipationBase
 {
     double maxTurbining = 0;
     double maxPumping = 0;
-    double participationCost = 0;
 };

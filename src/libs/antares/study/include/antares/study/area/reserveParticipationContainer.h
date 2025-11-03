@@ -20,8 +20,9 @@
 */
 #pragma once
 
+#include <ranges>
+
 #include <antares/study/area/reserveParticipation.h>
-#include <antares/study/area/reserveParticipationTraits.h>
 
 template<typename T>
 concept DerivedFromReserveParticipationBase = std::is_base_of_v<ReserveParticipationBase, T>;
@@ -111,51 +112,35 @@ public:
         return reservesParticipations.contains(name);
     }
 
-protected:
-    /// @brief Returns the value of a member of the reserve participation struct for a given reserve
-    /// name
-    /// @param name name of the reserve
-    /// @param member member of the reserve participation struct
-    /// @return the value of the member
-    double getValue(ReserveName name, double T::*member) const
+    auto getReservesParticipations() const noexcept
     {
-        if (isParticipatingInReserve(name))
-        {
-            return reservesParticipations.at(name).*member;
-        }
-        else
-        {
-            throw std::out_of_range("reserve " + name + " not found in cluster participations");
-        }
+        return std::views::all(reservesParticipations);
+    }
+
+    double reserveCost(ReserveName name) const
+    {
+        return reservesParticipations.at(name).participationCost;
     }
 };
 
 /// @brief Container for reserve participation specific to a cluster type
 /// @tparam T type of the cluster
-/// @details The methods to access the fields are only callable if the cluster type traits have the
-/// corresponding field
 template<typename T>
 class ReserveParticipationContainer: public ReserveParticipationContainerBase<T>
 {
-    using Base = ReserveParticipationContainerBase<T>;
+};
 
+template<>
+class ReserveParticipationContainer<ThermalClusterReserveParticipation>
+    : public ReserveParticipationContainerBase<ThermalClusterReserveParticipation>
+{
 public:
-    using Base::reservesParticipations;
-
-    /// @brief Returns the cost of participation in a reserve
-    /// @param name name of the reserve
-    /// @return the cost of participation in the reserve
-    double reserveCost(ReserveName name) const
-    {
-        return this->getValue(name, ReserveParticipationTraits<T>::participationCost);
-    }
-
     /// @brief Returns the cost of participation in a reserve when the cluster is off
     /// @param name name of the reserve
     /// @return the cost of participation in the reserve when the cluster is off
     double reserveCostOff(ReserveName name) const
     {
-        return this->getValue(name, ReserveParticipationTraits<T>::participationCostOff);
+        return reservesParticipations.at(name).participationCostOff;
     }
 
     /// @brief Returns the maximum power that can be reserved when the cluster is off
@@ -163,7 +148,7 @@ public:
     /// @return the maximum power that can be reserved when the cluster is off
     double reserveMaxPowerOff(ReserveName name) const
     {
-        return this->getValue(name, ReserveParticipationTraits<T>::maxPowerOff);
+        return reservesParticipations.at(name).maxPowerOff;
     }
 
     /// @brief Returns the maximum power that can be reserved
@@ -171,15 +156,21 @@ public:
     /// @return the maximum power that can be reserved
     double reserveMaxPower(ReserveName name) const
     {
-        return this->getValue(name, ReserveParticipationTraits<T>::maxPower);
+        return reservesParticipations.at(name).maxPower;
     }
+};
 
+template<>
+class ReserveParticipationContainer<StorageClusterReserveParticipation>
+    : public ReserveParticipationContainerBase<StorageClusterReserveParticipation>
+{
+public:
     /// @brief Returns the maximum turbining power that can be reserved
     /// @param name name of the reserve
     /// @return the maximum turbining power that can be reserved
     double reserveMaxTurbining(ReserveName name) const
     {
-        return this->getValue(name, ReserveParticipationTraits<T>::maxTurbining);
+        return reservesParticipations.at(name).maxTurbining;
     }
 
     /// @brief Returns the maximum pumping power that can be reserved
@@ -187,6 +178,6 @@ public:
     /// @return the maximum pumping power that can be reserved
     double reserveMaxPumping(ReserveName name) const
     {
-        return this->getValue(name, ReserveParticipationTraits<T>::maxPumping);
+        return reservesParticipations.at(name).maxPumping;
     }
 };

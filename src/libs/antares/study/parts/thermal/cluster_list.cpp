@@ -112,7 +112,7 @@ std::size_t ThermalClusterList::capacityReservationsCount() const
     for (auto& cluster: allClusters_)
     {
         for (const auto& [_, reserveParticipation]:
-             cluster->reserveParticipationContainer().reservesParticipations)
+             cluster->reserveParticipationContainer().getReservesParticipations())
         {
             const CapacityReservation* reservationPtr = reserveParticipation.capacityReservation;
             uniqueReservations.insert(reservationPtr);
