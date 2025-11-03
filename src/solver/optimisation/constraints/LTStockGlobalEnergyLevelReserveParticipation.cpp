@@ -85,22 +85,12 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
     }
     else
     {
-        // Lambda that count the number of reserveParticipations
-        auto countReservesParticipations =
-          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations, int t_max)
-        {
-            int counter = 0;
-            for (const auto& capacityReservation: reservations)
-            {
-                counter += capacityReservation.AllLTStorageReservesParticipation.size() * t_max;
-            }
-            return counter;
-        };
-
-        int nbTermsUp = countReservesParticipations(
+        int nbTermsUp = data.countLTStorageReservesParticipationsTerms(
           data.areaReserves[pays].areaCapacityReservationsUp,
-          data.areaReserves[pays].referenceGlobalActivationDurationUp);
-        int nbTermsDown = countReservesParticipations(
+          data.areaReserves[pays]
+            .referenceGlobalActivationDurationUp); // One term by timestep where the constraint is
+                                                   // active
+        int nbTermsDown = data.countLTStorageReservesParticipationsTerms(
           data.areaReserves[pays].areaCapacityReservationsDown,
           data.areaReserves[pays].referenceGlobalActivationDurationDown);
 

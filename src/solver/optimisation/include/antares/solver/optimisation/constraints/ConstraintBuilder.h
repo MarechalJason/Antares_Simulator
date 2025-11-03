@@ -383,4 +383,45 @@ struct ReserveData
     std::vector<::ShortTermStorage::AREA_INPUT>& shortTermStorageOfArea;
     std::vector<ENERGIES_ET_PUISSANCES_HYDRAULIQUES>& longTermStorageOfArea;
     std::vector<CORRESPONDANCES_DES_CONTRAINTES>& CorrespondanceCntNativesCntOptim;
+
+    int countLTStorageReservesParticipationsTerms(
+      const std::vector<CAPACITY_RESERVATION>& reservations,
+      int tMax = 1)
+    {
+        int counter = 0;
+        for (const auto& capacityReservation: reservations)
+        {
+            counter += capacityReservation.AllLTStorageReservesParticipation.size()
+                       * tMax; // When applied, tMax multiplies the number a terms by the number of
+                               // timesteps taken into account for this constraint
+        }
+        return counter;
+    }
+
+    int countSTStorageReservesParticipationsTerms(
+      const std::vector<CAPACITY_RESERVATION>& reservations,
+      int cluster,
+      int tMax = 1)
+    {
+        int counter = 0;
+        for (const auto& capacityReservation: reservations)
+        {
+            counter += capacityReservation.AllSTStorageReservesParticipation.count(cluster)
+                       * tMax; // When applied, tMax multiplies the number a terms by the number of
+                               // timesteps taken into account for this constraint
+        }
+        return counter;
+    }
+
+    int countThermalReservesParticipationsTerms(
+      const std::vector<CAPACITY_RESERVATION>& reservations,
+      int cluster)
+    {
+        int counter = 0;
+        for (const auto& capacityReservation: reservations)
+        {
+            counter += capacityReservation.AllThermalReservesParticipation.count(cluster);
+        }
+        return counter;
+    }
 };

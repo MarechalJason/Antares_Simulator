@@ -90,21 +90,9 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
     }
     else
     {
-        // Lambda that count the number of reserveParticipations
-        auto countReservesParticipations =
-          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
-        {
-            int counter = 0;
-            for (const auto& capacityReservation: reservations)
-            {
-                counter += capacityReservation.AllLTStorageReservesParticipation.size();
-            }
-            return counter;
-        };
-
-        int nbTermsUp = countReservesParticipations(
+        int nbTermsUp = data.countLTStorageReservesParticipationsTerms(
           data.areaReserves[pays].areaCapacityReservationsUp);
-        int nbTermsDown = countReservesParticipations(
+        int nbTermsDown = data.countLTStorageReservesParticipationsTerms(
           data.areaReserves[pays].areaCapacityReservationsDown);
 
         builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);

@@ -117,24 +117,13 @@ void STStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
     }
     else
     {
-        // Lambda that count the number of reserveParticipations
-        auto countReservesParticipations =
-          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations, int t_max)
-        {
-            int counter = 0;
-            for (const auto& capacityReservation: reservations)
-            {
-                counter += capacityReservation.AllSTStorageReservesParticipation.count(cluster)
-                           * t_max;
-            }
-            return counter;
-        };
-
-        int nbTermsUp = countReservesParticipations(
+        int nbTermsUp = data.countSTStorageReservesParticipationsTerms(
           data.areaReserves[pays].areaCapacityReservationsUp,
+          cluster,
           data.areaReserves[pays].referenceGlobalActivationDurationUp);
-        int nbTermsDown = countReservesParticipations(
+        int nbTermsDown = data.countSTStorageReservesParticipationsTerms(
           data.areaReserves[pays].areaCapacityReservationsDown,
+          cluster,
           data.areaReserves[pays].referenceGlobalActivationDurationDown);
 
         builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);

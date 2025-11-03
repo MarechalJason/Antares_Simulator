@@ -92,27 +92,12 @@ void POutBounds::add(int pays, int cluster, int pdt)
     }
     else
     {
-        // Lambda that count the number of reserves Participations
-        auto countReservesParticipations =
-          [cluster](const std::vector<CAPACITY_RESERVATION>& reservations)
-        {
-            int counter = 0;
-            for (const auto& capacityReservation: reservations)
-            {
-                counter += capacityReservation.AllThermalReservesParticipation.count(cluster);
-            }
-            return counter;
-        };
-
-        int nbTermsUp = countReservesParticipations(
-          data.areaReserves[pays].areaCapacityReservationsUp);
-        int nbTermsDown = countReservesParticipations(
-          data.areaReserves[pays].areaCapacityReservationsDown);
-
-        int nbTermsToAdd = countReservesParticipations(
-                             data.areaReserves[pays].areaCapacityReservationsUp)
-                           + countReservesParticipations(
-                             data.areaReserves[pays].areaCapacityReservationsDown);
+        int nbTermsUp = data.countThermalReservesParticipationsTerms(
+          data.areaReserves[pays].areaCapacityReservationsUp,
+          cluster);
+        int nbTermsDown = data.countThermalReservesParticipationsTerms(
+          data.areaReserves[pays].areaCapacityReservationsDown,
+          cluster);
 
         builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);
     }

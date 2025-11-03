@@ -89,20 +89,9 @@ void LTTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
     }
     else
     {
-        // Lambda that count the number of reserveParticipations
-        auto countReservesParticipations = [](const std::vector<CAPACITY_RESERVATION>& reservations)
-        {
-            int counter = 0;
-            for (const auto& capacityReservation: reservations)
-            {
-                counter += capacityReservation.AllLTStorageReservesParticipation.size();
-            }
-            return counter;
-        };
-
-        int nbTermsUp = countReservesParticipations(
+        int nbTermsUp = data.countLTStorageReservesParticipationsTerms(
           data.areaReserves[pays].areaCapacityReservationsUp);
-        int nbTermsDown = countReservesParticipations(
+        int nbTermsDown = data.countLTStorageReservesParticipationsTerms(
           data.areaReserves[pays].areaCapacityReservationsDown);
 
         int hydroProd = data.longTermStorageOfArea[pays].PresenceDHydrauliqueModulable;
