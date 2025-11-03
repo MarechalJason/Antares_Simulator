@@ -390,7 +390,7 @@ template<class ClusterT>
 bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::filesystem::path& file)
 {
     IniFile ini;
-    if (!ini.open(file))
+    if (!ini.open(file), false)
     {
         return false;
     }

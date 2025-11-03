@@ -239,7 +239,7 @@ bool STStorageInput::loadSeriesFromFolder(const fs::path& folder, StudyVersion s
 bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem::path& file)
 {
     IniFile ini;
-    if (!ini.open(file))
+    if (!ini.open(file), false)
     {
         return false;
     }
