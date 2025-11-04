@@ -800,7 +800,7 @@ bool PartHydro::CheckDailyMaxEnergy(const AnyString& areaName)
 bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::path& file)
 {
     IniFile ini;
-    if (!ini.open(file), false)
+    if (!ini.open(file, false))
     {
         return false;
     }
