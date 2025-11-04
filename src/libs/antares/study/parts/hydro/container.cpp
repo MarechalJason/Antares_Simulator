@@ -829,6 +829,11 @@ void PartHydro::readSymmetrySection(Area& area, const IniFile::Section& section)
         auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
         for (auto& sym: symmetries)
         {
+            if (!reserveParticipationContainer)
+            {
+                reserveParticipationContainer = ReserveParticipationContainer<
+                  StorageClusterReserveParticipation>();
+            }
             reserveParticipationContainer().addReserveParticipationSymmetry(sym);
         }
     }

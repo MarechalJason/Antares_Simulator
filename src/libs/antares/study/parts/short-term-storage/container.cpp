@@ -272,6 +272,11 @@ void STStorageInput::readSymmetrySection(Area& area, const IniFile::Section& sec
             auto cluster = area.shortTermStorage.findInAll(clusterName);
             if (cluster)
             {
+                if (!cluster->reserveParticipationContainer)
+                {
+                    cluster->reserveParticipationContainer = ReserveParticipationContainer<
+                      StorageClusterReserveParticipation>();
+                }
                 cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
             }
             else
