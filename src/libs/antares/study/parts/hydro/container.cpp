@@ -105,7 +105,7 @@ template<class T>
 static bool loadProperties(Study& study,
                            IniFile::Property* property,
                            const fs::path& filename,
-                           T PartHydro::* ptr)
+                           T PartHydro::*ptr)
 {
     if (!property)
     {
