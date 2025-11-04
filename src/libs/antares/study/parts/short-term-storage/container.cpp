@@ -247,13 +247,19 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
     ini.each(
       [&](const IniFile::Section& section)
       {
+          if (section.name != "symmetries")
+          {
+              readCapacityReservationSection(area, section);
+          }
+      });
+
+    // Capacity Reservations should be loaded before loading symmetries
+    ini.each(
+      [&](const IniFile::Section& section)
+      {
           if (section.name == "symmetries")
           {
               readSymmetrySection(area, section);
-          }
-          else
-          {
-              readCapacityReservationSection(area, section);
           }
       });
     return true;
@@ -272,10 +278,6 @@ void STStorageInput::readSymmetrySection(Area& area, const IniFile::Section& sec
             auto cluster = area.shortTermStorage.findInAll(clusterName);
             if (cluster)
             {
-                if (!cluster->reserveParticipationContainer)
-                {
-                    cluster->reserveParticipationContainer.emplace();
-                }
                 cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
             }
             else
@@ -324,8 +326,7 @@ void STStorageInput::readCapacityReservationSection(Area& area, const IniFile::S
         reserveParticipation.capacityReservation = reserve;
         if (!cluster->reserveParticipationContainer)
         {
-            cluster->reserveParticipationContainer = ReserveParticipationContainer<
-              StorageClusterReserveParticipation>();
+            cluster->reserveParticipationContainer.emplace();
         }
         cluster->reserveParticipationContainer().addReserveParticipation(section.name,
                                                                          reserveParticipation);
@@ -390,7 +391,8 @@ std::size_t STStorageInput::cumulativeConstraintCount() const
                                    sts.additionalConstraints.end(),
                                    0,
                                    [](size_t inner_constraint_count,
-                                      const auto& additionalConstraints) {
+                                      const auto& additionalConstraints)
+                                   {
                                        return inner_constraint_count
                                               + additionalConstraints->enabledConstraintsCount();
                                    });

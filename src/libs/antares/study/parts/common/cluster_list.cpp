@@ -398,13 +398,19 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
     ini.each(
       [&](const IniFile::Section& section)
       {
+          if (section.name != "symmetries")
+          {
+              readCapacityReservationSection(area, section);
+          }
+      });
+
+    // Capacity Reservations should be loaded before loading symmetries
+    ini.each(
+      [&](const IniFile::Section& section)
+      {
           if (section.name == "symmetries")
           {
               readSymmetrySection(area, section);
-          }
-          else
-          {
-              readCapacityReservationSection(area, section);
           }
       });
     return true;
@@ -424,10 +430,6 @@ void ClusterList<ClusterT>::readSymmetrySection(Area& area, const IniFile::Secti
             auto cluster = area.thermal.list.findInAll(clusterName);
             if (cluster)
             {
-                if (!cluster->reserveParticipationContainer)
-                {
-                    cluster->reserveParticipationContainer.emplace();
-                }
                 cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
             }
             else
@@ -503,8 +505,7 @@ void ClusterList<ClusterT>::readCapacityReservationSection(Area& area,
         {
             if (!cluster->reserveParticipationContainer)
             {
-                cluster->reserveParticipationContainer = ReserveParticipationContainer<
-                  ThermalClusterReserveParticipation>();
+                cluster->reserveParticipationContainer.emplace();
             }
             cluster->reserveParticipationContainer().addReserveParticipation(section.name,
                                                                              reserveParticipation);

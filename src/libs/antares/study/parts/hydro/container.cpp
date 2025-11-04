@@ -105,7 +105,7 @@ template<class T>
 static bool loadProperties(Study& study,
                            IniFile::Property* property,
                            const fs::path& filename,
-                           T PartHydro::*ptr)
+                           T PartHydro::* ptr)
 {
     if (!property)
     {
@@ -808,13 +808,19 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
     ini.each(
       [&](const IniFile::Section& section)
       {
+          if (section.name != "symmetries")
+          {
+              readCapacityReservationSection(area, section);
+          }
+      });
+
+    // Capacity Reservations should be loaded before loading symmetries
+    ini.each(
+      [&](const IniFile::Section& section)
+      {
           if (section.name == "symmetries")
           {
               readSymmetrySection(area, section);
-          }
-          else
-          {
-              readCapacityReservationSection(area, section);
           }
       });
     return true;
@@ -829,10 +835,6 @@ void PartHydro::readSymmetrySection(Area& area, const IniFile::Section& section)
         auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
         for (auto& sym: symmetries)
         {
-            if (!reserveParticipationContainer)
-            {
-                reserveParticipationContainer.emplace();
-            }
             reserveParticipationContainer().addReserveParticipationSymmetry(sym);
         }
     }
@@ -868,8 +870,7 @@ void PartHydro::readCapacityReservationSection(Area& area, const IniFile::Sectio
         reserveParticipation.capacityReservation = reserve;
         if (!reserveParticipationContainer)
         {
-            reserveParticipationContainer = ReserveParticipationContainer<
-              StorageClusterReserveParticipation>();
+            reserveParticipationContainer.emplace();
         }
         reserveParticipationContainer().addReserveParticipation(section.name, reserveParticipation);
     }
