@@ -119,4 +119,3 @@ struct AllCapacityReservations
         return file_name;
     }
 };
-
