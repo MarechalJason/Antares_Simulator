@@ -90,13 +90,8 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
     }
     else
     {
-        int nbTermsUp = data.countSTStorageReservesParticipationsTerms(
-          data.areaReserves[pays].areaCapacityReservationsUp,
+        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForSTStorageReserves(
+          pays,
           cluster);
-        int nbTermsDown = data.countSTStorageReservesParticipationsTerms(
-          data.areaReserves[pays].areaCapacityReservationsDown,
-          cluster);
-
-        builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);
     }
 }

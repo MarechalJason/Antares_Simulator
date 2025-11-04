@@ -384,44 +384,90 @@ struct ReserveData
     std::vector<ENERGIES_ET_PUISSANCES_HYDRAULIQUES>& longTermStorageOfArea;
     std::vector<CORRESPONDANCES_DES_CONTRAINTES>& CorrespondanceCntNativesCntOptim;
 
-    int countLTStorageReservesParticipationsTerms(
-      const std::vector<CAPACITY_RESERVATION>& reservations,
-      int tMax = 1)
+    int countNumberOfConstraintsForThermalReserves(int pays, int cluster)
     {
-        int counter = 0;
-        for (const auto& capacityReservation: reservations)
+        int count = 0;
+        for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsUp)
         {
-            counter += capacityReservation.AllLTStorageReservesParticipation.size()
-                       * tMax; // When applied, tMax multiplies the number a terms by the number of
-                               // timesteps taken into account for this constraint
+            if (capacityReservation.AllThermalReservesParticipation.count(cluster) > 0)
+            {
+                count++;
+                break;
+            }
         }
-        return counter;
+        for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsDown)
+        {
+            if (capacityReservation.AllThermalReservesParticipation.count(cluster) > 0)
+            {
+                count++;
+                break;
+            }
+        }
+        return count;
     }
 
-    int countSTStorageReservesParticipationsTerms(
-      const std::vector<CAPACITY_RESERVATION>& reservations,
+    int countNumberOfConstraintsForLTStorageReserves(
+      int pays,
+      bool accountForGlobalActivationDuration = false)
+    {
+        int count = 0;
+        if (!accountForGlobalActivationDuration
+            || areaReserves[pays].referenceGlobalActivationDurationUp)
+        {
+            for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsUp)
+            {
+                if (capacityReservation.AllLTStorageReservesParticipation.size() > 0)
+                {
+                    count++;
+                    break;
+                }
+            }
+        }
+        if (!accountForGlobalActivationDuration
+            || areaReserves[pays].referenceGlobalActivationDurationDown)
+        {
+            for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsDown)
+            {
+                if (capacityReservation.AllLTStorageReservesParticipation.size() > 0)
+                {
+                    count++;
+                    break;
+                }
+            }
+        }
+        return count;
+    }
+
+    int countNumberOfConstraintsForSTStorageReserves(
+      int pays,
       int cluster,
-      int tMax = 1)
+      bool accountForGlobalActivationDuration = false)
     {
-        int counter = 0;
-        for (const auto& capacityReservation: reservations)
+        int count = 0;
+        if (!accountForGlobalActivationDuration
+            || areaReserves[pays].referenceGlobalActivationDurationUp)
         {
-            counter += capacityReservation.AllSTStorageReservesParticipation.count(cluster)
-                       * tMax; // When applied, tMax multiplies the number a terms by the number of
-                               // timesteps taken into account for this constraint
+            for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsUp)
+            {
+                if (capacityReservation.AllSTStorageReservesParticipation.count(cluster) > 0)
+                {
+                    count++;
+                    break;
+                }
+            }
         }
-        return counter;
-    }
-
-    int countThermalReservesParticipationsTerms(
-      const std::vector<CAPACITY_RESERVATION>& reservations,
-      int cluster)
-    {
-        int counter = 0;
-        for (const auto& capacityReservation: reservations)
+        if (!accountForGlobalActivationDuration
+            || areaReserves[pays].referenceGlobalActivationDurationDown)
         {
-            counter += capacityReservation.AllThermalReservesParticipation.count(cluster);
+            for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsDown)
+            {
+                if (capacityReservation.AllSTStorageReservesParticipation.count(cluster) > 0)
+                {
+                    count++;
+                    break;
+                }
+            }
         }
-        return counter;
+        return count;
     }
 };

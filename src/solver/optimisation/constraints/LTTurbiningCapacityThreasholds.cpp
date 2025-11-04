@@ -89,13 +89,6 @@ void LTTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
     }
     else
     {
-        int nbTermsUp = data.countLTStorageReservesParticipationsTerms(
-          data.areaReserves[pays].areaCapacityReservationsUp);
-        int nbTermsDown = data.countLTStorageReservesParticipationsTerms(
-          data.areaReserves[pays].areaCapacityReservationsDown);
-
-        int hydroProd = data.longTermStorageOfArea[pays].PresenceDHydrauliqueModulable;
-
-        builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);
+        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForLTStorageReserves(pays);
     }
 }

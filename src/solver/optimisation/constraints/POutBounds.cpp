@@ -92,13 +92,8 @@ void POutBounds::add(int pays, int cluster, int pdt)
     }
     else
     {
-        int nbTermsUp = data.countThermalReservesParticipationsTerms(
-          data.areaReserves[pays].areaCapacityReservationsUp,
+        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForThermalReserves(
+          pays,
           cluster);
-        int nbTermsDown = data.countThermalReservesParticipationsTerms(
-          data.areaReserves[pays].areaCapacityReservationsDown,
-          cluster);
-
-        builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);
     }
 }

@@ -85,15 +85,9 @@ void LTStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, in
     }
     else
     {
-        int nbTermsUp = data.countLTStorageReservesParticipationsTerms(
-          data.areaReserves[pays].areaCapacityReservationsUp,
-          data.areaReserves[pays]
-            .referenceGlobalActivationDurationUp); // One term by timestep where the constraint is
-                                                   // active
-        int nbTermsDown = data.countLTStorageReservesParticipationsTerms(
-          data.areaReserves[pays].areaCapacityReservationsDown,
-          data.areaReserves[pays].referenceGlobalActivationDurationDown);
-
-        builder.data.nombreDeContraintes += (nbTermsUp > 0) + (nbTermsDown > 0);
+        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForLTStorageReserves(
+          pays,
+          true /*account For Global Activation Duration*/);
+        ;
     }
 }
