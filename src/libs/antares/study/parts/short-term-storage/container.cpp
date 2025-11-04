@@ -253,7 +253,7 @@ bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem
           }
       });
 
-    // Capacity Reservations should be loaded before loading symmetries
+    // Capacity Reservations are loaded before loading symmetries
     ini.each(
       [&](const IniFile::Section& section)
       {

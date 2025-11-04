@@ -20,12 +20,12 @@
  */
 
 #include <antares/antares/fatal-error.h>
+#include "antares/solver/optimisation/opt_decompte_variables_et_contraintes_reserves.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 
 using namespace Antares;
 
 void OPT_DecompteDesVariablesEtDesContraintesCoutsDeDemarrage(PROBLEME_HEBDO*);
-void OPT_DecompteDesVariablesEtDesContraintesReserves(PROBLEME_HEBDO*);
 
 // This estimate is not very accurate, some constraints may not be enabled
 // in some cases.

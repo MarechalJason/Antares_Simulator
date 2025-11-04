@@ -30,7 +30,7 @@
 
 using namespace Yuni;
 
-void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
+void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReserves(
   PROBLEME_HEBDO* problemeHebdo,
   const int PremierPdtDeLIntervalle,
   const int DernierPdtDeLIntervalle)

@@ -21,11 +21,11 @@
 
 #include <numeric>
 
+#include "antares/solver/optimisation/opt_gestion_second_membre_reserves.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 
 double OPT_SommeDesPminThermiques(const PROBLEME_HEBDO*, int, uint);
 void OPT_InitialiserLeSecondMembreDuProblemeLineaireCoutsDeDemarrage(PROBLEME_HEBDO*, int, int);
-void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO*, int, int);
 
 static void shortTermStorageLevelsRHS(
   const std::vector<::ShortTermStorage::AREA_INPUT>& shortTermStorageInput,

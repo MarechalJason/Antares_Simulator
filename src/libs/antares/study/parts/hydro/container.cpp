@@ -814,7 +814,7 @@ bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::pat
           }
       });
 
-    // Capacity Reservations should be loaded before loading symmetries
+    // Capacity Reservations are loaded before loading symmetries
     ini.each(
       [&](const IniFile::Section& section)
       {

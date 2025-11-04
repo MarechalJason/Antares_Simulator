@@ -19,6 +19,7 @@
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
 
+#include "antares/solver/optimisation/opt_gestion_des_couts_reserves.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 
 #include "variables/VariableManagerUtils.h"
@@ -29,7 +30,6 @@ constexpr double LEVEL_COST = -1.e-6;
 }
 
 void OPT_InitialiserLesCoutsLineaireCoutsDeDemarrage(PROBLEME_HEBDO*, const int, const int);
-void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO*, const int, const int);
 
 static void shortTermStorageCost(
   int weekInTheYear,

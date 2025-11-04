@@ -22,6 +22,7 @@
 #include <cmath>
 #include <spx_constantes_externes.h>
 
+#include "antares/solver/optimisation/opt_gestion_des_bornes_reserves.h"
 #include "antares/solver/simulation/adequacy_patch_runtime_data.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 
@@ -31,9 +32,6 @@
 void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(PROBLEME_HEBDO*,
                                                                             const int,
                                                                             const int);
-void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(PROBLEME_HEBDO*,
-                                                                              const int,
-                                                                              const int);
 
 void OPT_MaxDesPmaxHydrauliques(PROBLEME_HEBDO* problemeHebdo)
 {
@@ -529,10 +527,9 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaire(PROBLEME_HEBDO* prob
           DernierPdtDeLIntervalle);
         if (problemeHebdo->allReserves)
         {
-            OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReservesThermiques(
-              problemeHebdo,
-              PremierPdtDeLIntervalle,
-              DernierPdtDeLIntervalle);
+            OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReserves(problemeHebdo,
+                                                                           PremierPdtDeLIntervalle,
+                                                                           DernierPdtDeLIntervalle);
         }
     }
 }

@@ -19,11 +19,15 @@
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
 
+#include "antares/solver/optimisation/opt_construction_variables_reserves.h"
+
 #include <spx_constantes_externes.h>
 
-#include "antares/solver/optimisation/opt_fonctions.h"
 #include "antares/solver/optimisation/opt_rename_problem.h"
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
+
+#include "variables/VariableManagement.h"
+#include "variables/VariableManagerUtils.h"
 
 void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
   PROBLEME_HEBDO* problemeHebdo,

@@ -31,10 +31,6 @@ void ProblemMatrixEssential::Run()
 {
     for (auto& group: constraintgroups_)
     {
-        if (dynamic_cast<ReserveParticipationGroup*>(group) && !problemeHebdo_->allReserves)
-        {
-            continue;
-        }
         group->BuildConstraints();
     }
 }

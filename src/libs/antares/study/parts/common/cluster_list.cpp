@@ -404,7 +404,7 @@ bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::fil
           }
       });
 
-    // Capacity Reservations should be loaded before loading symmetries
+    // Capacity Reservations are loaded before loading symmetries
     ini.each(
       [&](const IniFile::Section& section)
       {

@@ -32,13 +32,6 @@
 namespace Antares::Data
 {
 
-//    struct ReserveParams
-//{
-//    double maxTurbining;
-//    double maxPumping;
-//    double participationCost;
-//};
-
 /*!
 ** \brief Data series (Hydro)
 */
