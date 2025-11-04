@@ -19,7 +19,8 @@
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
 
-#include "antares/solver/optimisation/opt_fonctions.h"
+#include "antares/solver/optimisation/opt_gestion_des_bornes_reserves.h"
+
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 #include "antares/solver/simulation/sim_structure_donnees.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
@@ -28,245 +29,187 @@
 #include "variables/VariableManagement.h"
 #include "variables/VariableManagerUtils.h"
 
-using namespace Yuni;
+struct ReserveVariablesBoundsSetter
+{
+    PROBLEME_HEBDO* problemeHebdo;
+    const std::unique_ptr<PROBLEME_ANTARES_A_RESOUDRE>& ProblemeAResoudre;
+    std::vector<double>& Xmin;
+    std::vector<double>& Xmax;
+    std::vector<double*>& AdresseOuPlacerLaValeurDesVariablesOptimisees;
+    int pdtJour = 0, pdtHebdo = 0, pays = 0;
+
+    ReserveVariablesBoundsSetter(PROBLEME_HEBDO* hebdo):
+        problemeHebdo(hebdo),
+        ProblemeAResoudre(hebdo->ProblemeAResoudre),
+        Xmin(ProblemeAResoudre->Xmin),
+        Xmax(ProblemeAResoudre->Xmax),
+        AdresseOuPlacerLaValeurDesVariablesOptimisees(
+          ProblemeAResoudre->AdresseOuPlacerLaValeurDesVariablesOptimisees)
+    {
+    }
+
+    void setPdtJour(int pdt)
+    {
+        pdtJour = pdt;
+    }
+
+    void setPdtHebdo(int pdt)
+    {
+        pdtHebdo = pdt;
+    }
+
+    void setPays(int p)
+    {
+        pays = p;
+    }
+
+    // Set variables bounds for a reserve
+    void setReserveBounds(int reserveIdInArea, int reserveId)
+    {
+        const auto& indices = varIndices();
+        auto& res = problemeHebdo->ResultatsHoraires[pays].Reserves()[pdtHebdo];
+
+        setVarBounds(indices.internalUnsatisfied[reserveId],
+                     &res.ValeursHorairesInternalUnsatisfied[reserveIdInArea]);
+
+        setVarBounds(indices.internalExcess[reserveId],
+                     &res.ValeursHorairesInternalExcessReserve[reserveIdInArea]);
+    }
+
+    // Set variables bounds for a Thermal cluster participation to a reserve up or down
+    void setThermalReserveParticipationBounds(int clusterParticipationIdInArea,
+                                              int clusterParticipationId,
+                                              bool isUpReserve)
+    {
+        const auto& indices = varIndices();
+        auto& prod = problemeHebdo->ResultatsHoraires[pays].ProductionThermique[pdtHebdo];
+
+        setVarBounds(indices.runningThermalClusterParticipation[clusterParticipationId],
+                     &prod.ParticipationReservesDuPalierOn()[clusterParticipationIdInArea]);
+
+        if (isUpReserve)
+        {
+            setVarBounds(indices.offThermalClusterParticipation[clusterParticipationId],
+                         &prod.ParticipationReservesDuPalierOff()[clusterParticipationIdInArea]);
+        }
+
+        setVarBounds(indices.thermalClusterParticipation[clusterParticipationId],
+                     &prod.ParticipationReservesDuPalier()[clusterParticipationIdInArea]);
+    }
+
+    // Set variables bounds for a ShortTerm cluster participation to a reserve up or down
+
+    void setSTStorageReserveParticipationBounds(int clusterParticipationIdInArea,
+                                                int clusterParticipationId,
+                                                bool isUpReserve)
+    {
+        const auto& indices = varIndices();
+        auto& st = problemeHebdo->ResultatsHoraires[pays]
+                     .ShortTermStorageReserves()[clusterParticipationIdInArea];
+
+        setVarBounds(indices.STStorageTurbiningClusterParticipation[clusterParticipationId],
+                     nullptr);
+        setVarBounds(indices.STStoragePumpingClusterParticipation[clusterParticipationId], nullptr);
+
+        int dirVar = isUpReserve
+                       ? indices.STStorageClusterParticipationUp[clusterParticipationId]
+                       : indices.STStorageClusterParticipationDown[clusterParticipationId];
+
+        setVarBounds(dirVar, &st.reserveParticipationOfCluster()[pdtHebdo]);
+    }
+
+    // Set variables bounds for a LongTerm cluster participation to a reserve up
+    void setLTStorageReserveParticipationBounds(int clusterParticipationIdInArea,
+                                                int clusterParticipationId,
+                                                bool isUpReserve)
+
+    {
+        const auto& indices = varIndices();
+        auto& hydroUsage = problemeHebdo->ResultatsHoraires[pays].HydroUsage[pdtHebdo];
+
+        setVarBounds(indices.LTStorageTurbiningClusterParticipation[clusterParticipationId],
+                     nullptr);
+
+        setVarBounds(indices.LTStoragePumpingClusterParticipation[clusterParticipationId], nullptr);
+
+        int dirVar = isUpReserve
+                       ? indices.LTStorageClusterParticipationUp[clusterParticipationId]
+                       : indices.LTStorageClusterParticipationDown[clusterParticipationId];
+
+        setVarBounds(dirVar,
+                     &hydroUsage.reserveParticipationOfCluster()[clusterParticipationIdInArea]);
+    }
+
+private:
+    void setVarBounds(int var, double* adresseDuResultat)
+    {
+        Xmin[var] = 0;
+        Xmax[var] = LINFINI_ANTARES;
+        AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
+    }
+
+    inline const CORRESPONDANCES_DES_VARIABLES::ReservesIndices& varIndices() const noexcept
+    {
+        return problemeHebdo->CorrespondanceVarNativesVarOptim[pdtJour].reservesIndices();
+    }
+};
+
+void SetAllReservesBoundsForArea(ReserveVariablesBoundsSetter& setter,
+                                 const AREA_RESERVES_VECTOR& areaReserves,
+                                 bool isUpReserve)
+{
+    const auto& areaCapacityReservations = isUpReserve ? areaReserves.areaCapacityReservationsUp
+                                                       : areaReserves.areaCapacityReservationsDown;
+
+    for (const auto& areaReserve: areaCapacityReservations)
+    {
+        setter.setReserveBounds(areaReserve.areaReserveIndex, areaReserve.globalReserveIndex);
+
+        for (const auto& [clusterId, thermal]: areaReserve.AllThermalReservesParticipation)
+        {
+            setter.setThermalReserveParticipationBounds(thermal.areaIndexClusterParticipation,
+                                                        thermal.globalIndexClusterParticipation,
+                                                        isUpReserve);
+        }
+
+        for (const auto& [clusterId, stStorage]: areaReserve.AllSTStorageReservesParticipation)
+        {
+            setter.setSTStorageReserveParticipationBounds(stStorage.areaIndexClusterParticipation,
+                                                          stStorage.globalIndexClusterParticipation,
+                                                          isUpReserve);
+        }
+
+        for (const auto& ltStorage: areaReserve.AllLTStorageReservesParticipation)
+        {
+            setter.setLTStorageReserveParticipationBounds(ltStorage.areaIndexClusterParticipation,
+                                                          ltStorage.globalIndexClusterParticipation,
+                                                          isUpReserve);
+        }
+    }
+}
 
 void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReserves(
   PROBLEME_HEBDO* problemeHebdo,
   const int PremierPdtDeLIntervalle,
   const int DernierPdtDeLIntervalle)
 {
-    struct ReserveVariablesBoundsSetter
-    {
-        PROBLEME_HEBDO* problemeHebdo;
-        const std::unique_ptr<PROBLEME_ANTARES_A_RESOUDRE>& ProblemeAResoudre;
-        std::vector<double>& Xmin;
-        std::vector<double>& Xmax;
-        std::vector<double*>& AdresseOuPlacerLaValeurDesVariablesOptimisees;
-        int pdtJour, pdtHebdo, pays;
-
-        ReserveVariablesBoundsSetter(PROBLEME_HEBDO* hebdo):
-            problemeHebdo(hebdo),
-            ProblemeAResoudre(hebdo->ProblemeAResoudre),
-            Xmin(ProblemeAResoudre->Xmin),
-            Xmax(ProblemeAResoudre->Xmax),
-            AdresseOuPlacerLaValeurDesVariablesOptimisees(
-              ProblemeAResoudre->AdresseOuPlacerLaValeurDesVariablesOptimisees),
-            pdtJour(0),
-            pdtHebdo(0),
-            pays(0)
-        {
-        }
-
-        void setPdtJour(int pdt)
-        {
-            pdtJour = pdt;
-        }
-
-        void setPdtHebdo(int pdt)
-        {
-            pdtHebdo = pdt;
-        }
-
-        void setPays(int p)
-        {
-            pays = p;
-        }
-
-        // Set variables bounds for a reserve
-        void setReserveBounds(int reserveIdInArea, int reserveId)
-        {
-            const auto& CorrespondanceVarNativesVarOptim = problemeHebdo
-                                                             ->CorrespondanceVarNativesVarOptim
-                                                               [pdtJour];
-            int var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                        .internalUnsatisfied[reserveId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            double* adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                            .Reserves()[pdtHebdo]
-                                            .ValeursHorairesInternalUnsatisfied[reserveIdInArea]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
-
-            var = CorrespondanceVarNativesVarOptim.reservesIndices().internalExcess[reserveId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .Reserves()[pdtHebdo]
-                                    .ValeursHorairesInternalExcessReserve[reserveIdInArea]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
-        }
-
-        // Set variables bounds for a Thermal cluster participation to a reserve up or down
-        void setThermalReserveParticipationBounds(int clusterParticipationIdInArea,
-                                                  int clusterParticipationId,
-                                                  bool isUpReserve)
-        {
-            const auto& CorrespondanceVarNativesVarOptim = problemeHebdo
-                                                             ->CorrespondanceVarNativesVarOptim
-                                                               [pdtJour];
-            int var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                        .runningThermalClusterParticipation[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            double* adresseDuResultat = &(
-              problemeHebdo->ResultatsHoraires[pays]
-                .ProductionThermique[pdtHebdo]
-                .ParticipationReservesDuPalierOn()[clusterParticipationIdInArea]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
-
-            if (isUpReserve) // only for reserves up
-            {
-                var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                        .offThermalClusterParticipation[clusterParticipationId];
-                Xmin[var] = 0;
-                Xmax[var] = LINFINI_ANTARES;
-                adresseDuResultat = &(
-                  problemeHebdo->ResultatsHoraires[pays]
-                    .ProductionThermique[pdtHebdo]
-                    .ParticipationReservesDuPalierOff()[clusterParticipationIdInArea]);
-                AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
-            }
-
-            var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                    .thermalClusterParticipation[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ProductionThermique[pdtHebdo]
-                                    .ParticipationReservesDuPalier()[clusterParticipationIdInArea]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
-        }
-
-        // Set variables bounds for a ShortTerm cluster participation to a reserve up or down
-        void setSTStorageReserveParticipationBounds(int clusterParticipationIdInArea,
-                                                    int clusterParticipationId,
-                                                    bool isUpReserve)
-        {
-            const auto& CorrespondanceVarNativesVarOptim = problemeHebdo
-                                                             ->CorrespondanceVarNativesVarOptim
-                                                               [pdtJour];
-            int var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                        .STStorageTurbiningClusterParticipation[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            double* adresseDuResultat = &(
-              problemeHebdo->ResultatsHoraires[pays]
-                .ShortTermStorageReserves()[clusterParticipationIdInArea]
-                .reserveParticipationOfCluster()[pdtHebdo]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
-
-            var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                    .STStoragePumpingClusterParticipation[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorageReserves()[clusterParticipationIdInArea]
-                                    .reserveParticipationOfCluster()[pdtHebdo]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
-
-            var = isUpReserve ? CorrespondanceVarNativesVarOptim.reservesIndices()
-                                  .STStorageClusterParticipationUp[clusterParticipationId]
-                              : CorrespondanceVarNativesVarOptim.reservesIndices()
-                                  .STStorageClusterParticipationDown[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .ShortTermStorageReserves()[clusterParticipationIdInArea]
-                                    .reserveParticipationOfCluster()[pdtHebdo]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
-        }
-
-        // Set variables bounds for a LongTerm cluster participation to a reserve up
-        void setLTStorageReserveParticipationBounds(int clusterParticipationIdInArea,
-                                                    int clusterParticipationId,
-                                                    bool isUpReserve)
-        {
-            const auto& CorrespondanceVarNativesVarOptim = problemeHebdo
-                                                             ->CorrespondanceVarNativesVarOptim
-                                                               [pdtJour];
-            int var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                        .LTStorageTurbiningClusterParticipation[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            double* adresseDuResultat = &(
-              problemeHebdo->ResultatsHoraires[pays]
-                .HydroUsage[pdtHebdo]
-                .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
-
-            var = CorrespondanceVarNativesVarOptim.reservesIndices()
-                    .LTStoragePumpingClusterParticipation[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .HydroUsage[pdtHebdo]
-                                    .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
-
-            var = isUpReserve ? CorrespondanceVarNativesVarOptim.reservesIndices()
-                                  .LTStorageClusterParticipationUp[clusterParticipationId]
-                              : CorrespondanceVarNativesVarOptim.reservesIndices()
-                                  .LTStorageClusterParticipationDown[clusterParticipationId];
-            Xmin[var] = 0;
-            Xmax[var] = LINFINI_ANTARES;
-            adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
-                                    .HydroUsage[pdtHebdo]
-                                    .reserveParticipationOfCluster()[clusterParticipationIdInArea]);
-            AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
-        }
-    };
-
-    ReserveVariablesBoundsSetter reserveVariablesBoundsSetter(problemeHebdo);
+    ReserveVariablesBoundsSetter setter(problemeHebdo);
 
     for (int pdtHebdo = PremierPdtDeLIntervalle, pdtJour = 0; pdtHebdo < DernierPdtDeLIntervalle;
-         pdtHebdo++, pdtJour++)
+         ++pdtHebdo, ++pdtJour)
     {
-        reserveVariablesBoundsSetter.setPdtJour(pdtJour);
-        reserveVariablesBoundsSetter.setPdtHebdo(pdtHebdo);
+        setter.setPdtJour(pdtJour);
+        setter.setPdtHebdo(pdtHebdo);
 
-        for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
+        for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; ++pays)
         {
-            reserveVariablesBoundsSetter.setPays(pays);
+            setter.setPays(pays);
+
             const auto& areaReserves = problemeHebdo->allReserves()[pays];
+
             for (bool isUpReserve: {reserveIsUp, reserveIsDown})
             {
-                for (const auto& areaReserve: isUpReserve
-                                                ? areaReserves.areaCapacityReservationsUp
-                                                : areaReserves.areaCapacityReservationsDown)
-                {
-                    reserveVariablesBoundsSetter.setReserveBounds(areaReserve.areaReserveIndex,
-                                                                  areaReserve.globalReserveIndex);
-
-                    // Thermal Cluster
-                    for (const auto& [clusterId, clusterReserveParticipation]:
-                         areaReserve.AllThermalReservesParticipation)
-                    {
-                        reserveVariablesBoundsSetter.setThermalReserveParticipationBounds(
-                          clusterReserveParticipation.areaIndexClusterParticipation,
-                          clusterReserveParticipation.globalIndexClusterParticipation,
-                          isUpReserve);
-                    }
-
-                    // Short Term Storage Cluster
-                    for (const auto& [clusterId, clusterReserveParticipation]:
-                         areaReserve.AllSTStorageReservesParticipation)
-                    {
-                        reserveVariablesBoundsSetter.setSTStorageReserveParticipationBounds(
-                          clusterReserveParticipation.areaIndexClusterParticipation,
-                          clusterReserveParticipation.globalIndexClusterParticipation,
-                          isUpReserve);
-                    }
-
-                    // Long Term Storage Cluster
-                    for (const auto& clusterReserveParticipation:
-                         areaReserve.AllLTStorageReservesParticipation)
-                    {
-                        reserveVariablesBoundsSetter.setLTStorageReserveParticipationBounds(
-                          clusterReserveParticipation.areaIndexClusterParticipation,
-                          clusterReserveParticipation.globalIndexClusterParticipation,
-                          isUpReserve);
-                    }
-                }
+                SetAllReservesBoundsForArea(setter, areaReserves, isUpReserve);
             }
         }
     }
