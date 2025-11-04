@@ -274,8 +274,7 @@ void STStorageInput::readSymmetrySection(Area& area, const IniFile::Section& sec
             {
                 if (!cluster->reserveParticipationContainer)
                 {
-                    cluster->reserveParticipationContainer = ReserveParticipationContainer<
-                      StorageClusterReserveParticipation>();
+                    cluster->reserveParticipationContainer.emplace();
                 }
                 cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
             }

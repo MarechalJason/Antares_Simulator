@@ -426,8 +426,7 @@ void ClusterList<ClusterT>::readSymmetrySection(Area& area, const IniFile::Secti
             {
                 if (!cluster->reserveParticipationContainer)
                 {
-                    cluster->reserveParticipationContainer = ReserveParticipationContainer<
-                      ThermalClusterReserveParticipation>();
+                    cluster->reserveParticipationContainer.emplace();
                 }
                 cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
             }

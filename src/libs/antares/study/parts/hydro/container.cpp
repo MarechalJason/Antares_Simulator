@@ -831,8 +831,7 @@ void PartHydro::readSymmetrySection(Area& area, const IniFile::Section& section)
         {
             if (!reserveParticipationContainer)
             {
-                reserveParticipationContainer = ReserveParticipationContainer<
-                  StorageClusterReserveParticipation>();
+                reserveParticipationContainer.emplace();
             }
             reserveParticipationContainer().addReserveParticipationSymmetry(sym);
         }
