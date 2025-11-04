@@ -372,11 +372,6 @@ void Areas<NextT>::hourForEachArea(State& state, uint numSpace)
           // Initializing the state for the current area
           state.initFromAreaIndex(area.index, numSpace);
 
-          if (state.study.parameters.reservesEnabled)
-          {
-              state.initReserveParticipationIndexMaps();
-          }
-
           for (const auto& cluster: area.thermal.list.each_enabled())
           {
               // Intiializing the state for the current thermal cluster
@@ -424,6 +419,11 @@ void Areas<NextT>::weekForEachArea(State& state, uint numSpace)
 
           // Initializing the state for the current area
           state.initFromAreaIndex(area.index, numSpace);
+
+          if (state.study.parameters.reservesEnabled)
+          {
+              state.initReserveParticipationIndexMaps();
+          }
 
           auto& variablesForArea = pAreas[area.index];
 
