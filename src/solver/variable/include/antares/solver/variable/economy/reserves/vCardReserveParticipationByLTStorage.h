@@ -3,7 +3,13 @@
 
 #include "../../storage/results.h"
 
-namespace Antares::Solver::Variable::Economy
+namespace Antares
+{
+namespace Solver
+{
+namespace Variable
+{
+namespace Economy
 {
 
 struct VCardReserveParticipationByLTStorage
@@ -46,4 +52,7 @@ struct VCardReserveParticipationByLTStorage
     typedef std::vector<IntermediateValuesBaseType> IntermediateValuesType;
 };
 
-} // namespace Antares::Solver::Variable::Economy
+} // namespace Economy
+} // namespace Variable
+} // namespace Solver
+} // namespace Antares

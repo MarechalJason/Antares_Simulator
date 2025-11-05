@@ -603,11 +603,6 @@ static bool SGDIntLoadFamily_General(Parameters& d,
     {
         return value.to<bool>(d.yearByYear);
     }
-
-    if (key == "reserves")
-    {
-        return StringToCompatibilityReserves(d.reservesEnabled, value);
-    }
     return false;
 }
 
@@ -1094,6 +1089,10 @@ static bool SGDIntLoadFamily_Compatibility(Parameters& d,
     if (key == "hydro-pmax")
     {
         return StringToCompatibilityHydroPmax(d.compatibility.hydroPmax, value);
+    }
+    else if (key == "reserves")
+    {
+        return StringToCompatibilityReserves(d.reservesEnabled, value);
     }
 
     return false;
