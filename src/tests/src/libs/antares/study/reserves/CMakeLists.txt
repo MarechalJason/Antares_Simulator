@@ -5,4 +5,5 @@ include(${CMAKE_SOURCE_DIR}/tests/macros.cmake)
 # ====================================
 add_boost_test(test_study_reserves
   SRC test_study_reserves.cpp
-  LIBS Antares::study)
+  LIBS Antares::study
+  test_utils_unit)
