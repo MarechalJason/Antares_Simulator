@@ -57,7 +57,7 @@ public:
     {
         if (!this->has_value())
         {
-            this->emplace(T());
+            this->emplace();
         }
     }
 };
