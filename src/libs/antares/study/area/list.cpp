@@ -21,6 +21,7 @@
 
 #include <cassert>
 #include <fstream>
+#include <ranges>
 
 #include <yuni/io/file.h>
 
@@ -57,9 +58,8 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
 {
     for (auto* p = section.firstProperty; p; p = p->next)
     {
-        CString<32, false> key;
-        key = p->key;
-        key.toLower();
+        std::string key = p->key;
+        std::ranges::transform(key, key.begin(), [](unsigned char c) { return std::tolower(c); });
 
         if (key == "energy-activation-ratio-up")
         {
@@ -120,9 +120,8 @@ void readReserveParameters(fs::path& folderInput,
     tristate isReserveUp = Undefined;
     for (auto* p = section.firstProperty; p; p = p->next)
     {
-        CString<30, false> key;
-        key = p->key;
-        key.toLower();
+        std::string key = p->key;
+        std::ranges::transform(key, key.begin(), [](unsigned char c) { return std::tolower(c); });
 
         if (key == "failure-cost")
         {
