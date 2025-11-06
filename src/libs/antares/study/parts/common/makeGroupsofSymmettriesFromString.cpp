@@ -82,19 +82,8 @@ std::vector<std::set<std::string>> makeGroupsOfSymmetries(const std::string& sym
     {
         SymmetryCollectorVisitor visitor;
         auto result = std::any_cast<std::vector<std::set<std::string>>>(visitor.visit(tree));
-        std::cout << "Result: " << std::endl;
-        for (const auto& group: result)
-        {
-            for (const auto& element: group)
-            {
-                std::cout << element << " ";
-            }
-            std::cout << std::endl;
-            std::cout << "----" << std::endl;
-        }
 
         return result;
-        // return std::any_cast<std::vector<std::set<std::string>>>(visitor.visit(tree));
     }
     catch (std::exception& e)
     {

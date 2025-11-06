@@ -461,7 +461,7 @@ BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Bad_Cluster_Symmetry,
     file.close();
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(getWarnings().contains(
-      "Thermal cluster cluster3 is not participating to reserves of area A"));
+      "Thermal cluster cluster3 not participating to reserves of A"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Bad_Reserve_Symmetry,

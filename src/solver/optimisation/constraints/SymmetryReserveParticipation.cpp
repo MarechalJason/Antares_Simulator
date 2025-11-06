@@ -81,12 +81,12 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
                                     .maxTurbining;
         auto refMaxPumping = reserveParticipationRefWithName.reserveParticipation.get().maxPumping;
         auto targetMaxPumping = reserveParticipationWithName.reserveParticipation.get().maxPumping;
-        if (refMaxTurbining != 0 && targetMaxTurbining != 0)
+        if (abs(refMaxTurbining) > 10e-4 && abs(targetMaxTurbining) > 10e-4)
         {
             builder.LTStorageTurbiningClusterReserveParticipation(refIndex, 1 / refMaxTurbining)
               .LTStorageTurbiningClusterReserveParticipation(targetIndex, -1 / targetMaxTurbining);
         }
-        if (refMaxPumping != 0 && targetMaxPumping != 0)
+        if (abs(refMaxPumping) > 10e-4 && abs(refMaxPumping) > 10e-4)
         {
             builder.LTStoragePumpingClusterReserveParticipation(refIndex, 1 / refMaxPumping)
               .LTStoragePumpingClusterReserveParticipation(targetIndex, -1 / targetMaxPumping);
