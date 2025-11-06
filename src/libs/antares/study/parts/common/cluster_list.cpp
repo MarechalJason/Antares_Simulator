@@ -27,7 +27,7 @@
 
 #include <antares/study/parts/common/makeGroupsOfSymmetriesFromString.h>
 #include <antares/utils/utils.h>
-#include "antares/study/parts/reserves/reservesLoader.h"
+#include "antares/study/parts/reserves/reservesParticipationsLoader.h"
 #include "antares/study/study.h"
 
 namespace fs = std::filesystem;

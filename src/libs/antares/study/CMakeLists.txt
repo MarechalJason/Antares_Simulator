@@ -106,7 +106,7 @@ set(SRC_STUDY_PART_RENEWABLE
 source_group("study\\part\\renewable" FILES ${SRC_STUDY_PART_RENEWABLE})
 
 set(SRC_STUDY_PART_RESERVES
-        include/antares/study/parts/reserves/reservesLoader.h
+        include/antares/study/parts/reserves/reservesParticipationsLoader.h
 )
 source_group("study\\part\\reserves" FILES ${SRC_STUDY_PART_RESERVES})
 
