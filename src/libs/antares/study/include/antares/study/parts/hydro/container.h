@@ -178,10 +178,6 @@ public:
 
     bool loadReserveParticipations(Area& area, const std::filesystem::path& file);
 
-private:
-    void readSymmetrySection(Area& area, const IniFile::Section& section);
-    void readCapacityReservationSection(Area& area, const IniFile::Section& section);
-
 public:
     //! Inter-daily breakdown (previously called Smoothing Factor or alpha)
     double interDailyBreakdown;

@@ -76,9 +76,5 @@ public:
 
     /// Number cumulative - constraint
     std::size_t cumulativeConstraintCount() const;
-
-private:
-    void readSymmetrySection(Area& area, const IniFile::Section& section);
-    void readCapacityReservationSection(Area& area, const IniFile::Section& section);
 };
 } // namespace Antares::Data::ShortTermStorage

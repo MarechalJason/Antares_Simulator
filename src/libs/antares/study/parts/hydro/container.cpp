@@ -24,6 +24,7 @@
 #include <antares/study/area/capacityReservation.h>
 #include <antares/study/parts/common/makeGroupsOfSymmetriesFromString.h>
 #include "antares/study/parts/hydro/hydromaxtimeseriesreader.h"
+#include "antares/study/parts/reserves/reservesLoader.h"
 #include "antares/study/study.h"
 
 namespace fs = std::filesystem;
@@ -799,85 +800,8 @@ bool PartHydro::CheckDailyMaxEnergy(const AnyString& areaName)
 
 bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::path& file)
 {
-    IniFile ini;
-    if (!ini.open(file, false))
-    {
-        return false;
-    }
-
-    ini.each(
-      [&](const IniFile::Section& section)
-      {
-          if (section.name != "symmetries")
-          {
-              readCapacityReservationSection(area, section);
-          }
-      });
-
-    // Capacity Reservations are loaded before loading symmetries
-    ini.each(
-      [&](const IniFile::Section& section)
-      {
-          if (section.name == "symmetries")
-          {
-              readSymmetrySection(area, section);
-          }
-      });
-    return true;
-}
-
-void PartHydro::readSymmetrySection(Area& area, const IniFile::Section& section)
-{
-    for (auto* p = section.firstProperty; p; p = p->next)
-    {
-        std::string clusterName;
-        TransformNameIntoID(p->key, clusterName);
-        auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
-        for (auto& sym: symmetries)
-        {
-            reserveParticipationContainer().addReserveParticipationSymmetry(sym);
-        }
-    }
-}
-
-void PartHydro::readCapacityReservationSection(Area& area, const IniFile::Section& section)
-{
-    logs.info() << "Processing section: " << section.name;
-    std::string reserveName = section.name.c_str();
-    StorageClusterReserveParticipation reserveParticipation;
-
-    section.each(
-      [&](const IniFile::Property& property)
-      {
-          if (property.key == "max-turbining")
-          {
-              property.value.to<double>(reserveParticipation.maxTurbining);
-          }
-          else if (property.key == "max-pumping")
-          {
-              property.value.to<double>(reserveParticipation.maxPumping);
-          }
-          else if (property.key == "participation-cost")
-          {
-              property.value.to<double>(reserveParticipation.participationCost);
-          }
-          logs.info() << "Property: " << property.key << " = " << property.value;
-      });
-
-    auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
-    if (reserve)
-    {
-        reserveParticipation.capacityReservation = reserve;
-        if (!reserveParticipationContainer)
-        {
-            reserveParticipationContainer.emplace();
-        }
-        reserveParticipationContainer().addReserveParticipation(section.name, reserveParticipation);
-    }
-    else
-    {
-        logs.info() << area.name << ": does not contain this reserve " << reserveName;
-    }
+    HydroReserveLoader loader;
+    return loader.load(area, file);
 }
 
 uint PartHydro::reserveParticipationsCount() const

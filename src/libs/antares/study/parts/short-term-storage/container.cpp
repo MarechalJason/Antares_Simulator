@@ -27,6 +27,7 @@
 
 #include <antares/study/parts/common/makeGroupsOfSymmetriesFromString.h>
 #include <antares/utils/utils.h>
+#include "antares/study/parts/reserves/reservesLoader.h"
 #include "antares/study/parts/short-term-storage/container.h"
 #include "antares/study/parts/short-term-storage/makeGroupsOfHoursFromString.h"
 #include "antares/study/study.h"
@@ -238,110 +239,8 @@ bool STStorageInput::loadSeriesFromFolder(const fs::path& folder, StudyVersion s
 
 bool STStorageInput::loadReserveParticipations(Area& area, const std::filesystem::path& file)
 {
-    IniFile ini;
-    if (!ini.open(file, false))
-    {
-        return false;
-    }
-
-    ini.each(
-      [&](const IniFile::Section& section)
-      {
-          if (section.name != "symmetries")
-          {
-              readCapacityReservationSection(area, section);
-          }
-      });
-
-    // Capacity Reservations are loaded before loading symmetries
-    ini.each(
-      [&](const IniFile::Section& section)
-      {
-          if (section.name == "symmetries")
-          {
-              readSymmetrySection(area, section);
-          }
-      });
-    return true;
-}
-
-void STStorageInput::readSymmetrySection(Area& area, const IniFile::Section& section)
-{
-    for (auto* p = section.firstProperty; p; p = p->next)
-    {
-        std::string clusterName;
-        TransformNameIntoID(p->key, clusterName);
-
-        auto symmetries = Antares::Data::Symmetries::makeGroupsOfSymmetries(p->value);
-        for (auto& sym: symmetries)
-        {
-            auto cluster = area.shortTermStorage.findInAll(clusterName);
-            if (cluster)
-            {
-                cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
-            }
-            else
-            {
-                logs.warning() << "Short-term storage cluster " << clusterName
-                               << " is not participating to reserves of area " << area.name;
-            }
-        }
-    }
-}
-
-void STStorageInput::readCapacityReservationSection(Area& area, const IniFile::Section& section)
-{
-    logs.info() << "Processing section: " << section.name;
-    std::string reserveName = section.name.c_str();
-    StorageClusterReserveParticipation reserveParticipation;
-    std::string clusterName;
-
-    section.each(
-      [&](const IniFile::Property& property)
-      {
-          if (property.key == "cluster-name")
-          {
-              TransformNameIntoID(property.value, clusterName);
-          }
-          else if (property.key == "max-turbining")
-          {
-              property.value.to<double>(reserveParticipation.maxTurbining);
-          }
-          else if (property.key == "max-pumping")
-          {
-              property.value.to<double>(reserveParticipation.maxPumping);
-          }
-          else if (property.key == "participation-cost")
-          {
-              property.value.to<double>(reserveParticipation.participationCost);
-          }
-          logs.info() << "Property: " << property.key << " = " << property.value;
-      });
-
-    auto reserve = area.allCapacityReservations().getReserveByName(reserveName);
-    auto cluster = findInAll(clusterName);
-
-    if (reserve && cluster)
-    {
-        reserveParticipation.capacityReservation = reserve;
-        if (!cluster->reserveParticipationContainer)
-        {
-            cluster->reserveParticipationContainer.emplace();
-        }
-        cluster->reserveParticipationContainer().addReserveParticipation(section.name,
-                                                                         reserveParticipation);
-    }
-    else
-    {
-        if (!reserve)
-        {
-            logs.warning() << area.name << ": does not contain this reserve " << section.name;
-        }
-        if (!cluster)
-        {
-            logs.warning() << area.name << ": does not contain this cluster " << clusterName;
-        }
-    }
+    STStorageReserveLoader loader;
+    return loader.load(area, file);
 }
 
 bool STStorageInput::saveToFolder(const std::string& folder) const

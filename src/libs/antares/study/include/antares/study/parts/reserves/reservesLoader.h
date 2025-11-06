@@ -1,0 +1,267 @@
+/*
+ * Copyright 2007-2025, RTE (https://www.rte-france.com)
+ * See AUTHORS.txt
+ * SPDX-License-Identifier: MPL-2.0
+ * This file is part of Antares-Simulator,
+ * Adequacy and Performance assessment for interconnected energy networks.
+ *
+ * Antares_Simulator is free software: you can redistribute it and/or modify
+ * it under the terms of the Mozilla Public Licence 2.0 as published by
+ * the Mozilla Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Antares_Simulator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Mozilla Public Licence 2.0 for more details.
+ *
+ * You should have received a copy of the Mozilla Public Licence 2.0
+ * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
+ */
+#pragma once
+
+#include <antares/inifile/inifile.h>
+#include <antares/study/area/area.h>
+
+namespace Antares::Data
+{
+template<typename Derived>
+class ReserveParticipationLoader
+{
+public:
+    bool load(Area& area, const std::filesystem::path& file)
+    {
+        IniFile ini;
+        if (!ini.open(file, false))
+        {
+            return false;
+        }
+
+        ini.each(
+          [&](const IniFile::Section& section)
+          {
+              if (section.name != "symmetries")
+              {
+                  readCapacityReservationSection(area, section);
+              }
+          });
+
+        // Load symmetries after the reserves
+        ini.each(
+          [&](const IniFile::Section& section)
+          {
+              if (section.name == "symmetries")
+              {
+                  readSymmetrySection(area, section);
+              }
+          });
+
+        return true;
+    }
+
+private:
+    virtual void readCapacityReservationSection(Area& area, const IniFile::Section& section) = 0;
+    virtual void readSymmetrySection(Area& area, const IniFile::Section& section) = 0;
+};
+
+template<class ClusterT>
+class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoader<ClusterT>>
+{
+    void readCapacityReservationSection(Area& area, const IniFile::Section& section) override
+    {
+        std::string clusterName;
+        ThermalClusterReserveParticipation reserveParticipation;
+
+        section.each(
+          [&](const IniFile::Property& p)
+          {
+              if (p.key == "cluster-name")
+              {
+                  TransformNameIntoID(p.value, clusterName);
+              }
+              else if (p.key == "max-power")
+              {
+                  p.value.to<double>(reserveParticipation.maxPower);
+              }
+              else if (p.key == "participation-cost")
+              {
+                  p.value.to<double>(reserveParticipation.participationCost);
+              }
+              else if (p.key == "max-power-off")
+              {
+                  p.value.to<double>(reserveParticipation.maxPowerOff);
+              }
+              else if (p.key == "participation-cost-off")
+              {
+                  p.value.to<double>(reserveParticipation.participationCostOff);
+              }
+          });
+
+        auto cluster = area.thermal.list.findInAll(clusterName);
+        auto reserve = area.allCapacityReservations().getReserveByName(section.name);
+
+        if (reserve && cluster)
+        {
+            reserveParticipation.capacityReservation = reserve;
+            if (!cluster->reserveParticipationContainer)
+            {
+                cluster->reserveParticipationContainer.emplace();
+            }
+
+            cluster->reserveParticipationContainer().addReserveParticipation(section.name,
+                                                                             reserveParticipation);
+        }
+        else
+        {
+            if (!reserve)
+            {
+                logs.warning() << area.name << ": missing reserve " << section.name;
+            }
+            if (!cluster)
+            {
+                logs.warning() << area.name << ": missing cluster " << clusterName;
+            }
+        }
+    }
+
+    void readSymmetrySection(Area& area, const IniFile::Section& section) override
+    {
+        for (auto* p = section.firstProperty; p; p = p->next)
+        {
+            std::string clusterName;
+            TransformNameIntoID(p->key, clusterName);
+            auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
+
+            for (auto& sym: symmetries)
+            {
+                auto cluster = area.thermal.list.findInAll(clusterName);
+                if (cluster)
+                {
+                    cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
+                }
+                else
+                {
+                    logs.warning() << "Thermal cluster " << clusterName
+                                   << " not participating to reserves of " << area.name;
+                }
+            }
+        }
+    }
+};
+
+class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserveLoader>
+{
+    void readCapacityReservationSection(Area& area, const IniFile::Section& section) override
+    {
+        std::string clusterName;
+        StorageClusterReserveParticipation reserveParticipation;
+
+        section.each(
+          [&](const IniFile::Property& p)
+          {
+              if (p.key == "cluster-name")
+              {
+                  TransformNameIntoID(p.value, clusterName);
+              }
+              else if (p.key == "max-turbining")
+              {
+                  p.value.to<double>(reserveParticipation.maxTurbining);
+              }
+              else if (p.key == "max-pumping")
+              {
+                  p.value.to<double>(reserveParticipation.maxPumping);
+              }
+              else if (p.key == "participation-cost")
+              {
+                  p.value.to<double>(reserveParticipation.participationCost);
+              }
+          });
+
+        auto reserve = area.allCapacityReservations().getReserveByName(section.name);
+        auto cluster = area.shortTermStorage.findInAll(clusterName);
+
+        if (reserve && cluster)
+        {
+            reserveParticipation.capacityReservation = reserve;
+            if (!cluster->reserveParticipationContainer)
+            {
+                cluster->reserveParticipationContainer.emplace();
+            }
+
+            cluster->reserveParticipationContainer().addReserveParticipation(section.name,
+                                                                             reserveParticipation);
+        }
+    }
+
+    void readSymmetrySection(Area& area, const IniFile::Section& section) override
+    {
+        for (auto* p = section.firstProperty; p; p = p->next)
+        {
+            std::string clusterName;
+            TransformNameIntoID(p->key, clusterName);
+            auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
+
+            for (auto& sym: symmetries)
+            {
+                auto cluster = area.shortTermStorage.findInAll(clusterName);
+                if (cluster)
+                {
+                    cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
+                }
+            }
+        }
+    }
+};
+
+class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
+{
+    void readCapacityReservationSection(Area& area, const IniFile::Section& section) override
+    {
+        StorageClusterReserveParticipation reserveParticipation;
+
+        section.each(
+          [&](const IniFile::Property& p)
+          {
+              if (p.key == "max-turbining")
+              {
+                  p.value.to<double>(reserveParticipation.maxTurbining);
+              }
+              else if (p.key == "max-pumping")
+              {
+                  p.value.to<double>(reserveParticipation.maxPumping);
+              }
+              else if (p.key == "participation-cost")
+              {
+                  p.value.to<double>(reserveParticipation.participationCost);
+              }
+          });
+
+        auto reserve = area.allCapacityReservations().getReserveByName(section.name);
+        if (reserve)
+        {
+            reserveParticipation.capacityReservation = reserve;
+            auto& reserveParticipationContainer = area.hydro.reserveParticipationContainer;
+            if (!reserveParticipationContainer)
+            {
+                reserveParticipationContainer.emplace();
+            }
+
+            reserveParticipationContainer().addReserveParticipation(section.name,
+                                                                    reserveParticipation);
+        }
+    }
+
+    void readSymmetrySection(Area& area, const IniFile::Section& section) override
+    {
+        auto& reserveParticipationContainer = area.hydro.reserveParticipationContainer;
+        for (auto* p = section.firstProperty; p; p = p->next)
+        {
+            auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
+            for (auto& sym: symmetries)
+            {
+                reserveParticipationContainer().addReserveParticipationSymmetry(sym);
+            }
+        }
+    }
+};
+} // namespace Antares::Data

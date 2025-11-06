@@ -203,8 +203,6 @@ protected:
 
 private:
     bool alreadyInAllClusters(std::string clusterName);
-    void readSymmetrySection(Area& area, const IniFile::Section& section);
-    void readCapacityReservationSection(Area& area, const IniFile::Section& section);
 
 }; // class ClusterList
 } // namespace Antares::Data

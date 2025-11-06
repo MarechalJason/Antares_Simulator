@@ -104,6 +104,12 @@ set(SRC_STUDY_PART_RENEWABLE
         parts/renewable/cluster_list.cpp
 )
 source_group("study\\part\\renewable" FILES ${SRC_STUDY_PART_RENEWABLE})
+
+set(SRC_STUDY_PART_RESERVES
+        include/antares/study/parts/reserves/reservesLoader.h
+)
+source_group("study\\part\\reserves" FILES ${SRC_STUDY_PART_RESERVES})
+
 set(SRC_STUDY_PART_SHORT_TERM_STORAGE
         include/antares/study/parts/short-term-storage/container.h
         parts/short-term-storage/container.cpp
@@ -290,6 +296,7 @@ set(SRC_ALL
         ${SRC_STUDY_PART_COMMON}
         ${SRC_STUDY_PART_THERMAL}
         ${SRC_STUDY_PART_RENEWABLE}
+        ${SRC_STUDY_PART_RESERVES}
         ${SRC_STUDY_PART_SHORT_TERM_STORAGE}
         ${SRC_STUDY_SCENARIO_BUILDER}
         ${SRC_STUDY}
