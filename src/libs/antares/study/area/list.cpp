@@ -53,7 +53,7 @@ enum tristate : uint8_t
     Undefined = 2
 };
 
-void openReservesGlobalParameter(Antares::Data::Area& area, const IniFile::Section& section)
+void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Section& section)
 {
     for (auto* p = section.firstProperty; p; p = p->next)
     {
@@ -103,12 +103,18 @@ void openReservesGlobalParameter(Antares::Data::Area& area, const IniFile::Secti
     }
 }
 
-void openReservesFileParameters(Antares::Data::Study& study,
-                                Antares::Data::Area& area,
-                                const IniFile::Section& section,
-                                bool* ret)
+void readReserveParameters(fs::path& folderInput,
+                           Antares::Data::Area& area,
+                           const IniFile::Section& section,
+                           bool* ret)
 {
-    CapacityReservation tmpCapacityReservation{};
+    if (area.allCapacityReservations().contains(section.name))
+    {
+        logs.warning() << area.name << ": reserve name already exists for reserve " << section.name;
+        return;
+    }
+
+    CapacityReservation capacityReservation;
     std::string file_name = AllCapacityReservations::toFilename(section.name);
 
     tristate isReserveUp = Undefined;
@@ -120,7 +126,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
 
         if (key == "failure-cost")
         {
-            if (!p->value.to<double>(tmpCapacityReservation.unsuppliedCost))
+            if (!p->value.to<double>(capacityReservation.unsuppliedCost))
             {
                 logs.warning() << area.name << ": invalid failure cost for reserve "
                                << section.name;
@@ -128,7 +134,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
         }
         else if (key == "spillage-cost")
         {
-            if (!p->value.to<double>(tmpCapacityReservation.spillageCost))
+            if (!p->value.to<double>(capacityReservation.spillageCost))
             {
                 logs.warning() << area.name << ": invalid spillage cost for reserve "
                                << section.name;
@@ -136,7 +142,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
         }
         else if (key == "power-activation-ratio")
         {
-            if (!p->value.to<double>(tmpCapacityReservation.powerActivationRatio))
+            if (!p->value.to<double>(capacityReservation.powerActivationRatio))
             {
                 logs.warning() << area.name << ": invalid maximum activation ratio for reserve "
                                << section.name;
@@ -144,7 +150,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
         }
         else if (key == "energy-activation-ratio")
         {
-            if (!p->value.to<double>(tmpCapacityReservation.energyActivationRatio))
+            if (!p->value.to<double>(capacityReservation.energyActivationRatio))
             {
                 logs.warning() << area.name << ": invalid energy activation ratio for reserve "
                                << section.name;
@@ -152,7 +158,7 @@ void openReservesFileParameters(Antares::Data::Study& study,
         }
         else if (key == "reference-activation-duration")
         {
-            if (!p->value.to<int>(tmpCapacityReservation.referenceActivationHours))
+            if (!p->value.to<int>(capacityReservation.referenceActivationHours))
             {
                 logs.warning() << area.name
                                << ": invalid reference activation duration for reserve "
@@ -179,18 +185,17 @@ void openReservesFileParameters(Antares::Data::Study& study,
             logs.warning() << area.name << ": invalid key " << key << " in file " << section.name;
         }
     }
-    fs::path filePath = study.folderInput / "reserves" / area.id.to<std::string>()
-                        / (file_name + ".txt");
-    tmpCapacityReservation.loadNeedFromFile(filePath);
+    fs::path filePath = folderInput / "reserves" / area.id.to<std::string>() / (file_name + ".txt");
+    capacityReservation.loadNeedFromFile(filePath);
     if (isReserveUp == True)
     {
         area.allCapacityReservations().areaCapacityReservationsUp.emplace(section.name,
-                                                                          tmpCapacityReservation);
+                                                                          capacityReservation);
     }
     else if (isReserveUp == False)
     {
         area.allCapacityReservations().areaCapacityReservationsDown.emplace(section.name,
-                                                                            tmpCapacityReservation);
+                                                                            capacityReservation);
     }
     else
     {
@@ -198,11 +203,10 @@ void openReservesFileParameters(Antares::Data::Study& study,
     }
 }
 
-bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area)
+bool loadReservesParameters(fs::path& folderInput, Antares::Data::Area& area)
 {
     bool ret = true;
-    fs::path reservesIni = study.folderInput / "reserves" / area.id.to<std::string>()
-                           / "reserves.ini";
+    fs::path reservesIni = folderInput / "reserves" / area.id.to<std::string>() / "reserves.ini";
     IniFile ini;
 
     area.allCapacityReservations = AllCapacityReservations();
@@ -211,18 +215,13 @@ bool loadReserves(Antares::Data::Study& study, Antares::Data::Area& area)
         ini.each(
           [&](const IniFile::Section& section)
           {
-              if (section.name == "globalparameters" && section.firstProperty)
+              if (section.name == "globalparameters")
               {
-                  openReservesGlobalParameter(area, section);
-              }
-              else if (area.allCapacityReservations().contains(section.name))
-              {
-                  logs.warning() << area.name << ": reserve name already exists for reserve "
-                                 << section.name;
+                  readReservesAreaParameters(area, section);
               }
               else
               {
-                  openReservesFileParameters(study, area, section, &ret);
+                  readReserveParameters(folderInput, area, section, &ret);
               }
           });
     }
@@ -1128,7 +1127,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
     // Reserves
     if (study.parameters.reservesEnabled)
     {
-        ret = loadReserves(study, area) && ret;
+        ret = loadReservesParameters(study.folderInput, area) && ret;
     }
 
     // Solar
