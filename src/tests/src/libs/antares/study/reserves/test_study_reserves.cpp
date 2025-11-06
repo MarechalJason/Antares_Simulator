@@ -22,12 +22,15 @@
 #define BOOST_TEST_MODULE study
 #include <files-system.h>
 #include <filesystem>
+#include <unit_test_utils.h>
 
 #include <boost/test/unit_test.hpp>
+#include <boost/test/unit_test_suite.hpp>
 
+#include <antares/logs/logs.h>
 #include <antares/solver/simulation/sim_structure_probleme_economique.h>
 #include "antares/study/study.h"
-
+using Antares::UnitTests::CaptureAntaresLogs;
 using namespace Antares::Data;
 
 void addThermalCluster(Data::Area* area, const std::string& name)
@@ -40,8 +43,9 @@ void addThermalCluster(Data::Area* area, const std::string& name)
 /*!
  * Study with one area named "A"
  */
-struct OneProblemWithReservesOneArea
+class OneProblemWithReservesOneArea
 {
+public:
     OneProblemWithReservesOneArea()
     {
         study = std::make_unique<Study>();
@@ -54,23 +58,53 @@ struct OneProblemWithReservesOneArea
         tmpCapacityReservationUp.powerActivationRatio = 3;
         tmpCapacityReservationUp.energyActivationRatio = 4;
 
+        tmpCapacityReservationUpTwo.unsuppliedCost = 11;
+        tmpCapacityReservationUpTwo.referenceActivationHours = 12;
+        tmpCapacityReservationUpTwo.powerActivationRatio = 13;
+        tmpCapacityReservationUpTwo.energyActivationRatio = 14;
+
+        tmpCapacityReservationUpThree.unsuppliedCost = 21;
+        tmpCapacityReservationUpThree.referenceActivationHours = 22;
+        tmpCapacityReservationUpThree.powerActivationRatio = 23;
+        tmpCapacityReservationUpThree.energyActivationRatio = 24;
+
         tmpCapacityReservationDown.unsuppliedCost = 5;
         tmpCapacityReservationDown.referenceActivationHours = 6;
         tmpCapacityReservationDown.powerActivationRatio = 7;
         tmpCapacityReservationDown.energyActivationRatio = 8;
 
+        tmpCapacityReservationDownTwo.unsuppliedCost = 15;
+        tmpCapacityReservationDownTwo.referenceActivationHours = 16;
+        tmpCapacityReservationDownTwo.powerActivationRatio = 17;
+        tmpCapacityReservationDownTwo.energyActivationRatio = 18;
+
         areaA->allCapacityReservations = AllCapacityReservations();
         areaA->allCapacityReservations()
           .areaCapacityReservationsUp.emplace("ReserveUp", tmpCapacityReservationUp);
         areaA->allCapacityReservations()
+          .areaCapacityReservationsUp.emplace("ReserveUpTwo", tmpCapacityReservationUpTwo);
+        areaA->allCapacityReservations()
+          .areaCapacityReservationsUp.emplace("ReserveUpThree", tmpCapacityReservationUpThree);
+
+        areaA->allCapacityReservations()
           .areaCapacityReservationsDown.emplace("ReserveDown", tmpCapacityReservationDown);
+        areaA->allCapacityReservations()
+          .areaCapacityReservationsDown.emplace("ReserveDownTwo", tmpCapacityReservationDownTwo);
     }
 
     std::unique_ptr<Study> study;
     Area* areaA;
     PROBLEME_HEBDO problem;
     CapacityReservation tmpCapacityReservationUp;
+    CapacityReservation tmpCapacityReservationUpTwo;
+    CapacityReservation tmpCapacityReservationUpThree;
     CapacityReservation tmpCapacityReservationDown;
+    CapacityReservation tmpCapacityReservationDownTwo;
+};
+
+class OneProblemWithReservesOneArea_withlogger: public OneProblemWithReservesOneArea,
+                                                public CaptureAntaresLogs
+{
 };
 
 /*!
@@ -171,9 +205,9 @@ BOOST_AUTO_TEST_CASE(reserve_add_double)
 
 BOOST_FIXTURE_TEST_CASE(reserve_one_area, OneProblemWithReservesOneArea)
 {
-    BOOST_CHECK_EQUAL(areaA->allCapacityReservations().size(), 2);
-    BOOST_CHECK_EQUAL(areaA->allCapacityReservations().areaCapacityReservationsDown.size(), 1);
-    BOOST_CHECK_EQUAL(areaA->allCapacityReservations().areaCapacityReservationsUp.size(), 1);
+    BOOST_CHECK_EQUAL(areaA->allCapacityReservations().size(), 5);
+    BOOST_CHECK_EQUAL(areaA->allCapacityReservations().areaCapacityReservationsDown.size(), 2);
+    BOOST_CHECK_EQUAL(areaA->allCapacityReservations().areaCapacityReservationsUp.size(), 3);
     BOOST_CHECK_EQUAL(
       areaA->allCapacityReservations().areaCapacityReservationsUp.at("ReserveUp").unsuppliedCost,
       1);
@@ -234,7 +268,8 @@ BOOST_FIXTURE_TEST_CASE(reserve_up_two_areas, OneProblemWithReservesTwoAreas)
                       15);
 }
 
-BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Normal, OneProblemWithReservesOneArea)
+BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_One_No_Symmetries,
+                        OneProblemWithReservesOneArea)
 {
     auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
     addThermalCluster(areaA, "cluster1");
@@ -263,6 +298,200 @@ BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Normal, OneProblemWithRes
                         ->reserveParticipationContainer.value()
                         .reserveMaxPower("ReserveUp"),
                       9.9);
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .reserveCost("ReserveUp"),
+                      8.8);
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .reserveMaxPowerOff("ReserveUp"),
+                      7.7);
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .reserveCostOff("ReserveUp"),
+                      6.6);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Symmetries, OneProblemWithReservesOneArea)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+    addThermalCluster(areaA, "cluster2");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown]\n";
+    file << "cluster1 = [ReserveUpThree, ReserveDown]\n";
+    file << "cluster1 = [ReserveUpTwo, ReserveDownTwo]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveUpTwo]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 19.9\n";
+    file << "participation-cost = 18.8\n";
+    file << "max-power-off = 17.7\n";
+    file << "participation-cost-off = 16.6\n";
+    file << "\n";
+    file << "[ReserveUpThree]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 19.9\n";
+    file << "participation-cost = 18.8\n";
+    file << "max-power-off = 17.7\n";
+    file << "participation-cost-off = 16.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file << "\n";
+    file << "[ReserveDownTwo]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(
+      areaA->thermal.list.findInAll("cluster1")->reserveParticipationContainer.has_value());
+    BOOST_CHECK(
+      !areaA->thermal.list.findInAll("cluster2")->reserveParticipationContainer.has_value());
+    BOOST_CHECK(areaA->thermal.list.findInAll("cluster1")
+                  ->reserveParticipationContainer.value()
+                  .isParticipatingInReserve("ReserveUp"));
+    BOOST_CHECK(areaA->thermal.list.findInAll("cluster1")
+                  ->reserveParticipationContainer.value()
+                  .isParticipatingInReserve("ReserveDown"));
+
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .getNbSymGroups(),
+                      3);
+
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .symmetricalIndices("ReserveUp")
+                        .size(),
+                      1);
+
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .symmetricalIndices("ReserveDown")
+                        .size(),
+                      2);
+
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .symmetricalIndices("ReserveUpThree")
+                        .size(),
+                      1);
+
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .symmetricalIndices("ReserveUpTwo")
+                        .size(),
+                      1);
+
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .symmetricalIndices("ReserveDownTwo")
+                        .size(),
+                      1);
+
+    std::vector<int> symDown = areaA->thermal.list.findInAll("cluster1")
+                                 ->reserveParticipationContainer.value()
+                                 .symmetricalIndices("ReserveDown");
+
+    int symUp = areaA->thermal.list.findInAll("cluster1")
+                  ->reserveParticipationContainer.value()
+                  .symmetricalIndices("ReserveUp")
+                  .at(0);
+    int symUpTwo = areaA->thermal.list.findInAll("cluster1")
+                     ->reserveParticipationContainer.value()
+                     .symmetricalIndices("ReserveUpTwo")
+                     .at(0);
+    int symUpThree = areaA->thermal.list.findInAll("cluster1")
+                       ->reserveParticipationContainer.value()
+                       .symmetricalIndices("ReserveUpThree")
+                       .at(0);
+    BOOST_CHECK_EQUAL(
+      count(symDown.begin(), symDown.end(), symUp),
+      1); // Value in symmetricalIndices("ReserveUp") is also in symmetricalIndices("ReserveDown")
+    BOOST_CHECK_EQUAL(
+      count(symDown.begin(), symDown.end(), symUpTwo),
+      0); // Value in symmetricalIndices("ReserveUpTwo") is not in symmetricalIndices("ReserveDown")
+    BOOST_CHECK_EQUAL(count(symDown.begin(), symDown.end(), symUpThree),
+                      1);             // Value in symmetricalIndices("ReserveUpThree") is also in
+                                      // symmetricalIndices("ReserveDown")
+    BOOST_CHECK(symUp != symUpThree); // Value in symmetricalIndices("ReserveUp") is not in
+                                      // symmetricalIndices("ReserveUpThree")
+}
+
+BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Bad_Cluster_Symmetry,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster3 = [ReserveUp, ReserveDown]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getWarnings().contains(
+      "Thermal cluster cluster3 is not participating to reserves of area A"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Bad_Reserve_Symmetry,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveNull, ReserveDown]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    BOOST_CHECK_EXCEPTION(
+      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
+      std::out_of_range,
+      checkMessage("This entity is not participating to reserve ReserveNull"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version
