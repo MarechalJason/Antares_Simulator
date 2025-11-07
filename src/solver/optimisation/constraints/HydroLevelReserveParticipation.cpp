@@ -1,12 +1,12 @@
-#include "antares/solver/optimisation/constraints/STStockLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/HydroLevelReserveParticipation.h"
 
-void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
+void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
-    int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
+    int globalClusterIdx = data.hydroOfArea[pays].GlobalHydroIndex;
 
     if (!data.Simulation)
     {
-        // 15 (g) (1)
+        // 15 (r) (1)
         // Participation of down reserves requires a sufficient level of stock
         // R_t + Sum(P_{res} * R_{min,res}) <= R_up
         // R_t : stock level at time t
@@ -18,11 +18,11 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
 
             for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsDown)
             {
-                if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
+                if (capacityReservation.AllHydroReservesParticipation.size())
                 {
-                    RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
-                      = capacityReservation.AllSTStorageReservesParticipation[cluster];
-                    builder.STStorageClusterReserveParticipation(
+                    RESERVE_PARTICIPATION_HYDRO reserveParticipations
+                      = capacityReservation.AllHydroReservesParticipation[cluster];
+                    builder.HydroReserveParticipation(
                       reserveIsDown,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
@@ -30,24 +30,24 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
             }
             if (builder.NumberOfVariables() > 0)
             {
-                builder.ShortTermStorageLevel(globalClusterIdx, 1.);
+                builder.HydroLevel(globalClusterIdx, 1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .STStorageLevelParticipationDown[globalClusterIdx]
+                  .HydroLevelParticipationDown[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STStockLevelReserveParticipationDown(
-                  builder.data.nombreDeContraintes,
-                  data.shortTermStorageOfArea[pays][cluster].name);
+                namer.HydroLevelReserveParticipation(reserveIsDown,
+                                                     builder.data.nombreDeContraintes,
+                                                     "Hydro");
                 builder.build();
             }
         }
 
-        // 15 (g) (2)
+        // 15 (r) (2)
         // Participation of up reserves requires a sufficient level of stock
         // -R_t + Sum(P_{res} * R_{min,res}) <= -R_down
         // R_t : stock level at time t
@@ -59,11 +59,11 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
 
             for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsUp)
             {
-                if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
+                if (capacityReservation.AllHydroReservesParticipation.size())
                 {
-                    RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
-                      = capacityReservation.AllSTStorageReservesParticipation[cluster];
-                    builder.STStorageClusterReserveParticipation(
+                    RESERVE_PARTICIPATION_HYDRO reserveParticipations
+                      = capacityReservation.AllHydroReservesParticipation[cluster];
+                    builder.HydroReserveParticipation(
                       reserveIsUp,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
@@ -71,27 +71,25 @@ void STStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
             }
             if (builder.NumberOfVariables() > 0)
             {
-                builder.ShortTermStorageLevel(globalClusterIdx, -1.);
+                builder.HydroLevel(globalClusterIdx, -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .STStorageLevelParticipationUp[globalClusterIdx]
+                  .HydroLevelParticipationUp[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STStockLevelReserveParticipationUp(
-                  builder.data.nombreDeContraintes,
-                  data.shortTermStorageOfArea[pays][cluster].name);
+                namer.HydroLevelReserveParticipation(reserveIsUp,
+                                                     builder.data.nombreDeContraintes,
+                                                     "Hydro");
                 builder.build();
             }
         }
     }
     else
     {
-        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForSTStorageReserves(
-          pays,
-          cluster);
+        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForHydroReserves(pays);
     }
 }

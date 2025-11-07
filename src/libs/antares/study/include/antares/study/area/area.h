@@ -299,7 +299,7 @@ public:
     {
         boost::bimap<std::pair<ReserveName, std::string>, int> thermalClusters;
         boost::bimap<std::pair<ReserveName, std::string>, int> STStorageClusters;
-        boost::bimap<ReserveName, int> LTStorage;
+        boost::bimap<ReserveName, int> Hydro;
     };
 
     ReserveOpt<ReserveIndexMap> reserveParticipationIndexMaps;

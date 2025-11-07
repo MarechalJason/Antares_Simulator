@@ -125,46 +125,37 @@ ConstraintBuilder& ConstraintBuilder::STStoragePumpingClusterReserveParticipatio
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::LTStorageClusterReserveParticipation(bool isUpReserve,
-                                                                           unsigned int index,
-                                                                           double coeff,
-                                                                           int offset,
-                                                                           int delta)
+ConstraintBuilder& ConstraintBuilder::HydroReserveParticipation(bool isUpReserve,
+                                                                unsigned int index,
+                                                                double coeff,
+                                                                int offset,
+                                                                int delta)
 {
-    AddVariable(variableManager_.LTStorageClusterReserveParticipation(isUpReserve,
-                                                                      index,
-                                                                      hourInWeek_,
-                                                                      offset,
-                                                                      delta),
-                coeff);
+    AddVariable(
+      variableManager_.HydroReserveParticipation(isUpReserve, index, hourInWeek_, offset, delta),
+      coeff);
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::LTStorageTurbiningClusterReserveParticipation(
-  unsigned int index,
-  double coeff,
-  int offset,
-  int delta)
+ConstraintBuilder& ConstraintBuilder::HydroTurbiningReserveParticipation(unsigned int index,
+                                                                         double coeff,
+                                                                         int offset,
+                                                                         int delta)
 {
-    AddVariable(variableManager_.LTStorageTurbiningClusterReserveParticipation(index,
-                                                                               hourInWeek_,
-                                                                               offset,
-                                                                               delta),
-                coeff);
+    AddVariable(
+      variableManager_.HydroTurbiningReserveParticipation(index, hourInWeek_, offset, delta),
+      coeff);
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::LTStoragePumpingClusterReserveParticipation(
-  unsigned int index,
-  double coeff,
-  int offset,
-  int delta)
+ConstraintBuilder& ConstraintBuilder::HydroPumpingReserveParticipation(unsigned int index,
+                                                                       double coeff,
+                                                                       int offset,
+                                                                       int delta)
 {
-    AddVariable(variableManager_.LTStoragePumpingClusterReserveParticipation(index,
-                                                                             hourInWeek_,
-                                                                             offset,
-                                                                             delta),
-                coeff);
+    AddVariable(
+      variableManager_.HydroPumpingReserveParticipation(index, hourInWeek_, offset, delta),
+      coeff);
     return *this;
 }
 

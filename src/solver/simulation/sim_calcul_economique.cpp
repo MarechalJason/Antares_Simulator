@@ -232,76 +232,71 @@ static void importShortTermStorages(
     }
 }
 
-static void importLongTermStoragesReserves(AreaList& areas, PROBLEME_HEBDO& problem)
+static void importHydrosReserves(AreaList& areas, PROBLEME_HEBDO& problem)
 {
     int globalReserveIndex = 0;
-    int globalLTStorageClusterParticipationIndex = 0;
+    int globalHydroParticipationIndex = 0;
     for (uint areaIndex = 0; areaIndex != areas.size(); areaIndex++)
     {
         int areaReserveIndex = 0;
         int areaClusterParticipationIndex = 0;
         auto area = areas[areaIndex];
-        auto& ltStorage = area->hydro;
+        auto& hydro = area->hydro;
 
-        if (area->allCapacityReservations && ltStorage.reserveParticipationContainer)
+        if (area->allCapacityReservations && hydro.reserveParticipationContainer)
         {
             auto& areaReserves = problem.allReserves()[areaIndex];
 
-            auto processLTStorageReservations = [&](const auto& reserveDefs, auto& targetMap)
+            auto processHydroReservations = [&](const auto& reserveDefs, auto& targetMap)
             {
                 int areaReserveIdx = 0;
                 for (const auto& [reserveName, _]: reserveDefs)
                 {
-                    if (ltStorage.reserveParticipationContainer().isParticipatingInReserve(
-                          reserveName))
+                    if (hydro.reserveParticipationContainer().isParticipatingInReserve(reserveName))
                     {
-                        RESERVE_PARTICIPATION_LTSTORAGE reserveParticipation;
-                        reserveParticipation.maxTurbining = ltStorage
-                                                              .reserveParticipationContainer()
+                        RESERVE_PARTICIPATION_HYDRO reserveParticipation;
+                        reserveParticipation.maxTurbining = hydro.reserveParticipationContainer()
                                                               .reserveMaxTurbining(reserveName);
-                        reserveParticipation.maxPumping = ltStorage.reserveParticipationContainer()
+                        reserveParticipation.maxPumping = hydro.reserveParticipationContainer()
                                                             .reserveMaxPumping(reserveName);
-                        reserveParticipation.participationCost = ltStorage
+                        reserveParticipation.participationCost = hydro
                                                                    .reserveParticipationContainer()
                                                                    .reserveCost(reserveName);
-                        reserveParticipation.clusterName = "LongTermStorage";
+                        reserveParticipation.clusterName = "Hydro";
                         reserveParticipation.clusterIdInArea = 0;
                         reserveParticipation.globalIndexClusterParticipation
-                          = globalLTStorageClusterParticipationIndex;
+                          = globalHydroParticipationIndex;
                         reserveParticipation.areaIndexClusterParticipation
                           = areaClusterParticipationIndex;
 
-                        targetMap[areaReserveIdx].AllLTStorageReservesParticipation.push_back(
+                        targetMap[areaReserveIdx].AllHydroReservesParticipation.push_back(
                           std::move(reserveParticipation));
 
                         for (const auto& symIdx:
-                             ltStorage.reserveParticipationContainer().symmetricalIndices(
-                               reserveName))
+                             hydro.reserveParticipationContainer().symmetricalIndices(reserveName))
                         {
-                            if (areaReserves.LTStorageReservesParticipationSymmetries.size()
-                                <= symIdx)
+                            if (areaReserves.HydroReservesParticipationSymmetries.size() <= symIdx)
                             {
-                                areaReserves.LTStorageReservesParticipationSymmetries.resize(
-                                  ltStorage.reserveParticipationContainer().getNbSymGroups());
+                                areaReserves.HydroReservesParticipationSymmetries.resize(
+                                  hydro.reserveParticipationContainer().getNbSymGroups());
                             }
-                            areaReserves.LTStorageReservesParticipationSymmetries[symIdx].push_back(
+                            areaReserves.HydroReservesParticipationSymmetries[symIdx].push_back(
                               {reserveName,
-                               targetMap[areaReserveIdx].AllLTStorageReservesParticipation.back()});
+                               targetMap[areaReserveIdx].AllHydroReservesParticipation.back()});
                         }
 
-                        ++globalLTStorageClusterParticipationIndex;
+                        ++globalHydroParticipationIndex;
                         ++areaClusterParticipationIndex;
                     }
                     ++areaReserveIdx;
                 }
             };
 
-            processLTStorageReservations(area->allCapacityReservations().areaCapacityReservationsUp,
-                                         areaReserves.areaCapacityReservationsUp);
+            processHydroReservations(area->allCapacityReservations().areaCapacityReservationsUp,
+                                     areaReserves.areaCapacityReservationsUp);
 
-            processLTStorageReservations(
-              area->allCapacityReservations().areaCapacityReservationsDown,
-              areaReserves.areaCapacityReservationsDown);
+            processHydroReservations(area->allCapacityReservations().areaCapacityReservationsDown,
+                                     areaReserves.areaCapacityReservationsDown);
         }
     }
 }
@@ -339,7 +334,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
     problem.NombreDInterconnexions = study.runtime.interconnectionsCount();
 
     problem.NumberOfShortTermStorages = study.runtime.counts.shortTermStorages;
-    problem.NumberOfLongTermStorages = study.runtime.counts.longTermStorages;
+    problem.NumberOfHydros = study.runtime.counts.hydros;
 
     auto activeConstraints = study.bindingConstraints.activeConstraints();
     problem.NombreDeContraintesCouplantes = activeConstraints.size();
@@ -455,7 +450,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
     if (parameters.reservesEnabled)
     {
         importCapacityReservations(study.areas, problem);
-        importLongTermStoragesReserves(study.areas, problem);
+        importHydrosReserves(study.areas, problem);
     }
 
     importShortTermStorages(study.parameters, study.areas, problem.ShortTermStorage, problem);

@@ -160,28 +160,28 @@ set(RTESOLVER_OPT
 		constraints/STPumpingCapacityThreasholds.cpp
 		include/antares/solver/optimisation/constraints/STReserveParticipation.h
 		constraints/STReserveParticipation.cpp
-		include/antares/solver/optimisation/constraints/STStockLevelReserveParticipation.h
-		constraints/STStockLevelReserveParticipation.cpp
-		include/antares/solver/optimisation/constraints/LTTurbiningMaxReserve.h
-		constraints/LTTurbiningMaxReserve.cpp
-		include/antares/solver/optimisation/constraints/LTPumpingMaxReserve.h
-		constraints/LTPumpingMaxReserve.cpp
-		include/antares/solver/optimisation/constraints/LTReserveParticipation.h
-		constraints/LTReserveParticipation.cpp
-		include/antares/solver/optimisation/constraints/LTTurbiningCapacityThreasholds.h
-		constraints/LTTurbiningCapacityThreasholds.cpp
-		include/antares/solver/optimisation/constraints/LTPumpingCapacityThreasholds.h
-		constraints/LTPumpingCapacityThreasholds.cpp
-		include/antares/solver/optimisation/constraints/LTStockLevelReserveParticipation.h
-		constraints/LTStockLevelReserveParticipation.cpp
-		include/antares/solver/optimisation/constraints/STStockEnergyLevelReserveParticipation.h
-		constraints/STStockEnergyLevelReserveParticipation.cpp
-		include/antares/solver/optimisation/constraints/STStockGlobalEnergyLevelReserveParticipation.h
-		constraints/STStockGlobalEnergyLevelReserveParticipation.cpp
-		include/antares/solver/optimisation/constraints/LTStockEnergyLevelReserveParticipation.h
-		constraints/LTStockEnergyLevelReserveParticipation.cpp
-		include/antares/solver/optimisation/constraints/LTStockGlobalEnergyLevelReserveParticipation.h
-		constraints/LTStockGlobalEnergyLevelReserveParticipation.cpp
+		include/antares/solver/optimisation/constraints/STStorageLevelReserveParticipation.h
+		constraints/STStorageLevelReserveParticipation.cpp
+		include/antares/solver/optimisation/constraints/HydroTurbiningMaxReserve.h
+		constraints/HydroTurbiningMaxReserve.cpp
+		include/antares/solver/optimisation/constraints/HydroPumpingMaxReserve.h
+		constraints/HydroPumpingMaxReserve.cpp
+		include/antares/solver/optimisation/constraints/HydroReserveParticipation.h
+		constraints/HydroReserveParticipation.cpp
+		include/antares/solver/optimisation/constraints/HydroTurbiningCapacityThreasholds.h
+		constraints/HydroTurbiningCapacityThreasholds.cpp
+		include/antares/solver/optimisation/constraints/HydroPumpingCapacityThreasholds.h
+		constraints/HydroPumpingCapacityThreasholds.cpp
+		include/antares/solver/optimisation/constraints/HydroLevelReserveParticipation.h
+		constraints/HydroLevelReserveParticipation.cpp
+		include/antares/solver/optimisation/constraints/STStorageEnergyLevelReserveParticipation.h
+		constraints/STStorageEnergyLevelReserveParticipation.cpp
+		include/antares/solver/optimisation/constraints/STStorageGlobalEnergyLevelReserveParticipation.h
+		constraints/STStorageGlobalEnergyLevelReserveParticipation.cpp
+		include/antares/solver/optimisation/constraints/HydroEnergyLevelReserveParticipation.h
+		constraints/HydroEnergyLevelReserveParticipation.cpp
+		include/antares/solver/optimisation/constraints/HydroGlobalEnergyLevelReserveParticipation.h
+		constraints/HydroGlobalEnergyLevelReserveParticipation.cpp
         include/antares/solver/optimisation/ProblemMatrixEssential.h
         ProblemMatrixEssential.cpp
         include/antares/solver/optimisation/LinearProblemMatrixStartUpCosts.h

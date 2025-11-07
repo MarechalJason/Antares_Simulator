@@ -2,12 +2,12 @@
 #include "ConstraintBuilder.h"
 
 /*
- * represent 'STStockLevelReserveParticipation' Constraint type
+ * represent 'STStorageLevelReserveParticipation' Constraint type
  */
-class STStockLevelReserveParticipation: private ConstraintFactory
+class STStorageGlobalEnergyLevelReserveParticipation: private ConstraintFactory
 {
 public:
-    STStockLevelReserveParticipation(ConstraintBuilder& builder, ReserveData& data):
+    STStorageGlobalEnergyLevelReserveParticipation(ConstraintBuilder& builder, ReserveData& data):
         ConstraintFactory(builder),
         data(data)
     {

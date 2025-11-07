@@ -12,7 +12,7 @@ namespace Variable
 namespace Economy
 {
 
-struct VCardReserveParticipationByLTStorage
+struct VCardReserveParticipationByHydro
 {
     static std::string Caption()
     {
@@ -26,11 +26,11 @@ struct VCardReserveParticipationByLTStorage
 
     static std::string Description()
     {
-        return "Reserve Participation from long-term storage to a reserve";
+        return "Reserve Participation from hydro to a reserve";
     }
 
     typedef Results<R::AllYears::Average<>> ResultsType;
-    typedef VCardReserveParticipationByLTStorage VCardForSpatialAggregate;
+    typedef VCardReserveParticipationByHydro VCardForSpatialAggregate;
 
     enum
     {

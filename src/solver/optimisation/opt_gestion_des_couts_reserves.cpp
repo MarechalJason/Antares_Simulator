@@ -98,12 +98,12 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
             CoutLineaire[var] = reserveParticipation.participationCost;
         }
 
-        // Init costs for a LongTerm cluster participation to a reserve
-        void initLTStorageReserveParticipationCosts(
+        // Init costs for a Hydro participation to a reserve
+        void initHydroReserveParticipationCosts(
           bool isUpReserve,
-          const RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation)
+          const RESERVE_PARTICIPATION_HYDRO& reserveParticipation)
         {
-            int var = variableManager.LTStorageClusterReserveParticipation(
+            int var = variableManager.HydroReserveParticipation(
               isUpReserve,
               reserveParticipation.globalIndexClusterParticipation,
               pdtHebdo);
@@ -142,13 +142,12 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                       clusterReserveParticipation);
                 }
 
-                // Long Term Storage clusters
+                // Hydro
                 for (const auto& clusterReserveParticipation:
-                     areaReserveUp.AllLTStorageReservesParticipation)
+                     areaReserveUp.AllHydroReservesParticipation)
                 {
-                    reserveCostsInitializer.initLTStorageReserveParticipationCosts(
-                      reserveIsUp,
-                      clusterReserveParticipation);
+                    reserveCostsInitializer
+                      .initHydroReserveParticipationCosts(reserveIsUp, clusterReserveParticipation);
                 }
             }
 
@@ -174,11 +173,11 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                       clusterReserveParticipation);
                 }
 
-                // Long Term Storage clusters
+                // Hydro
                 for (const auto& clusterReserveParticipation:
-                     areaReserveDown.AllLTStorageReservesParticipation)
+                     areaReserveDown.AllHydroReservesParticipation)
                 {
-                    reserveCostsInitializer.initLTStorageReserveParticipationCosts(
+                    reserveCostsInitializer.initHydroReserveParticipationCosts(
                       reserveIsDown,
                       clusterReserveParticipation);
                 }

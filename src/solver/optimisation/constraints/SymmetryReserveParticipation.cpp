@@ -73,7 +73,7 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
               .STStoragePumpingClusterReserveParticipation(targetIndex, -1 / targetMaxPumping);
         }
     }
-    else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_LTSTORAGE>)
+    else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_HYDRO>)
     {
         auto refMaxTurbining = reserveParticipationRefWithName.reserveParticipation.get()
                                  .maxTurbining;
@@ -83,13 +83,13 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
         auto targetMaxPumping = reserveParticipationWithName.reserveParticipation.get().maxPumping;
         if (abs(refMaxTurbining) > 10e-4 && abs(targetMaxTurbining) > 10e-4)
         {
-            builder.LTStorageTurbiningClusterReserveParticipation(refIndex, 1 / refMaxTurbining)
-              .LTStorageTurbiningClusterReserveParticipation(targetIndex, -1 / targetMaxTurbining);
+            builder.HydroTurbiningReserveParticipation(refIndex, 1 / refMaxTurbining)
+              .HydroTurbiningReserveParticipation(targetIndex, -1 / targetMaxTurbining);
         }
         if (abs(refMaxPumping) > 10e-4 && abs(refMaxPumping) > 10e-4)
         {
-            builder.LTStoragePumpingClusterReserveParticipation(refIndex, 1 / refMaxPumping)
-              .LTStoragePumpingClusterReserveParticipation(targetIndex, -1 / targetMaxPumping);
+            builder.HydroPumpingReserveParticipation(refIndex, 1 / refMaxPumping)
+              .HydroPumpingReserveParticipation(targetIndex, -1 / targetMaxPumping);
         }
     }
 }
@@ -123,7 +123,7 @@ template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_STSTORAGE>
   const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_STSTORAGE>>&,
   int);
 
-template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_LTSTORAGE>(
+template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_HYDRO>(
   int,
-  const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_LTSTORAGE>>&,
+  const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_HYDRO>>&,
   int);

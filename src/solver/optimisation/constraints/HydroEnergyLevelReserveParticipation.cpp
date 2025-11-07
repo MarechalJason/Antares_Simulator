@@ -1,12 +1,12 @@
-#include "antares/solver/optimisation/constraints/LTStockEnergyLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/HydroEnergyLevelReserveParticipation.h"
 
-void LTStockEnergyLevelReserveParticipation::add(int pays,
-                                                 int cluster,
-                                                 int reserve,
-                                                 int pdt,
-                                                 bool isUpReserve)
+void HydroEnergyLevelReserveParticipation::add(int pays,
+                                               int cluster,
+                                               int reserve,
+                                               int pdt,
+                                               bool isUpReserve)
 {
-    int globalClusterIdx = data.longTermStorageOfArea[pays].GlobalHydroIndex;
+    int globalClusterIdx = data.hydroOfArea[pays].GlobalHydroIndex;
     CAPACITY_RESERVATION& capacityReservation = isUpReserve
                                                   ? data.areaReserves[pays]
                                                       .areaCapacityReservationsUp[reserve]
@@ -27,14 +27,15 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
             {
                 double sign = isUpReserve ? -1. : 1.;
 
-                RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation
-                  = capacityReservation.AllLTStorageReservesParticipation[cluster];
+                RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
+                                                                      .AllHydroReservesParticipation
+                                                                        [cluster];
 
                 builder.updateHourWithinWeek(pdt);
 
                 for (int t = 0; t < capacityReservation.maxActivationDuration; t++)
                 {
-                    builder.LTStorageClusterReserveParticipation(
+                    builder.HydroReserveParticipation(
                       isUpReserve,
                       reserveParticipation.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio,
@@ -51,17 +52,17 @@ void LTStockEnergyLevelReserveParticipation::add(int pays,
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .LTStorageEnergyLevelParticipation[reserveParticipation
-                                                       .globalIndexClusterParticipation]
+                  .HydroEnergyLevelParticipation[reserveParticipation
+                                                   .globalIndexClusterParticipation]
                   = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTEnergyStockLevelReserveParticipation(builder.data.nombreDeContraintes,
-                                                             reserveParticipation.clusterName,
-                                                             capacityReservation.reserveName);
+                namer.HydroEnergyLevelReserveParticipation(builder.data.nombreDeContraintes,
+                                                           reserveParticipation.clusterName,
+                                                           capacityReservation.reserveName);
                 builder.build();
             }
         }

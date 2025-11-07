@@ -9,7 +9,7 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
                                                      .areaCapacityReservationsDown[reserve];
     int nbTermes = capacityReservation.AllThermalReservesParticipation.size()
                    + capacityReservation.AllSTStorageReservesParticipation.size()
-                   + capacityReservation.AllLTStorageReservesParticipation.size();
+                   + capacityReservation.AllHydroReservesParticipation.size();
     if (nbTermes)
     {
         if (!data.Simulation)
@@ -19,7 +19,7 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
             // Sum(P_θ) + Sum(P_B) + Sum(P_H) = S + J^+ -J^-
             // P_θ : Participation power from thermal cluster θ to the reserve res
             // P_B : Participation power from Short Term Storage cluster B to the reserve res
-            // P_H : Participation power from Long Term Storage to the reserve res
+            // P_H : Participation power from Hydro to the reserve res
             // S : Internal reserve res need for the area (second membre)
             // J^+ : Amount of internal excess reserve for the reserve res
             // J^- : Amount of internal unsatisfied reserve for the reserve res
@@ -45,10 +45,10 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
                   1);
             }
 
-            // Long Term Storage clusters reserve participation
-            for (auto& reserveParticipation: capacityReservation.AllLTStorageReservesParticipation)
+            // Hydro reserve participation
+            for (auto& reserveParticipation: capacityReservation.AllHydroReservesParticipation)
             {
-                builder.LTStorageClusterReserveParticipation(
+                builder.HydroReserveParticipation(
                   isUpReserve,
                   reserveParticipation.globalIndexClusterParticipation,
                   1);

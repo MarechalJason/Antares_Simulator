@@ -1,6 +1,6 @@
-#include "antares/solver/optimisation/constraints/LTPumpingMaxReserve.h"
+#include "antares/solver/optimisation/constraints/HydroPumpingMaxReserve.h"
 
-void LTPumpingMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void HydroPumpingMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
 {
     if (!data.Simulation)
     {
@@ -15,28 +15,26 @@ void LTPumpingMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool 
                                                       : data.areaReserves[pays]
                                                           .areaCapacityReservationsDown[reserve];
 
-        RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation = capacityReservation
-                                                                  .AllLTStorageReservesParticipation
-                                                                    [cluster];
+        RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
+                                                              .AllHydroReservesParticipation
+                                                                [cluster];
 
         builder.updateHourWithinWeek(pdt)
-          .LTStoragePumpingClusterReserveParticipation(
-            reserveParticipation.globalIndexClusterParticipation,
-            1.0)
+          .HydroPumpingReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
+                                            1.0)
           .lessThan();
         data.CorrespondanceCntNativesCntOptim[pdt]
           .reservesIndices()
-          .LTStorageClusterMaxPumpingParticipation[reserveParticipation
-                                                     .globalIndexClusterParticipation]
+          .HydroMaxPumpingParticipation[reserveParticipation.globalIndexClusterParticipation]
           = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
         const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
         namer.UpdateTimeStep(hourInTheYear);
         namer.UpdateArea(builder.data.NomsDesPays[pays]);
-        namer.LTPumpingMaxReserve(builder.data.nombreDeContraintes,
-                                  reserveParticipation.clusterName,
-                                  capacityReservation.reserveName);
+        namer.HydroPumpingMaxReserve(builder.data.nombreDeContraintes,
+                                     reserveParticipation.clusterName,
+                                     capacityReservation.reserveName);
         builder.build();
     }
     else

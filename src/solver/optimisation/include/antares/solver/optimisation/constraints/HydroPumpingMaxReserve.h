@@ -2,12 +2,12 @@
 #include "ConstraintBuilder.h"
 
 /*!
- * represent 'LTReserveParticipation' Constraint type
+ * represent 'HydroPumpingMaxReserve' Constraint type
  */
-class LTReserveParticipation: private ConstraintFactory
+class HydroPumpingMaxReserve: private ConstraintFactory
 {
 public:
-    LTReserveParticipation(ConstraintBuilder& builder, ReserveData& data):
+    HydroPumpingMaxReserve(ConstraintBuilder& builder, ReserveData& data):
         ConstraintFactory(builder),
         data(data)
     {
@@ -19,7 +19,7 @@ public:
      * @param reserve : capacity reservation
      * @param cluster : local index of the cluster
      * @param pdt : timestep
-     * @param isUpReserve : bool
+     * @param isUpReserve : true if ReserveUp, false if ReserveDown
      */
     void add(int pays, int reserve, int cluster, int pdt, bool isUpReserve);
 

@@ -1,13 +1,13 @@
 #pragma once
 #include "ConstraintBuilder.h"
 
-/*
- * represent 'LTStockLevelReserveParticipation' Constraint type
+/*!
+ * represent 'HydroTurbiningMaxReserve' Constraint type
  */
-class LTStockEnergyLevelReserveParticipation: private ConstraintFactory
+class HydroTurbiningMaxReserve: private ConstraintFactory
 {
 public:
-    LTStockEnergyLevelReserveParticipation(ConstraintBuilder& builder, ReserveData& data):
+    HydroTurbiningMaxReserve(ConstraintBuilder& builder, ReserveData& data):
         ConstraintFactory(builder),
         data(data)
     {
@@ -16,11 +16,12 @@ public:
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
      * @param pays : area
-     * @param cluster : global index of the cluster
+     * @param reserve : capacity reservation
+     * @param cluster : local index of the cluster
      * @param pdt : timestep
      * @param isUpReserve : true if ReserveUp, false if ReserveDown
      */
-    void add(int pays, int cluster, int reserve, int pdt, bool isUpReserve);
+    void add(int pays, int reserve, int cluster, int pdt, bool isUpReserve);
 
 private:
     ReserveData& data;

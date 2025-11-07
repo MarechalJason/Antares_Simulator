@@ -22,14 +22,14 @@
 #include "antares/solver/optimisation/constraints/ReserveParticipationGroup.h"
 
 #include "antares/solver/optimisation/constraints/ConstraintGroup.h"
-#include "antares/solver/optimisation/constraints/LTPumpingCapacityThreasholds.h"
-#include "antares/solver/optimisation/constraints/LTPumpingMaxReserve.h"
-#include "antares/solver/optimisation/constraints/LTReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/LTStockEnergyLevelReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/LTStockGlobalEnergyLevelReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/LTStockLevelReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/LTTurbiningCapacityThreasholds.h"
-#include "antares/solver/optimisation/constraints/LTTurbiningMaxReserve.h"
+#include "antares/solver/optimisation/constraints/HydroEnergyLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/HydroGlobalEnergyLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/HydroLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/HydroPumpingCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/HydroPumpingMaxReserve.h"
+#include "antares/solver/optimisation/constraints/HydroReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/HydroTurbiningCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/HydroTurbiningMaxReserve.h"
 #include "antares/solver/optimisation/constraints/OffUnitsThermalParticipatingToReserves.h"
 #include "antares/solver/optimisation/constraints/PMaxReserve.h"
 #include "antares/solver/optimisation/constraints/POffUnits.h"
@@ -39,9 +39,9 @@
 #include "antares/solver/optimisation/constraints/STPumpingCapacityThreasholds.h"
 #include "antares/solver/optimisation/constraints/STPumpingMaxReserve.h"
 #include "antares/solver/optimisation/constraints/STReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/STStockEnergyLevelReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/STStockGlobalEnergyLevelReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/STStockLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/STStorageEnergyLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/STStorageGlobalEnergyLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/STStorageLevelReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/STTurbiningCapacityThreasholds.h"
 #include "antares/solver/optimisation/constraints/STTurbiningMaxReserve.h"
 #include "antares/solver/optimisation/constraints/SymmetryReserveParticipation.h"
@@ -61,7 +61,7 @@ ReserveData ReserveParticipationGroup::GetReserveDataFromProblemHebdo()
             .areaReserves = problemeHebdo_->allReserves(),
             .thermalClusters = problemeHebdo_->PaliersThermiquesDuPays,
             .shortTermStorageOfArea = problemeHebdo_->ShortTermStorage,
-            .longTermStorageOfArea = problemeHebdo_->CaracteristiquesHydrauliques,
+            .hydroOfArea = problemeHebdo_->CaracteristiquesHydrauliques,
             .CorrespondanceCntNativesCntOptim = problemeHebdo_->CorrespondanceCntNativesCntOptim};
 }
 
@@ -82,13 +82,12 @@ void ReserveParticipationGroup::BuildConstraints()
         STTurbiningMaxReserve STTurbiningMaxReserve(builder_, data);
         STPumpingMaxReserve STPumpingMaxReserve(builder_, data);
         STReserveParticipation STReserveParticipation(builder_, data);
-        STStockEnergyLevelReserveParticipation STStockEnergyLevelReserveParticipation(builder_,
-                                                                                      data);
-        LTStockEnergyLevelReserveParticipation LTStockEnergyLevelReserveParticipation(builder_,
-                                                                                      data);
-        LTTurbiningMaxReserve LTTurbiningMaxReserve(builder_, data);
-        LTPumpingMaxReserve LTPumpingMaxReserve(builder_, data);
-        LTReserveParticipation LTReserveParticipation(builder_, data);
+        STStorageEnergyLevelReserveParticipation STStorageEnergyLevelReserveParticipation(builder_,
+                                                                                          data);
+        HydroEnergyLevelReserveParticipation HydroEnergyLevelReserveParticipation(builder_, data);
+        HydroTurbiningMaxReserve HydroTurbiningMaxReserve(builder_, data);
+        HydroPumpingMaxReserve HydroPumpingMaxReserve(builder_, data);
+        HydroReserveParticipation HydroReserveParticipation(builder_, data);
 
         SymmetryReserveParticipation symmetryReserveParticipation(builder_, data);
 
@@ -197,7 +196,7 @@ void ReserveParticipationGroup::BuildConstraints()
                                   isUpReserve);
 
                                 // 15 (h)
-                                STStockEnergyLevelReserveParticipation.add(
+                                STStorageEnergyLevelReserveParticipation.add(
                                   pays,
                                   clusterReserveParticipation.clusterIdInArea,
                                   reserve,
@@ -220,7 +219,7 @@ void ReserveParticipationGroup::BuildConstraints()
                     }
                 }
 
-                // LongTerm Storage reserve participations
+                // Hydro reserve participations
                 {
                     for (bool isUpReserve: {reserveIsUp, reserveIsDown})
                     {
@@ -232,23 +231,24 @@ void ReserveParticipationGroup::BuildConstraints()
                         for (const auto& areaReserve: areaReserves)
                         {
                             for (const auto& clusterReserveParticipation:
-                                 areaReserve.AllLTStorageReservesParticipation)
+                                 areaReserve.AllHydroReservesParticipation)
                             {
                                 // 15 (a)
-                                LTTurbiningMaxReserve.add(
+                                HydroTurbiningMaxReserve.add(
                                   pays,
                                   reserve,
                                   clusterReserveParticipation.clusterIdInArea,
                                   pdt,
                                   isUpReserve);
                                 // 15 (b)
-                                LTPumpingMaxReserve.add(pays,
-                                                        reserve,
-                                                        clusterReserveParticipation.clusterIdInArea,
-                                                        pdt,
-                                                        isUpReserve);
+                                HydroPumpingMaxReserve.add(
+                                  pays,
+                                  reserve,
+                                  clusterReserveParticipation.clusterIdInArea,
+                                  pdt,
+                                  isUpReserve);
                                 // 15 (e & f)
-                                LTReserveParticipation.add(
+                                HydroReserveParticipation.add(
                                   pays,
                                   reserve,
                                   clusterReserveParticipation.clusterIdInArea,
@@ -256,7 +256,7 @@ void ReserveParticipationGroup::BuildConstraints()
                                   isUpReserve);
 
                                 // 15 (s)
-                                LTStockEnergyLevelReserveParticipation.add(
+                                HydroEnergyLevelReserveParticipation.add(
                                   pays,
                                   clusterReserveParticipation.clusterIdInArea,
                                   reserve,
@@ -267,9 +267,9 @@ void ReserveParticipationGroup::BuildConstraints()
                         }
                     }
 
-                    // LongTerm Storage Symmetries
+                    // Hydro Symmetries
                     for (const auto& symmetry:
-                         data.areaReserves[pays].LTStorageReservesParticipationSymmetries)
+                         data.areaReserves[pays].HydroReservesParticipationSymmetries)
                     {
                         // 18
                         symmetryReserveParticipation.add(pays, symmetry, pdt);
@@ -284,14 +284,13 @@ void ReserveParticipationGroup::BuildConstraints()
         POutBounds pOutBounds(builder_, data);
         STTurbiningCapacityThreasholds STTurbiningCapacityThreasholds(builder_, data);
         STPumpingCapacityThreasholds STPumpingCapacityThreasholds(builder_, data);
-        LTTurbiningCapacityThreasholds LTTurbiningCapacityThreasholds(builder_, data);
-        LTPumpingCapacityThreasholds LTPumpingCapacityThreasholds(builder_, data);
-        LTStockLevelReserveParticipation LTStockLevelReserveParticipation(builder_, data);
-        STStockLevelReserveParticipation STStockLevelReserveParticipation(builder_, data);
-        STStockGlobalEnergyLevelReserveParticipation STStockGlobalEnergyLevelReserveParticipation(
-          builder_,
-          data);
-        LTStockGlobalEnergyLevelReserveParticipation LTStockGlobalEnergyLevelReserveParticipation(
+        HydroTurbiningCapacityThreasholds HydroTurbiningCapacityThreasholds(builder_, data);
+        HydroPumpingCapacityThreasholds HydroPumpingCapacityThreasholds(builder_, data);
+        HydroLevelReserveParticipation HydroLevelReserveParticipation(builder_, data);
+        STStorageLevelReserveParticipation STStorageLevelReserveParticipation(builder_, data);
+        STStorageGlobalEnergyLevelReserveParticipation
+          STStorageGlobalEnergyLevelReserveParticipation(builder_, data);
+        HydroGlobalEnergyLevelReserveParticipation HydroGlobalEnergyLevelReserveParticipation(
           builder_,
           data);
 
@@ -322,18 +321,18 @@ void ReserveParticipationGroup::BuildConstraints()
                     // 15 (n)
                     STPumpingCapacityThreasholds.add(pays, cluster, pdt);
                     // 15 (g)
-                    STStockLevelReserveParticipation.add(pays, cluster, pdt);
+                    STStorageLevelReserveParticipation.add(pays, cluster, pdt);
                     // 15 (i)
-                    STStockGlobalEnergyLevelReserveParticipation.add(pays, cluster, pdt);
+                    STStorageGlobalEnergyLevelReserveParticipation.add(pays, cluster, pdt);
                 }
 
-                // Long Term Storage Clusters
-                // Check if the LT Storage is participating to the reserves
+                // Hydro
+                // Check if the Hydro is participating to the reserves
                 auto isClusterParticipatingToReserves =
                   [](std::vector<CAPACITY_RESERVATION>& reserves)
                 {
                     auto hasReserveParticipations = [](CAPACITY_RESERVATION& res)
-                    { return res.AllLTStorageReservesParticipation.size() > 0; };
+                    { return res.AllHydroReservesParticipation.size() > 0; };
                     return std::any_of(reserves.begin(), reserves.end(), hasReserveParticipations);
                 };
 
@@ -343,13 +342,13 @@ void ReserveParticipationGroup::BuildConstraints()
                       problemeHebdo_->allReserves()[pays].areaCapacityReservationsUp))
                 {
                     // 15 (c)
-                    LTTurbiningCapacityThreasholds.add(pays, 0, pdt);
+                    HydroTurbiningCapacityThreasholds.add(pays, 0, pdt);
                     // 15 (d)
-                    LTPumpingCapacityThreasholds.add(pays, 0, pdt);
+                    HydroPumpingCapacityThreasholds.add(pays, 0, pdt);
                     // 15 (r)
-                    LTStockLevelReserveParticipation.add(pays, 0, pdt);
+                    HydroLevelReserveParticipation.add(pays, 0, pdt);
                     // 15 (t)
-                    LTStockGlobalEnergyLevelReserveParticipation.add(pays, 0, pdt);
+                    HydroGlobalEnergyLevelReserveParticipation.add(pays, 0, pdt);
                 }
             }
         }

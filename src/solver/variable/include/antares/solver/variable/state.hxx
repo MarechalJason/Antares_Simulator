@@ -32,12 +32,12 @@ inline void State::initReserveVectors()
     thermalClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
     STStorageClusterReserveParticipationCostForYear.init();
     STStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
-    LTStorageClusterReserveParticipationCostForYear.init();
-    LTStorageClusterReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
+    HydroReserveParticipationCostForYear.init();
+    HydroReserveParticipationCostForYear().resize(HOURS_PER_YEAR, 0);
     reserveParticipationPerSTStorageClusterForYear.clear();
     reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
-    reserveParticipationPerLTStorageClusterForYear.clear();
-    reserveParticipationPerLTStorageClusterForYear.resize(HOURS_PER_YEAR);
+    reserveParticipationPerHydroForYear.clear();
+    reserveParticipationPerHydroForYear.resize(HOURS_PER_YEAR);
     reserveParticipationPerThermalClusterForYear.clear();
     reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
 }

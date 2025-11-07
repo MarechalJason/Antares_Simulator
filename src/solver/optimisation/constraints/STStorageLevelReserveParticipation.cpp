@@ -1,12 +1,12 @@
-#include "antares/solver/optimisation/constraints/LTStockLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/STStorageLevelReserveParticipation.h"
 
-void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
+void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
-    int globalClusterIdx = data.longTermStorageOfArea[pays].GlobalHydroIndex;
+    int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 
     if (!data.Simulation)
     {
-        // 15 (r) (1)
+        // 15 (g) (1)
         // Participation of down reserves requires a sufficient level of stock
         // R_t + Sum(P_{res} * R_{min,res}) <= R_up
         // R_t : stock level at time t
@@ -18,11 +18,11 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
 
             for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsDown)
             {
-                if (capacityReservation.AllLTStorageReservesParticipation.size())
+                if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
-                    RESERVE_PARTICIPATION_LTSTORAGE reserveParticipations
-                      = capacityReservation.AllLTStorageReservesParticipation[cluster];
-                    builder.LTStorageClusterReserveParticipation(
+                    RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
+                      = capacityReservation.AllSTStorageReservesParticipation[cluster];
+                    builder.STStorageClusterReserveParticipation(
                       reserveIsDown,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
@@ -30,24 +30,24 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
             }
             if (builder.NumberOfVariables() > 0)
             {
-                builder.HydroLevel(globalClusterIdx, 1.);
+                builder.ShortTermStorageLevel(globalClusterIdx, 1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .LTStorageLevelParticipationDown[globalClusterIdx]
+                  .STStorageLevelParticipationDown[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTStockLevelReserveParticipation(reserveIsDown,
-                                                       builder.data.nombreDeContraintes,
-                                                       "LongTermStorage");
+                namer.STStorageLevelReserveParticipationDown(
+                  builder.data.nombreDeContraintes,
+                  data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
 
-        // 15 (r) (2)
+        // 15 (g) (2)
         // Participation of up reserves requires a sufficient level of stock
         // -R_t + Sum(P_{res} * R_{min,res}) <= -R_down
         // R_t : stock level at time t
@@ -59,11 +59,11 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
 
             for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsUp)
             {
-                if (capacityReservation.AllLTStorageReservesParticipation.size())
+                if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
-                    RESERVE_PARTICIPATION_LTSTORAGE reserveParticipations
-                      = capacityReservation.AllLTStorageReservesParticipation[cluster];
-                    builder.LTStorageClusterReserveParticipation(
+                    RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
+                      = capacityReservation.AllSTStorageReservesParticipation[cluster];
+                    builder.STStorageClusterReserveParticipation(
                       reserveIsUp,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
@@ -71,25 +71,27 @@ void LTStockLevelReserveParticipation::add(int pays, int cluster, int pdt)
             }
             if (builder.NumberOfVariables() > 0)
             {
-                builder.HydroLevel(globalClusterIdx, -1.);
+                builder.ShortTermStorageLevel(globalClusterIdx, -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .LTStorageLevelParticipationUp[globalClusterIdx]
+                  .STStorageLevelParticipationUp[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTStockLevelReserveParticipation(reserveIsUp,
-                                                       builder.data.nombreDeContraintes,
-                                                       "LongTermStorage");
+                namer.STStorageLevelReserveParticipationUp(
+                  builder.data.nombreDeContraintes,
+                  data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }
     }
     else
     {
-        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForLTStorageReserves(pays);
+        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForSTStorageReserves(
+          pays,
+          cluster);
     }
 }

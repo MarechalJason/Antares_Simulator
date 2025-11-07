@@ -77,7 +77,7 @@
 #include "renewableGeneration.h"
 #include "reserves/reserveParticipationByDispatchableOffUnitsPlant.h"
 #include "reserves/reserveParticipationByDispatchableOnUnitsPlant.h"
-#include "reserves/reserveParticipationByLTStorage.h"
+#include "reserves/reserveParticipationByHydro.h"
 #include "reserves/reserveParticipationBySTStorage.h"
 #include "reserves/reserveParticipationBySTStorageGroup.h"
 #include "reserves/reserveParticipationByThermalGroup.h"
@@ -155,7 +155,7 @@ using VariablesPerArea = Common::ComposeAll<OverallCost,
                                             ReserveParticipationByThermalGroup,
                                             ReserveParticipationBySTStorage,
                                             ReserveParticipationBySTStorageGroup,
-                                            ReserveParticipationByLTStorage,
+                                            ReserveParticipationByHydro,
                                             ReserveParticipationUnsuppliedSpilled,
                                             Links>::type;
 

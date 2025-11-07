@@ -133,7 +133,7 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
 
     const uint linkCount = study.runtime.interconnectionsCount();
     const uint shortTermStorageCount = study.runtime.counts.shortTermStorages;
-    const uint longTermStorageCount = study.runtime.counts.longTermStorages;
+    const uint hydroCount = study.runtime.counts.hydros;
 
     auto activeConstraints = study.bindingConstraints.activeConstraints();
 
@@ -213,17 +213,17 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
               0);
 
-            variablesMapping.reservesIndices().LTStorageClusterParticipationUp.assign(
-              study.runtime.counts.longTermStorages * study.runtime.counts.capacityReservations,
+            variablesMapping.reservesIndices().HydroParticipationUp.assign(
+              study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
               0);
-            variablesMapping.reservesIndices().LTStorageClusterParticipationDown.assign(
-              study.runtime.counts.longTermStorages * study.runtime.counts.capacityReservations,
+            variablesMapping.reservesIndices().HydroParticipationDown.assign(
+              study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
               0);
-            variablesMapping.reservesIndices().LTStorageTurbiningClusterParticipation.assign(
-              study.runtime.counts.longTermStorages * study.runtime.counts.capacityReservations,
+            variablesMapping.reservesIndices().HydroTurbiningParticipation.assign(
+              study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
               0);
-            variablesMapping.reservesIndices().LTStoragePumpingClusterParticipation.assign(
-              study.runtime.counts.longTermStorages * study.runtime.counts.capacityReservations,
+            variablesMapping.reservesIndices().HydroPumpingParticipation.assign(
+              study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
               0);
 
             variablesMapping.reservesIndices()
@@ -349,45 +349,40 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
 
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageClusterMaxTurbiningParticipation.assign(
-                study.runtime.counts.longTermStorages * study.runtime.counts.capacityReservations,
-                -1);
+              .HydroMaxTurbiningParticipation.assign(study.runtime.counts.hydros
+                                                       * study.runtime.counts.capacityReservations,
+                                                     -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageClusterMaxPumpingParticipation.assign(
-                study.runtime.counts.longTermStorages * study.runtime.counts.capacityReservations,
-                -1);
+              .HydroMaxPumpingParticipation.assign(study.runtime.counts.hydros
+                                                     * study.runtime.counts.capacityReservations,
+                                                   -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageClusterTurbiningCapacityThreasholdsMax
-              .assign(study.runtime.counts.longTermStorages, -1);
+              .HydroTurbiningCapacityThreasholdsMax.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageClusterTurbiningCapacityThreasholdsMin
-              .assign(study.runtime.counts.longTermStorages, -1);
+              .HydroTurbiningCapacityThreasholdsMin.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageClusterPumpingCapacityThreasholds
-              .assign(study.runtime.counts.longTermStorages, -1);
+              .HydroPumpingCapacityThreasholds.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageLevelParticipationDown.assign(study.runtime.counts.longTermStorages, -1);
+              .HydroLevelParticipationDown.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageLevelParticipationUp.assign(study.runtime.counts.longTermStorages, -1);
+              .HydroLevelParticipationUp.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageEnergyLevelParticipation.assign(
-                study.runtime.counts.longTermStorages * study.runtime.counts.capacityReservations,
-                -1);
+              .HydroEnergyLevelParticipation.assign(study.runtime.counts.hydros
+                                                      * study.runtime.counts.capacityReservations,
+                                                    -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageGlobalStockEnergyLevelParticipationUp
-              .assign(study.runtime.counts.longTermStorages, -1);
+              .HydroGlobalEnergyLevelParticipationUp.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .LTStorageGlobalStockEnergyLevelParticipationDown
-              .assign(study.runtime.counts.longTermStorages, -1);
+              .HydroGlobalEnergyLevelParticipationDown.assign(study.runtime.counts.hydros, -1);
         }
     }
 }
@@ -505,10 +500,10 @@ void SIM_AllocateAreas(PROBLEME_HEBDO& problem,
                                                                      ->shortTermStorage
                                                                      .reserveParticipationsCount()
                                                                  : 0;
-        const uint nbLTStorageReserveParticipations = resEnabled
-                                                        ? study.areas.byIndex[k]
-                                                            ->hydro.reserveParticipationsCount()
-                                                        : 0;
+        const uint nbHydroReserveParticipations = resEnabled
+                                                    ? study.areas.byIndex[k]
+                                                        ->hydro.reserveParticipationsCount()
+                                                    : 0;
         const uint nbReserves = resEnabled
                                   ? study.areas.byIndex[k]->allCapacityReservations().size()
                                   : 0;
@@ -666,7 +661,7 @@ void SIM_AllocateAreas(PROBLEME_HEBDO& problem,
                                                                                          0.);
                 problem.ResultatsHoraires[k].HydroUsage[j].reserveParticipationOfCluster.init();
                 problem.ResultatsHoraires[k].HydroUsage[j].reserveParticipationOfCluster().assign(
-                  nbLTStorageReserveParticipations,
+                  nbHydroReserveParticipations,
                   0.);
             }
         }

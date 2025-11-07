@@ -1,10 +1,10 @@
-#include "antares/solver/optimisation/constraints/STStockEnergyLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/STStorageEnergyLevelReserveParticipation.h"
 
-void STStockEnergyLevelReserveParticipation::add(int pays,
-                                                 int cluster,
-                                                 int reserve,
-                                                 int pdt,
-                                                 bool isUpReserve)
+void STStorageEnergyLevelReserveParticipation::add(int pays,
+                                                   int cluster,
+                                                   int reserve,
+                                                   int pdt,
+                                                   bool isUpReserve)
 {
     int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
     CAPACITY_RESERVATION& capacityReservation = isUpReserve

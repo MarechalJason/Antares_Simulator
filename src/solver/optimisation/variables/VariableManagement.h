@@ -52,21 +52,21 @@ public:
                                                      int offset = 0,
                                                      int delta = 0);
 
-    int& LTStorageClusterReserveParticipation(bool isUpReserve,
-                                              unsigned int index,
-                                              unsigned int hourInWeek,
-                                              int offset = 0,
-                                              int delta = 0);
+    int& HydroReserveParticipation(bool isUpReserve,
+                                   unsigned int index,
+                                   unsigned int hourInWeek,
+                                   int offset = 0,
+                                   int delta = 0);
 
-    int& LTStorageTurbiningClusterReserveParticipation(unsigned int index,
-                                                       unsigned int hourInWeek,
-                                                       int offset = 0,
-                                                       int delta = 0);
+    int& HydroTurbiningReserveParticipation(unsigned int index,
+                                            unsigned int hourInWeek,
+                                            int offset = 0,
+                                            int delta = 0);
 
-    int& LTStoragePumpingClusterReserveParticipation(unsigned int index,
-                                                     unsigned int hourInWeek,
-                                                     int offset = 0,
-                                                     int delta = 0);
+    int& HydroPumpingReserveParticipation(unsigned int index,
+                                          unsigned int hourInWeek,
+                                          int offset = 0,
+                                          int delta = 0);
 
     int& InternalUnsatisfiedReserve(unsigned int index,
                                     unsigned int hourInWeek,

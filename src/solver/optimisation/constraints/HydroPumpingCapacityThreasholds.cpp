@@ -1,8 +1,8 @@
-#include "antares/solver/optimisation/constraints/LTPumpingCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/HydroPumpingCapacityThreasholds.h"
 
-void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
+void HydroPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
 {
-    int globalClusterIdx = data.longTermStorageOfArea[pays].GlobalHydroIndex;
+    int globalClusterIdx = data.hydroOfArea[pays].GlobalHydroIndex;
 
     if (!data.Simulation)
     {
@@ -20,9 +20,9 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                  data.areaReserves[pays].areaCapacityReservationsUp)
             {
                 for (const auto& reserveParticipations:
-                     capacityReservation.AllLTStorageReservesParticipation)
+                     capacityReservation.AllHydroReservesParticipation)
                 {
-                    builder.LTStoragePumpingClusterReserveParticipation(
+                    builder.HydroPumpingReserveParticipation(
                       reserveParticipations.globalIndexClusterParticipation,
                       1);
                 }
@@ -30,7 +30,7 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
 
             if (builder.NumberOfVariables() > 0)
             {
-                if (data.longTermStorageOfArea[pays].PresenceDePompageModulable)
+                if (data.hydroOfArea[pays].PresenceDePompageModulable)
                 {
                     builder.Pumping(pays, -1);
                 }
@@ -39,8 +39,8 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTPumpingCapacityThreasholdsDown(builder.data.nombreDeContraintes,
-                                                       "LongTermStorage");
+                namer.HydroPumpingCapacityThreasholdsDown(builder.data.nombreDeContraintes,
+                                                          "Hydro");
                 builder.build();
             }
         }
@@ -53,9 +53,9 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                  data.areaReserves[pays].areaCapacityReservationsDown)
             {
                 for (const auto& reserveParticipations:
-                     capacityReservation.AllLTStorageReservesParticipation)
+                     capacityReservation.AllHydroReservesParticipation)
                 {
-                    builder.LTStoragePumpingClusterReserveParticipation(
+                    builder.HydroPumpingReserveParticipation(
                       reserveParticipations.globalIndexClusterParticipation,
                       1);
                 }
@@ -63,27 +63,26 @@ void LTPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
 
             if (builder.NumberOfVariables() > 0)
             {
-                if (data.longTermStorageOfArea[pays].PresenceDHydrauliqueModulable)
+                if (data.hydroOfArea[pays].PresenceDHydrauliqueModulable)
                 {
                     builder.Pumping(pays, 1);
                 }
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .LTStorageClusterPumpingCapacityThreasholds[globalClusterIdx]
+                  .HydroPumpingCapacityThreasholds[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.LTPumpingCapacityThreasholdsUp(builder.data.nombreDeContraintes,
-                                                     "LongTermStorage");
+                namer.HydroPumpingCapacityThreasholdsUp(builder.data.nombreDeContraintes, "Hydro");
                 builder.build();
             }
         }
     }
     else
     {
-        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForLTStorageReserves(pays);
+        builder.data.nombreDeContraintes += data.countNumberOfConstraintsForHydroReserves(pays);
     }
 }

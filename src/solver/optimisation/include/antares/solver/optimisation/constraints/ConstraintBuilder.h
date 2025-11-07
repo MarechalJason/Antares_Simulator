@@ -130,21 +130,21 @@ public:
                                                                    int offset = 0,
                                                                    int delta = 0);
 
-    ConstraintBuilder& LTStorageClusterReserveParticipation(bool isUpReserve,
-                                                            unsigned int index,
-                                                            double coeff,
-                                                            int offset = 0,
-                                                            int delta = 0);
+    ConstraintBuilder& HydroReserveParticipation(bool isUpReserve,
+                                                 unsigned int index,
+                                                 double coeff,
+                                                 int offset = 0,
+                                                 int delta = 0);
 
-    ConstraintBuilder& LTStorageTurbiningClusterReserveParticipation(unsigned int index,
-                                                                     double coeff,
-                                                                     int offset = 0,
-                                                                     int delta = 0);
+    ConstraintBuilder& HydroTurbiningReserveParticipation(unsigned int index,
+                                                          double coeff,
+                                                          int offset = 0,
+                                                          int delta = 0);
 
-    ConstraintBuilder& LTStoragePumpingClusterReserveParticipation(unsigned int index,
-                                                                   double coeff,
-                                                                   int offset = 0,
-                                                                   int delta = 0);
+    ConstraintBuilder& HydroPumpingReserveParticipation(unsigned int index,
+                                                        double coeff,
+                                                        int offset = 0,
+                                                        int delta = 0);
 
     ConstraintBuilder& InternalUnsatisfiedReserve(unsigned int pays,
                                                   double coeff,
@@ -381,7 +381,7 @@ struct ReserveData
     std::vector<AREA_RESERVES_VECTOR>& areaReserves;
     std::vector<PALIERS_THERMIQUES>& thermalClusters;
     std::vector<::ShortTermStorage::AREA_INPUT>& shortTermStorageOfArea;
-    std::vector<ENERGIES_ET_PUISSANCES_HYDRAULIQUES>& longTermStorageOfArea;
+    std::vector<ENERGIES_ET_PUISSANCES_HYDRAULIQUES>& hydroOfArea;
     std::vector<CORRESPONDANCES_DES_CONTRAINTES>& CorrespondanceCntNativesCntOptim;
 
     int countNumberOfConstraintsForThermalReserves(int pays, int cluster)
@@ -406,9 +406,8 @@ struct ReserveData
         return count;
     }
 
-    int countNumberOfConstraintsForLTStorageReserves(
-      int pays,
-      bool accountForGlobalActivationDuration = false)
+    int countNumberOfConstraintsForHydroReserves(int pays,
+                                                 bool accountForGlobalActivationDuration = false)
     {
         int count = 0;
         if (!accountForGlobalActivationDuration
@@ -416,7 +415,7 @@ struct ReserveData
         {
             for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsUp)
             {
-                if (capacityReservation.AllLTStorageReservesParticipation.size() > 0)
+                if (capacityReservation.AllHydroReservesParticipation.size() > 0)
                 {
                     count++;
                     break;
@@ -428,7 +427,7 @@ struct ReserveData
         {
             for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsDown)
             {
-                if (capacityReservation.AllLTStorageReservesParticipation.size() > 0)
+                if (capacityReservation.AllHydroReservesParticipation.size() > 0)
                 {
                     count++;
                     break;

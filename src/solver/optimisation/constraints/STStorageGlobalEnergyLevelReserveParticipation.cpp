@@ -1,6 +1,6 @@
-#include "antares/solver/optimisation/constraints/STStockGlobalEnergyLevelReserveParticipation.h"
+#include "antares/solver/optimisation/constraints/STStorageGlobalEnergyLevelReserveParticipation.h"
 
-void STStockGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int pdt)
+void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
     int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 

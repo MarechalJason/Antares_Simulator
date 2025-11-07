@@ -153,12 +153,12 @@ void Namer::SetSTStorageClusterAndReserveElementName(unsigned int variable,
                                        variable);
 }
 
-void Namer::SetLTStorageClusterElementName(unsigned int variable,
-                                           const std::string& elementType,
-                                           const std::string& clusterName)
+void Namer::SetHydroElementName(unsigned int variable,
+                                const std::string& elementType,
+                                const std::string& clusterName)
 {
-    const auto location = LocationIdentifier(area_, AREA) + SEPARATOR + "LongTerm Storage Cluster"
-                          + "<" + clusterName + ">";
+    const auto location = LocationIdentifier(area_, AREA) + SEPARATOR + "Hydro" + "<" + clusterName
+                          + ">";
 
     targetUpdater_.UpdateTargetAtIndex(BuildName(elementType,
                                                  location,
@@ -166,14 +166,13 @@ void Namer::SetLTStorageClusterElementName(unsigned int variable,
                                        variable);
 }
 
-void Namer::SetLTStorageClusterAndReserveElementName(unsigned int variable,
-                                                     const std::string& elementType,
-                                                     const std::string& clusterName,
-                                                     const std::string& reserveName)
+void Namer::SetHydroAndReserveElementName(unsigned int variable,
+                                          const std::string& elementType,
+                                          const std::string& clusterName,
+                                          const std::string& reserveName)
 {
-    const auto location = LocationIdentifier(area_, AREA) + SEPARATOR + "LongTerm Storage Cluster"
-                          + "<" + clusterName + ">" + SEPARATOR + "Reserve" + "<" + reserveName
-                          + ">";
+    const auto location = LocationIdentifier(area_, AREA) + SEPARATOR + "Hydro" + "<" + clusterName
+                          + ">" + SEPARATOR + "Reserve" + "<" + reserveName + ">";
 
     targetUpdater_.UpdateTargetAtIndex(BuildName(elementType,
                                                  location,
@@ -241,45 +240,45 @@ void VariableNamer::ParticipationOfSTStorageToReserve(bool isUpReserve,
                                              reserveName);
 }
 
-void VariableNamer::ParticipationOfLTStorageTurbiningToReserve(unsigned int variable,
-                                                               const std::string& clusterName,
-                                                               const std::string& reserveName)
+void VariableNamer::ParticipationOfHydroTurbiningToReserve(unsigned int variable,
+                                                           const std::string& clusterName,
+                                                           const std::string& reserveName)
 {
-    SetLTStorageClusterAndReserveElementName(variable,
-                                             "ParticipationOfLTStorageTurbiningToReserve",
-                                             clusterName,
-                                             reserveName);
+    SetHydroAndReserveElementName(variable,
+                                  "ParticipationOfHydroTurbiningToReserve",
+                                  clusterName,
+                                  reserveName);
 }
 
-void VariableNamer::ParticipationOfLTStoragePumpingToReserve(unsigned int variable,
-                                                             const std::string& clusterName,
-                                                             const std::string& reserveName)
+void VariableNamer::ParticipationOfHydroPumpingToReserve(unsigned int variable,
+                                                         const std::string& clusterName,
+                                                         const std::string& reserveName)
 {
-    SetLTStorageClusterAndReserveElementName(variable,
-                                             "ParticipationOfLTStoragePumpingToReserve",
-                                             clusterName,
-                                             reserveName);
+    SetHydroAndReserveElementName(variable,
+                                  "ParticipationOfHydroPumpingToReserve",
+                                  clusterName,
+                                  reserveName);
 }
 
-void VariableNamer::ParticipationOfLTStorageToReserve(bool isUpReserve,
-                                                      unsigned int variable,
-                                                      const std::string& clusterName,
-                                                      const std::string& reserveName)
+void VariableNamer::ParticipationOfHydroToReserve(bool isUpReserve,
+                                                  unsigned int variable,
+                                                  const std::string& clusterName,
+                                                  const std::string& reserveName)
 {
     if (isUpReserve)
     {
-        SetLTStorageClusterAndReserveElementName(variable,
-                                                 "ParticipationOfLTStorageToUpReserve",
-                                                 clusterName,
-                                                 reserveName);
+        SetHydroAndReserveElementName(variable,
+                                      "ParticipationOfHydroToUpReserve",
+                                      clusterName,
+                                      reserveName);
     }
 
     else
     {
-        SetLTStorageClusterAndReserveElementName(variable,
-                                                 "ParticipationOfSTStorageToDownReserve",
-                                                 clusterName,
-                                                 reserveName);
+        SetHydroAndReserveElementName(variable,
+                                      "ParticipationOfSTStorageToDownReserve",
+                                      clusterName,
+                                      reserveName);
     }
 }
 
@@ -709,16 +708,18 @@ void ConstraintNamer::STPumpingCapacityThreasholdsDown(unsigned int constraint,
     SetSTStorageClusterElementName(constraint, "STPumpingCapacityThreasholdsDown", clusterName);
 }
 
-void ConstraintNamer::STStockLevelReserveParticipationUp(unsigned int constraint,
-                                                         const std::string& clusterName)
-{
-    SetSTStorageClusterElementName(constraint, "STStockLevelReserveParticipationUp", clusterName);
-}
-
-void ConstraintNamer::STStockLevelReserveParticipationDown(unsigned int constraint,
+void ConstraintNamer::STStorageLevelReserveParticipationUp(unsigned int constraint,
                                                            const std::string& clusterName)
 {
-    SetSTStorageClusterElementName(constraint, "STStockLevelReserveParticipationDown", clusterName);
+    SetSTStorageClusterElementName(constraint, "STStorageLevelReserveParticipationUp", clusterName);
+}
+
+void ConstraintNamer::STStorageLevelReserveParticipationDown(unsigned int constraint,
+                                                             const std::string& clusterName)
+{
+    SetSTStorageClusterElementName(constraint,
+                                   "STStorageLevelReserveParticipationDown",
+                                   clusterName);
 }
 
 void ConstraintNamer::STEnergyStockLevelReserveParticipation(unsigned int constraint,
@@ -748,97 +749,86 @@ void ConstraintNamer::STGlobalEnergyStockLevelReserveParticipationUp(unsigned in
                                    clusterName);
 }
 
-void ConstraintNamer::LTReserveParticipation(bool isUpReserve,
-                                             unsigned int constraint,
+void ConstraintNamer::HydroReserveParticipation(bool isUpReserve,
+                                                unsigned int constraint,
+                                                const std::string& clusterName,
+                                                const std::string& reserveName)
+{
+    SetHydroAndReserveElementName(constraint,
+                                  isUpReserve ? "HydroReserveUpParticipation"
+                                              : "HydroReserveDownParticipation",
+                                  clusterName,
+                                  reserveName);
+}
+
+void ConstraintNamer::HydroTurbiningMaxReserve(unsigned int constraint,
+                                               const std::string& clusterName,
+                                               const std::string& reserveName)
+{
+    SetHydroAndReserveElementName(constraint, "HydroTurbiningMaxReserve", clusterName, reserveName);
+}
+
+void ConstraintNamer::HydroPumpingMaxReserve(unsigned int constraint,
                                              const std::string& clusterName,
                                              const std::string& reserveName)
 {
-    SetLTStorageClusterAndReserveElementName(constraint,
-                                             isUpReserve ? "LTReserveUpParticipation"
-                                                         : "LTReserveDownParticipation",
-                                             clusterName,
-                                             reserveName);
+    SetHydroAndReserveElementName(constraint, "HydroPumpingMaxReserve", clusterName, reserveName);
 }
 
-void ConstraintNamer::LTTurbiningMaxReserve(unsigned int constraint,
-                                            const std::string& clusterName,
-                                            const std::string& reserveName)
+void ConstraintNamer::HydroTurbiningCapacityThreasholdsUp(unsigned int constraint,
+                                                          const std::string& clusterName)
 {
-    SetLTStorageClusterAndReserveElementName(constraint,
-                                             "LTTurbiningMaxReserve",
-                                             clusterName,
-                                             reserveName);
+    SetHydroElementName(constraint, "HydroTurbiningCapacityThreasholdsUp", clusterName);
 }
 
-void ConstraintNamer::LTPumpingMaxReserve(unsigned int constraint,
-                                          const std::string& clusterName,
-                                          const std::string& reserveName)
+void ConstraintNamer::HydroPumpingCapacityThreasholdsUp(unsigned int constraint,
+                                                        const std::string& clusterName)
 {
-    SetLTStorageClusterAndReserveElementName(constraint,
-                                             "LTPumpingMaxReserve",
-                                             clusterName,
-                                             reserveName);
+    SetHydroElementName(constraint, "HydroPumpingCapacityThreasholdsUp", clusterName);
 }
 
-void ConstraintNamer::LTTurbiningCapacityThreasholdsUp(unsigned int constraint,
-                                                       const std::string& clusterName)
+void ConstraintNamer::HydroTurbiningCapacityThreasholdsDown(unsigned int constraint,
+                                                            const std::string& clusterName)
 {
-    SetLTStorageClusterElementName(constraint, "LTTurbiningCapacityThreasholdsUp", clusterName);
+    SetHydroElementName(constraint, "HydroTurbiningCapacityThreasholdsDown", clusterName);
 }
 
-void ConstraintNamer::LTPumpingCapacityThreasholdsUp(unsigned int constraint,
+void ConstraintNamer::HydroPumpingCapacityThreasholdsDown(unsigned int constraint,
+                                                          const std::string& clusterName)
+{
+    SetHydroElementName(constraint, "HydroPumpingCapacityThreasholdsDown", clusterName);
+}
+
+void ConstraintNamer::HydroLevelReserveParticipation(bool isUpReserve,
+                                                     unsigned int constraint,
                                                      const std::string& clusterName)
 {
-    SetLTStorageClusterElementName(constraint, "LTPumpingCapacityThreasholdsUp", clusterName);
+    SetHydroElementName(constraint,
+                        isUpReserve ? "HydroLevelReserveParticipationUp"
+                                    : "HydroLevelReserveParticipationDown",
+                        clusterName);
 }
 
-void ConstraintNamer::LTTurbiningCapacityThreasholdsDown(unsigned int constraint,
-                                                         const std::string& clusterName)
+void ConstraintNamer::HydroEnergyLevelReserveParticipation(unsigned int constraint,
+                                                           const std::string& clusterName,
+                                                           const std::string& reserveName)
 {
-    SetLTStorageClusterElementName(constraint, "LTTurbiningCapacityThreasholdsDown", clusterName);
+    SetHydroAndReserveElementName(constraint,
+                                  "HydroEnergyLevelReserveParticipation",
+                                  clusterName,
+                                  reserveName);
 }
 
-void ConstraintNamer::LTPumpingCapacityThreasholdsDown(unsigned int constraint,
-                                                       const std::string& clusterName)
-{
-    SetLTStorageClusterElementName(constraint, "LTPumpingCapacityThreasholdsDown", clusterName);
-}
-
-void ConstraintNamer::LTStockLevelReserveParticipation(bool isUpReserve,
-                                                       unsigned int constraint,
-                                                       const std::string& clusterName)
-{
-    SetLTStorageClusterElementName(constraint,
-                                   isUpReserve ? "LTStockLevelReserveParticipationUp"
-                                               : "LTStockLevelReserveParticipationDown",
-                                   clusterName);
-}
-
-void ConstraintNamer::LTEnergyStockLevelReserveParticipation(unsigned int constraint,
-                                                             const std::string& clusterName,
-                                                             const std::string& reserveName)
-{
-    SetLTStorageClusterAndReserveElementName(constraint,
-                                             "LTEnergyStockLevelReserveParticipation",
-                                             clusterName,
-                                             reserveName);
-}
-
-void ConstraintNamer::LTGlobalEnergyStockLevelReserveParticipationDown(
-  unsigned int constraint,
-  const std::string& clusterName)
-{
-    SetLTStorageClusterElementName(constraint,
-                                   "LTGlobalEnergyStockLevelReserveParticipationDown",
-                                   clusterName);
-}
-
-void ConstraintNamer::LTGlobalEnergyStockLevelReserveParticipationUp(unsigned int constraint,
+void ConstraintNamer::HydroGlobalEnergyLevelReserveParticipationDown(unsigned int constraint,
                                                                      const std::string& clusterName)
 {
-    SetLTStorageClusterElementName(constraint,
-                                   "LTGlobalEnergyStockLevelReserveParticipationUp",
-                                   clusterName);
+    SetHydroElementName(constraint, "HydroGlobalEnergyLevelReserveParticipationDown", clusterName);
+}
+
+void ConstraintNamer::HydroGlobalEnergyLevelReserveParticipationUp(unsigned int constraint,
+                                                                   const std::string& clusterName)
+{
+    SetHydroElementName(constraint, "HydroGlobalEnergyLevelReserveParticipationUp", clusterName);
 }
 
 void ConstraintNamer::ReserveSatisfaction(unsigned int constraint, const std::string& reserveName)

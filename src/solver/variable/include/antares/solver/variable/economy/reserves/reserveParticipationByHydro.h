@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../variable.h"
-#include "./vCardReserveParticipationByLTStorage.h"
+#include "./vCardReserveParticipationByHydro.h"
 
 namespace Antares
 {
@@ -12,16 +12,14 @@ namespace Variable
 namespace Economy
 {
 template<class NextT = Container::EndOfList>
-class ReserveParticipationByLTStorage
-    : public Variable::IVariable<ReserveParticipationByLTStorage<NextT>,
-                                 NextT,
-                                 VCardReserveParticipationByLTStorage>
+class ReserveParticipationByHydro: public Variable::IVariable<ReserveParticipationByHydro<NextT>,
+                                                              NextT,
+                                                              VCardReserveParticipationByHydro>
 {
 public:
     typedef NextT NextType;
-    typedef VCardReserveParticipationByLTStorage VCardType;
-    typedef Variable::IVariable<ReserveParticipationByLTStorage<NextT>, NextT, VCardType>
-      AncestorType;
+    typedef VCardReserveParticipationByHydro VCardType;
+    typedef Variable::IVariable<ReserveParticipationByHydro<NextT>, NextT, VCardType> AncestorType;
 
     typedef typename VCardType::ResultsType ResultsType;
 
@@ -46,14 +44,14 @@ public:
     };
 
 public:
-    ReserveParticipationByLTStorage() = default;
+    ReserveParticipationByHydro() = default;
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         pNbYearsParallel = study->maxNbYearsInParallel;
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
-        // Get the number of LTStorage reserveParticipations
+        // Get the number of Hydro reserveParticipations
         pSize = study->parameters.reservesEnabled ? area->hydro.reserveParticipationsCount() : 0;
         if (pSize)
         {
@@ -154,14 +152,13 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         if (state.study.parameters.reservesEnabled
-            && state.area->reserveParticipationIndexMaps().LTStorage.size())
+            && state.area->reserveParticipationIndexMaps().Hydro.size())
         {
             for (const auto& [reserveName, reserveParticipation]:
-                 state.reserveParticipationPerLTStorageClusterForYear[state.hourInTheYear]
-                                                                     ["LongTermStorage"])
+                 state.reserveParticipationPerHydroForYear[state.hourInTheYear]["Hydro"])
             {
                 pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps()
-                                                     .LTStorage.left.at(reserveName)]
+                                                     .Hydro.left.at(reserveName)]
                   .hour[state.hourInTheYear]
                   = reserveParticipation;
             }
@@ -190,12 +187,11 @@ public:
             {
                 if (results.data.area->reserveParticipationIndexMaps
                     && results.data.area->reserveParticipationIndexMaps()
-                         .LTStorage.size()) // Bimap is not empty
+                         .Hydro.size()) // Bimap is not empty
                 {
                     auto reserveName = results.data.area->reserveParticipationIndexMaps()
-                                         .LTStorage.right.at(i);
-                    results.variableCaption = reserveName
-                                              + "_LongTermStorage"; // VCardType::Caption();
+                                         .Hydro.right.at(i);
+                    results.variableCaption = reserveName + "_Hydro"; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();
                     pValuesForTheCurrentYear[numSpace][i]
                       .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
@@ -209,7 +205,7 @@ private:
     size_t pSize = 0;
     unsigned int pNbYearsParallel = 0;
 
-}; // class ReserveParticipationByLTStorage
+}; // class ReserveParticipationByHydro
 
 } // namespace Economy
 } // namespace Variable
