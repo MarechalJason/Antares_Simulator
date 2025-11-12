@@ -28,6 +28,9 @@
 
 #include <boost/bimap.hpp>
 
+//
+#include "antares/study/parts/parts.h"
+//
 #include <yuni/yuni.h>
 #include <yuni/core/noncopyable.h>
 #include <yuni/core/string.h>
@@ -37,7 +40,6 @@
 #include <antares/study/area/capacityReservation.h>
 #include <antares/study/parameters/adq-patch-params.h>
 #include "antares/study/filter.h"
-#include "antares/study/parts/parts.h"
 
 #include "constants.h"
 #include "links.h"
