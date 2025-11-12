@@ -206,10 +206,10 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
             variablesMapping.reservesIndices().STStorageClusterParticipationDown.assign(
               study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
               0);
-            variablesMapping.reservesIndices().STStorageTurbiningClusterParticipation.assign(
+            variablesMapping.reservesIndices().STStorageReleaseClusterParticipation.assign(
               study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
               0);
-            variablesMapping.reservesIndices().STStoragePumpingClusterParticipation.assign(
+            variablesMapping.reservesIndices().STStorageStoreClusterParticipation.assign(
               study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
               0);
 
@@ -219,10 +219,10 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
             variablesMapping.reservesIndices().HydroParticipationDown.assign(
               study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
               0);
-            variablesMapping.reservesIndices().HydroTurbiningParticipation.assign(
+            variablesMapping.reservesIndices().HydroReleaseParticipation.assign(
               study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
               0);
-            variablesMapping.reservesIndices().HydroPumpingParticipation.assign(
+            variablesMapping.reservesIndices().HydroStoreParticipation.assign(
               study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
               0);
 
@@ -307,25 +307,25 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
 
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .STStorageClusterMaxTurbiningParticipation.assign(
+              .STStorageClusterMaxReleaseParticipation.assign(
                 study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
                 -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .STStorageClusterMaxPumpingParticipation.assign(
+              .STStorageClusterMaxStoreParticipation.assign(
                 study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
                 -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .STStorageClusterTurbiningCapacityThreasholdsMax
+              .STStorageClusterReleaseCapacityThreasholdsMax
               .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .STStorageClusterTurbiningCapacityThreasholdsMin
+              .STStorageClusterReleaseCapacityThreasholdsMin
               .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .STStorageClusterPumpingCapacityThreasholds
+              .STStorageClusterStoreCapacityThreasholds
               .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
@@ -349,23 +349,23 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
 
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .HydroMaxTurbiningParticipation.assign(study.runtime.counts.hydros
-                                                       * study.runtime.counts.capacityReservations,
-                                                     -1);
-            problem.CorrespondanceCntNativesCntOptim[k]
-              .reservesIndices()
-              .HydroMaxPumpingParticipation.assign(study.runtime.counts.hydros
+              .HydroMaxReleaseParticipation.assign(study.runtime.counts.hydros
                                                      * study.runtime.counts.capacityReservations,
                                                    -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .HydroTurbiningCapacityThreasholdsMax.assign(study.runtime.counts.hydros, -1);
+              .HydroMaxStoreParticipation.assign(study.runtime.counts.hydros
+                                                   * study.runtime.counts.capacityReservations,
+                                                 -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .HydroTurbiningCapacityThreasholdsMin.assign(study.runtime.counts.hydros, -1);
+              .HydroReleaseCapacityThreasholdsMax.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .HydroPumpingCapacityThreasholds.assign(study.runtime.counts.hydros, -1);
+              .HydroReleaseCapacityThreasholdsMin.assign(study.runtime.counts.hydros, -1);
+            problem.CorrespondanceCntNativesCntOptim[k]
+              .reservesIndices()
+              .HydroStoreCapacityThreasholds.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
               .HydroLevelParticipationDown.assign(study.runtime.counts.hydros, -1);

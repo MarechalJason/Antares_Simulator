@@ -1,13 +1,13 @@
-#include "antares/solver/optimisation/constraints/STTurbiningMaxReserve.h"
+#include "antares/solver/optimisation/constraints/STStoreMaxReserve.h"
 
-void STTurbiningMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void STStoreMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
 {
     if (!data.Simulation)
     {
-        // 15 (k)
-        // Participation to the reserve using turbining is bounded by the max turbining reserve
-        // participation of the cluster constraint : H <= H^max H : Turbining power H^max : Maximum
-        // accessible power of the cluster for the reserve
+        // 15 (l)
+        // Participation to the reserve is bounded by the max store reserve participation of the
+        // cluster Π <= Π^max Π : Store power Π^max : Maximum accessible limit of the cluster for
+        // the reserve
 
         CAPACITY_RESERVATION& capacityReservation = isUpReserve
                                                       ? data.areaReserves[pays]
@@ -22,23 +22,23 @@ void STTurbiningMaxReserve::add(int pays, int reserve, int cluster, int pdt, boo
         int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 
         builder.updateHourWithinWeek(pdt)
-          .STStorageTurbiningClusterReserveParticipation(
+          .STStorageStoreClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
             1.0)
           .lessThan();
         data.CorrespondanceCntNativesCntOptim[pdt]
           .reservesIndices()
-          .STStorageClusterMaxTurbiningParticipation[reserveParticipation
-                                                       .globalIndexClusterParticipation]
+          .STStorageClusterMaxStoreParticipation[reserveParticipation
+                                                   .globalIndexClusterParticipation]
           = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
         const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
         namer.UpdateTimeStep(hourInTheYear);
         namer.UpdateArea(builder.data.NomsDesPays[pays]);
-        namer.STTurbiningMaxReserve(builder.data.nombreDeContraintes,
-                                    reserveParticipation.clusterName,
-                                    capacityReservation.reserveName);
+        namer.STStoreMaxReserve(builder.data.nombreDeContraintes,
+                                reserveParticipation.clusterName,
+                                capacityReservation.reserveName);
         builder.build();
     }
     else

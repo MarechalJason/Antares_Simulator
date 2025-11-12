@@ -5,10 +5,10 @@ void STReserveDownParticipation::add(int pays, int reserve, int cluster, int pdt
     if (!data.Simulation)
     {
         // 15 (p)
-        // Participation to the down reserve is the sum of the turbining and pumping participation
+        // Participation to the down reserve is the sum of the release and store participation
         // constraint : P_res = H_res + Π_res
-        // H : Turbining participation to reserve
-        // Π : Pumping participation to reserve
+        // H : Release participation to reserve
+        // Π : Store participation to reserve
         // P : Down Reserve Participation
 
         CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
@@ -21,10 +21,10 @@ void STReserveDownParticipation::add(int pays, int reserve, int cluster, int pdt
         int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 
         builder.updateHourWithinWeek(pdt)
-          .STStorageTurbiningClusterReserveParticipation(
+          .STStorageReleaseClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
             1.0)
-          .STStoragePumpingClusterReserveParticipation(
+          .STStorageStoreClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
             1.0)
           .STStorageClusterReserveParticipation(

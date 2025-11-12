@@ -72,12 +72,12 @@ struct CORRESPONDANCES_DES_VARIABLES
         std::vector<int> offThermalClusterParticipation;
         std::vector<int> STStorageClusterParticipationUp;
         std::vector<int> STStorageClusterParticipationDown;
-        std::vector<int> STStorageTurbiningClusterParticipation;
-        std::vector<int> STStoragePumpingClusterParticipation;
+        std::vector<int> STStorageReleaseClusterParticipation;
+        std::vector<int> STStorageStoreClusterParticipation;
         std::vector<int> HydroParticipationUp;
         std::vector<int> HydroParticipationDown;
-        std::vector<int> HydroTurbiningParticipation;
-        std::vector<int> HydroPumpingParticipation;
+        std::vector<int> HydroReleaseParticipation;
+        std::vector<int> HydroStoreParticipation;
 
         std::vector<int> internalUnsatisfied;
         std::vector<int> internalExcess;
@@ -136,21 +136,21 @@ struct CORRESPONDANCES_DES_CONTRAINTES
         std::vector<int> STStorageEnergyLevelParticipation;
         std::vector<int> STStorageGlobalStockEnergyLevelParticipationUp;
         std::vector<int> STStorageGlobalStockEnergyLevelParticipationDown;
-        std::vector<int> STStorageClusterMaxTurbiningParticipation;
-        std::vector<int> STStorageClusterMaxPumpingParticipation;
-        std::vector<int> STStorageClusterTurbiningCapacityThreasholdsMax;
-        std::vector<int> STStorageClusterTurbiningCapacityThreasholdsMin;
-        std::vector<int> STStorageClusterPumpingCapacityThreasholds;
+        std::vector<int> STStorageClusterMaxReleaseParticipation;
+        std::vector<int> STStorageClusterMaxStoreParticipation;
+        std::vector<int> STStorageClusterReleaseCapacityThreasholdsMax;
+        std::vector<int> STStorageClusterReleaseCapacityThreasholdsMin;
+        std::vector<int> STStorageClusterStoreCapacityThreasholds;
         std::vector<int> HydroLevelParticipationUp;
         std::vector<int> HydroLevelParticipationDown;
         std::vector<int> HydroEnergyLevelParticipation;
         std::vector<int> HydroGlobalEnergyLevelParticipationUp;
         std::vector<int> HydroGlobalEnergyLevelParticipationDown;
-        std::vector<int> HydroMaxTurbiningParticipation;
-        std::vector<int> HydroMaxPumpingParticipation;
-        std::vector<int> HydroTurbiningCapacityThreasholdsMax;
-        std::vector<int> HydroTurbiningCapacityThreasholdsMin;
-        std::vector<int> HydroPumpingCapacityThreasholds;
+        std::vector<int> HydroMaxReleaseParticipation;
+        std::vector<int> HydroMaxStoreParticipation;
+        std::vector<int> HydroReleaseCapacityThreasholdsMax;
+        std::vector<int> HydroReleaseCapacityThreasholdsMin;
+        std::vector<int> HydroStoreCapacityThreasholds;
     };
 
     ReserveOpt<ReservesIndices> reservesIndices;
@@ -345,14 +345,14 @@ struct RESERVE_PARTICIPATION_THERMAL: public RESERVE_PARTICIPATION_BASE
 
 struct RESERVE_PARTICIPATION_STSTORAGE: public RESERVE_PARTICIPATION_BASE
 {
-    double maxTurbining;
-    double maxPumping;
+    double maxRelease;
+    double maxStore;
 };
 
 struct RESERVE_PARTICIPATION_HYDRO: public RESERVE_PARTICIPATION_BASE
 {
-    double maxTurbining;
-    double maxPumping;
+    double maxRelease;
+    double maxStore;
 };
 
 struct CAPACITY_RESERVATION

@@ -112,22 +112,22 @@ public:
     void ThermalClusterReserveParticipation(unsigned int variable,
                                             const std::string& clusterName,
                                             const std::string& reserveName);
-    void ParticipationOfSTStorageTurbiningToReserve(unsigned int variable,
-                                                    const std::string& clusterName,
-                                                    const std::string& reserveName);
-    void ParticipationOfSTStoragePumpingToReserve(unsigned int variable,
+    void ParticipationOfSTStorageReleaseToReserve(unsigned int variable,
                                                   const std::string& clusterName,
                                                   const std::string& reserveName);
+    void ParticipationOfSTStorageStoreToReserve(unsigned int variable,
+                                                const std::string& clusterName,
+                                                const std::string& reserveName);
     void ParticipationOfSTStorageToReserve(bool isUpReserve,
                                            unsigned int variable,
                                            const std::string& clusterName,
                                            const std::string& reserveName);
-    void ParticipationOfHydroTurbiningToReserve(unsigned int variable,
-                                                const std::string& clusterName,
-                                                const std::string& reserveName);
-    void ParticipationOfHydroPumpingToReserve(unsigned int variable,
+    void ParticipationOfHydroReleaseToReserve(unsigned int variable,
                                               const std::string& clusterName,
                                               const std::string& reserveName);
+    void ParticipationOfHydroStoreToReserve(unsigned int variable,
+                                            const std::string& clusterName,
+                                            const std::string& reserveName);
     void ParticipationOfHydroToReserve(bool isUpReserve,
                                        unsigned int variable,
                                        const std::string& clusterName,
@@ -231,17 +231,16 @@ public:
                                 const std::string& clusterName,
                                 const std::string& reserveName,
                                 bool isUpReserve);
-    void STTurbiningMaxReserve(unsigned int constraint,
-                               const std::string& clusterName,
-                               const std::string& reserveName);
-    void STPumpingMaxReserve(unsigned int constraint,
+    void STReleaseMaxReserve(unsigned int constraint,
                              const std::string& clusterName,
                              const std::string& reserveName);
-    void STTurbiningCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
-    void STTurbiningCapacityThreasholdsDown(unsigned int constraint,
-                                            const std::string& clusterName);
-    void STPumpingCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
-    void STPumpingCapacityThreasholdsDown(unsigned int constraint, const std::string& clusterName);
+    void STStoreMaxReserve(unsigned int constraint,
+                           const std::string& clusterName,
+                           const std::string& reserveName);
+    void STReleaseCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
+    void STReleaseCapacityThreasholdsDown(unsigned int constraint, const std::string& clusterName);
+    void STStoreCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
+    void STStoreCapacityThreasholdsDown(unsigned int constraint, const std::string& clusterName);
     void STStorageLevelReserveParticipationUp(unsigned int constraint,
                                               const std::string& clusterName);
     void STStorageLevelReserveParticipationDown(unsigned int constraint,
@@ -258,19 +257,17 @@ public:
                                    unsigned int constraint,
                                    const std::string& clusterName,
                                    const std::string& reserveName);
-    void HydroTurbiningMaxReserve(unsigned int constraint,
-                                  const std::string& clusterName,
-                                  const std::string& reserveName);
-    void HydroPumpingMaxReserve(unsigned int constraint,
+    void HydroReleaseMaxReserve(unsigned int constraint,
                                 const std::string& clusterName,
                                 const std::string& reserveName);
-    void HydroTurbiningCapacityThreasholdsUp(unsigned int constraint,
+    void HydroStoreMaxReserve(unsigned int constraint,
+                              const std::string& clusterName,
+                              const std::string& reserveName);
+    void HydroReleaseCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
+    void HydroReleaseCapacityThreasholdsDown(unsigned int constraint,
                                              const std::string& clusterName);
-    void HydroTurbiningCapacityThreasholdsDown(unsigned int constraint,
-                                               const std::string& clusterName);
-    void HydroPumpingCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
-    void HydroPumpingCapacityThreasholdsDown(unsigned int constraint,
-                                             const std::string& clusterName);
+    void HydroStoreCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
+    void HydroStoreCapacityThreasholdsDown(unsigned int constraint, const std::string& clusterName);
     void HydroLevelReserveParticipation(bool isUpReserve,
                                         unsigned int constraint,
                                         const std::string& clusterName);

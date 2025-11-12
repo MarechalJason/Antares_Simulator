@@ -120,15 +120,15 @@ public:
                                                             int offset = 0,
                                                             int delta = 0);
 
-    ConstraintBuilder& STStorageTurbiningClusterReserveParticipation(unsigned int index,
-                                                                     double coeff,
-                                                                     int offset = 0,
-                                                                     int delta = 0);
-
-    ConstraintBuilder& STStoragePumpingClusterReserveParticipation(unsigned int index,
+    ConstraintBuilder& STStorageReleaseClusterReserveParticipation(unsigned int index,
                                                                    double coeff,
                                                                    int offset = 0,
                                                                    int delta = 0);
+
+    ConstraintBuilder& STStorageStoreClusterReserveParticipation(unsigned int index,
+                                                                 double coeff,
+                                                                 int offset = 0,
+                                                                 int delta = 0);
 
     ConstraintBuilder& HydroReserveParticipation(bool isUpReserve,
                                                  unsigned int index,
@@ -136,15 +136,15 @@ public:
                                                  int offset = 0,
                                                  int delta = 0);
 
-    ConstraintBuilder& HydroTurbiningReserveParticipation(unsigned int index,
-                                                          double coeff,
-                                                          int offset = 0,
-                                                          int delta = 0);
-
-    ConstraintBuilder& HydroPumpingReserveParticipation(unsigned int index,
+    ConstraintBuilder& HydroReleaseReserveParticipation(unsigned int index,
                                                         double coeff,
                                                         int offset = 0,
                                                         int delta = 0);
+
+    ConstraintBuilder& HydroStoreReserveParticipation(unsigned int index,
+                                                      double coeff,
+                                                      int offset = 0,
+                                                      int delta = 0);
 
     ConstraintBuilder& InternalUnsatisfiedReserve(unsigned int pays,
                                                   double coeff,

@@ -95,19 +95,7 @@ int& VariableManager::STStorageClusterReserveParticipation(bool isUpReserve,
                            .STStorageClusterParticipationDown[index];
 }
 
-int& VariableManager::STStorageTurbiningClusterReserveParticipation(unsigned int index,
-                                                                    unsigned int hourInWeek,
-                                                                    int offset,
-                                                                    int delta)
-{
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
-
-    return CorrespondanceVarNativesVarOptim_[pdt]
-      .reservesIndices()
-      .STStorageTurbiningClusterParticipation[index];
-}
-
-int& VariableManager::STStoragePumpingClusterReserveParticipation(unsigned int index,
+int& VariableManager::STStorageReleaseClusterReserveParticipation(unsigned int index,
                                                                   unsigned int hourInWeek,
                                                                   int offset,
                                                                   int delta)
@@ -116,7 +104,19 @@ int& VariableManager::STStoragePumpingClusterReserveParticipation(unsigned int i
 
     return CorrespondanceVarNativesVarOptim_[pdt]
       .reservesIndices()
-      .STStoragePumpingClusterParticipation[index];
+      .STStorageReleaseClusterParticipation[index];
+}
+
+int& VariableManager::STStorageStoreClusterReserveParticipation(unsigned int index,
+                                                                unsigned int hourInWeek,
+                                                                int offset,
+                                                                int delta)
+{
+    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+
+    return CorrespondanceVarNativesVarOptim_[pdt]
+      .reservesIndices()
+      .STStorageStoreClusterParticipation[index];
 }
 
 int& VariableManager::HydroReserveParticipation(bool isUpReserve,
@@ -133,18 +133,7 @@ int& VariableManager::HydroReserveParticipation(bool isUpReserve,
                  .HydroParticipationDown[index];
 }
 
-int& VariableManager::HydroTurbiningReserveParticipation(unsigned int index,
-                                                         unsigned int hourInWeek,
-                                                         int offset,
-                                                         int delta)
-{
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
-    return CorrespondanceVarNativesVarOptim_[pdt]
-      .reservesIndices()
-      .HydroTurbiningParticipation[index];
-}
-
-int& VariableManager::HydroPumpingReserveParticipation(unsigned int index,
+int& VariableManager::HydroReleaseReserveParticipation(unsigned int index,
                                                        unsigned int hourInWeek,
                                                        int offset,
                                                        int delta)
@@ -152,7 +141,16 @@ int& VariableManager::HydroPumpingReserveParticipation(unsigned int index,
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .reservesIndices()
-      .HydroPumpingParticipation[index];
+      .HydroReleaseParticipation[index];
+}
+
+int& VariableManager::HydroStoreReserveParticipation(unsigned int index,
+                                                     unsigned int hourInWeek,
+                                                     int offset,
+                                                     int delta)
+{
+    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    return CorrespondanceVarNativesVarOptim_[pdt].reservesIndices().HydroStoreParticipation[index];
 }
 
 int& VariableManager::InternalUnsatisfiedReserve(unsigned int index,

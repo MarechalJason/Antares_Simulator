@@ -41,6 +41,6 @@ struct ThermalClusterReserveParticipation: ReserveParticipationBase
 /// reserve
 struct StorageClusterReserveParticipation: ReserveParticipationBase
 {
-    double maxTurbining = 0;
-    double maxPumping = 0;
+    double maxRelease = 0;
+    double maxStore = 0;
 };
