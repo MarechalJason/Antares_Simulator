@@ -158,8 +158,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         }
 
         // Common setter for the ShortTerm Storage clusters
-        void setSTStorageClusterRightSides(const ::ShortTermStorage::PROPERTIES& cluster,
-                                           const AREA_RESERVES_VECTOR& reserves)
+        void setSTStorageClusterRightSides(const ::PROPERTIES& cluster,
+                                           const ::AREA_RESERVES_VECTOR& reserves)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -284,7 +284,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         }
 
         // Common setter for the LongTerm Storage clusters
-        void setLTStorageClusterRightSides(const AREA_RESERVES_VECTOR& reserves)
+        void setLTStorageClusterRightSides(const ::AREA_RESERVES_VECTOR& reserves)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim

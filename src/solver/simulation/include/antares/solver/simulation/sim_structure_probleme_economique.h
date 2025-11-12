@@ -220,8 +220,6 @@ struct CONTRAINTES_COUPLANTES
     std::shared_ptr<Antares::Data::BindingConstraint> bindingConstraint;
 };
 
-namespace ShortTermStorage
-{
 struct PROPERTIES
 {
     double reservoirCapacity;
@@ -243,7 +241,7 @@ struct PROPERTIES
     std::string name;
 };
 
-using AREA_INPUT = std::vector<::ShortTermStorage::PROPERTIES>; // index is local
+using AREA_INPUT = std::vector<PROPERTIES>; // index is local
 
 struct RESULTS
 {
@@ -258,7 +256,6 @@ struct RESULTSRESERVES
     // Index is the number of the STS reserves participations in the area
     ReserveOpt<std::vector<double>> reserveParticipationOfCluster; // MWh
 };
-} // namespace ShortTermStorage
 
 struct DEMAND_MARKET_POOL
 {
@@ -531,9 +528,9 @@ struct RESULTATS_HORAIRES
     std::vector<PRODUCTION_THERMIQUE_OPTIMALE> ProductionThermique; // index is pdtHebdo
     std::vector<OPTIMAL_HYDRO_USAGE> HydroUsage;                    // index is pdtHebdo
 
-    std::vector<::ShortTermStorage::RESULTS> ShortTermStorage;
+    std::vector<::RESULTS> ShortTermStorage;
 
-    ReserveOpt<std::vector<::ShortTermStorage::RESULTSRESERVES>> ShortTermStorageReserves;
+    ReserveOpt<std::vector<::RESULTSRESERVES>> ShortTermStorageReserves;
     ReserveOpt<std::vector<RESERVES>> Reserves;
 };
 
@@ -605,10 +602,10 @@ struct PROBLEME_HEBDO
     std::vector<PALIERS_THERMIQUES> PaliersThermiquesDuPays;
     std::vector<ENERGIES_ET_PUISSANCES_HYDRAULIQUES> CaracteristiquesHydrauliques;
 
-    ReserveOpt<std::vector<AREA_RESERVES_VECTOR>> allReserves;
+    ReserveOpt<std::vector<::AREA_RESERVES_VECTOR>> allReserves;
 
     uint32_t NumberOfShortTermStorages = 0;
-    std::vector<::ShortTermStorage::AREA_INPUT> ShortTermStorage;
+    std::vector<::AREA_INPUT> ShortTermStorage;
 
     uint32_t NumberOfLongTermStorages = 0;
 
@@ -629,7 +626,6 @@ struct PROBLEME_HEBDO
 
     Data::mpsExportStatus ExportMPS = Data::mpsExportStatus::NO_EXPORT;
     bool exportMPSOnError = false;
-    bool ExportStructure = false;
     bool NamedProblems = false;
     bool exportSolutions = false;
 
