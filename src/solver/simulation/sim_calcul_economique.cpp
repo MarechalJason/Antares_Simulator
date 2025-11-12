@@ -40,7 +40,7 @@ constexpr double LEVEL_TOLERANCE_MWH = 1.e-6;
 static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
 {
     int globalReserveIndex = 0;
-    problem.allReserves = std::vector<AREA_RESERVES_VECTOR>(areas.size());
+    problem.allReserves = std::vector<::AREA_RESERVES_VECTOR>(areas.size());
     for (uint areaIndex = 0; areaIndex != areas.size(); areaIndex++)
     {
         int areaReserveIndex = 0;
@@ -100,11 +100,10 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
     }
 }
 
-static void importShortTermStorages(
-  Data::Parameters parameters,
-  AreaList& areas,
-  std::vector<::ShortTermStorage::AREA_INPUT>& ShortTermStorageOut,
-  PROBLEME_HEBDO& problem)
+static void importShortTermStorages(Data::Parameters parameters,
+                                    AreaList& areas,
+                                    std::vector<::AREA_INPUT>& ShortTermStorageOut,
+                                    PROBLEME_HEBDO& problem)
 {
     int clusterGlobalIndex = 0;
     int constraintGlobalIndex = 0;
@@ -120,7 +119,7 @@ static void importShortTermStorages(
         int storageIndex = 0;
         for (const auto& st: area->shortTermStorage.storagesByIndex)
         {
-            ::ShortTermStorage::PROPERTIES& toInsert = ShortTermStorageOut[areaIndex][storageIndex];
+            PROPERTIES& toInsert = ShortTermStorageOut[areaIndex][storageIndex];
             toInsert.clusterGlobalIndex = clusterGlobalIndex;
 
             // capacities
@@ -340,7 +339,6 @@ void SIM_InitialisationProblemeHebdo(Study& study,
 
     problem.ExportMPS = study.parameters.include.exportMPS;
     problem.exportSolutions = study.parameters.include.exportSolutions;
-    problem.ExportStructure = study.parameters.include.exportStructure;
     problem.NamedProblems = study.parameters.namedProblems;
     problem.exportMPSOnError = Data::exportMPS(parameters.include.unfeasibleProblemBehavior);
 
