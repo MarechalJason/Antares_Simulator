@@ -56,46 +56,34 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
         areaReserves.maxGlobalEnergyActivationRatioUp = area->allCapacityReservations()
                                                           .maxGlobalEnergyActivationRatioUp;
 
-        for (const auto& [reserveName, reserveCapacity]:
-             area->allCapacityReservations().areaCapacityReservationsUp)
+        for (bool isUpReserve : {reserveIsUp, reserveIsDown})
         {
-            CAPACITY_RESERVATION areaCapacityReservationsUp;
-            areaCapacityReservationsUp.unsuppliedCost = reserveCapacity.unsuppliedCost;
-            areaCapacityReservationsUp.spillageCost = reserveCapacity.spillageCost;
-            areaCapacityReservationsUp.powerActivationRatio = reserveCapacity.powerActivationRatio;
-            areaCapacityReservationsUp.energyActivationRatio = reserveCapacity
-                                                                 .energyActivationRatio;
-            areaCapacityReservationsUp.maxActivationDuration = reserveCapacity
-                                                                 .referenceActivationHours;
-            areaCapacityReservationsUp.reserveName = reserveName;
-            areaCapacityReservationsUp.globalReserveIndex = globalReserveIndex;
-            areaCapacityReservationsUp.areaReserveIndex = areaReserveIndex;
-            globalReserveIndex++;
-            areaReserveIndex++;
-            areaCapacityReservationsUp.need = reserveCapacity.need;
+            auto& areaCapacityReservations = isUpReserve? area->allCapacityReservations()
+                                                             .areaCapacityReservationsUp
+                                                         : area->allCapacityReservations()
+                                                             .areaCapacityReservationsDown;
+            for (const auto& [reserveName, reserveCapacity]: areaCapacityReservations)
+            {
+                CAPACITY_RESERVATION areaCapacityReservation;
+                areaCapacityReservation.unsuppliedCost = reserveCapacity.unsuppliedCost;
+                areaCapacityReservation.spillageCost = reserveCapacity.spillageCost;
+                areaCapacityReservation.powerActivationRatio = reserveCapacity
+                                                                    .powerActivationRatio;
+                areaCapacityReservation.energyActivationRatio = reserveCapacity
+                                                                     .energyActivationRatio;
+                areaCapacityReservation.maxActivationDuration = reserveCapacity
+                                                                     .referenceActivationHours;
+                areaCapacityReservation.reserveName = reserveName;
+                areaCapacityReservation.globalReserveIndex = globalReserveIndex;
+                areaCapacityReservation.areaReserveIndex = areaReserveIndex;
+                globalReserveIndex++;
+                areaReserveIndex++;
+                areaCapacityReservation.need = reserveCapacity.need;
 
-            areaReserves.areaCapacityReservationsUp.emplace_back(areaCapacityReservationsUp);
-        }
-        for (const auto& [reserveName, reserveCapacity]:
-             area->allCapacityReservations().areaCapacityReservationsDown)
-        {
-            CAPACITY_RESERVATION areaCapacityReservationsDown;
-            areaCapacityReservationsDown.unsuppliedCost = reserveCapacity.unsuppliedCost;
-            areaCapacityReservationsDown.spillageCost = reserveCapacity.spillageCost;
-            areaCapacityReservationsDown.powerActivationRatio = reserveCapacity
-                                                                  .powerActivationRatio;
-            areaCapacityReservationsDown.maxActivationDuration = reserveCapacity
-                                                                   .referenceActivationHours;
-            areaCapacityReservationsDown.energyActivationRatio = reserveCapacity
-                                                                   .energyActivationRatio;
-            areaCapacityReservationsDown.reserveName = reserveName;
-            areaCapacityReservationsDown.globalReserveIndex = globalReserveIndex;
-            areaCapacityReservationsDown.areaReserveIndex = areaReserveIndex;
-            globalReserveIndex++;
-            areaReserveIndex++;
-            areaCapacityReservationsDown.need = reserveCapacity.need;
-
-            areaReserves.areaCapacityReservationsDown.emplace_back(areaCapacityReservationsDown);
+                auto& whereToEmplace = isUpReserve ? areaReserves.areaCapacityReservationsUp
+                                                   : areaReserves.areaCapacityReservationsDown;
+                whereToEmplace.emplace_back(areaCapacityReservation);
+            }
         }
     }
 }

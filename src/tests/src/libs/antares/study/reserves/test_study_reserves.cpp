@@ -494,4 +494,34 @@ BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Bad_Reserve_Symmetry,
       checkMessage("This entity is not participating to reserve ReserveNull"));
 }
 
+BOOST_FIXTURE_TEST_CASE(test_loadReserveParticipations_Bad_Cluster_Participation,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster3\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    BOOST_CHECK_EXCEPTION(
+      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
+      std::out_of_range,
+      checkMessage("This entity is not participating to reserve ReserveDown"));
+}
+
 BOOST_AUTO_TEST_SUITE_END() // version
