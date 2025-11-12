@@ -155,7 +155,7 @@ private:
 };
 
 void SetAllReservesBoundsForArea(ReserveVariablesBoundsSetter& setter,
-                                 const AREA_RESERVES_VECTOR& areaReserves,
+                                 const ::AREA_RESERVES_VECTOR& areaReserves,
                                  bool isUpReserve)
 {
     const auto& areaCapacityReservations = isUpReserve ? areaReserves.areaCapacityReservationsUp
