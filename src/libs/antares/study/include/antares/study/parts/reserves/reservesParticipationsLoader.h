@@ -137,6 +137,11 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                 auto cluster = area.thermal.list.findInAll(clusterName);
                 if (cluster)
                 {
+                    if (!cluster->reserveParticipationContainer.has_value())
+                    {
+                        throw std::out_of_range(
+                          "Area " + area.name + ", " + clusterName + " : trying to add symmetries without any reserves"); 
+                    }
                     cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
                 }
                 else
@@ -208,6 +213,11 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
                 {
                     cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
                 }
+                else
+                {
+                    throw std::out_of_range("Area " + area.name + ", " + clusterName
+                                            + " : trying to add symmetries to a non existing cluster or participation");
+                }
             }
         }
     }
@@ -254,6 +264,10 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
     void readSymmetrySection(Area& area, const IniFile::Section& section) override
     {
         auto& reserveParticipationContainer = area.hydro.reserveParticipationContainer;
+        if (!area.hydro.reserveParticipationContainer.has_value())
+        {
+            throw std::out_of_range("Area " + area.name + ", hydro : trying to add symmetries without any reserves"); 
+        }
         for (auto* p = section.firstProperty; p; p = p->next)
         {
             auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
