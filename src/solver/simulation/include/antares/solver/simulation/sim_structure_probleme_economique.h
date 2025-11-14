@@ -138,9 +138,9 @@ struct CORRESPONDANCES_DES_CONTRAINTES
         std::vector<int> STStorageGlobalStockEnergyLevelParticipationDown;
         std::vector<int> STStorageClusterMaxReleaseParticipation;
         std::vector<int> STStorageClusterMaxStoreParticipation;
-        std::vector<int> STStorageClusterReleaseCapacityThreasholdsMax;
-        std::vector<int> STStorageClusterReleaseCapacityThreasholdsMin;
-        std::vector<int> STStorageClusterStoreCapacityThreasholds;
+        std::vector<int> STStorageClusterReleaseCapacityThresholdsMax;
+        std::vector<int> STStorageClusterReleaseCapacityThresholdsMin;
+        std::vector<int> STStorageClusterStoreCapacityThresholds;
         std::vector<int> HydroLevelParticipationUp;
         std::vector<int> HydroLevelParticipationDown;
         std::vector<int> HydroEnergyLevelParticipation;
@@ -148,9 +148,9 @@ struct CORRESPONDANCES_DES_CONTRAINTES
         std::vector<int> HydroGlobalEnergyLevelParticipationDown;
         std::vector<int> HydroMaxReleaseParticipation;
         std::vector<int> HydroMaxStoreParticipation;
-        std::vector<int> HydroReleaseCapacityThreasholdsMax;
-        std::vector<int> HydroReleaseCapacityThreasholdsMin;
-        std::vector<int> HydroStoreCapacityThreasholds;
+        std::vector<int> HydroReleaseCapacityThresholdsMax;
+        std::vector<int> HydroReleaseCapacityThresholdsMin;
+        std::vector<int> HydroStoreCapacityThresholds;
     };
 
     ReserveOpt<ReservesIndices> reservesIndices;

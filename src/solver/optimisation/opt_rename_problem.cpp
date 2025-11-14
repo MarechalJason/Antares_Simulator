@@ -630,16 +630,16 @@ void ConstraintNamer::POffUnitsUpperBound(unsigned int constraint, const std::st
     SetThermalClusterElementName(constraint, "POffUnitsUpperBound", clusterName);
 }
 
-void ConstraintNamer::POutCapacityThreasholdInf(unsigned int constraint,
-                                                const std::string& clusterName)
+void ConstraintNamer::POutCapacityThresholdInf(unsigned int constraint,
+                                               const std::string& clusterName)
 {
-    SetThermalClusterElementName(constraint, "POutCapacityThreasholdInf", clusterName);
+    SetThermalClusterElementName(constraint, "POutCapacityThresholdInf", clusterName);
 }
 
-void ConstraintNamer::POutCapacityThreasholdSup(unsigned int constraint,
-                                                const std::string& clusterName)
+void ConstraintNamer::POutCapacityThresholdSup(unsigned int constraint,
+                                               const std::string& clusterName)
 {
-    SetThermalClusterElementName(constraint, "POutCapacityThreasholdSup", clusterName);
+    SetThermalClusterElementName(constraint, "POutCapacityThresholdSup", clusterName);
 }
 
 void ConstraintNamer::POutBoundMin(unsigned int constraint, const std::string& clusterName)
@@ -684,28 +684,28 @@ void ConstraintNamer::STStoreMaxReserve(unsigned int constraint,
                                              reserveName);
 }
 
-void ConstraintNamer::STReleaseCapacityThreasholdsUp(unsigned int constraint,
-                                                     const std::string& clusterName)
+void ConstraintNamer::STReleaseCapacityThresholdsUp(unsigned int constraint,
+                                                    const std::string& clusterName)
 {
-    SetSTStorageClusterElementName(constraint, "STReleaseCapacityThreasholdsUp", clusterName);
+    SetSTStorageClusterElementName(constraint, "STReleaseCapacityThresholdsUp", clusterName);
 }
 
-void ConstraintNamer::STStoreCapacityThreasholdsUp(unsigned int constraint,
-                                                   const std::string& clusterName)
+void ConstraintNamer::STStoreCapacityThresholdsUp(unsigned int constraint,
+                                                  const std::string& clusterName)
 {
-    SetSTStorageClusterElementName(constraint, "STStoreCapacityThreasholdsUp", clusterName);
+    SetSTStorageClusterElementName(constraint, "STStoreCapacityThresholdsUp", clusterName);
 }
 
-void ConstraintNamer::STReleaseCapacityThreasholdsDown(unsigned int constraint,
-                                                       const std::string& clusterName)
+void ConstraintNamer::STReleaseCapacityThresholdsDown(unsigned int constraint,
+                                                      const std::string& clusterName)
 {
-    SetSTStorageClusterElementName(constraint, "STReleaseCapacityThreasholdsDown", clusterName);
+    SetSTStorageClusterElementName(constraint, "STReleaseCapacityThresholdsDown", clusterName);
 }
 
-void ConstraintNamer::STStoreCapacityThreasholdsDown(unsigned int constraint,
-                                                     const std::string& clusterName)
+void ConstraintNamer::STStoreCapacityThresholdsDown(unsigned int constraint,
+                                                    const std::string& clusterName)
 {
-    SetSTStorageClusterElementName(constraint, "STStoreCapacityThreasholdsDown", clusterName);
+    SetSTStorageClusterElementName(constraint, "STStoreCapacityThresholdsDown", clusterName);
 }
 
 void ConstraintNamer::STStorageLevelReserveParticipationUp(unsigned int constraint,
@@ -775,28 +775,28 @@ void ConstraintNamer::HydroStoreMaxReserve(unsigned int constraint,
     SetHydroAndReserveElementName(constraint, "HydroStoreMaxReserve", clusterName, reserveName);
 }
 
-void ConstraintNamer::HydroReleaseCapacityThreasholdsUp(unsigned int constraint,
-                                                        const std::string& clusterName)
+void ConstraintNamer::HydroReleaseCapacityThresholdsUp(unsigned int constraint,
+                                                       const std::string& clusterName)
 {
-    SetHydroElementName(constraint, "HydroReleaseCapacityThreasholdsUp", clusterName);
+    SetHydroElementName(constraint, "HydroReleaseCapacityThresholdsUp", clusterName);
 }
 
-void ConstraintNamer::HydroStoreCapacityThreasholdsUp(unsigned int constraint,
-                                                      const std::string& clusterName)
+void ConstraintNamer::HydroStoreCapacityThresholdsUp(unsigned int constraint,
+                                                     const std::string& clusterName)
 {
-    SetHydroElementName(constraint, "HydroStoreCapacityThreasholdsUp", clusterName);
+    SetHydroElementName(constraint, "HydroStoreCapacityThresholdsUp", clusterName);
 }
 
-void ConstraintNamer::HydroReleaseCapacityThreasholdsDown(unsigned int constraint,
-                                                          const std::string& clusterName)
+void ConstraintNamer::HydroReleaseCapacityThresholdsDown(unsigned int constraint,
+                                                         const std::string& clusterName)
 {
-    SetHydroElementName(constraint, "HydroReleaseCapacityThreasholdsDown", clusterName);
+    SetHydroElementName(constraint, "HydroReleaseCapacityThresholdsDown", clusterName);
 }
 
-void ConstraintNamer::HydroStoreCapacityThreasholdsDown(unsigned int constraint,
-                                                        const std::string& clusterName)
+void ConstraintNamer::HydroStoreCapacityThresholdsDown(unsigned int constraint,
+                                                       const std::string& clusterName)
 {
-    SetHydroElementName(constraint, "HydroStoreCapacityThreasholdsDown", clusterName);
+    SetHydroElementName(constraint, "HydroStoreCapacityThresholdsDown", clusterName);
 }
 
 void ConstraintNamer::HydroLevelReserveParticipation(bool isUpReserve,

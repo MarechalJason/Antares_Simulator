@@ -138,8 +138,8 @@ set(RTESOLVER_OPT
 		constraints/PMaxReserve.cpp
 		include/antares/solver/optimisation/constraints/OffUnitsThermalParticipatingToReserves.h
 		constraints/OffUnitsThermalParticipatingToReserves.cpp
-		include/antares/solver/optimisation/constraints/POutCapacityThreasholds.h
-		constraints/POutCapacityThreasholds.cpp
+		include/antares/solver/optimisation/constraints/POutCapacityThresholds.h
+		constraints/POutCapacityThresholds.cpp
 		include/antares/solver/optimisation/constraints/POutBounds.h
 		constraints/POutBounds.cpp
 		include/antares/solver/optimisation/constraints/ThermalReserveParticipation.h
@@ -154,10 +154,10 @@ set(RTESOLVER_OPT
 		constraints/STReleaseMaxReserve.cpp
 		include/antares/solver/optimisation/constraints/STStoreMaxReserve.h
 		constraints/STStoreMaxReserve.cpp
-		include/antares/solver/optimisation/constraints/STReleaseCapacityThreasholds.h
-		constraints/STReleaseCapacityThreasholds.cpp
-		include/antares/solver/optimisation/constraints/STStoreCapacityThreasholds.h
-		constraints/STStoreCapacityThreasholds.cpp
+		include/antares/solver/optimisation/constraints/STReleaseCapacityThresholds.h
+		constraints/STReleaseCapacityThresholds.cpp
+		include/antares/solver/optimisation/constraints/STStoreCapacityThresholds.h
+		constraints/STStoreCapacityThresholds.cpp
 		include/antares/solver/optimisation/constraints/STReserveParticipation.h
 		constraints/STReserveParticipation.cpp
 		include/antares/solver/optimisation/constraints/STStorageLevelReserveParticipation.h
@@ -168,10 +168,10 @@ set(RTESOLVER_OPT
 		constraints/HydroStoreMaxReserve.cpp
 		include/antares/solver/optimisation/constraints/HydroReserveParticipation.h
 		constraints/HydroReserveParticipation.cpp
-		include/antares/solver/optimisation/constraints/HydroReleaseCapacityThreasholds.h
-		constraints/HydroReleaseCapacityThreasholds.cpp
-		include/antares/solver/optimisation/constraints/HydroStoreCapacityThreasholds.h
-		constraints/HydroStoreCapacityThreasholds.cpp
+		include/antares/solver/optimisation/constraints/HydroReleaseCapacityThresholds.h
+		constraints/HydroReleaseCapacityThresholds.cpp
+		include/antares/solver/optimisation/constraints/HydroStoreCapacityThresholds.h
+		constraints/HydroStoreCapacityThresholds.cpp
 		include/antares/solver/optimisation/constraints/HydroLevelReserveParticipation.h
 		constraints/HydroLevelReserveParticipation.cpp
 		include/antares/solver/optimisation/constraints/STStorageEnergyLevelReserveParticipation.h

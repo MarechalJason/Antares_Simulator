@@ -223,8 +223,8 @@ public:
                                       const std::string& reserveName1,
                                       const std::string& reserveName2);
     void POffUnitsUpperBound(unsigned int constraint, const std::string& clusterName);
-    void POutCapacityThreasholdInf(unsigned int constraint, const std::string& clusterName);
-    void POutCapacityThreasholdSup(unsigned int constraint, const std::string& clusterName);
+    void POutCapacityThresholdInf(unsigned int constraint, const std::string& clusterName);
+    void POutCapacityThresholdSup(unsigned int constraint, const std::string& clusterName);
     void POutBoundMin(unsigned int constraint, const std::string& clusterName);
     void POutBoundMax(unsigned int constraint, const std::string& clusterName);
     void STReserveParticipation(unsigned int constraint,
@@ -237,10 +237,10 @@ public:
     void STStoreMaxReserve(unsigned int constraint,
                            const std::string& clusterName,
                            const std::string& reserveName);
-    void STReleaseCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
-    void STReleaseCapacityThreasholdsDown(unsigned int constraint, const std::string& clusterName);
-    void STStoreCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
-    void STStoreCapacityThreasholdsDown(unsigned int constraint, const std::string& clusterName);
+    void STReleaseCapacityThresholdsUp(unsigned int constraint, const std::string& clusterName);
+    void STReleaseCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
+    void STStoreCapacityThresholdsUp(unsigned int constraint, const std::string& clusterName);
+    void STStoreCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
     void STStorageLevelReserveParticipationUp(unsigned int constraint,
                                               const std::string& clusterName);
     void STStorageLevelReserveParticipationDown(unsigned int constraint,
@@ -263,11 +263,11 @@ public:
     void HydroStoreMaxReserve(unsigned int constraint,
                               const std::string& clusterName,
                               const std::string& reserveName);
-    void HydroReleaseCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
-    void HydroReleaseCapacityThreasholdsDown(unsigned int constraint,
-                                             const std::string& clusterName);
-    void HydroStoreCapacityThreasholdsUp(unsigned int constraint, const std::string& clusterName);
-    void HydroStoreCapacityThreasholdsDown(unsigned int constraint, const std::string& clusterName);
+    void HydroReleaseCapacityThresholdsUp(unsigned int constraint, const std::string& clusterName);
+    void HydroReleaseCapacityThresholdsDown(unsigned int constraint,
+                                            const std::string& clusterName);
+    void HydroStoreCapacityThresholdsUp(unsigned int constraint, const std::string& clusterName);
+    void HydroStoreCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
     void HydroLevelReserveParticipation(bool isUpReserve,
                                         unsigned int constraint,
                                         const std::string& clusterName);

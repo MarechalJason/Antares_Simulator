@@ -317,15 +317,15 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
                 -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .STStorageClusterReleaseCapacityThreasholdsMax
+              .STStorageClusterReleaseCapacityThresholdsMax
               .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .STStorageClusterReleaseCapacityThreasholdsMin
+              .STStorageClusterReleaseCapacityThresholdsMin
               .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .STStorageClusterStoreCapacityThreasholds
+              .STStorageClusterStoreCapacityThresholds
               .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
@@ -359,13 +359,13 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
                                                  -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .HydroReleaseCapacityThreasholdsMax.assign(study.runtime.counts.hydros, -1);
+              .HydroReleaseCapacityThresholdsMax.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .HydroReleaseCapacityThreasholdsMin.assign(study.runtime.counts.hydros, -1);
+              .HydroReleaseCapacityThresholdsMin.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
-              .HydroStoreCapacityThreasholds.assign(study.runtime.counts.hydros, -1);
+              .HydroStoreCapacityThresholds.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices()
               .HydroLevelParticipationDown.assign(study.runtime.counts.hydros, -1);

@@ -25,24 +25,24 @@
 #include "antares/solver/optimisation/constraints/HydroEnergyLevelReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/HydroGlobalEnergyLevelReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/HydroLevelReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/HydroReleaseCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/HydroReleaseCapacityThresholds.h"
 #include "antares/solver/optimisation/constraints/HydroReleaseMaxReserve.h"
 #include "antares/solver/optimisation/constraints/HydroReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/HydroStoreCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/HydroStoreCapacityThresholds.h"
 #include "antares/solver/optimisation/constraints/HydroStoreMaxReserve.h"
 #include "antares/solver/optimisation/constraints/OffUnitsThermalParticipatingToReserves.h"
 #include "antares/solver/optimisation/constraints/PMaxReserve.h"
 #include "antares/solver/optimisation/constraints/POffUnits.h"
 #include "antares/solver/optimisation/constraints/POutBounds.h"
-#include "antares/solver/optimisation/constraints/POutCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/POutCapacityThresholds.h"
 #include "antares/solver/optimisation/constraints/ReserveSatisfaction.h"
-#include "antares/solver/optimisation/constraints/STReleaseCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/STReleaseCapacityThresholds.h"
 #include "antares/solver/optimisation/constraints/STReleaseMaxReserve.h"
 #include "antares/solver/optimisation/constraints/STReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/STStorageEnergyLevelReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/STStorageGlobalEnergyLevelReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/STStorageLevelReserveParticipation.h"
-#include "antares/solver/optimisation/constraints/STStoreCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/STStoreCapacityThresholds.h"
 #include "antares/solver/optimisation/constraints/STStoreMaxReserve.h"
 #include "antares/solver/optimisation/constraints/SymmetryReserveParticipation.h"
 #include "antares/solver/optimisation/constraints/ThermalReserveParticipation.h"
@@ -279,12 +279,12 @@ void ReserveParticipationGroup::BuildConstraints()
     }
     {
         auto data = GetReserveDataFromProblemHebdo();
-        POutCapacityThreasholds pOutCapacityThreasholds(builder_, data);
+        POutCapacityThresholds pOutCapacityThresholds(builder_, data);
         POutBounds pOutBounds(builder_, data);
-        STReleaseCapacityThreasholds STReleaseCapacityThreasholds(builder_, data);
-        STStoreCapacityThreasholds STStoreCapacityThreasholds(builder_, data);
-        HydroReleaseCapacityThreasholds HydroReleaseCapacityThreasholds(builder_, data);
-        HydroStoreCapacityThreasholds HydroStoreCapacityThreasholds(builder_, data);
+        STReleaseCapacityThresholds STReleaseCapacityThresholds(builder_, data);
+        STStoreCapacityThresholds STStoreCapacityThresholds(builder_, data);
+        HydroReleaseCapacityThresholds HydroReleaseCapacityThresholds(builder_, data);
+        HydroStoreCapacityThresholds HydroStoreCapacityThresholds(builder_, data);
         HydroLevelReserveParticipation HydroLevelReserveParticipation(builder_, data);
         STStorageLevelReserveParticipation STStorageLevelReserveParticipation(builder_, data);
         STStorageGlobalEnergyLevelReserveParticipation
@@ -305,7 +305,7 @@ void ReserveParticipationGroup::BuildConstraints()
                      cluster++)
                 {
                     // 17 bis
-                    pOutCapacityThreasholds.add(pays, cluster, pdt);
+                    pOutCapacityThresholds.add(pays, cluster, pdt);
 
                     // 17 ter
                     pOutBounds.add(pays, cluster, pdt);
@@ -316,9 +316,9 @@ void ReserveParticipationGroup::BuildConstraints()
                 for (int cluster = 0; cluster < STStorageDuPays.size(); cluster++)
                 {
                     // 15 (m)
-                    STReleaseCapacityThreasholds.add(pays, cluster, pdt);
+                    STReleaseCapacityThresholds.add(pays, cluster, pdt);
                     // 15 (n)
-                    STStoreCapacityThreasholds.add(pays, cluster, pdt);
+                    STStoreCapacityThresholds.add(pays, cluster, pdt);
                     // 15 (g)
                     STStorageLevelReserveParticipation.add(pays, cluster, pdt);
                     // 15 (i)
@@ -341,9 +341,9 @@ void ReserveParticipationGroup::BuildConstraints()
                       problemeHebdo_->allReserves()[pays].areaCapacityReservationsUp))
                 {
                     // 15 (c)
-                    HydroReleaseCapacityThreasholds.add(pays, 0, pdt);
+                    HydroReleaseCapacityThresholds.add(pays, 0, pdt);
                     // 15 (d)
-                    HydroStoreCapacityThreasholds.add(pays, 0, pdt);
+                    HydroStoreCapacityThresholds.add(pays, 0, pdt);
                     // 15 (r)
                     HydroLevelReserveParticipation.add(pays, 0, pdt);
                     // 15 (t)
