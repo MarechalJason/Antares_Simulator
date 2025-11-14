@@ -608,10 +608,10 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_Symmetries,
 
     BOOST_CHECK_EQUAL(areaA->hydro.reserveParticipationContainer.value().reserveCost("ReserveUp"),
                       9.9);
-    BOOST_CHECK_EQUAL(areaA->hydro.reserveParticipationContainer.value().reserveMaxPumping(
+    BOOST_CHECK_EQUAL(areaA->hydro.reserveParticipationContainer.value().reserveMaxStore(
                         "ReserveUp"),
                       8.8);
-    BOOST_CHECK_EQUAL(areaA->hydro.reserveParticipationContainer.value().reserveMaxTurbining(
+    BOOST_CHECK_EQUAL(areaA->hydro.reserveParticipationContainer.value().reserveMaxRelease(
                         "ReserveUp"),
                       7.7);
 }
@@ -656,7 +656,6 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_reserve,
                           std::out_of_range,
                           checkMessage("This entity is not participating to reserve ReserveDown"));
 }
-
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster,
                         OneProblemWithReservesOneArea)
