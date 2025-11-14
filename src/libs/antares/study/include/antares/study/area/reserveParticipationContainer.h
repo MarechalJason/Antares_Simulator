@@ -165,19 +165,19 @@ class ReserveParticipationContainer<StorageClusterReserveParticipation>
     : public ReserveParticipationContainerBase<StorageClusterReserveParticipation>
 {
 public:
-    /// @brief Returns the maximum turbining power that can be reserved
+    /// @brief Returns the maximum release power that can be reserved
     /// @param name name of the reserve
-    /// @return the maximum turbining power that can be reserved
-    double reserveMaxTurbining(ReserveName name) const
+    /// @return the maximum release power that can be reserved
+    double reserveMaxRelease(ReserveName name) const
     {
-        return reservesParticipations.at(name).maxTurbining;
+        return reservesParticipations.at(name).maxRelease;
     }
 
-    /// @brief Returns the maximum pumping power that can be reserved
+    /// @brief Returns the maximum store power that can be reserved
     /// @param name name of the reserve
-    /// @return the maximum pumping power that can be reserved
-    double reserveMaxPumping(ReserveName name) const
+    /// @return the maximum store power that can be reserved
+    double reserveMaxStore(ReserveName name) const
     {
-        return reservesParticipations.at(name).maxPumping;
+        return reservesParticipations.at(name).maxStore;
     }
 };

@@ -116,14 +116,14 @@ public:
     void initFromShortTermStorageClusterIndex(const unsigned int areaWideIndex);
 
     /*!
-     ** \brief Initialize some variable according a long term storage cluster index
+     ** \brief Initialize some variable according a Hydro index
      **
      ** We assume here that the variables related to an area
      ** are properly initialized.
      **
-     ** \param areaWideIndex Index of the long term storage cluster for the current area
+     ** \param areaWideIndex Index of the Hydro for the current area
      */
-    void initFromLongTermStorageClusterIndex(const unsigned int areaWideIndex);
+    void initFromHydroIndex(const unsigned int areaWideIndex);
 
     /*!
     ** \brief End the year by smoothing the thermal units run
@@ -138,7 +138,7 @@ public:
 
     void calculateReserveParticipationCosts();
 
-    void initFromHydroStorage();
+    void initFromHydro();
 
 private:
     /*!
@@ -265,9 +265,9 @@ public:
     std::vector<std::map<std::string, std::map<ReserveName, double>>>
       reserveParticipationPerSTStorageClusterForYear{HOURS_PER_YEAR};
 
-    //! Reserve Participation for each LTStorage cluster per reserve
+    //! Reserve Participation for each Hydro per reserve
     std::vector<std::map<std::string, std::map<ReserveName, double>>>
-      reserveParticipationPerLTStorageClusterForYear{HOURS_PER_YEAR};
+      reserveParticipationPerHydroForYear{HOURS_PER_YEAR};
 
     //! Reserve Participation cost for the whole year
     ReserveOpt<std::vector<double>> reserveParticipationCostForYear;
@@ -288,8 +288,8 @@ public:
     //! Reserves participation cost of the Short Term Storage cluster for the whole year
     ReserveOpt<std::vector<double>> STStorageClusterReserveParticipationCostForYear;
 
-    //! Reserves participation cost of the Long Term Storage  for the whole year
-    ReserveOpt<std::vector<double>> LTStorageClusterReserveParticipationCostForYear;
+    //! Reserves participation cost of the Hydro for the whole year
+    ReserveOpt<std::vector<double>> HydroReserveParticipationCostForYear;
 
     double renewableClusterProduction;
 

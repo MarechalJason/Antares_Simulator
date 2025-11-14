@@ -165,8 +165,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
             int cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                        .STStorageClusterTurbiningCapacityThreasholdsMax[cluster
-                                                                           .clusterGlobalIndex];
+                        .STStorageClusterReleaseCapacityThresholdsMax[cluster.clusterGlobalIndex];
 
             if (cnt >= 0)
             {
@@ -176,7 +175,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageClusterTurbiningCapacityThreasholdsMin[cluster.clusterGlobalIndex];
+                    .STStorageClusterReleaseCapacityThresholdsMin[cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = cluster.series.get()->lowerRuleCurve[pdtGlobal]
@@ -185,7 +184,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageClusterPumpingCapacityThreasholds[cluster.clusterGlobalIndex];
+                    .STStorageClusterStoreCapacityThresholds[cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = cluster.series.get()->maxInjectionModulation[pdtGlobal]
@@ -232,7 +231,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
         }
 
-        // Set the rigth sides of equations for a ShortTerm cluster participation to a reserve up
+        // Set the rigth sides of equations for a ShortTerm cluster participation to a reserve
         void setSTStorageReserveParticipationRightSides(
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation,
           const CAPACITY_RESERVATION& reserve,
@@ -242,19 +241,19 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
             int cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                        .STStorageClusterMaxTurbiningParticipation
+                        .STStorageClusterMaxReleaseParticipation
                           [reserveParticipation.globalIndexClusterParticipation];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserveParticipation.maxTurbining;
+                SecondMembre[cnt] = reserveParticipation.maxRelease;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .STStorageClusterMaxPumpingParticipation[reserveParticipation
-                                                               .globalIndexClusterParticipation];
+                    .STStorageClusterMaxStoreParticipation[reserveParticipation
+                                                             .globalIndexClusterParticipation];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserveParticipation.maxPumping;
+                SecondMembre[cnt] = reserveParticipation.maxStore;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
@@ -283,8 +282,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
         }
 
-        // Common setter for the LongTerm Storage clusters
-        void setLTStorageClusterRightSides(const ::AREA_RESERVES_VECTOR& reserves)
+        // Common setter for the Hydro
+        void setHydroRightSides(const ::AREA_RESERVES_VECTOR& reserves)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -293,7 +292,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             int globalClusterIdx = hydroCluster.GlobalHydroIndex;
 
             int cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                        .LTStorageClusterTurbiningCapacityThreasholdsMax[globalClusterIdx];
+                        .HydroReleaseCapacityThresholdsMax[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.ContrainteDePmaxHydrauliqueHoraire[pdtJour];
@@ -301,7 +300,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageClusterTurbiningCapacityThreasholdsMin[globalClusterIdx];
+                    .HydroReleaseCapacityThresholdsMin[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.MingenHoraire[pdtJour];
@@ -309,7 +308,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageClusterPumpingCapacityThreasholds[globalClusterIdx];
+                    .HydroStoreCapacityThresholds[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.ContrainteDePmaxPompageHoraire[pdtJour];
@@ -319,7 +318,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             double level_max = hydroCluster.NiveauHoraireSup[pdtHebdo];
             double level_min = hydroCluster.NiveauHoraireInf[pdtHebdo];
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageLevelParticipationDown[globalClusterIdx];
+                    .HydroLevelParticipationDown[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.NiveauHoraireSup[pdtHebdo];
@@ -327,7 +326,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageLevelParticipationUp[globalClusterIdx];
+                    .HydroLevelParticipationUp[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.NiveauHoraireInf[pdtHebdo];
@@ -335,7 +334,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageGlobalStockEnergyLevelParticipationDown[globalClusterIdx];
+                    .HydroGlobalEnergyLevelParticipationDown[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = reserves.referenceGlobalActivationDurationDown
@@ -344,7 +343,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageGlobalStockEnergyLevelParticipationUp[globalClusterIdx];
+                    .HydroGlobalEnergyLevelParticipationUp[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = -reserves.referenceGlobalActivationDurationUp
@@ -353,9 +352,9 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
         }
 
-        // Set the rigth sides of equations for a LongTerm cluster participation to a reserve up
-        void setLTStorageReserveParticipationRightSides(
-          const RESERVE_PARTICIPATION_LTSTORAGE& reserveParticipation,
+        // Set the rigth sides of equations for a Hydro participation to a reserve
+        void setHydroReserveParticipationRightSides(
+          const RESERVE_PARTICIPATION_HYDRO& reserveParticipation,
           const CAPACITY_RESERVATION& reserve,
           bool isUpReserve)
         {
@@ -363,24 +362,22 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                                              ->CorrespondanceCntNativesCntOptim
                                                                [pdtJour];
             int cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                        .LTStorageClusterMaxTurbiningParticipation
-                          [reserveParticipation.globalIndexClusterParticipation];
+                        .HydroMaxReleaseParticipation[reserveParticipation
+                                                        .globalIndexClusterParticipation];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserveParticipation.maxTurbining;
+                SecondMembre[cnt] = reserveParticipation.maxRelease;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
-            cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageClusterMaxPumpingParticipation[reserveParticipation
-                                                               .globalIndexClusterParticipation];
+            cnt = CorrespondanceCntNativesCntOptim.reservesIndices().HydroMaxStoreParticipation
+                    [reserveParticipation.globalIndexClusterParticipation];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserveParticipation.maxPumping;
+                SecondMembre[cnt] = reserveParticipation.maxStore;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
-            cnt = CorrespondanceCntNativesCntOptim.reservesIndices()
-                    .LTStorageEnergyLevelParticipation[reserveParticipation
-                                                         .globalIndexClusterParticipation];
+            cnt = CorrespondanceCntNativesCntOptim.reservesIndices().HydroEnergyLevelParticipation
+                    [reserveParticipation.globalIndexClusterParticipation];
             if (cnt >= 0)
             {
                 auto& hydroCluster = problemeHebdo->CaracteristiquesHydrauliques[pays];
@@ -444,11 +441,11 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                       reserveIsUp);
                 }
 
-                // Long Term Storage Cluster
+                // Hydro
                 for (const auto& clusterReserveParticipation:
-                     areaReserveUp.AllLTStorageReservesParticipation)
+                     areaReserveUp.AllHydroReservesParticipation)
                 {
-                    reserveVariablesRightSidesSetter.setLTStorageReserveParticipationRightSides(
+                    reserveVariablesRightSidesSetter.setHydroReserveParticipationRightSides(
                       clusterReserveParticipation,
                       areaReserveUp,
                       reserveIsUp);
@@ -468,11 +465,11 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                       reserveIsDown);
                 }
 
-                // Long Term Storage Cluster
+                // Hydro
                 for (const auto& clusterReserveParticipation:
-                     areaReserveDown.AllLTStorageReservesParticipation)
+                     areaReserveDown.AllHydroReservesParticipation)
                 {
-                    reserveVariablesRightSidesSetter.setLTStorageReserveParticipationRightSides(
+                    reserveVariablesRightSidesSetter.setHydroReserveParticipationRightSides(
                       clusterReserveParticipation,
                       areaReserveDown,
                       reserveIsDown);
@@ -494,12 +491,12 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                                                                areaReserves);
             }
 
-            // Long Term Storage cluster
-            // Checks if LTStorage cluster is participating to reserves
+            // Hydro
+            // Checks if Hydro is participating to reserves
             auto isClusterParticipatingToReserves = [](std::vector<CAPACITY_RESERVATION>& reserves)
             {
                 auto hasReserveParticipations = [](CAPACITY_RESERVATION& res)
-                { return res.AllLTStorageReservesParticipation.size() > 0; };
+                { return res.AllHydroReservesParticipation.size() > 0; };
                 return std::any_of(reserves.begin(), reserves.end(), hasReserveParticipations);
             };
 
@@ -508,7 +505,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                 || isClusterParticipatingToReserves(
                   problemeHebdo->allReserves()[pays].areaCapacityReservationsUp))
             {
-                reserveVariablesRightSidesSetter.setLTStorageClusterRightSides(areaReserves);
+                reserveVariablesRightSidesSetter.setHydroRightSides(areaReserves);
             }
         }
     }

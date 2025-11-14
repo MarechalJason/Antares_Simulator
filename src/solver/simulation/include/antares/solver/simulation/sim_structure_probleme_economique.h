@@ -72,12 +72,12 @@ struct CORRESPONDANCES_DES_VARIABLES
         std::vector<int> offThermalClusterParticipation;
         std::vector<int> STStorageClusterParticipationUp;
         std::vector<int> STStorageClusterParticipationDown;
-        std::vector<int> STStorageTurbiningClusterParticipation;
-        std::vector<int> STStoragePumpingClusterParticipation;
-        std::vector<int> LTStorageClusterParticipationUp;
-        std::vector<int> LTStorageClusterParticipationDown;
-        std::vector<int> LTStorageTurbiningClusterParticipation;
-        std::vector<int> LTStoragePumpingClusterParticipation;
+        std::vector<int> STStorageReleaseClusterParticipation;
+        std::vector<int> STStorageStoreClusterParticipation;
+        std::vector<int> HydroParticipationUp;
+        std::vector<int> HydroParticipationDown;
+        std::vector<int> HydroReleaseParticipation;
+        std::vector<int> HydroStoreParticipation;
 
         std::vector<int> internalUnsatisfied;
         std::vector<int> internalExcess;
@@ -136,21 +136,21 @@ struct CORRESPONDANCES_DES_CONTRAINTES
         std::vector<int> STStorageEnergyLevelParticipation;
         std::vector<int> STStorageGlobalStockEnergyLevelParticipationUp;
         std::vector<int> STStorageGlobalStockEnergyLevelParticipationDown;
-        std::vector<int> STStorageClusterMaxTurbiningParticipation;
-        std::vector<int> STStorageClusterMaxPumpingParticipation;
-        std::vector<int> STStorageClusterTurbiningCapacityThreasholdsMax;
-        std::vector<int> STStorageClusterTurbiningCapacityThreasholdsMin;
-        std::vector<int> STStorageClusterPumpingCapacityThreasholds;
-        std::vector<int> LTStorageLevelParticipationUp;
-        std::vector<int> LTStorageLevelParticipationDown;
-        std::vector<int> LTStorageEnergyLevelParticipation;
-        std::vector<int> LTStorageGlobalStockEnergyLevelParticipationUp;
-        std::vector<int> LTStorageGlobalStockEnergyLevelParticipationDown;
-        std::vector<int> LTStorageClusterMaxTurbiningParticipation;
-        std::vector<int> LTStorageClusterMaxPumpingParticipation;
-        std::vector<int> LTStorageClusterTurbiningCapacityThreasholdsMax;
-        std::vector<int> LTStorageClusterTurbiningCapacityThreasholdsMin;
-        std::vector<int> LTStorageClusterPumpingCapacityThreasholds;
+        std::vector<int> STStorageClusterMaxReleaseParticipation;
+        std::vector<int> STStorageClusterMaxStoreParticipation;
+        std::vector<int> STStorageClusterReleaseCapacityThresholdsMax;
+        std::vector<int> STStorageClusterReleaseCapacityThresholdsMin;
+        std::vector<int> STStorageClusterStoreCapacityThresholds;
+        std::vector<int> HydroLevelParticipationUp;
+        std::vector<int> HydroLevelParticipationDown;
+        std::vector<int> HydroEnergyLevelParticipation;
+        std::vector<int> HydroGlobalEnergyLevelParticipationUp;
+        std::vector<int> HydroGlobalEnergyLevelParticipationDown;
+        std::vector<int> HydroMaxReleaseParticipation;
+        std::vector<int> HydroMaxStoreParticipation;
+        std::vector<int> HydroReleaseCapacityThresholdsMax;
+        std::vector<int> HydroReleaseCapacityThresholdsMin;
+        std::vector<int> HydroStoreCapacityThresholds;
     };
 
     ReserveOpt<ReservesIndices> reservesIndices;
@@ -342,14 +342,14 @@ struct RESERVE_PARTICIPATION_THERMAL: public RESERVE_PARTICIPATION_BASE
 
 struct RESERVE_PARTICIPATION_STSTORAGE: public RESERVE_PARTICIPATION_BASE
 {
-    double maxTurbining;
-    double maxPumping;
+    double maxRelease;
+    double maxStore;
 };
 
-struct RESERVE_PARTICIPATION_LTSTORAGE: public RESERVE_PARTICIPATION_BASE
+struct RESERVE_PARTICIPATION_HYDRO: public RESERVE_PARTICIPATION_BASE
 {
-    double maxTurbining;
-    double maxPumping;
+    double maxRelease;
+    double maxStore;
 };
 
 struct CAPACITY_RESERVATION
@@ -357,7 +357,7 @@ struct CAPACITY_RESERVATION
     std::map</*area_clusterId*/ int, RESERVE_PARTICIPATION_THERMAL> AllThermalReservesParticipation;
     std::map</*area_clusterId*/ int, RESERVE_PARTICIPATION_STSTORAGE>
       AllSTStorageReservesParticipation;
-    std::vector<RESERVE_PARTICIPATION_LTSTORAGE> AllLTStorageReservesParticipation;
+    std::vector<RESERVE_PARTICIPATION_HYDRO> AllHydroReservesParticipation;
     std::vector<double> need; //!< Vector size is number of hours in year
     double unsuppliedCost = 0;
     double spillageCost = 0;
@@ -397,9 +397,8 @@ struct AREA_RESERVES_VECTOR
              std::vector<std::vector<
                RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_STSTORAGE>>>>
       STStorageReservesParticipationSymmetries;
-    std::vector<
-      std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_LTSTORAGE>>>
-      LTStorageReservesParticipationSymmetries;
+    std::vector<std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_HYDRO>>>
+      HydroReservesParticipationSymmetries;
 };
 
 struct PALIERS_THERMIQUES
@@ -607,7 +606,7 @@ struct PROBLEME_HEBDO
     uint32_t NumberOfShortTermStorages = 0;
     std::vector<::AREA_INPUT> ShortTermStorage;
 
-    uint32_t NumberOfLongTermStorages = 0;
+    uint32_t NumberOfHydros = 0;
 
     /* Optimization problem */
     std::vector<bool> DefaillanceNegativeUtiliserPMinThermique;

@@ -107,9 +107,8 @@ struct ReserveVariablesBoundsSetter
         auto& st = problemeHebdo->ResultatsHoraires[pays]
                      .ShortTermStorageReserves()[clusterParticipationIdInArea];
 
-        setVarBounds(indices.STStorageTurbiningClusterParticipation[clusterParticipationId],
-                     nullptr);
-        setVarBounds(indices.STStoragePumpingClusterParticipation[clusterParticipationId], nullptr);
+        setVarBounds(indices.STStorageReleaseClusterParticipation[clusterParticipationId], nullptr);
+        setVarBounds(indices.STStorageStoreClusterParticipation[clusterParticipationId], nullptr);
 
         int dirVar = isUpReserve
                        ? indices.STStorageClusterParticipationUp[clusterParticipationId]
@@ -118,23 +117,21 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(dirVar, &st.reserveParticipationOfCluster()[pdtHebdo]);
     }
 
-    // Set variables bounds for a LongTerm cluster participation to a reserve up
-    void setLTStorageReserveParticipationBounds(int clusterParticipationIdInArea,
-                                                int clusterParticipationId,
-                                                bool isUpReserve)
+    // Set variables bounds for a Hydro participation to a reserve up
+    void setHydroReserveParticipationBounds(int clusterParticipationIdInArea,
+                                            int clusterParticipationId,
+                                            bool isUpReserve)
 
     {
         const auto& indices = varIndices();
         auto& hydroUsage = problemeHebdo->ResultatsHoraires[pays].HydroUsage[pdtHebdo];
 
-        setVarBounds(indices.LTStorageTurbiningClusterParticipation[clusterParticipationId],
-                     nullptr);
+        setVarBounds(indices.HydroReleaseParticipation[clusterParticipationId], nullptr);
 
-        setVarBounds(indices.LTStoragePumpingClusterParticipation[clusterParticipationId], nullptr);
+        setVarBounds(indices.HydroStoreParticipation[clusterParticipationId], nullptr);
 
-        int dirVar = isUpReserve
-                       ? indices.LTStorageClusterParticipationUp[clusterParticipationId]
-                       : indices.LTStorageClusterParticipationDown[clusterParticipationId];
+        int dirVar = isUpReserve ? indices.HydroParticipationUp[clusterParticipationId]
+                                 : indices.HydroParticipationDown[clusterParticipationId];
 
         setVarBounds(dirVar,
                      &hydroUsage.reserveParticipationOfCluster()[clusterParticipationIdInArea]);
@@ -179,11 +176,11 @@ void SetAllReservesBoundsForArea(ReserveVariablesBoundsSetter& setter,
                                                           isUpReserve);
         }
 
-        for (const auto& ltStorage: areaReserve.AllLTStorageReservesParticipation)
+        for (const auto& hydro: areaReserve.AllHydroReservesParticipation)
         {
-            setter.setLTStorageReserveParticipationBounds(ltStorage.areaIndexClusterParticipation,
-                                                          ltStorage.globalIndexClusterParticipation,
-                                                          isUpReserve);
+            setter.setHydroReserveParticipationBounds(hydro.areaIndexClusterParticipation,
+                                                      hydro.globalIndexClusterParticipation,
+                                                      isUpReserve);
         }
     }
 }

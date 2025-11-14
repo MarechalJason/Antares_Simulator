@@ -28,7 +28,7 @@
 
 #include "economy/reserves/vCardReserveParticipationByDispatchableOffUnitsPlant.h"
 #include "economy/reserves/vCardReserveParticipationByDispatchableOnUnitsPlant.h"
-#include "economy/reserves/vCardReserveParticipationByLTStorage.h"
+#include "economy/reserves/vCardReserveParticipationByHydro.h"
 #include "economy/reserves/vCardReserveParticipationBySTStorage.h"
 #include "economy/reserves/vCardReserveParticipationBySTStorageGroup.h"
 #include "economy/reserves/vCardReserveParticipationByThermalGroup.h"
@@ -388,7 +388,7 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
         {
             const Data::PartThermal& thermal = results.data.area->thermal;
             const auto& shortTermStorage = results.data.area->shortTermStorage;
-            const auto& longTermStorage = results.data.area->hydro;
+            const auto& hydro = results.data.area->hydro;
             for (uint i = 0; i != container.size(); ++i)
             {
                 if constexpr (std::is_same_v<
@@ -436,12 +436,12 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
                     results.variableCaption = reserveName + "_" + groupName;
                 }
                 else if constexpr (std::is_same_v<VCardT,
-                                                  Economy::VCardReserveParticipationByLTStorage>)
+                                                  Economy::VCardReserveParticipationByHydro>)
                 {
-                    auto reserveName = longTermStorage.reserveParticipationAt(results.data.area, i);
+                    auto reserveName = hydro.reserveParticipationAt(results.data.area, i);
                     if (reserveName)
                     {
-                        results.variableCaption = reserveName.value() + "_LongTermStorage";
+                        results.variableCaption = reserveName.value() + "_Hydro";
                     }
                 }
                 else if constexpr (std::is_same_v<
@@ -539,7 +539,7 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
         {
             const Data::PartThermal& thermal = results.data.area->thermal;
             const auto& shortTermStorage = results.data.area->shortTermStorage;
-            const auto& longTermStorage = results.data.area->hydro;
+            const auto& hydro = results.data.area->hydro;
             for (uint i = 0; i != container.size(); ++i)
             {
                 if constexpr (std::is_same_v<
@@ -592,12 +592,12 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
                     res = true;
                 }
                 else if constexpr (std::is_same_v<VCardType,
-                                                  Economy::VCardReserveParticipationByLTStorage>)
+                                                  Economy::VCardReserveParticipationByHydro>)
                 {
-                    auto reserveName = longTermStorage.reserveParticipationAt(results.data.area, i);
+                    auto reserveName = hydro.reserveParticipationAt(results.data.area, i);
                     if (reserveName)
                     {
-                        results.variableCaption = reserveName.value() + "_LongTermStorage";
+                        results.variableCaption = reserveName.value() + "_Hydro";
                         res = true;
                     }
                     else

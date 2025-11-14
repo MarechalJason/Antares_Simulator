@@ -107,7 +107,7 @@ public:
         pumpMod,
     };
 
-    struct LTStorageReserveParticipationWithName
+    struct HydroReserveParticipationWithName
     {
         std::reference_wrapper<StorageClusterReserveParticipation> reserveParticipation;
         std::string reserveName;

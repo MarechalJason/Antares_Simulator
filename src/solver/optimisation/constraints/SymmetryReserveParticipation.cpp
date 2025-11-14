@@ -56,40 +56,36 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
     }
     else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_STSTORAGE>)
     {
-        auto refMaxTurbining = reserveParticipationRefWithName.reserveParticipation.get()
-                                 .maxTurbining;
-        auto targetMaxTurbining = reserveParticipationWithName.reserveParticipation.get()
-                                    .maxTurbining;
-        auto refMaxPumping = reserveParticipationRefWithName.reserveParticipation.get().maxPumping;
-        auto targetMaxPumping = reserveParticipationWithName.reserveParticipation.get().maxPumping;
-        if (abs(refMaxTurbining) > 10e-4 && abs(targetMaxTurbining) > 10e-4)
+        auto refMaxRelease = reserveParticipationRefWithName.reserveParticipation.get().maxRelease;
+        auto targetMaxRelease = reserveParticipationWithName.reserveParticipation.get().maxRelease;
+        auto refMaxStore = reserveParticipationRefWithName.reserveParticipation.get().maxStore;
+        auto targetMaxStore = reserveParticipationWithName.reserveParticipation.get().maxStore;
+        if (abs(refMaxRelease) > 10e-4 && abs(targetMaxRelease) > 10e-4)
         {
-            builder.STStorageTurbiningClusterReserveParticipation(refIndex, 1 / refMaxTurbining)
-              .STStorageTurbiningClusterReserveParticipation(targetIndex, -1 / targetMaxTurbining);
+            builder.STStorageReleaseClusterReserveParticipation(refIndex, 1 / refMaxRelease)
+              .STStorageReleaseClusterReserveParticipation(targetIndex, -1 / targetMaxRelease);
         }
-        if (abs(refMaxPumping) > 10e-4 && abs(targetMaxPumping) > 10e-4)
+        if (abs(refMaxStore) > 10e-4 && abs(targetMaxStore) > 10e-4)
         {
-            builder.STStoragePumpingClusterReserveParticipation(refIndex, 1 / refMaxPumping)
-              .STStoragePumpingClusterReserveParticipation(targetIndex, -1 / targetMaxPumping);
+            builder.STStorageStoreClusterReserveParticipation(refIndex, 1 / refMaxStore)
+              .STStorageStoreClusterReserveParticipation(targetIndex, -1 / targetMaxStore);
         }
     }
-    else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_LTSTORAGE>)
+    else if constexpr (std::is_same_v<T, RESERVE_PARTICIPATION_HYDRO>)
     {
-        auto refMaxTurbining = reserveParticipationRefWithName.reserveParticipation.get()
-                                 .maxTurbining;
-        auto targetMaxTurbining = reserveParticipationWithName.reserveParticipation.get()
-                                    .maxTurbining;
-        auto refMaxPumping = reserveParticipationRefWithName.reserveParticipation.get().maxPumping;
-        auto targetMaxPumping = reserveParticipationWithName.reserveParticipation.get().maxPumping;
-        if (abs(refMaxTurbining) > 10e-4 && abs(targetMaxTurbining) > 10e-4)
+        auto refMaxRelease = reserveParticipationRefWithName.reserveParticipation.get().maxRelease;
+        auto targetMaxRelease = reserveParticipationWithName.reserveParticipation.get().maxRelease;
+        auto refMaxStore = reserveParticipationRefWithName.reserveParticipation.get().maxStore;
+        auto targetMaxStore = reserveParticipationWithName.reserveParticipation.get().maxStore;
+        if (abs(refMaxRelease) > 10e-4 && abs(targetMaxRelease) > 10e-4)
         {
-            builder.LTStorageTurbiningClusterReserveParticipation(refIndex, 1 / refMaxTurbining)
-              .LTStorageTurbiningClusterReserveParticipation(targetIndex, -1 / targetMaxTurbining);
+            builder.HydroReleaseReserveParticipation(refIndex, 1 / refMaxRelease)
+              .HydroReleaseReserveParticipation(targetIndex, -1 / targetMaxRelease);
         }
-        if (abs(refMaxPumping) > 10e-4 && abs(refMaxPumping) > 10e-4)
+        if (abs(refMaxStore) > 10e-4 && abs(refMaxStore) > 10e-4)
         {
-            builder.LTStoragePumpingClusterReserveParticipation(refIndex, 1 / refMaxPumping)
-              .LTStoragePumpingClusterReserveParticipation(targetIndex, -1 / targetMaxPumping);
+            builder.HydroStoreReserveParticipation(refIndex, 1 / refMaxStore)
+              .HydroStoreReserveParticipation(targetIndex, -1 / targetMaxStore);
         }
     }
 }
@@ -123,7 +119,7 @@ template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_STSTORAGE>
   const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_STSTORAGE>>&,
   int);
 
-template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_LTSTORAGE>(
+template void SymmetryReserveParticipation::add<RESERVE_PARTICIPATION_HYDRO>(
   int,
-  const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_LTSTORAGE>>&,
+  const std::vector<RESERVE_PARTICIPATION_WITH_RESERVE_NAME<RESERVE_PARTICIPATION_HYDRO>>&,
   int);

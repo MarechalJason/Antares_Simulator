@@ -114,7 +114,7 @@ public:
         uint capacityReservations = 0;  //! Total number of capacity reservations
         uint shortTermStorages = 0;
         uint shortTermStorageCumulativeConstraints = 0;
-        uint longTermStorages = 0;
+        uint hydros = 0;
     } counts;
 
     //! Override enable/disable TS generation per cluster

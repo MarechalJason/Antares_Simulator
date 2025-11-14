@@ -384,8 +384,8 @@ void Areas<NextT>::hourForEachArea(State& state, uint numSpace)
               state.initFromShortTermStorageClusterIndex(i);
           }
 
-          // Ajout de l'initialisation pour l'hydro (long terme)
-          state.initFromHydroStorage();
+          // Ajout de l'initialisation pour l'hydro
+          state.initFromHydro();
 
           // Calculation of reserve participation costs
           if (state.study.parameters.reservesEnabled)

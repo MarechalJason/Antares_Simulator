@@ -86,10 +86,10 @@ void State::initReserveParticipationIndexMaps()
                reserveParticipation.areaIndexClusterParticipation});
         }
 
-        // Long Term Storage
-        for (auto& reserveParticipation: reserve.AllLTStorageReservesParticipation)
+        // Hydro
+        for (auto& reserveParticipation: reserve.AllHydroReservesParticipation)
         {
-            area->reserveParticipationIndexMaps().LTStorage.insert(
+            area->reserveParticipationIndexMaps().Hydro.insert(
               {reserve.reserveName, reserveParticipation.areaIndexClusterParticipation});
         }
     };
@@ -227,29 +227,27 @@ void State::initFromShortTermStorageClusterIndex(const uint clusterAreaWideIndex
     }
 }
 
-void State::initFromHydroStorage()
+void State::initFromHydro()
 {
     // Asserts
     assert(area);
 
-    auto& LTStorage = area->hydro;
+    auto& Hydro = area->hydro;
 
     if (unitCommitmentMode != Antares::Data::UnitCommitmentMode::ucHeuristicFast
-        && study.parameters.reservesEnabled && LTStorage.reserveParticipationContainer)
+        && study.parameters.reservesEnabled && Hydro.reserveParticipationContainer)
     {
         for (const auto& [resName, resParticipation]:
-             LTStorage.reserveParticipationContainer().getReservesParticipations())
+             Hydro.reserveParticipationContainer().getReservesParticipations())
         {
             double participation = hourlyResults->HydroUsage[hourInTheWeek]
                                      .reserveParticipationOfCluster()
-                                       [area->reserveParticipationIndexMaps().LTStorage.left.at(
+                                       [area->reserveParticipationIndexMaps().Hydro.left.at(
                                          resName)];
-            LTStorageClusterReserveParticipationCostForYear()[hourInTheYear]
-              += participation * LTStorage.reserveParticipationContainer().reserveCost(resName);
+            HydroReserveParticipationCostForYear()[hourInTheYear]
+              += participation * Hydro.reserveParticipationContainer().reserveCost(resName);
 
-            reserveParticipationPerLTStorageClusterForYear[hourInTheYear]["LongTermStorage"]
-                                                          [resName]
-              += participation;
+            reserveParticipationPerHydroForYear[hourInTheYear]["Hydro"][resName] += participation;
         }
     }
 }
@@ -544,7 +542,7 @@ void State::calculateReserveParticipationCosts()
             reserveParticipationCostForYear()[h]
               += thermalClusterReserveParticipationCostForYear()[h]
                  + STStorageClusterReserveParticipationCostForYear()[h]
-                 + LTStorageClusterReserveParticipationCostForYear()[h];
+                 + HydroReserveParticipationCostForYear()[h];
         }
     }
 }

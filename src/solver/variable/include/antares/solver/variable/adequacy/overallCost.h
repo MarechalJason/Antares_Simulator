@@ -245,8 +245,8 @@ public:
              + (state.STStorageClusterReserveParticipationCostForYear
                   ? state.STStorageClusterReserveParticipationCostForYear()[state.hourInTheYear]
                   : 0)
-             + (state.LTStorageClusterReserveParticipationCostForYear
-                  ? state.LTStorageClusterReserveParticipationCostForYear()[state.hourInTheYear]
+             + (state.HydroReserveParticipationCostForYear
+                  ? state.HydroReserveParticipationCostForYear()[state.hourInTheYear]
                   : 0);
 
         // Thermal costs

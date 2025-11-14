@@ -168,13 +168,13 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
               {
                   TransformNameIntoID(p.value, clusterName);
               }
-              else if (p.key == "max-turbining")
+              else if (p.key == "max-release")
               {
-                  p.value.to<double>(reserveParticipation.maxTurbining);
+                  p.value.to<double>(reserveParticipation.maxRelease);
               }
-              else if (p.key == "max-pumping")
+              else if (p.key == "max-store")
               {
-                  p.value.to<double>(reserveParticipation.maxPumping);
+                  p.value.to<double>(reserveParticipation.maxStore);
               }
               else if (p.key == "participation-cost")
               {
@@ -232,13 +232,13 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
         section.each(
           [&](const IniFile::Property& p)
           {
-              if (p.key == "max-turbining")
+              if (p.key == "max-release")
               {
-                  p.value.to<double>(reserveParticipation.maxTurbining);
+                  p.value.to<double>(reserveParticipation.maxRelease);
               }
-              else if (p.key == "max-pumping")
+              else if (p.key == "max-store")
               {
-                  p.value.to<double>(reserveParticipation.maxPumping);
+                  p.value.to<double>(reserveParticipation.maxStore);
               }
               else if (p.key == "participation-cost")
               {

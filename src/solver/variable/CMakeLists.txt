@@ -137,8 +137,8 @@ set(SRC_VARIABLE_ECONOMY
         include/antares/solver/variable/economy/reserves/vCardReserveParticipationByThermalGroup.h
         include/antares/solver/variable/economy/reserves/reserveParticipationBySTStorageGroup.h
         include/antares/solver/variable/economy/reserves/vCardReserveParticipationBySTStorageGroup.h
-        include/antares/solver/variable/economy/reserves/reserveParticipationByLTStorage.h
-        include/antares/solver/variable/economy/reserves/vCardReserveParticipationByLTStorage.h
+        include/antares/solver/variable/economy/reserves/reserveParticipationByHydro.h
+        include/antares/solver/variable/economy/reserves/vCardReserveParticipationByHydro.h
         include/antares/solver/variable/economy/reserves/vCardReserveParticipationMarginalCost.h
 
         # Links

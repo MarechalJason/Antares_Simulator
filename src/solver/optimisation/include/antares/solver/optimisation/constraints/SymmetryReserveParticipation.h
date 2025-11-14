@@ -4,7 +4,7 @@
 template<typename T>
 concept ValidReserveParticipation = std::is_same_v<T, RESERVE_PARTICIPATION_THERMAL>
                                     || std::is_same_v<T, RESERVE_PARTICIPATION_STSTORAGE>
-                                    || std::is_same_v<T, RESERVE_PARTICIPATION_LTSTORAGE>;
+                                    || std::is_same_v<T, RESERVE_PARTICIPATION_HYDRO>;
 
 /*!
  * represent 'SymmetryReserveParticipation' Constraint type
