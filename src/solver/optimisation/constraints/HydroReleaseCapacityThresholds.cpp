@@ -1,16 +1,16 @@
-#include "antares/solver/optimisation/constraints/HydroTurbiningCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/HydroReleaseCapacityThresholds.h"
 
-void HydroTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
+void HydroReleaseCapacityThresholds::add(int pays, int cluster, int pdt)
 {
     int globalClusterIdx = data.hydroOfArea[pays].GlobalHydroIndex;
 
     if (!data.Simulation)
     {
         // 15 (c)
-        // Turbining power remains within limits set by minimum stable power (0) and maximum
-        // capacity threasholds Hmin + Sum(H^on_re-) <= H <= Hmax - Sum(H^on_re+) H^on_re- :
-        // Turbining Participation of cluster to Down reserves H^on_re+ : Turbining Participation of
-        // cluster to Up reserves H : Turbining Power output from cluster Hmax : Maximum Turbining
+        // Release power remains within limits set by minimum stable power (0) and maximum
+        // capacity thresholds Hmin + Sum(H^on_re-) <= H <= Hmax - Sum(H^on_re+) H^on_re- :
+        // Release Participation of cluster to Down reserves H^on_re+ : Release Participation of
+        // cluster to Up reserves H : Release Power output from cluster Hmax : Maximum Release
         // Power from cluster
 
         // 15 (c) (1) : H - Sum(H^on_re-) >= Hmin
@@ -23,7 +23,7 @@ void HydroTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 for (const auto& reserveParticipations:
                      capacityReservation.AllHydroReservesParticipation)
                 {
-                    builder.HydroTurbiningReserveParticipation(
+                    builder.HydroReleaseReserveParticipation(
                       reserveParticipations.globalIndexClusterParticipation,
                       -1);
                 }
@@ -38,14 +38,13 @@ void HydroTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 builder.greaterThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .HydroTurbiningCapacityThreasholdsMin[globalClusterIdx]
+                  .HydroReleaseCapacityThresholdsMin[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.HydroTurbiningCapacityThreasholdsDown(builder.data.nombreDeContraintes,
-                                                            "Hydro");
+                namer.HydroReleaseCapacityThresholdsDown(builder.data.nombreDeContraintes, "Hydro");
                 builder.build();
             }
         }
@@ -60,7 +59,7 @@ void HydroTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 for (const auto& reserveParticipations:
                      capacityReservation.AllHydroReservesParticipation)
                 {
-                    builder.HydroTurbiningReserveParticipation(
+                    builder.HydroReleaseReserveParticipation(
                       reserveParticipations.globalIndexClusterParticipation,
                       1);
                 }
@@ -75,14 +74,13 @@ void HydroTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .HydroTurbiningCapacityThreasholdsMax[globalClusterIdx]
+                  .HydroReleaseCapacityThresholdsMax[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.HydroTurbiningCapacityThreasholdsUp(builder.data.nombreDeContraintes,
-                                                          "Hydro");
+                namer.HydroReleaseCapacityThresholdsUp(builder.data.nombreDeContraintes, "Hydro");
                 builder.build();
             }
         }

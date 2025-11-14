@@ -42,15 +42,15 @@ public:
                                               int offset = 0,
                                               int delta = 0);
 
-    int& STStorageTurbiningClusterReserveParticipation(unsigned int index,
-                                                       unsigned int hourInWeek,
-                                                       int offset = 0,
-                                                       int delta = 0);
-
-    int& STStoragePumpingClusterReserveParticipation(unsigned int index,
+    int& STStorageReleaseClusterReserveParticipation(unsigned int index,
                                                      unsigned int hourInWeek,
                                                      int offset = 0,
                                                      int delta = 0);
+
+    int& STStorageStoreClusterReserveParticipation(unsigned int index,
+                                                   unsigned int hourInWeek,
+                                                   int offset = 0,
+                                                   int delta = 0);
 
     int& HydroReserveParticipation(bool isUpReserve,
                                    unsigned int index,
@@ -58,15 +58,15 @@ public:
                                    int offset = 0,
                                    int delta = 0);
 
-    int& HydroTurbiningReserveParticipation(unsigned int index,
-                                            unsigned int hourInWeek,
-                                            int offset = 0,
-                                            int delta = 0);
-
-    int& HydroPumpingReserveParticipation(unsigned int index,
+    int& HydroReleaseReserveParticipation(unsigned int index,
                                           unsigned int hourInWeek,
                                           int offset = 0,
                                           int delta = 0);
+
+    int& HydroStoreReserveParticipation(unsigned int index,
+                                        unsigned int hourInWeek,
+                                        int offset = 0,
+                                        int delta = 0);
 
     int& InternalUnsatisfiedReserve(unsigned int index,
                                     unsigned int hourInWeek,

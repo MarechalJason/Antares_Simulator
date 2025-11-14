@@ -2,12 +2,12 @@
 #include "ConstraintBuilder.h"
 
 /*!
- * represent 'STTurbiningMaxReserve' Constraint type
+ * represent 'STStoreMaxReserve' Constraint type
  */
-class STTurbiningMaxReserve: private ConstraintFactory
+class STStoreMaxReserve: private ConstraintFactory
 {
 public:
-    STTurbiningMaxReserve(ConstraintBuilder& builder, ReserveData& data):
+    STStoreMaxReserve(ConstraintBuilder& builder, ReserveData& data):
         ConstraintFactory(builder),
         data(data)
     {

@@ -178,12 +178,11 @@ static void importShortTermStorages(Data::Parameters parameters,
                               reserveName))
                         {
                             RESERVE_PARTICIPATION_STSTORAGE reserveParticipation;
-                            reserveParticipation.maxTurbining = cluster
-                                                                  .reserveParticipationContainer()
-                                                                  .reserveMaxTurbining(reserveName);
-                            reserveParticipation.maxPumping = cluster
+                            reserveParticipation.maxRelease = cluster
                                                                 .reserveParticipationContainer()
-                                                                .reserveMaxPumping(reserveName);
+                                                                .reserveMaxRelease(reserveName);
+                            reserveParticipation.maxStore = cluster.reserveParticipationContainer()
+                                                              .reserveMaxStore(reserveName);
                             reserveParticipation.participationCost
                               = cluster.reserveParticipationContainer().reserveCost(reserveName);
                             reserveParticipation.clusterName = cluster.id;
@@ -254,10 +253,10 @@ static void importHydrosReserves(AreaList& areas, PROBLEME_HEBDO& problem)
                     if (hydro.reserveParticipationContainer().isParticipatingInReserve(reserveName))
                     {
                         RESERVE_PARTICIPATION_HYDRO reserveParticipation;
-                        reserveParticipation.maxTurbining = hydro.reserveParticipationContainer()
-                                                              .reserveMaxTurbining(reserveName);
-                        reserveParticipation.maxPumping = hydro.reserveParticipationContainer()
-                                                            .reserveMaxPumping(reserveName);
+                        reserveParticipation.maxRelease = hydro.reserveParticipationContainer()
+                                                            .reserveMaxRelease(reserveName);
+                        reserveParticipation.maxStore = hydro.reserveParticipationContainer()
+                                                          .reserveMaxStore(reserveName);
                         reserveParticipation.participationCost = hydro
                                                                    .reserveParticipationContainer()
                                                                    .reserveCost(reserveName);

@@ -1,6 +1,6 @@
-#include "antares/solver/optimisation/constraints/POutCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/POutCapacityThresholds.h"
 
-void POutCapacityThreasholds::add(int pays, int cluster, int pdt)
+void POutCapacityThresholds::add(int pays, int cluster, int pdt)
 {
     int globalClusterIdx = data.thermalClusters[pays]
                              .NumeroDuPalierDansLEnsembleDesPaliersThermiques[cluster];
@@ -9,7 +9,7 @@ void POutCapacityThreasholds::add(int pays, int cluster, int pdt)
     {
         // 17 bis
         // Power output remains within limits set by minimum stable power and maximum capacity
-        // threasholds l * M + Sum(P^on_re-) <= P <= u * M - Sum(P^on_re+) l : minimum stable power
+        // thresholds l * M + Sum(P^on_re-) <= P <= u * M - Sum(P^on_re+) l : minimum stable power
         // output when running u : maximum stable power output when running M : number of running
         // units in cluster θ P^on_re- : Participation of running units in cluster θ to Down
         // reserves P^on_re+ : Participation of running units in cluster θ to Up reserves P : Power
@@ -44,7 +44,7 @@ void POutCapacityThreasholds::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.POutCapacityThreasholdInf(
+                namer.POutCapacityThresholdInf(
                   builder.data.nombreDeContraintes,
                   data.thermalClusters[pays].NomsDesPaliersThermiques[cluster]);
                 builder.build();
@@ -79,7 +79,7 @@ void POutCapacityThreasholds::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.POutCapacityThreasholdSup(
+                namer.POutCapacityThresholdSup(
                   builder.data.nombreDeContraintes,
                   data.thermalClusters[pays].NomsDesPaliersThermiques[cluster]);
                 builder.build();

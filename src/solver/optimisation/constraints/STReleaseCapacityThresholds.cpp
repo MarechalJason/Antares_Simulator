@@ -1,16 +1,16 @@
-#include "antares/solver/optimisation/constraints/STTurbiningCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/STReleaseCapacityThresholds.h"
 
-void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
+void STReleaseCapacityThresholds::add(int pays, int cluster, int pdt)
 {
     int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 
     if (!data.Simulation)
     {
         // 15 (m)
-        // Turbining power remains within limits set by minimum stable power (0) and maximum
-        // capacity threasholds Hmin + Sum(H^on_re-) <= H <= Hmax - Sum(H^on_re+) H^on_re- :
-        // Turbining Participation of cluster to Down reserves H^on_re+ : Turbining Participation of
-        // cluster to Up reserves H : Turbining Power output from cluster Hmax : Maximum Turbining
+        // Release power remains within limits set by minimum stable power (0) and maximum
+        // capacity thresholds Hmin + Sum(H^on_re-) <= H <= Hmax - Sum(H^on_re+) H^on_re- :
+        // Release Participation of cluster to Down reserves H^on_re+ : Release Participation of
+        // cluster to Up reserves H : Release Power output from cluster Hmax : Maximum Release
         // Power from cluster
 
         // 15 (m) (1) : H - Sum(H^on_re-) >= Hmin
@@ -24,7 +24,7 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 {
                     auto& reserveParticipation = capacityReservation
                                                    .AllSTStorageReservesParticipation.at(cluster);
-                    builder.STStorageTurbiningClusterReserveParticipation(
+                    builder.STStorageReleaseClusterReserveParticipation(
                       reserveParticipation.globalIndexClusterParticipation,
                       -1);
                 }
@@ -35,13 +35,13 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 builder.ShortTermStorageWithdrawal(globalClusterIdx, 1).greaterThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .STStorageClusterTurbiningCapacityThreasholdsMin[globalClusterIdx]
+                  .STStorageClusterReleaseCapacityThresholdsMin[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STTurbiningCapacityThreasholdsDown(
+                namer.STReleaseCapacityThresholdsDown(
                   builder.data.nombreDeContraintes,
                   data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
@@ -59,7 +59,7 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 {
                     auto& reserveParticipation = capacityReservation
                                                    .AllSTStorageReservesParticipation.at(cluster);
-                    builder.STStorageTurbiningClusterReserveParticipation(
+                    builder.STStorageReleaseClusterReserveParticipation(
                       reserveParticipation.globalIndexClusterParticipation,
                       1);
                 }
@@ -70,13 +70,13 @@ void STTurbiningCapacityThreasholds::add(int pays, int cluster, int pdt)
                 builder.ShortTermStorageWithdrawal(globalClusterIdx, 1).lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .STStorageClusterTurbiningCapacityThreasholdsMax[globalClusterIdx]
+                  .STStorageClusterReleaseCapacityThresholdsMax[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STTurbiningCapacityThreasholdsUp(
+                namer.STReleaseCapacityThresholdsUp(
                   builder.data.nombreDeContraintes,
                   data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();

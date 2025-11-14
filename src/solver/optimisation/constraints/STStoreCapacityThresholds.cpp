@@ -1,16 +1,16 @@
-#include "antares/solver/optimisation/constraints/STPumpingCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/STStoreCapacityThresholds.h"
 
-void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
+void STStoreCapacityThresholds::add(int pays, int cluster, int pdt)
 {
     int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
 
     if (!data.Simulation)
     {
         // 15 (n)
-        // Pumping power remains within limits set by minimum stable power (0) and maximum capacity
-        // threasholds Sum(Π^on_re+) <= Π <= Πmax - Sum(Π^on_re-) Π^on_re- : Pumping Participation
-        // of cluster to Down reserves Π^on_re+ : Pumping Participation of cluster to Up reserves Π
-        // : Pumping Power output from cluster Πmax : Maximum Pumping Power from cluster
+        // Store power remains within limits set by minimum stable power (0) and maximum capacity
+        // thresholds Sum(Π^on_re+) <= Π <= Πmax - Sum(Π^on_re-) Π^on_re- : Store Participation
+        // of cluster to Down reserves Π^on_re+ : Store Participation of cluster to Up reserves Π
+        // : Store Power output from cluster Πmax : Maximum Store Power from cluster
 
         // 15 (n) (1) : Sum(Π^on_re+) - Π <= 0
         {
@@ -23,7 +23,7 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 {
                     auto& reserveParticipation = capacityReservation
                                                    .AllSTStorageReservesParticipation.at(cluster);
-                    builder.STStoragePumpingClusterReserveParticipation(
+                    builder.STStorageStoreClusterReserveParticipation(
                       reserveParticipation.globalIndexClusterParticipation,
                       1);
                 }
@@ -36,7 +36,7 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STPumpingCapacityThreasholdsDown(
+                namer.STStoreCapacityThresholdsDown(
                   builder.data.nombreDeContraintes,
                   data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
@@ -54,7 +54,7 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 {
                     auto& reserveParticipation = capacityReservation
                                                    .AllSTStorageReservesParticipation.at(cluster);
-                    builder.STStoragePumpingClusterReserveParticipation(
+                    builder.STStorageStoreClusterReserveParticipation(
                       reserveParticipation.globalIndexClusterParticipation,
                       1);
                 }
@@ -65,15 +65,14 @@ void STPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 builder.ShortTermStorageInjection(globalClusterIdx, 1).lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .STStorageClusterPumpingCapacityThreasholds[globalClusterIdx]
+                  .STStorageClusterStoreCapacityThresholds[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STPumpingCapacityThreasholdsUp(
-                  builder.data.nombreDeContraintes,
-                  data.shortTermStorageOfArea[pays][cluster].name);
+                namer.STStoreCapacityThresholdsUp(builder.data.nombreDeContraintes,
+                                                  data.shortTermStorageOfArea[pays][cluster].name);
                 builder.build();
             }
         }

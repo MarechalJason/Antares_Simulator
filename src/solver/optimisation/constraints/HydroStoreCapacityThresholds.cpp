@@ -1,16 +1,16 @@
-#include "antares/solver/optimisation/constraints/HydroPumpingCapacityThreasholds.h"
+#include "antares/solver/optimisation/constraints/HydroStoreCapacityThresholds.h"
 
-void HydroPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
+void HydroStoreCapacityThresholds::add(int pays, int cluster, int pdt)
 {
     int globalClusterIdx = data.hydroOfArea[pays].GlobalHydroIndex;
 
     if (!data.Simulation)
     {
         // 15 (d)
-        // Pumping power remains within limits set by minimum stable power (0) and maximum capacity
-        // threasholds Sum(Π^on_re+) <= Π <= Πmax - Sum(Π^on_re-) Π^on_re- : Pumping Participation
-        // of cluster to Down reserves Π^on_re+ : Pumping Participation of cluster to Up reserves Π
-        // : Pumping Power output from cluster Πmax : Maximum Pumping Power from cluster
+        // Store power remains within limits set by minimum stable power (0) and maximum capacity
+        // thresholds Sum(Π^on_re+) <= Π <= Πmax - Sum(Π^on_re-) Π^on_re- : Store Participation
+        // of cluster to Down reserves Π^on_re+ : Store Participation of cluster to Up reserves Π
+        // : Store Power output from cluster Πmax : Maximum Store Power from cluster
 
         // 15 (d) (1) : Sum(Π^on_re+) - Π <= 0
         {
@@ -22,7 +22,7 @@ void HydroPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 for (const auto& reserveParticipations:
                      capacityReservation.AllHydroReservesParticipation)
                 {
-                    builder.HydroPumpingReserveParticipation(
+                    builder.HydroStoreReserveParticipation(
                       reserveParticipations.globalIndexClusterParticipation,
                       1);
                 }
@@ -39,8 +39,7 @@ void HydroPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.HydroPumpingCapacityThreasholdsDown(builder.data.nombreDeContraintes,
-                                                          "Hydro");
+                namer.HydroStoreCapacityThresholdsDown(builder.data.nombreDeContraintes, "Hydro");
                 builder.build();
             }
         }
@@ -55,7 +54,7 @@ void HydroPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 for (const auto& reserveParticipations:
                      capacityReservation.AllHydroReservesParticipation)
                 {
-                    builder.HydroPumpingReserveParticipation(
+                    builder.HydroStoreReserveParticipation(
                       reserveParticipations.globalIndexClusterParticipation,
                       1);
                 }
@@ -70,13 +69,13 @@ void HydroPumpingCapacityThreasholds::add(int pays, int cluster, int pdt)
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices()
-                  .HydroPumpingCapacityThreasholds[globalClusterIdx]
+                  .HydroStoreCapacityThresholds[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.HydroPumpingCapacityThreasholdsUp(builder.data.nombreDeContraintes, "Hydro");
+                namer.HydroStoreCapacityThresholdsUp(builder.data.nombreDeContraintes, "Hydro");
                 builder.build();
             }
         }

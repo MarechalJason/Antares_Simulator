@@ -2,12 +2,12 @@
 #include "ConstraintBuilder.h"
 
 /*
- * represent 'POutCapacityThreasholds' Constraint type
+ * represent 'HydroStoreCapacityThresholds' Constraint type
  */
-class POutCapacityThreasholds: private ConstraintFactory
+class HydroStoreCapacityThresholds: private ConstraintFactory
 {
 public:
-    POutCapacityThreasholds(ConstraintBuilder& builder, ReserveData& data):
+    HydroStoreCapacityThresholds(ConstraintBuilder& builder, ReserveData& data):
         ConstraintFactory(builder),
         data(data)
     {

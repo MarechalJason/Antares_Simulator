@@ -5,9 +5,9 @@ void HydroReserveParticipation::add(int pays, int reserve, int cluster, int pdt,
     if (!data.Simulation)
     {
         // 15 (e & f)
-        // Participation to the up or down reserve is the sum of the turbining and pumping
-        // participation constraint : P_res = H_res + Π_res H : Turbining participation to reserve
-        // Π : Pumping participation to reserve
+        // Participation to the up or down reserve is the sum of the release and store
+        // participation constraint : P_res = H_res + Π_res H : Release participation to reserve
+        // Π : Store participation to reserve
         // P : Up (e) or down (f) Reserve Participation
 
         CAPACITY_RESERVATION& capacityReservation = isUpReserve
@@ -20,10 +20,10 @@ void HydroReserveParticipation::add(int pays, int reserve, int cluster, int pdt,
                                                               .AllHydroReservesParticipation
                                                                 [cluster];
         builder.updateHourWithinWeek(pdt)
-          .HydroTurbiningReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
-                                              isUpReserve ? -1.0 : 1.0)
-          .HydroPumpingReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
+          .HydroReleaseReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
                                             isUpReserve ? -1.0 : 1.0)
+          .HydroStoreReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
+                                          isUpReserve ? -1.0 : 1.0)
           .HydroReserveParticipation(isUpReserve,
                                      reserveParticipation.globalIndexClusterParticipation,
                                      isUpReserve ? 1.0 : -1.0)
