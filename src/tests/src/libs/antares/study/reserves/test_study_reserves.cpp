@@ -561,8 +561,8 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_Symmetries,
     file << "\n";
     file << "[ReserveUp]\n";
     file << "participation-cost = 9.9\n";
-    file << "max-pumping = 8.8\n";
-    file << "max-turbining = 7.7\n";
+    file << "max-store = 8.8\n";
+    file << "max-release = 7.7\n";
     file << "\n";
     file << "[ReserveUpTwo]\n";
     file << "cluster-name = cluster1\n";
@@ -641,8 +641,8 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_reserve,
     file << "cluster1 = [ReserveUp, ReserveDown]\n";
     file << "[ReserveUp]\n";
     file << "participation-cost = 9.9\n";
-    file << "max-pumping = 8.8\n";
-    file << "max-turbining = 7.7\n";
+    file << "max-store = 8.8\n";
+    file << "max-release = 7.7\n";
     file << "\n";
     file << "[ReserveUpTwo]\n";
     file << "cluster-name = cluster1\n";
