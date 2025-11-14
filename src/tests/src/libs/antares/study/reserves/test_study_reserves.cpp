@@ -668,8 +668,8 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster,
     file << "\n";
     file << "[ReserveNull]\n";
     file << "participation-cost = 9.9\n";
-    file << "max-pumping = 8.8\n";
-    file << "max-turbining = 7.7\n";
+    file << "max-store = 8.8\n";
+    file << "max-release = 7.7\n";
     file.close();
     BOOST_CHECK_EXCEPTION(
       areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
