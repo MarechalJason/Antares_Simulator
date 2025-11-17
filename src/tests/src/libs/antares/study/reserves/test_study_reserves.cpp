@@ -44,6 +44,7 @@ void addShortTermStorage(Data::Area* area, const std::string& name)
 {
     ShortTermStorage::STStorageCluster cluster;
     cluster.properties.name = name;
+    cluster.id = name;
     area->shortTermStorage.storagesByIndex.push_back(cluster);
 }
 
@@ -664,11 +665,72 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_reserve,
                           checkMessage("This entity is not participating to reserve ReserveDown"));
 }
 
-BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster,
+BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_Symmetries,
                         OneProblemWithReservesOneArea)
 {
     auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
 
+    addShortTermStorage(areaA, "cluster1");
+    std::ofstream file(studyPath / "myreserve.ini");
+
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown]\n";
+    file << "cluster1 = [ReserveUpThree, ReserveDown]\n";
+    file << "cluster1 = [ReserveUpTwo, ReserveDownTwo]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "participation-cost = 9.9\n";
+    file << "max-store = 8.8\n";
+    file << "max-release = 7.7\n";
+    file << "\n";
+    file << "[ReserveUpTwo]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 19.9\n";
+    file << "participation-cost = 18.8\n";
+    file << "max-power-off = 17.7\n";
+    file << "participation-cost-off = 16.6\n";
+    file << "\n";
+    file << "[ReserveUpThree]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 19.9\n";
+    file << "participation-cost = 18.8\n";
+    file << "max-power-off = 17.7\n";
+    file << "participation-cost-off = 16.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file << "\n";
+    file << "[ReserveDownTwo]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+
+    areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    auto* resContainer = &areaA->shortTermStorage.findInAll("cluster1")
+                            ->reserveParticipationContainer;
+
+    BOOST_CHECK(resContainer->has_value());
+    BOOST_CHECK_EQUAL(resContainer->value().isParticipatingInReserve("ReserveUp"), true);
+    BOOST_CHECK_EQUAL(resContainer->value().isParticipatingInReserve("ReserveDown"), true);
+    BOOST_CHECK_EQUAL(resContainer->value().getNbSymGroups(), 3);
+    BOOST_CHECK_EQUAL(resContainer->value().reserveCost("ReserveUp"), 9.9);
+    BOOST_CHECK_EQUAL(resContainer->value().reserveMaxStore("ReserveUp"), 8.8);
+    BOOST_CHECK_EQUAL(resContainer->value().reserveMaxRelease("ReserveUp"), 7.7);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster,
+                        OneProblemWithReservesOneArea)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    logs.info() << "ici16";
     std::ofstream file(studyPath / "myreserve.ini");
     file << "[symmetries]\n";
     file << "cluster1 = [ReserveUp, ReserveDown]\n";
@@ -682,7 +744,7 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster,
       areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
       checkMessage(
-        "Area A, cluster1 : trying to add symmetries to a non existing cluster or participation"));
+        "Area A : reserve ReserveNull does not exist, cannot add participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_no_reserves,
@@ -730,7 +792,7 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_reserve,
       areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
       checkMessage(
-        "Area A, cluster1 : trying to add symmetries to a non existing cluster or participation"));
+        "This entity is not participating to reserve ReserveDown"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version

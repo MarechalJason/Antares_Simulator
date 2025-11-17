@@ -197,6 +197,11 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
 
             cluster->reserveParticipationContainer.value()
               .addReserveParticipation(section.name, reserveParticipation);
+if (reserve == nullptr)
+        {
+            throw std::out_of_range("Area " + area.name + " : reserve " + (std::string)section.name
+                                    + " does not exist, cannot add participation");
+        }
         }
     }
 
@@ -211,7 +216,7 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
             for (auto& sym: symmetries)
             {
                 auto cluster = area.shortTermStorage.findInAll(clusterName);
-                if (cluster)
+                if (cluster && cluster->reserveParticipationContainer())
                 {
                     cluster->reserveParticipationContainer.value().addReserveParticipationSymmetry(
                       sym);
