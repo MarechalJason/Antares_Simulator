@@ -137,7 +137,7 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                 auto cluster = area.thermal.list.findInAll(clusterName);
                 if (cluster)
                 {
-                    if (!cluster->reserveParticipationContainer.has_value())
+                    if (!cluster->reserveParticipationContainer)
                     {
                         throw std::out_of_range(
                           "Area " + area.name + ", " + clusterName
@@ -197,11 +197,12 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
 
             cluster->reserveParticipationContainer.value()
               .addReserveParticipation(section.name, reserveParticipation);
-if (reserve == nullptr)
-        {
-            throw std::out_of_range("Area " + area.name + " : reserve " + (std::string)section.name
-                                    + " does not exist, cannot add participation");
-        }
+            if (reserve == nullptr)
+            {
+                throw std::out_of_range("Area " + area.name + " : reserve "
+                                        + (std::string)section.name
+                                        + " does not exist, cannot add participation");
+            }
         }
     }
 
@@ -216,7 +217,7 @@ if (reserve == nullptr)
             for (auto& sym: symmetries)
             {
                 auto cluster = area.shortTermStorage.findInAll(clusterName);
-                if (cluster && cluster->reserveParticipationContainer())
+                if (cluster && cluster->reserveParticipationContainer)
                 {
                     cluster->reserveParticipationContainer.value().addReserveParticipationSymmetry(
                       sym);
@@ -273,7 +274,7 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
     void readSymmetrySection(Area& area, const IniFile::Section& section) override
     {
         auto& reserveParticipationContainer = area.hydro.reserveParticipationContainer;
-        if (!area.hydro.reserveParticipationContainer.has_value())
+        if (!area.hydro.reserveParticipationContainer)
         {
             throw std::out_of_range("Area " + area.name
                                     + ", hydro : trying to add symmetries without any reserves");

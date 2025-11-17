@@ -730,7 +730,6 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster,
                         OneProblemWithReservesOneArea)
 {
     auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
-    logs.info() << "ici16";
     std::ofstream file(studyPath / "myreserve.ini");
     file << "[symmetries]\n";
     file << "cluster1 = [ReserveUp, ReserveDown]\n";
@@ -744,7 +743,7 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster,
       areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
       checkMessage(
-        "Area A : reserve ReserveNull does not exist, cannot add participation"));
+        "Area A, cluster1 : trying to add symmetries to a non existing cluster or participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_no_reserves,
@@ -791,8 +790,7 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_reserve,
     BOOST_CHECK_EXCEPTION(
       areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
-      checkMessage(
-        "This entity is not participating to reserve ReserveDown"));
+      checkMessage("This entity is not participating to reserve ReserveDown"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version
