@@ -68,7 +68,7 @@ void HydroStoreCapacityThresholds::add(int pays, int cluster, int pdt)
                 }
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .HydroStoreCapacityThresholds[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);

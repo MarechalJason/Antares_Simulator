@@ -230,7 +230,7 @@ public:
     {
         pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
           += state.reserveParticipationCostForYear
-               ? state.reserveParticipationCostForYear()[state.hourInTheYear]
+               ? state.reserveParticipationCostForYear.value()[state.hourInTheYear]
                : 0;
         // Next variable
         NextType::hourForEachArea(state, numSpace);

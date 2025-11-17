@@ -243,10 +243,11 @@ public:
                   - area->hydro.pumpingEfficiency
                       * state.hourlyResults->PompageHoraire[state.hourInTheWeek])
              + (state.STStorageClusterReserveParticipationCostForYear
-                  ? state.STStorageClusterReserveParticipationCostForYear()[state.hourInTheYear]
+                  ? state.STStorageClusterReserveParticipationCostForYear
+                      .value()[state.hourInTheYear]
                   : 0)
              + (state.HydroReserveParticipationCostForYear
-                  ? state.HydroReserveParticipationCostForYear()[state.hourInTheYear]
+                  ? state.HydroReserveParticipationCostForYear.value()[state.hourInTheYear]
                   : 0);
 
         // Thermal costs

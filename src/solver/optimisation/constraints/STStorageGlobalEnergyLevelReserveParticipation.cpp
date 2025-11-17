@@ -50,7 +50,7 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
                 builder.lessThan();
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .STStorageGlobalStockEnergyLevelParticipationDown[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
 
@@ -100,7 +100,7 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
                 builder.lessThan();
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .STStorageGlobalStockEnergyLevelParticipationUp[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
 

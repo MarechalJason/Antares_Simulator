@@ -316,12 +316,14 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationClusterA
 {
     int globalReserveParticipationIdx = 0;
 
-    for (const auto& [reserveUpName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
+    for (const auto& [reserveUpName, _]:
+         area->allCapacityReservations.value().areaCapacityReservationsUp)
     {
         for (auto& cluster: storagesByIndex)
         {
             if (cluster.reserveParticipationContainer
-                && cluster.reserveParticipationContainer().isParticipatingInReserve(reserveUpName))
+                && cluster.reserveParticipationContainer.value().isParticipatingInReserve(
+                  reserveUpName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -333,12 +335,12 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationClusterA
     }
 
     for (const auto& [reserveDownName, _]:
-         area->allCapacityReservations().areaCapacityReservationsDown)
+         area->allCapacityReservations.value().areaCapacityReservationsDown)
     {
         for (auto& cluster: storagesByIndex)
         {
             if (cluster.reserveParticipationContainer
-                && cluster.reserveParticipationContainer().isParticipatingInReserve(
+                && cluster.reserveParticipationContainer.value().isParticipatingInReserve(
                   reserveDownName))
             {
                 if (globalReserveParticipationIdx == index)
@@ -359,7 +361,8 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
   unsigned int index) const
 {
     int column = 0;
-    for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
+    for (const auto& [reserveName, _]:
+         area->allCapacityReservations.value().areaCapacityReservationsUp)
     {
         if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
         {
@@ -373,7 +376,8 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
             }
         }
     }
-    for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
+    for (const auto& [reserveName, _]:
+         area->allCapacityReservations.value().areaCapacityReservationsDown)
     {
         if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
         {
@@ -430,7 +434,8 @@ uint STStorageInput::reserveParticipationsCount() const
       [](int total, const STStorageCluster& cluster)
       {
           return cluster.reserveParticipationContainer
-                   ? total + cluster.reserveParticipationContainer().reserveParticipationsCount()
+                   ? total
+                       + cluster.reserveParticipationContainer.value().reserveParticipationsCount()
                    : total;
       });
 }

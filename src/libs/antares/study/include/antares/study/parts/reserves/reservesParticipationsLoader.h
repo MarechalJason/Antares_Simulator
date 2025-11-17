@@ -98,7 +98,7 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
           });
 
         auto cluster = area.thermal.list.findInAll(clusterName);
-        auto reserve = area.allCapacityReservations().getReserveByName(section.name);
+        auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
 
         if (reserve && cluster)
         {
@@ -108,8 +108,8 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                 cluster->reserveParticipationContainer.emplace();
             }
 
-            cluster->reserveParticipationContainer().addReserveParticipation(section.name,
-                                                                             reserveParticipation);
+            cluster->reserveParticipationContainer.value()
+              .addReserveParticipation(section.name, reserveParticipation);
         }
         else
         {
@@ -140,9 +140,11 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                     if (!cluster->reserveParticipationContainer.has_value())
                     {
                         throw std::out_of_range(
-                          "Area " + area.name + ", " + clusterName + " : trying to add symmetries without any reserves"); 
+                          "Area " + area.name + ", " + clusterName
+                          + " : trying to add symmetries without any reserves");
                     }
-                    cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
+                    cluster->reserveParticipationContainer.value().addReserveParticipationSymmetry(
+                      sym);
                 }
                 else
                 {
@@ -182,7 +184,7 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
               }
           });
 
-        auto reserve = area.allCapacityReservations().getReserveByName(section.name);
+        auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
         auto cluster = area.shortTermStorage.findInAll(clusterName);
 
         if (reserve && cluster)
@@ -193,8 +195,8 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
                 cluster->reserveParticipationContainer.emplace();
             }
 
-            cluster->reserveParticipationContainer().addReserveParticipation(section.name,
-                                                                             reserveParticipation);
+            cluster->reserveParticipationContainer.value()
+              .addReserveParticipation(section.name, reserveParticipation);
         }
     }
 
@@ -211,12 +213,14 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
                 auto cluster = area.shortTermStorage.findInAll(clusterName);
                 if (cluster)
                 {
-                    cluster->reserveParticipationContainer().addReserveParticipationSymmetry(sym);
+                    cluster->reserveParticipationContainer.value().addReserveParticipationSymmetry(
+                      sym);
                 }
                 else
                 {
-                    throw std::out_of_range("Area " + area.name + ", " + clusterName
-                                            + " : trying to add symmetries to a non existing cluster or participation");
+                    throw std::out_of_range(
+                      "Area " + area.name + ", " + clusterName
+                      + " : trying to add symmetries to a non existing cluster or participation");
                 }
             }
         }
@@ -246,7 +250,7 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
               }
           });
 
-        auto reserve = area.allCapacityReservations().getReserveByName(section.name);
+        auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
         if (reserve)
         {
             reserveParticipation.capacityReservation = reserve;
@@ -256,8 +260,8 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
                 reserveParticipationContainer.emplace();
             }
 
-            reserveParticipationContainer().addReserveParticipation(section.name,
-                                                                    reserveParticipation);
+            reserveParticipationContainer.value().addReserveParticipation(section.name,
+                                                                          reserveParticipation);
         }
     }
 
@@ -266,14 +270,15 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
         auto& reserveParticipationContainer = area.hydro.reserveParticipationContainer;
         if (!area.hydro.reserveParticipationContainer.has_value())
         {
-            throw std::out_of_range("Area " + area.name + ", hydro : trying to add symmetries without any reserves"); 
+            throw std::out_of_range("Area " + area.name
+                                    + ", hydro : trying to add symmetries without any reserves");
         }
         for (auto* p = section.firstProperty; p; p = p->next)
         {
             auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
             for (auto& sym: symmetries)
             {
-                reserveParticipationContainer().addReserveParticipationSymmetry(sym);
+                reserveParticipationContainer.value().addReserveParticipationSymmetry(sym);
             }
         }
     }

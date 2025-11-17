@@ -152,12 +152,12 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         if (state.study.parameters.reservesEnabled
-            && state.area->reserveParticipationIndexMaps().Hydro.size())
+            && state.area->reserveParticipationIndexMaps.value().Hydro.size())
         {
             for (const auto& [reserveName, reserveParticipation]:
                  state.reserveParticipationPerHydroForYear[state.hourInTheYear]["Hydro"])
             {
-                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps()
+                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()
                                                      .Hydro.left.at(reserveName)]
                   .hour[state.hourInTheYear]
                   = reserveParticipation;
@@ -186,10 +186,10 @@ public:
             for (uint i = 0; i < pSize; ++i)
             {
                 if (results.data.area->reserveParticipationIndexMaps
-                    && results.data.area->reserveParticipationIndexMaps()
+                    && results.data.area->reserveParticipationIndexMaps.value()
                          .Hydro.size()) // Bimap is not empty
                 {
-                    auto reserveName = results.data.area->reserveParticipationIndexMaps()
+                    auto reserveName = results.data.area->reserveParticipationIndexMaps.value()
                                          .Hydro.right.at(i);
                     results.variableCaption = reserveName + "_Hydro"; // VCardType::Caption();
                     results.variableUnit = VCardType::Unit();

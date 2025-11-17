@@ -273,7 +273,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
         for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
         {
             variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
-            auto areaReserves = problemeHebdo->allReserves()[pays];
+            auto areaReserves = problemeHebdo->allReserves.value()[pays];
 
             for (bool isUpReserve: {reserveIsUp, reserveIsDown})
             {

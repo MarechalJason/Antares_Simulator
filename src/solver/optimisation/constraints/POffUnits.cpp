@@ -37,7 +37,7 @@ void POffUnits::add(int pays, int cluster, int pdt)
               .lessThan();
 
             data.CorrespondanceCntNativesCntOptim[pdt]
-              .reservesIndices()
+              .reservesIndices.value()
               .maxPowerOffUnitsInThermalCluster[globalClusterIdx]
               = builder.data.nombreDeContraintes;
 

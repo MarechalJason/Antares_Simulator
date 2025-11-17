@@ -27,7 +27,7 @@ void STStoreMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool is
             1.0)
           .lessThan();
         data.CorrespondanceCntNativesCntOptim[pdt]
-          .reservesIndices()
+          .reservesIndices.value()
           .STStorageClusterMaxStoreParticipation[reserveParticipation
                                                    .globalIndexClusterParticipation]
           = builder.data.nombreDeContraintes;

@@ -97,7 +97,8 @@ std::size_t ThermalClusterList::reserveParticipationsCount() const
       {
           if (cluster->reserveParticipationContainer.has_value() && cluster->isEnabled())
           {
-              return total + cluster->reserveParticipationContainer().reserveParticipationsCount();
+              return total
+                     + cluster->reserveParticipationContainer.value().reserveParticipationsCount();
           }
           else
           {
@@ -112,7 +113,7 @@ std::size_t ThermalClusterList::capacityReservationsCount() const
     for (auto& cluster: allClusters_)
     {
         for (const auto& [_, reserveParticipation]:
-             cluster->reserveParticipationContainer().getReservesParticipations())
+             cluster->reserveParticipationContainer.value().getReservesParticipations())
         {
             const CapacityReservation* reservationPtr = reserveParticipation.capacityReservation;
             uniqueReservations.insert(reservationPtr);

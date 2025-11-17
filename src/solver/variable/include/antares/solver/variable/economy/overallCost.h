@@ -238,24 +238,24 @@ public:
 
         if (state.study.parameters.reservesEnabled)
         {
-            const auto& reserves = state.problemeHebdo->allReserves()[area->index];
+            const auto& reserves = state.problemeHebdo->allReserves.value()[area->index];
             for (const auto& reserveUp: reserves.areaCapacityReservationsUp)
             {
                 costForSpilledOrUnsuppliedEnergy
-                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
                          .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex]
                        * reserveUp.unsuppliedCost
-                     + state.hourlyResults->Reserves()[state.hourInTheWeek]
+                     + state.hourlyResults->Reserves.value()[state.hourInTheWeek]
                            .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex]
                          * reserveUp.spillageCost;
             }
             for (const auto& reserveDown: reserves.areaCapacityReservationsDown)
             {
                 costForSpilledOrUnsuppliedEnergy
-                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
                          .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex]
                        * reserveDown.unsuppliedCost
-                     + state.hourlyResults->Reserves()[state.hourInTheWeek]
+                     + state.hourlyResults->Reserves.value()[state.hourInTheWeek]
                            .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex]
                          * reserveDown.spillageCost;
             }
@@ -264,14 +264,14 @@ public:
         pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
           += costForSpilledOrUnsuppliedEnergy
              + (state.reserveParticipationCostForYear
-                  ? state.reserveParticipationCostForYear()[state.hourInTheYear]
+                  ? state.reserveParticipationCostForYear.value()[state.hourInTheYear]
                   : 0);
 
         // Incrementing annual system cost (to be printed in output into a separate file)
         state.annualSystemCost += costForSpilledOrUnsuppliedEnergy
                                   + (state.reserveParticipationCostForYear
-                                       ? state
-                                           .reserveParticipationCostForYear()[state.hourInTheYear]
+                                       ? state.reserveParticipationCostForYear
+                                           .value()[state.hourInTheYear]
                                        : 0);
 
         // Next variable

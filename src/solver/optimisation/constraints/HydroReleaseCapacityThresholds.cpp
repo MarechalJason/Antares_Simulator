@@ -37,7 +37,7 @@ void HydroReleaseCapacityThresholds::add(int pays, int cluster, int pdt)
                 }
                 builder.greaterThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .HydroReleaseCapacityThresholdsMin[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -73,7 +73,7 @@ void HydroReleaseCapacityThresholds::add(int pays, int cluster, int pdt)
                 }
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .HydroReleaseCapacityThresholdsMax[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);

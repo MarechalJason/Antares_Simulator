@@ -208,7 +208,7 @@ public:
     {
         // Get end year calculations
         if (state.study.parameters.reservesEnabled
-            && state.area->reserveParticipationIndexMaps().thermalClusters.size())
+            && state.area->reserveParticipationIndexMaps.value().thermalClusters.size())
         {
             for (auto& [clusterName, _]:
                  state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear])
@@ -218,7 +218,7 @@ public:
                                                                        [clusterName])
                 {
                     pValuesForTheCurrentYear[numSpace]
-                                            [state.area->reserveParticipationIndexMaps()
+                                            [state.area->reserveParticipationIndexMaps.value()
                                                .thermalClusters.left.at(
                                                  std::make_pair(reserveName, clusterName))]
                                               .hour[state.hourInTheYear]
@@ -254,11 +254,11 @@ public:
             for (uint i = 0; i < pSize; ++i)
             {
                 if (results.data.area->reserveParticipationIndexMaps
-                    && results.data.area->reserveParticipationIndexMaps()
+                    && results.data.area->reserveParticipationIndexMaps.value()
                          .thermalClusters.size()) // Bimap is not empty
                 {
                     auto [reserveName, clusterName] = results.data.area
-                                                        ->reserveParticipationIndexMaps()
+                                                        ->reserveParticipationIndexMaps.value()
                                                         .thermalClusters.right.at(i);
                     results.variableCaption = reserveName + "_" + clusterName
                                               + "_off"; // VCardType::Caption();

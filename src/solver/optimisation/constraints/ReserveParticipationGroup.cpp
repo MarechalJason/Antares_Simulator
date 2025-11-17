@@ -58,7 +58,7 @@ ReserveParticipationGroup::ReserveParticipationGroup(PROBLEME_HEBDO* problemeHeb
 ReserveData ReserveParticipationGroup::GetReserveDataFromProblemHebdo()
 {
     return {.Simulation = simulation_,
-            .areaReserves = problemeHebdo_->allReserves(),
+            .areaReserves = problemeHebdo_->allReserves.value(),
             .thermalClusters = problemeHebdo_->PaliersThermiquesDuPays,
             .shortTermStorageOfArea = problemeHebdo_->ShortTermStorage,
             .hydroOfArea = problemeHebdo_->CaracteristiquesHydrauliques,
@@ -336,9 +336,9 @@ void ReserveParticipationGroup::BuildConstraints()
                 };
 
                 if (isClusterParticipatingToReserves(
-                      problemeHebdo_->allReserves()[pays].areaCapacityReservationsDown)
+                      problemeHebdo_->allReserves.value()[pays].areaCapacityReservationsDown)
                     || isClusterParticipatingToReserves(
-                      problemeHebdo_->allReserves()[pays].areaCapacityReservationsUp))
+                      problemeHebdo_->allReserves.value()[pays].areaCapacityReservationsUp))
                 {
                     // 15 (c)
                     HydroReleaseCapacityThresholds.add(pays, 0, pdt);

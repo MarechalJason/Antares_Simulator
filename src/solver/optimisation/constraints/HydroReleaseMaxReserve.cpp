@@ -24,7 +24,7 @@ void HydroReleaseMaxReserve::add(int pays, int reserve, int cluster, int pdt, bo
                                             1.0)
           .lessThan();
         data.CorrespondanceCntNativesCntOptim[pdt]
-          .reservesIndices()
+          .reservesIndices.value()
           .HydroMaxReleaseParticipation[reserveParticipation.globalIndexClusterParticipation]
           = builder.data.nombreDeContraintes;
 

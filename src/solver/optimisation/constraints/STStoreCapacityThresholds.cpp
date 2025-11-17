@@ -64,7 +64,7 @@ void STStoreCapacityThresholds::add(int pays, int cluster, int pdt)
             {
                 builder.ShortTermStorageInjection(globalClusterIdx, 1).lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .STStorageClusterStoreCapacityThresholds[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);

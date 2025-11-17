@@ -28,7 +28,7 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
           .lessThan();
 
         data.CorrespondanceCntNativesCntOptim[pdt]
-          .reservesIndices()
+          .reservesIndices.value()
           .powerOffGroupUnitsInThermalClusterParticipating[reserveParticipation
                                                              .globalIndexClusterParticipation]
           = builder.data.nombreDeContraintes;

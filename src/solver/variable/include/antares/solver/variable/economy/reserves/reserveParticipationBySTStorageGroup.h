@@ -216,7 +216,7 @@ public:
             auto& area = state.area;
             int column = 0;
             for (const auto& [reserveName, _]:
-                 area->allCapacityReservations().areaCapacityReservationsUp)
+                 area->allCapacityReservations.value().areaCapacityReservationsUp)
             {
                 if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
                 {
@@ -231,7 +231,7 @@ public:
                 }
             }
             for (const auto& [reserveName, _]:
-                 area->allCapacityReservations().areaCapacityReservationsDown)
+                 area->allCapacityReservations.value().areaCapacityReservationsDown)
             {
                 if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
                 {
@@ -271,7 +271,7 @@ public:
             // Write the data for the current year
             int column = 0;
             for (const auto& [resName, _]:
-                 results.data.area->allCapacityReservations().areaCapacityReservationsUp)
+                 results.data.area->allCapacityReservations.value().areaCapacityReservationsUp)
             {
                 if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(
                       resName))
@@ -300,7 +300,7 @@ public:
                 }
             }
             for (const auto& [resName, _]:
-                 results.data.area->allCapacityReservations().areaCapacityReservationsDown)
+                 results.data.area->allCapacityReservations.value().areaCapacityReservationsDown)
             {
                 if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(
                       resName))

@@ -34,7 +34,7 @@ void STReleaseCapacityThresholds::add(int pays, int cluster, int pdt)
             {
                 builder.ShortTermStorageWithdrawal(globalClusterIdx, 1).greaterThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .STStorageClusterReleaseCapacityThresholdsMin[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -69,7 +69,7 @@ void STReleaseCapacityThresholds::add(int pays, int cluster, int pdt)
             {
                 builder.ShortTermStorageWithdrawal(globalClusterIdx, 1).lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .STStorageClusterReleaseCapacityThresholdsMax[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);

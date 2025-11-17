@@ -57,14 +57,14 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
                 if (isUpReserve)
                 {
                     data.CorrespondanceCntNativesCntOptim[pdt]
-                      .reservesIndices()
+                      .reservesIndices.value()
                       .HydroGlobalEnergyLevelParticipationUp[globalClusterIdx]
                       = builder.data.nombreDeContraintes;
                 }
                 else
                 {
                     data.CorrespondanceCntNativesCntOptim[pdt]
-                      .reservesIndices()
+                      .reservesIndices.value()
                       .HydroGlobalEnergyLevelParticipationDown[globalClusterIdx]
                       = builder.data.nombreDeContraintes;
                 }

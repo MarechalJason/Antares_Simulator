@@ -33,7 +33,7 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 builder.HydroLevel(globalClusterIdx, 1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .HydroLevelParticipationDown[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -74,7 +74,7 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 builder.HydroLevel(globalClusterIdx, -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .HydroLevelParticipationUp[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);

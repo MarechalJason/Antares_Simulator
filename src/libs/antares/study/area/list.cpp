@@ -64,7 +64,7 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
         if (key == "energy-activation-ratio-up")
         {
             if (!p->value.to<double>(
-                  area.allCapacityReservations().maxGlobalEnergyActivationRatioUp))
+                  area.allCapacityReservations.value().maxGlobalEnergyActivationRatioUp))
             {
                 logs.warning() << area.name
                                << ": invalid maximum energy activation ratio for UP reserves";
@@ -73,7 +73,7 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
         else if (key == "energy-activation-ratio-down")
         {
             if (!p->value.to<double>(
-                  area.allCapacityReservations().maxGlobalEnergyActivationRatioDown))
+                  area.allCapacityReservations.value().maxGlobalEnergyActivationRatioDown))
             {
                 logs.warning() << area.name
                                << ": invalid maximum energy activation ratio for "
@@ -83,7 +83,7 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
         else if (key == "reference-activation-duration-up")
         {
             if (!p->value.to<int>(
-                  area.allCapacityReservations().referenceGlobalActivationDurationUp))
+                  area.allCapacityReservations.value().referenceGlobalActivationDurationUp))
             {
                 logs.warning() << area.name
                                << ": invalid reference energy activation duration "
@@ -93,7 +93,7 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
         else if (key == "reference-activation-duration-down")
         {
             if (!p->value.to<int>(
-                  area.allCapacityReservations().referenceGlobalActivationDurationDown))
+                  area.allCapacityReservations.value().referenceGlobalActivationDurationDown))
             {
                 logs.warning() << area.name
                                << ": invalid reference energy activation duration "
@@ -108,7 +108,7 @@ void readReserveParameters(fs::path& folderInput,
                            const IniFile::Section& section,
                            bool* ret)
 {
-    if (area.allCapacityReservations().contains(section.name))
+    if (area.allCapacityReservations.value().contains(section.name))
     {
         logs.warning() << area.name << ": reserve name already exists for reserve " << section.name;
         return;
@@ -188,13 +188,13 @@ void readReserveParameters(fs::path& folderInput,
     capacityReservation.loadNeedFromFile(filePath);
     if (isReserveUp == True)
     {
-        area.allCapacityReservations().areaCapacityReservationsUp.emplace(section.name,
-                                                                          capacityReservation);
+        area.allCapacityReservations.value()
+          .areaCapacityReservationsUp.emplace(section.name, capacityReservation);
     }
     else if (isReserveUp == False)
     {
-        area.allCapacityReservations().areaCapacityReservationsDown.emplace(section.name,
-                                                                            capacityReservation);
+        area.allCapacityReservations.value()
+          .areaCapacityReservationsDown.emplace(section.name, capacityReservation);
     }
     else
     {

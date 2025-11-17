@@ -33,7 +33,7 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 builder.ShortTermStorageLevel(globalClusterIdx, 1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .STStorageLevelParticipationDown[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -74,7 +74,7 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 builder.ShortTermStorageLevel(globalClusterIdx, -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .STStorageLevelParticipationUp[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);

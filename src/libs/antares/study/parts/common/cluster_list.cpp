@@ -58,12 +58,14 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationC
 {
     int globalReserveParticipationIdx = 0;
 
-    for (const auto& [reserveUpName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
+    for (const auto& [reserveUpName, _]:
+         area->allCapacityReservations.value().areaCapacityReservationsUp)
     {
         for (auto& cluster: allClusters_)
         {
             if (cluster->reserveParticipationContainer
-                && cluster->reserveParticipationContainer().isParticipatingInReserve(reserveUpName))
+                && cluster->reserveParticipationContainer.value().isParticipatingInReserve(
+                  reserveUpName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
@@ -75,12 +77,12 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationC
     }
 
     for (const auto& [reserveDownName, _]:
-         area->allCapacityReservations().areaCapacityReservationsDown)
+         area->allCapacityReservations.value().areaCapacityReservationsDown)
     {
         for (auto& cluster: allClusters_)
         {
             if (cluster->reserveParticipationContainer
-                && cluster->reserveParticipationContainer().isParticipatingInReserve(
+                && cluster->reserveParticipationContainer.value().isParticipatingInReserve(
                   reserveDownName))
             {
                 if (globalReserveParticipationIdx == index)
@@ -102,7 +104,8 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationG
   unsigned int index) const
 {
     int column = 0;
-    for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
+    for (const auto& [reserveName, _]:
+         area->allCapacityReservations.value().areaCapacityReservationsUp)
     {
         if (area->allCapacityReservations->reserveGroupPartThermal.contains(reserveName))
         {
@@ -116,7 +119,8 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationG
             }
         }
     }
-    for (const auto& [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
+    for (const auto& [reserveName, _]:
+         area->allCapacityReservations.value().areaCapacityReservationsDown)
     {
         if (area->allCapacityReservations->reserveGroupPartThermal.contains(reserveName))
         {
@@ -140,7 +144,7 @@ ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area,
                                                                unsigned int index) const
 {
     int column = 0;
-    for (auto [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsUp)
+    for (auto [reserveName, _]: area->allCapacityReservations.value().areaCapacityReservationsUp)
     {
         for (int indexUnsuppliedSpilled = 0;
              indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax;
@@ -155,7 +159,7 @@ ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area,
             column++;
         }
     }
-    for (auto [reserveName, _]: area->allCapacityReservations().areaCapacityReservationsDown)
+    for (auto [reserveName, _]: area->allCapacityReservations.value().areaCapacityReservationsDown)
     {
         for (int indexUnsuppliedSpilled = 0;
              indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax;

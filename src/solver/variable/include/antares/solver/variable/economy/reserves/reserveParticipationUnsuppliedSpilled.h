@@ -91,8 +91,9 @@ public:
 
         // Get the area
         pSize = study->parameters.reservesEnabled
-                  ? area->allCapacityReservations().areaCapacityReservationsUp.size() * 2
-                      + area->allCapacityReservations().areaCapacityReservationsDown.size() * 2
+                  ? area->allCapacityReservations.value().areaCapacityReservationsUp.size() * 2
+                      + area->allCapacityReservations.value().areaCapacityReservationsDown.size()
+                          * 2
                   : 0;
 
         if (pSize)
@@ -198,23 +199,23 @@ public:
 
         if (state.study.parameters.reservesEnabled)
         {
-            auto reserves = state.problemeHebdo->allReserves()[area->index];
+            auto reserves = state.problemeHebdo->allReserves.value()[area->index];
             for (const auto& reserveUp: reserves.areaCapacityReservationsUp)
             {
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
                        .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex];
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
                        .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex];
             }
             for (const auto& reserveDown: reserves.areaCapacityReservationsDown)
             {
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
                        .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex];
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-                  += state.hourlyResults->Reserves()[state.hourInTheWeek]
+                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
                        .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex];
             }
         }
@@ -246,7 +247,7 @@ public:
             // Write the data for the current year
             int column = 0;
             for (const auto& reserveUp:
-                 results.data.area->allCapacityReservations().areaCapacityReservationsUp)
+                 results.data.area->allCapacityReservations.value().areaCapacityReservationsUp)
             {
                 // Write the data for the current year
                 Yuni::String caption = reserveUp.first;
@@ -261,7 +262,7 @@ public:
                   .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
             }
             for (const auto& reserveDown:
-                 results.data.area->allCapacityReservations().areaCapacityReservationsDown)
+                 results.data.area->allCapacityReservations.value().areaCapacityReservationsDown)
             {
                 // Write the data for the current year
                 Yuni::String caption = reserveDown.first;

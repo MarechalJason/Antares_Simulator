@@ -35,11 +35,11 @@ void POutBounds::add(int pays, int cluster, int pdt)
             {
                 builder.DispatchableProduction(globalClusterIdx, -1).lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .thermalClusterPOutBoundMin[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .thermalClusterPOutBoundMax[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -73,11 +73,11 @@ void POutBounds::add(int pays, int cluster, int pdt)
             {
                 builder.DispatchableProduction(globalClusterIdx, 1).lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .thermalClusterPOutBoundMin[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices()
+                  .reservesIndices.value()
                   .thermalClusterPOutBoundMax[globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
