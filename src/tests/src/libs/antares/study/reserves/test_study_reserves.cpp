@@ -621,7 +621,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_No_Cluster_Provid
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(getErrors().contains(
       "A : Please provide a cluster name when declaring a capacity reservation"));
-    BOOST_CHECK(getErrors().contains("A : missing cluster"));
+    BOOST_CHECK(getErrors().contains("A : missing cluster "));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Cluster_Participation,
@@ -1002,6 +1002,58 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_reserve,
       areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
       checkMessage("This entity is not participating to reserve ReserveDown"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_No_Cluster_Provided,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains(
+      "A : Please provide a cluster name when declaring a capacity reservation"));
+    BOOST_CHECK(getErrors().contains("A : missing cluster "));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_Invalid_Cluster,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addShortTermStorage(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster4\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    logs.info() << "ici";
+    areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains("A : missing cluster cluster4"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version

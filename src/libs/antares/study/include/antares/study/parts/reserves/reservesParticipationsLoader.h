@@ -116,7 +116,7 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                   section.name))
             {
                 logs.error() << area.name << ", cluster " << cluster->name()
-                               << " : duplicate participation to reserve " << section.name;
+                             << " : duplicate participation to reserve " << section.name;
             }
             cluster->reserveParticipationContainer.value()
               .addReserveParticipation(section.name, reserveParticipation);
@@ -129,7 +129,7 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
             }
             if (!cluster)
             {
-                logs.error() << area.name << " : missing cluster" << clusterName;
+                logs.error() << area.name << " : missing cluster " << clusterName;
             }
         }
     }
@@ -158,7 +158,7 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                 else
                 {
                     logs.error() << "Thermal cluster " << clusterName
-                                   << " not participating to reserves of " << area.name;
+                                 << " not participating to reserves of " << area.name;
                 }
             }
         }
@@ -195,7 +195,12 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
 
         auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
         auto cluster = area.shortTermStorage.findInAll(clusterName);
-
+        if (clusterName.empty())
+        {
+            logs.error()
+              << area.name
+              << " : Please provide a cluster name when declaring a capacity reservation";
+        }
         if (reserve && cluster)
         {
             reserveParticipation.capacityReservation = reserve;
@@ -206,11 +211,16 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
 
             cluster->reserveParticipationContainer.value()
               .addReserveParticipation(section.name, reserveParticipation);
-            if (reserve == nullptr)
+        }
+        else
+        {
+            if (!reserve)
             {
-                throw std::out_of_range("Area " + area.name + " : reserve "
-                                        + (std::string)section.name
-                                        + " does not exist, cannot add participation");
+                logs.error() << area.name << ": missing reserve " << section.name;
+            }
+            if (!cluster)
+            {
+                logs.error() << area.name << " : missing cluster " << clusterName;
             }
         }
     }
