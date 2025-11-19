@@ -215,23 +215,8 @@ public:
         {
             auto& area = state.area;
             int column = 0;
-            for (const auto& [reserveName, _]:
-                 area->allCapacityReservations.value().areaCapacityReservationsUp)
-            {
-                if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
-                {
-                    for (auto group:
-                         area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
-                    {
-                        pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                          += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
-                               .shortTermStorageGroupsReserveParticipation[group][reserveName];
-                        column++;
-                    }
-                }
-            }
-            for (const auto& [reserveName, _]:
-                 area->allCapacityReservations.value().areaCapacityReservationsDown)
+            for (const auto& reserveName:
+                 area->allCapacityReservations.value().areaCapacityReservations | std::views::keys)
             {
                 if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
                 {
@@ -270,53 +255,26 @@ public:
             assert(NULL != results.data.area);
             // Write the data for the current year
             int column = 0;
-            for (const auto& [resName, _]:
-                 results.data.area->allCapacityReservations.value().areaCapacityReservationsUp)
+            for (const auto& reserveName:
+                 results.data.area->allCapacityReservations.value().areaCapacityReservations
+                   | std::views::keys)
             {
                 if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(
-                      resName))
+                      reserveName))
                 {
                     for (auto group = results.data.area->allCapacityReservations
-                                        ->reserveGroupPartSTS.at(resName)
+                                        ->reserveGroupPartSTS.at(reserveName)
                                         .begin();
                          group
                          != results.data.area->allCapacityReservations->reserveGroupPartSTS
-                              .at(resName)
+                              .at(reserveName)
                               .end();
                          group++)
                     {
                         // Write the data for the current year
                         std::string tmp = *group;
-                        Yuni::String caption = resName;
+                        Yuni::String caption = reserveName;
                         caption << "_" << tmp;
-                        results.variableCaption = caption; // VCardType::Caption();
-                        results.variableUnit = VCardType::Unit();
-                        pValuesForTheCurrentYear[numSpace][column]
-                          .template buildAnnualSurveyReport<VCardType>(results,
-                                                                       fileLevel,
-                                                                       precision);
-                        column++;
-                    }
-                }
-            }
-            for (const auto& [resName, _]:
-                 results.data.area->allCapacityReservations.value().areaCapacityReservationsDown)
-            {
-                if (results.data.area->allCapacityReservations->reserveGroupPartSTS.contains(
-                      resName))
-                {
-                    for (auto group = results.data.area->allCapacityReservations
-                                        ->reserveGroupPartSTS.at(resName)
-                                        .begin();
-                         group
-                         != results.data.area->allCapacityReservations->reserveGroupPartSTS
-                              .at(resName)
-                              .end();
-                         group++)
-                    {
-                        // Write the data for the current year
-                        Yuni::String caption = resName;
-                        caption << "_" << *group;
                         results.variableCaption = caption; // VCardType::Caption();
                         results.variableUnit = VCardType::Unit();
                         pValuesForTheCurrentYear[numSpace][column]

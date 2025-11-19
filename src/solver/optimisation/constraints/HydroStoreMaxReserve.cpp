@@ -1,6 +1,6 @@
 #include "antares/solver/optimisation/constraints/HydroStoreMaxReserve.h"
 
-void HydroStoreMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void HydroStoreMaxReserve::add(int pays, int reserve, int cluster, int pdt)
 {
     if (!data.Simulation)
     {
@@ -9,11 +9,8 @@ void HydroStoreMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool
         // cluster Π <= Π^max Π : Store power Π^max : Maximum accessible limit of the cluster for
         // the reserve
 
-        CAPACITY_RESERVATION& capacityReservation = isUpReserve
-                                                      ? data.areaReserves[pays]
-                                                          .areaCapacityReservationsUp[reserve]
-                                                      : data.areaReserves[pays]
-                                                          .areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                      .areaCapacityReservations[reserve];
 
         RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
                                                               .AllHydroReservesParticipation

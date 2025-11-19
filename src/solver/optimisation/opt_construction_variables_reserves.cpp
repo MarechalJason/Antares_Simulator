@@ -28,6 +28,7 @@
 
 #include "variables/VariableManagement.h"
 #include "variables/VariableManagerUtils.h"
+using namespace reserve;
 
 void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
   PROBLEME_HEBDO* problemeHebdo,
@@ -83,15 +84,16 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a Thermal cluster participation to a reserve up or down
         void initThermalReserveParticipation(
+          DIRECTION dir,
           int pdt,
           const RESERVE_PARTICIPATION_THERMAL& clusterReserveParticipation,
-          const std::string& reserveName,
-          bool isUpReserve)
+          const std::string& reserveName)
         {
             const auto& clusterName = clusterReserveParticipation.clusterName;
             if (Simulation)
             {
-                NombreDeVariables += (isUpReserve ? 4 : 2); // 4 for up reserves, 2 for down
+                NombreDeVariables += (dir == DIRECTION::UP ? 4
+                                                           : 2); // 4 for up reserves, 2 for down
             }
             else
             {
@@ -107,8 +109,8 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                                                                    reserveName);
                 NombreDeVariables++;
 
-                if (isUpReserve) // For off units in cluster (off units can not participate to down
-                                 // reserves)
+                if (dir == DIRECTION::UP) // For off units in cluster (off units can not participate
+                                          // to down reserves)
                 {
                     variableManager.OffThermalClusterReserveParticipation(
                       clusterReserveParticipation.globalIndexClusterParticipation,
@@ -151,7 +153,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a ShortTerm cluster participation to a reserve
         void initSTStorageReserveParticipation(
-          bool isUpReserve,
+          DIRECTION dir,
           int pdt,
           const RESERVE_PARTICIPATION_STSTORAGE& clusterReserveParticipation,
           const std::string& reserveName)
@@ -189,12 +191,12 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
                 // For Short Term Storage participation to the up reserves
                 variableManager.STStorageClusterReserveParticipation(
-                  isUpReserve,
+                  dir,
                   clusterReserveParticipation.globalIndexClusterParticipation,
                   pdt)
                   = NombreDeVariables;
 
-                variableNamer.ParticipationOfSTStorageToReserve(isUpReserve,
+                variableNamer.ParticipationOfSTStorageToReserve(dir,
                                                                 NombreDeVariables,
                                                                 clusterName,
                                                                 reserveName);
@@ -206,7 +208,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a Hydro participation to a reserve
         void initHydroReserveParticipation(
-          bool isUpReserve,
+          DIRECTION dir,
           int pdt,
           const RESERVE_PARTICIPATION_HYDRO& clusterReserveParticipation,
           const std::string& reserveName)
@@ -244,14 +246,14 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
                 // For Hydro participation to the reserves
                 variableManager.HydroReserveParticipation(
-                  isUpReserve,
+                  dir,
                   clusterReserveParticipation.globalIndexClusterParticipation,
                   pdt)
                   = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
 
-                variableNamer.ParticipationOfHydroToReserve(isUpReserve,
+                variableNamer.ParticipationOfHydroToReserve(dir,
                                                             NombreDeVariables,
                                                             clusterName,
                                                             reserveName);
@@ -273,49 +275,44 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
         for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
         {
             variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
-            auto areaReserves = problemeHebdo->allReserves.value()[pays];
 
-            for (bool isUpReserve: {reserveIsUp, reserveIsDown})
+            for (auto& areaReserve:
+                 problemeHebdo->allReserves.value()[pays].areaCapacityReservations)
             {
-                for (auto& areaReserve: isUpReserve ? areaReserves.areaCapacityReservationsUp
-                                                    : areaReserves.areaCapacityReservationsDown)
+                reserveVariablesInitializer.initReserve(pdt,
+                                                        areaReserve.globalReserveIndex,
+                                                        areaReserve.reserveName);
+
+                // Thermal Clusters
+                for (auto& [clusterId, clusterReserveParticipation]:
+                     areaReserve.AllThermalReservesParticipation)
                 {
-                    reserveVariablesInitializer.initReserve(pdt,
-                                                            areaReserve.globalReserveIndex,
-                                                            areaReserve.reserveName);
+                    reserveVariablesInitializer.initThermalReserveParticipation(
+                      areaReserve.direction,
+                      pdt,
+                      clusterReserveParticipation,
+                      areaReserve.reserveName);
+                }
 
-                    // Thermal Clusters
-                    for (auto& [clusterId, clusterReserveParticipation]:
-                         areaReserve.AllThermalReservesParticipation)
-                    {
-                        reserveVariablesInitializer.initThermalReserveParticipation(
-                          pdt,
-                          clusterReserveParticipation,
-                          areaReserve.reserveName,
-                          isUpReserve);
-                    }
+                // Short Term Storage Clusters
+                for (auto& [clusterId, clusterReserveParticipation]:
+                     areaReserve.AllSTStorageReservesParticipation)
+                {
+                    reserveVariablesInitializer.initSTStorageReserveParticipation(
+                      areaReserve.direction,
+                      pdt,
+                      clusterReserveParticipation,
+                      areaReserve.reserveName);
+                }
 
-                    // Short Term Storage Clusters
-                    for (auto& [clusterId, clusterReserveParticipation]:
-                         areaReserve.AllSTStorageReservesParticipation)
-                    {
-                        reserveVariablesInitializer.initSTStorageReserveParticipation(
-                          isUpReserve,
-                          pdt,
-                          clusterReserveParticipation,
-                          areaReserve.reserveName);
-                    }
-
-                    // Hydro
-                    for (auto& clusterReserveParticipation:
-                         areaReserve.AllHydroReservesParticipation)
-                    {
-                        reserveVariablesInitializer.initHydroReserveParticipation(
-                          isUpReserve,
-                          pdt,
-                          clusterReserveParticipation,
-                          areaReserve.reserveName);
-                    }
+                // Hydro
+                for (auto& clusterReserveParticipation: areaReserve.AllHydroReservesParticipation)
+                {
+                    reserveVariablesInitializer.initHydroReserveParticipation(
+                      areaReserve.direction,
+                      pdt,
+                      clusterReserveParticipation,
+                      areaReserve.reserveName);
                 }
             }
         }

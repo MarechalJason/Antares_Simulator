@@ -1,4 +1,5 @@
 #include "antares/solver/optimisation/constraints/HydroLevelReserveParticipation.h"
+using namespace reserve;
 
 void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
@@ -15,15 +16,15 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // R_up : max stock level
         {
             builder.updateHourWithinWeek(pdt);
-
-            for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsDown)
+            for (auto& capacityReservation:
+                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::DOWN))
             {
                 if (capacityReservation.AllHydroReservesParticipation.size())
                 {
                     RESERVE_PARTICIPATION_HYDRO reserveParticipations
                       = capacityReservation.AllHydroReservesParticipation[cluster];
                     builder.HydroReserveParticipation(
-                      reserveIsDown,
+                      DIRECTION::DOWN,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }
@@ -40,7 +41,7 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.HydroLevelReserveParticipation(reserveIsDown,
+                namer.HydroLevelReserveParticipation(DIRECTION::DOWN,
                                                      builder.data.nombreDeContraintes,
                                                      "Hydro");
                 builder.build();
@@ -57,14 +58,15 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsUp)
+            for (auto& capacityReservation:
+                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::UP))
             {
                 if (capacityReservation.AllHydroReservesParticipation.size())
                 {
                     RESERVE_PARTICIPATION_HYDRO reserveParticipations
                       = capacityReservation.AllHydroReservesParticipation[cluster];
                     builder.HydroReserveParticipation(
-                      reserveIsUp,
+                      DIRECTION::UP,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }
@@ -81,7 +83,7 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.HydroLevelReserveParticipation(reserveIsUp,
+                namer.HydroLevelReserveParticipation(DIRECTION::UP,
                                                      builder.data.nombreDeContraintes,
                                                      "Hydro");
                 builder.build();

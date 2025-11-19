@@ -1,4 +1,5 @@
 #include "antares/solver/optimisation/constraints/HydroGlobalEnergyLevelReserveParticipation.h"
+using namespace reserve;
 
 void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
@@ -14,25 +15,28 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
 
-        for (bool isUpReserve: {reserveIsDown, reserveIsUp})
+        for (DIRECTION dir: {DIRECTION::DOWN, DIRECTION::UP})
         {
             builder.updateHourWithinWeek(pdt);
-
-            for (int t = 0;
-                 t < (isUpReserve ? data.areaReserves[pays].referenceGlobalActivationDurationUp
-                                  : data.areaReserves[pays].referenceGlobalActivationDurationDown);
-                 t++)
+            int time = dir == DIRECTION::UP
+                         ? data.areaReserves[pays].referenceGlobalActivationDurationUp
+                         : data.areaReserves[pays].referenceGlobalActivationDurationDown;
+            double maxGlobalEnergyActivationRatio = dir == DIRECTION::UP
+                                                      ? -data.areaReserves[pays]
+                                                           .maxGlobalEnergyActivationRatioUp
+                                                      : data.areaReserves[pays]
+                                                          .maxGlobalEnergyActivationRatioDown;
+            for (int t = 0; t < time; t++)
             {
                 for (auto& capacityReservation:
-                     isUpReserve ? data.areaReserves[pays].areaCapacityReservationsUp
-                                 : data.areaReserves[pays].areaCapacityReservationsDown)
+                     data.areaReserves[pays].areaCapacityReservations | filter(dir))
                 {
                     if (capacityReservation.AllHydroReservesParticipation.size())
                     {
                         RESERVE_PARTICIPATION_HYDRO& reserveParticipation
                           = capacityReservation.AllHydroReservesParticipation[cluster];
                         builder.HydroReserveParticipation(
-                          isUpReserve,
+                          dir,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,
@@ -41,12 +45,10 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
                 }
                 if (builder.NumberOfVariables() > 0)
                 {
-                    builder.HydroLevel(
-                      globalClusterIdx,
-                      isUpReserve ? -data.areaReserves[pays].maxGlobalEnergyActivationRatioUp
-                                  : data.areaReserves[pays].maxGlobalEnergyActivationRatioDown,
-                      t,
-                      builder.data.NombreDePasDeTempsPourUneOptimisation);
+                    builder.HydroLevel(globalClusterIdx,
+                                       maxGlobalEnergyActivationRatio,
+                                       t,
+                                       builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }
             }
 
@@ -54,7 +56,7 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
             {
                 builder.lessThan();
 
-                if (isUpReserve)
+                if (dir == DIRECTION::UP)
                 {
                     data.CorrespondanceCntNativesCntOptim[pdt]
                       .reservesIndices.value()
@@ -73,12 +75,18 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                isUpReserve ? namer.HydroGlobalEnergyLevelReserveParticipationUp(
-                                builder.data.nombreDeContraintes,
-                                "Hydro")
-                            : namer.HydroGlobalEnergyLevelReserveParticipationDown(
-                                builder.data.nombreDeContraintes,
-                                "Hydro");
+                if (dir == DIRECTION::UP)
+                {
+                    namer.HydroGlobalEnergyLevelReserveParticipationUp(
+                      builder.data.nombreDeContraintes,
+                      "Hydro");
+                }
+                else
+                {
+                    namer.HydroGlobalEnergyLevelReserveParticipationDown(
+                      builder.data.nombreDeContraintes,
+                      "Hydro");
+                }
                 builder.build();
             }
         }

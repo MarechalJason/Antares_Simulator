@@ -1,4 +1,5 @@
 #include "antares/solver/optimisation/constraints/POutCapacityThresholds.h"
+using namespace reserve;
 
 void POutCapacityThresholds::add(int pays, int cluster, int pdt)
 {
@@ -20,7 +21,7 @@ void POutCapacityThresholds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             for (const auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservationsDown)
+                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::DOWN))
             {
                 if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
                 {
@@ -56,7 +57,7 @@ void POutCapacityThresholds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             for (const auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservationsUp)
+                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::UP))
             {
                 if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
                 {

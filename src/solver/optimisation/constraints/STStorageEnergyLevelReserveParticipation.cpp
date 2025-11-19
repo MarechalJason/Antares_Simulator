@@ -1,17 +1,11 @@
 #include "antares/solver/optimisation/constraints/STStorageEnergyLevelReserveParticipation.h"
+using namespace reserve;
 
-void STStorageEnergyLevelReserveParticipation::add(int pays,
-                                                   int cluster,
-                                                   int reserve,
-                                                   int pdt,
-                                                   bool isUpReserve)
+void STStorageEnergyLevelReserveParticipation::add(int pays, int cluster, int reserve, int pdt)
 {
     int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
-    CAPACITY_RESERVATION& capacityReservation = isUpReserve
-                                                  ? data.areaReserves[pays]
-                                                      .areaCapacityReservationsUp[reserve]
-                                                  : data.areaReserves[pays]
-                                                      .areaCapacityReservationsDown[reserve];
+    CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                  .areaCapacityReservations[reserve];
 
     if (capacityReservation.maxActivationDuration > 0)
     {
@@ -25,7 +19,7 @@ void STStorageEnergyLevelReserveParticipation::add(int pays,
             // R_{min,res} : max power participation ratio
             // R_up : max stock level
             {
-                double sign = isUpReserve ? -1. : 1.;
+                double sign = capacityReservation.direction == DIRECTION::UP ? -1.0 : 1.0;
 
                 RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
                   = capacityReservation.AllSTStorageReservesParticipation[cluster];
@@ -35,7 +29,7 @@ void STStorageEnergyLevelReserveParticipation::add(int pays,
                 for (int t = 0; t < capacityReservation.maxActivationDuration; t++)
                 {
                     builder.STStorageClusterReserveParticipation(
-                      isUpReserve,
+                      capacityReservation.direction,
                       reserveParticipation.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio,
                       t,

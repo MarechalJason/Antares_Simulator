@@ -28,6 +28,7 @@
 
 #include "variables/VariableManagement.h"
 #include "variables/VariableManagerUtils.h"
+using namespace reserve;
 
 struct ReserveVariablesBoundsSetter
 {
@@ -79,7 +80,7 @@ struct ReserveVariablesBoundsSetter
     // Set variables bounds for a Thermal cluster participation to a reserve up or down
     void setThermalReserveParticipationBounds(int clusterParticipationIdInArea,
                                               int clusterParticipationId,
-                                              bool isUpReserve)
+                                              DIRECTION dir)
     {
         const auto& indices = varIndices();
         auto& prod = problemeHebdo->ResultatsHoraires[pays].ProductionThermique[pdtHebdo];
@@ -87,7 +88,7 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(indices.runningThermalClusterParticipation[clusterParticipationId],
                      &prod.ParticipationReservesDuPalierOn.value()[clusterParticipationIdInArea]);
 
-        if (isUpReserve)
+        if (dir == DIRECTION::UP)
         {
             setVarBounds(
               indices.offThermalClusterParticipation[clusterParticipationId],
@@ -102,7 +103,7 @@ struct ReserveVariablesBoundsSetter
 
     void setSTStorageReserveParticipationBounds(int clusterParticipationIdInArea,
                                                 int clusterParticipationId,
-                                                bool isUpReserve)
+                                                DIRECTION dir)
     {
         const auto& indices = varIndices();
         auto& st = problemeHebdo->ResultatsHoraires[pays]
@@ -111,7 +112,7 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(indices.STStorageReleaseClusterParticipation[clusterParticipationId], nullptr);
         setVarBounds(indices.STStorageStoreClusterParticipation[clusterParticipationId], nullptr);
 
-        int dirVar = isUpReserve
+        int dirVar = dir == DIRECTION::UP
                        ? indices.STStorageClusterParticipationUp[clusterParticipationId]
                        : indices.STStorageClusterParticipationDown[clusterParticipationId];
 
@@ -121,7 +122,7 @@ struct ReserveVariablesBoundsSetter
     // Set variables bounds for a Hydro participation to a reserve up
     void setHydroReserveParticipationBounds(int clusterParticipationIdInArea,
                                             int clusterParticipationId,
-                                            bool isUpReserve)
+                                            DIRECTION dir)
 
     {
         const auto& indices = varIndices();
@@ -131,8 +132,8 @@ struct ReserveVariablesBoundsSetter
 
         setVarBounds(indices.HydroStoreParticipation[clusterParticipationId], nullptr);
 
-        int dirVar = isUpReserve ? indices.HydroParticipationUp[clusterParticipationId]
-                                 : indices.HydroParticipationDown[clusterParticipationId];
+        int dirVar = dir == DIRECTION::UP ? indices.HydroParticipationUp[clusterParticipationId]
+                                          : indices.HydroParticipationDown[clusterParticipationId];
 
         setVarBounds(
           dirVar,
@@ -154,12 +155,8 @@ private:
 };
 
 void SetAllReservesBoundsForArea(ReserveVariablesBoundsSetter& setter,
-                                 const ::AREA_RESERVES_VECTOR& areaReserves,
-                                 bool isUpReserve)
+                                 const std::vector<CAPACITY_RESERVATION>& areaCapacityReservations)
 {
-    const auto& areaCapacityReservations = isUpReserve ? areaReserves.areaCapacityReservationsUp
-                                                       : areaReserves.areaCapacityReservationsDown;
-
     for (const auto& areaReserve: areaCapacityReservations)
     {
         setter.setReserveBounds(areaReserve.areaReserveIndex, areaReserve.globalReserveIndex);
@@ -168,21 +165,21 @@ void SetAllReservesBoundsForArea(ReserveVariablesBoundsSetter& setter,
         {
             setter.setThermalReserveParticipationBounds(thermal.areaIndexClusterParticipation,
                                                         thermal.globalIndexClusterParticipation,
-                                                        isUpReserve);
+                                                        areaReserve.direction);
         }
 
         for (const auto& [clusterId, stStorage]: areaReserve.AllSTStorageReservesParticipation)
         {
             setter.setSTStorageReserveParticipationBounds(stStorage.areaIndexClusterParticipation,
                                                           stStorage.globalIndexClusterParticipation,
-                                                          isUpReserve);
+                                                          areaReserve.direction);
         }
 
         for (const auto& hydro: areaReserve.AllHydroReservesParticipation)
         {
             setter.setHydroReserveParticipationBounds(hydro.areaIndexClusterParticipation,
                                                       hydro.globalIndexClusterParticipation,
-                                                      isUpReserve);
+                                                      areaReserve.direction);
         }
     }
 }
@@ -206,10 +203,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireReserves(
 
             const auto& areaReserves = problemeHebdo->allReserves.value()[pays];
 
-            for (bool isUpReserve: {reserveIsUp, reserveIsDown})
-            {
-                SetAllReservesBoundsForArea(setter, areaReserves, isUpReserve);
-            }
+            SetAllReservesBoundsForArea(setter, areaReserves.areaCapacityReservations);
         }
     }
 }

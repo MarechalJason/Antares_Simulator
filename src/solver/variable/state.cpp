@@ -96,14 +96,7 @@ void State::initReserveParticipationIndexMaps()
 
     area->reserveParticipationIndexMaps.emplace();
     // Reserves up
-    for (auto& reserve: problemeHebdo->allReserves.value()[area->index].areaCapacityReservationsUp)
-    {
-        loadReserveParticipations(reserve);
-    }
-
-    // Reserves down
-    for (auto& reserve:
-         problemeHebdo->allReserves.value()[area->index].areaCapacityReservationsDown)
+    for (auto& reserve: problemeHebdo->allReserves.value()[area->index].areaCapacityReservations)
     {
         loadReserveParticipations(reserve);
     }

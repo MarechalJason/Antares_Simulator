@@ -25,6 +25,7 @@
 #include "antares/solver/simulation/simulation.h"
 
 #include "variables/VariableManagerUtils.h"
+using namespace reserve;
 
 void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                                              const int PremierPdtDeLIntervalle,
@@ -70,14 +71,14 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
 
         // Init costs for a Thermal cluster participation to a reserve up
         void initThermalReserveParticipationCosts(
-          bool isUpReserve,
+          DIRECTION dir,
           const RESERVE_PARTICIPATION_THERMAL& reserveParticipation)
         {
             int var = variableManager.RunningThermalClusterReserveParticipation(
               reserveParticipation.globalIndexClusterParticipation,
               pdtHebdo);
             CoutLineaire[var] = reserveParticipation.participationCost;
-            if (isUpReserve)
+            if (dir == DIRECTION::UP)
             {
                 var = variableManager.OffThermalClusterReserveParticipation(
                   reserveParticipation.globalIndexClusterParticipation,
@@ -88,11 +89,11 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
 
         // Init costs for a ShortTerm cluster participation to a reserve up
         void initSTStorageReserveParticipationCosts(
-          bool isUpReserve,
+          DIRECTION dir,
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation)
         {
             int var = variableManager.STStorageClusterReserveParticipation(
-              isUpReserve,
+              dir,
               reserveParticipation.globalIndexClusterParticipation,
               pdtHebdo);
             CoutLineaire[var] = reserveParticipation.participationCost;
@@ -100,11 +101,11 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
 
         // Init costs for a Hydro participation to a reserve
         void initHydroReserveParticipationCosts(
-          bool isUpReserve,
+          DIRECTION dir,
           const RESERVE_PARTICIPATION_HYDRO& reserveParticipation)
         {
             int var = variableManager.HydroReserveParticipation(
-              isUpReserve,
+              dir,
               reserveParticipation.globalIndexClusterParticipation,
               pdtHebdo);
             CoutLineaire[var] = reserveParticipation.participationCost;
@@ -120,65 +121,34 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
         {
             auto areaReserves = problemeHebdo->allReserves.value()[pays];
 
-            for (auto& areaReserveUp: areaReserves.areaCapacityReservationsUp)
+            for (auto& areaReserve: areaReserves.areaCapacityReservations)
             {
-                reserveCostsInitializer.initReserveCosts(areaReserveUp);
+                reserveCostsInitializer.initReserveCosts(areaReserve);
 
                 // Thermal clusters
                 for (const auto& [clusterId, clusterReserveParticipation]:
-                     areaReserveUp.AllThermalReservesParticipation)
+                     areaReserve.AllThermalReservesParticipation)
                 {
                     reserveCostsInitializer.initThermalReserveParticipationCosts(
-                      reserveIsUp,
+                      areaReserve.direction,
                       clusterReserveParticipation);
                 }
 
                 // Short Term Storage clusters
                 for (const auto& [clusterId, clusterReserveParticipation]:
-                     areaReserveUp.AllSTStorageReservesParticipation)
+                     areaReserve.AllSTStorageReservesParticipation)
                 {
                     reserveCostsInitializer.initSTStorageReserveParticipationCosts(
-                      reserveIsUp,
+                      areaReserve.direction,
                       clusterReserveParticipation);
                 }
 
                 // Hydro
                 for (const auto& clusterReserveParticipation:
-                     areaReserveUp.AllHydroReservesParticipation)
-                {
-                    reserveCostsInitializer
-                      .initHydroReserveParticipationCosts(reserveIsUp, clusterReserveParticipation);
-                }
-            }
-
-            for (auto& areaReserveDown: areaReserves.areaCapacityReservationsDown)
-            {
-                reserveCostsInitializer.initReserveCosts(areaReserveDown);
-
-                // Thermal clusters
-                for (const auto& [clusterId, clusterReserveParticipation]:
-                     areaReserveDown.AllThermalReservesParticipation)
-                {
-                    reserveCostsInitializer.initThermalReserveParticipationCosts(
-                      reserveIsDown,
-                      clusterReserveParticipation);
-                }
-
-                // Short Term Storage clusters
-                for (const auto& [clusterId, clusterReserveParticipation]:
-                     areaReserveDown.AllSTStorageReservesParticipation)
-                {
-                    reserveCostsInitializer.initSTStorageReserveParticipationCosts(
-                      reserveIsDown,
-                      clusterReserveParticipation);
-                }
-
-                // Hydro
-                for (const auto& clusterReserveParticipation:
-                     areaReserveDown.AllHydroReservesParticipation)
+                     areaReserve.AllHydroReservesParticipation)
                 {
                     reserveCostsInitializer.initHydroReserveParticipationCosts(
-                      reserveIsDown,
+                      areaReserve.direction,
                       clusterReserveParticipation);
                 }
             }

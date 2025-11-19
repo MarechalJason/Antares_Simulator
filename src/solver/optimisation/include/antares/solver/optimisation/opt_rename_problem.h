@@ -19,6 +19,7 @@
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
 #pragma once
+#include "antares/solver/optimisation/ReserveDirection.h"
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 
 #include "opt_export_structure.h"
@@ -118,7 +119,7 @@ public:
     void ParticipationOfSTStorageStoreToReserve(unsigned int variable,
                                                 const std::string& clusterName,
                                                 const std::string& reserveName);
-    void ParticipationOfSTStorageToReserve(bool isUpReserve,
+    void ParticipationOfSTStorageToReserve(reserve::DIRECTION dir,
                                            unsigned int variable,
                                            const std::string& clusterName,
                                            const std::string& reserveName);
@@ -128,7 +129,7 @@ public:
     void ParticipationOfHydroStoreToReserve(unsigned int variable,
                                             const std::string& clusterName,
                                             const std::string& reserveName);
-    void ParticipationOfHydroToReserve(bool isUpReserve,
+    void ParticipationOfHydroToReserve(reserve::DIRECTION dir,
                                        unsigned int variable,
                                        const std::string& clusterName,
                                        const std::string& reserveName);
@@ -230,7 +231,7 @@ public:
     void STReserveParticipation(unsigned int constraint,
                                 const std::string& clusterName,
                                 const std::string& reserveName,
-                                bool isUpReserve);
+                                reserve::DIRECTION dir);
     void STReleaseMaxReserve(unsigned int constraint,
                              const std::string& clusterName,
                              const std::string& reserveName);
@@ -253,7 +254,7 @@ public:
     void STGlobalEnergyStockLevelReserveParticipationUp(unsigned int constraint,
                                                         const std::string& clusterName);
 
-    void HydroReserveParticipation(bool isReserveUp,
+    void HydroReserveParticipation(reserve::DIRECTION dir,
                                    unsigned int constraint,
                                    const std::string& clusterName,
                                    const std::string& reserveName);
@@ -268,7 +269,7 @@ public:
                                             const std::string& clusterName);
     void HydroStoreCapacityThresholdsUp(unsigned int constraint, const std::string& clusterName);
     void HydroStoreCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
-    void HydroLevelReserveParticipation(bool isUpReserve,
+    void HydroLevelReserveParticipation(reserve::DIRECTION dir,
                                         unsigned int constraint,
                                         const std::string& clusterName);
     void HydroEnergyLevelReserveParticipation(unsigned int constraint,

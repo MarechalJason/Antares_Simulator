@@ -110,7 +110,7 @@ public:
                                                           int offset = 0,
                                                           int delta = 0);
 
-    ConstraintBuilder& STStorageClusterReserveParticipation(bool isReserveUp,
+    ConstraintBuilder& STStorageClusterReserveParticipation(reserve::DIRECTION dir,
                                                             unsigned int index,
                                                             double coeff,
                                                             int offset = 0,
@@ -126,7 +126,7 @@ public:
                                                                  int offset = 0,
                                                                  int delta = 0);
 
-    ConstraintBuilder& HydroReserveParticipation(bool isUpReserve,
+    ConstraintBuilder& HydroReserveParticipation(reserve::DIRECTION dir,
                                                  unsigned int index,
                                                  double coeff,
                                                  int offset = 0,
@@ -383,21 +383,20 @@ struct ReserveData
     int countNumberOfConstraintsForThermalReserves(int pays, int cluster)
     {
         int count = 0;
-        for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsUp)
+        if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
+                                  | reserve::filter(reserve::DIRECTION::UP),
+                                [&](const auto& r)
+                                { return r.AllThermalReservesParticipation.count(cluster) > 0; }))
         {
-            if (capacityReservation.AllThermalReservesParticipation.count(cluster) > 0)
-            {
-                count++;
-                break;
-            }
+            count++;
         }
-        for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsDown)
+
+        if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
+                                  | reserve::filter(reserve::DIRECTION::DOWN),
+                                [&](const auto& r)
+                                { return r.AllThermalReservesParticipation.count(cluster) > 0; }))
         {
-            if (capacityReservation.AllThermalReservesParticipation.count(cluster) > 0)
-            {
-                count++;
-                break;
-            }
+            count++;
         }
         return count;
     }
@@ -409,25 +408,19 @@ struct ReserveData
         if (!accountForGlobalActivationDuration
             || areaReserves[pays].referenceGlobalActivationDurationUp)
         {
-            for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsUp)
+            if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
+                                      | reserve::filter(reserve::DIRECTION::UP),
+                                    [&](const auto& r)
+                                    { return r.AllHydroReservesParticipation.size() > 0; }))
             {
-                if (capacityReservation.AllHydroReservesParticipation.size() > 0)
-                {
-                    count++;
-                    break;
-                }
+                count++;
             }
-        }
-        if (!accountForGlobalActivationDuration
-            || areaReserves[pays].referenceGlobalActivationDurationDown)
-        {
-            for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsDown)
+            if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
+                                      | reserve::filter(reserve::DIRECTION::DOWN),
+                                    [&](const auto& r)
+                                    { return r.AllHydroReservesParticipation.size() > 0; }))
             {
-                if (capacityReservation.AllHydroReservesParticipation.size() > 0)
-                {
-                    count++;
-                    break;
-                }
+                count++;
             }
         }
         return count;
@@ -442,25 +435,27 @@ struct ReserveData
         if (!accountForGlobalActivationDuration
             || areaReserves[pays].referenceGlobalActivationDurationUp)
         {
-            for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsUp)
+            if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
+                                      | reserve::filter(reserve::DIRECTION::UP),
+                                    [&](const auto& r) {
+                                        return r.AllSTStorageReservesParticipation.count(cluster)
+                                               > 0;
+                                    }))
             {
-                if (capacityReservation.AllSTStorageReservesParticipation.count(cluster) > 0)
-                {
-                    count++;
-                    break;
-                }
+                count++;
             }
         }
         if (!accountForGlobalActivationDuration
             || areaReserves[pays].referenceGlobalActivationDurationDown)
         {
-            for (const auto& capacityReservation: areaReserves[pays].areaCapacityReservationsDown)
+            if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
+                                      | reserve::filter(reserve::DIRECTION::DOWN),
+                                    [&](const auto& r) {
+                                        return r.AllSTStorageReservesParticipation.count(cluster)
+                                               > 0;
+                                    }))
             {
-                if (capacityReservation.AllSTStorageReservesParticipation.count(cluster) > 0)
-                {
-                    count++;
-                    break;
-                }
+                count++;
             }
         }
         return count;

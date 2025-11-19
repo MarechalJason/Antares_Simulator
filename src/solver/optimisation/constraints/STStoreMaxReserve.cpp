@@ -1,6 +1,7 @@
 #include "antares/solver/optimisation/constraints/STStoreMaxReserve.h"
+using namespace reserve;
 
-void STStoreMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void STStoreMaxReserve::add(int pays, int reserve, int cluster, int pdt)
 {
     if (!data.Simulation)
     {
@@ -9,11 +10,8 @@ void STStoreMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool is
         // cluster Π <= Π^max Π : Store power Π^max : Maximum accessible limit of the cluster for
         // the reserve
 
-        CAPACITY_RESERVATION& capacityReservation = isUpReserve
-                                                      ? data.areaReserves[pays]
-                                                          .areaCapacityReservationsUp[reserve]
-                                                      : data.areaReserves[pays]
-                                                          .areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                      .areaCapacityReservations[reserve];
 
         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation = capacityReservation
                                                                   .AllSTStorageReservesParticipation

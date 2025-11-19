@@ -20,6 +20,7 @@
 */
 
 #include "antares/solver/optimisation/constraints/ConstraintBuilder.h"
+using namespace reserve;
 
 void ConstraintBuilder::build()
 {
@@ -82,18 +83,15 @@ ConstraintBuilder& ConstraintBuilder::ThermalClusterReserveParticipation(unsigne
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::STStorageClusterReserveParticipation(bool isUpReserve,
+ConstraintBuilder& ConstraintBuilder::STStorageClusterReserveParticipation(DIRECTION dir,
                                                                            unsigned int index,
                                                                            double coeff,
                                                                            int offset,
                                                                            int delta)
 {
-    AddVariable(variableManager_.STStorageClusterReserveParticipation(isUpReserve,
-                                                                      index,
-                                                                      hourInWeek_,
-                                                                      offset,
-                                                                      delta),
-                coeff);
+    AddVariable(
+      variableManager_.STStorageClusterReserveParticipation(dir, index, hourInWeek_, offset, delta),
+      coeff);
     return *this;
 }
 
@@ -122,15 +120,14 @@ ConstraintBuilder& ConstraintBuilder::STStorageStoreClusterReserveParticipation(
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::HydroReserveParticipation(bool isUpReserve,
+ConstraintBuilder& ConstraintBuilder::HydroReserveParticipation(DIRECTION dir,
                                                                 unsigned int index,
                                                                 double coeff,
                                                                 int offset,
                                                                 int delta)
 {
-    AddVariable(
-      variableManager_.HydroReserveParticipation(isUpReserve, index, hourInWeek_, offset, delta),
-      coeff);
+    AddVariable(variableManager_.HydroReserveParticipation(dir, index, hourInWeek_, offset, delta),
+                coeff);
     return *this;
 }
 

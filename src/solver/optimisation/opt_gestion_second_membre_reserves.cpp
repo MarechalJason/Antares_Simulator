@@ -27,6 +27,7 @@
 
 using namespace Antares;
 using namespace Antares::Data;
+using namespace reserve;
 
 void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                                                              int PremierPdtDeLIntervalle,
@@ -235,7 +236,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         void setSTStorageReserveParticipationRightSides(
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation,
           const CAPACITY_RESERVATION& reserve,
-          bool isUpReserve)
+          DIRECTION dir)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -263,7 +264,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             {
                 auto& cluster = problemeHebdo
                                   ->ShortTermStorage[pays][reserveParticipation.clusterIdInArea];
-                if (isUpReserve)
+                if (dir == DIRECTION::UP)
                 {
                     double level_min = cluster.reservoirCapacity
                                        * cluster.series->lowerRuleCurve[pdtGlobal];
@@ -356,7 +357,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         void setHydroReserveParticipationRightSides(
           const RESERVE_PARTICIPATION_HYDRO& reserveParticipation,
           const CAPACITY_RESERVATION& reserve,
-          bool isUpReserve)
+          DIRECTION dir)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -383,7 +384,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             if (cnt >= 0)
             {
                 auto& hydroCluster = problemeHebdo->CaracteristiquesHydrauliques[pays];
-                if (isUpReserve)
+                if (dir == DIRECTION::UP)
                 {
                     double level_min = hydroCluster.NiveauHoraireInf[pdtHebdo];
 
@@ -421,60 +422,39 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             const auto& areaReserves = problemeHebdo->allReserves.value()[pays];
 
             // Up Reserves Right Sides
-            for (const auto& areaReserveUp: areaReserves.areaCapacityReservationsUp)
+            for (const auto& areaReserve: areaReserves.areaCapacityReservations)
             {
-                reserveVariablesRightSidesSetter.setReserveRightSides(areaReserveUp);
+                reserveVariablesRightSidesSetter.setReserveRightSides(areaReserve);
 
                 // Thermal Cluster
-                for (const auto& [clusterId, clusterReserveParticipation]:
-                     areaReserveUp.AllThermalReservesParticipation)
+                if (areaReserve.direction == DIRECTION::UP)
                 {
-                    reserveVariablesRightSidesSetter.setThermalReserveUpParticipationRightSides(
-                      clusterReserveParticipation);
+                    for (const auto& [clusterId, clusterReserveParticipation]:
+                         areaReserve.AllThermalReservesParticipation)
+                    {
+                        reserveVariablesRightSidesSetter.setThermalReserveUpParticipationRightSides(
+                          clusterReserveParticipation);
+                    }
                 }
 
                 // Short Term Storage Cluster
                 for (const auto& [clusterId, clusterReserveParticipation]:
-                     areaReserveUp.AllSTStorageReservesParticipation)
+                     areaReserve.AllSTStorageReservesParticipation)
                 {
                     reserveVariablesRightSidesSetter.setSTStorageReserveParticipationRightSides(
                       clusterReserveParticipation,
-                      areaReserveUp,
-                      reserveIsUp);
+                      areaReserve,
+                      areaReserve.direction);
                 }
 
                 // Hydro
                 for (const auto& clusterReserveParticipation:
-                     areaReserveUp.AllHydroReservesParticipation)
+                     areaReserve.AllHydroReservesParticipation)
                 {
                     reserveVariablesRightSidesSetter.setHydroReserveParticipationRightSides(
                       clusterReserveParticipation,
-                      areaReserveUp,
-                      reserveIsUp);
-                }
-            }
-            for (const auto& areaReserveDown: areaReserves.areaCapacityReservationsDown)
-            {
-                reserveVariablesRightSidesSetter.setReserveRightSides(areaReserveDown);
-
-                // Short Term Storage Cluster
-                for (const auto& [clusterId, clusterReserveParticipation]:
-                     areaReserveDown.AllSTStorageReservesParticipation)
-                {
-                    reserveVariablesRightSidesSetter.setSTStorageReserveParticipationRightSides(
-                      clusterReserveParticipation,
-                      areaReserveDown,
-                      reserveIsDown);
-                }
-
-                // Hydro
-                for (const auto& clusterReserveParticipation:
-                     areaReserveDown.AllHydroReservesParticipation)
-                {
-                    reserveVariablesRightSidesSetter.setHydroReserveParticipationRightSides(
-                      clusterReserveParticipation,
-                      areaReserveDown,
-                      reserveIsDown);
+                      areaReserve,
+                      areaReserve.direction);
                 }
             }
 
@@ -495,17 +475,10 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
 
             // Hydro
             // Checks if Hydro is participating to reserves
-            auto isClusterParticipatingToReserves = [](std::vector<CAPACITY_RESERVATION>& reserves)
-            {
-                auto hasReserveParticipations = [](CAPACITY_RESERVATION& res)
-                { return res.AllHydroReservesParticipation.size() > 0; };
-                return std::any_of(reserves.begin(), reserves.end(), hasReserveParticipations);
-            };
-
-            if (isClusterParticipatingToReserves(
-                  problemeHebdo->allReserves.value()[pays].areaCapacityReservationsDown)
-                || isClusterParticipatingToReserves(
-                  problemeHebdo->allReserves.value()[pays].areaCapacityReservationsUp))
+            if (std::ranges::any_of(
+                  problemeHebdo->allReserves.value()[pays].areaCapacityReservations,
+                  [](CAPACITY_RESERVATION& res)
+                  { return res.AllHydroReservesParticipation.size() > 0; }))
             {
                 reserveVariablesRightSidesSetter.setHydroRightSides(areaReserves);
             }

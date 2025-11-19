@@ -117,7 +117,6 @@ void readReserveParameters(fs::path& folderInput,
     CapacityReservation capacityReservation;
     std::string file_name = AllCapacityReservations::toFilename(section.name);
 
-    tristate isReserveUp = Undefined;
     for (auto* p = section.firstProperty; p; p = p->next)
     {
         std::string key = p->key;
@@ -168,11 +167,11 @@ void readReserveParameters(fs::path& folderInput,
         {
             if (p->value == "up")
             {
-                isReserveUp = True;
+                capacityReservation.direction = CapacityReservation::Direction::UP;
             }
             else if (p->value == "down")
             {
-                isReserveUp = False;
+                capacityReservation.direction = CapacityReservation::Direction::DOWN;
             }
             else
             {
@@ -186,20 +185,8 @@ void readReserveParameters(fs::path& folderInput,
     }
     fs::path filePath = folderInput / "reserves" / area.id.to<std::string>() / (file_name + ".txt");
     capacityReservation.loadNeedFromFile(filePath);
-    if (isReserveUp == True)
-    {
-        area.allCapacityReservations.value()
-          .areaCapacityReservationsUp.emplace(section.name, capacityReservation);
-    }
-    else if (isReserveUp == False)
-    {
-        area.allCapacityReservations.value()
-          .areaCapacityReservationsDown.emplace(section.name, capacityReservation);
-    }
-    else
-    {
-        logs.warning() << area.name << ": invalid type for reserve " << section.name;
-    }
+    area.allCapacityReservations.value().areaCapacityReservations.emplace(section.name,
+                                                                          capacityReservation);
 }
 
 bool loadReservesParameters(fs::path& folderInput, Antares::Data::Area& area)

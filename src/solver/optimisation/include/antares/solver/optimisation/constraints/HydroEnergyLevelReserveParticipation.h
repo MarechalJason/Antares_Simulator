@@ -18,9 +18,8 @@ public:
      * @param pays : area
      * @param cluster : global index of the cluster
      * @param pdt : timestep
-     * @param isUpReserve : true if ReserveUp, false if ReserveDown
      */
-    void add(int pays, int cluster, int reserve, int pdt, bool isUpReserve);
+    void add(int pays, int cluster, int reserve, int pdt);
 
 private:
     ReserveData& data;

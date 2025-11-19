@@ -1,6 +1,7 @@
 #include "antares/solver/optimisation/constraints/PMaxReserve.h"
+using namespace reserve;
 
-void PMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void PMaxReserve::add(int pays, int reserve, int cluster, int pdt)
 {
     if (!data.Simulation)
     {
@@ -11,11 +12,8 @@ void PMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpRese
         // M : Number of running units in the cluster
         // B : Maximum accessible power if each unit running on the cluster for the reserve
 
-        CAPACITY_RESERVATION capacityReservation = isUpReserve
-                                                     ? data.areaReserves[pays]
-                                                         .areaCapacityReservationsUp[reserve]
-                                                     : data.areaReserves[pays]
-                                                         .areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]
+                                                     .areaCapacityReservations[reserve];
 
         auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
 

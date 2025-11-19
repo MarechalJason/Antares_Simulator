@@ -91,9 +91,7 @@ public:
 
         // Get the area
         pSize = study->parameters.reservesEnabled
-                  ? area->allCapacityReservations.value().areaCapacityReservationsUp.size() * 2
-                      + area->allCapacityReservations.value().areaCapacityReservationsDown.size()
-                          * 2
+                  ? area->allCapacityReservations.value().areaCapacityReservations.size() * 2
                   : 0;
 
         if (pSize)
@@ -200,23 +198,14 @@ public:
         if (state.study.parameters.reservesEnabled)
         {
             auto reserves = state.problemeHebdo->allReserves.value()[area->index];
-            for (const auto& reserveUp: reserves.areaCapacityReservationsUp)
+            for (const auto& reserve: reserves.areaCapacityReservations)
             {
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
                   += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                       .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex];
+                       .ValeursHorairesInternalUnsatisfied[reserve.areaReserveIndex];
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
                   += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                       .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex];
-            }
-            for (const auto& reserveDown: reserves.areaCapacityReservationsDown)
-            {
-                pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                       .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex];
-                pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                       .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex];
+                       .ValeursHorairesInternalExcessReserve[reserve.areaReserveIndex];
             }
         }
 
@@ -246,31 +235,17 @@ public:
             results.variableUnit = VCardType::Unit();
             // Write the data for the current year
             int column = 0;
-            for (const auto& reserveUp:
-                 results.data.area->allCapacityReservations.value().areaCapacityReservationsUp)
+            for (const auto& reserveName:
+                 results.data.area->allCapacityReservations.value().areaCapacityReservations
+                   | std::views::keys)
             {
                 // Write the data for the current year
-                Yuni::String caption = reserveUp.first;
+                Yuni::String caption = reserveName;
                 caption << "_UNSP.";
                 results.variableCaption = caption; // VCardType::Caption();
                 pValuesForTheCurrentYear[numSpace][column++]
                   .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-                caption = reserveUp.first;
-                caption << "_SPIL.";
-                results.variableCaption = caption; // VCardType::Caption();
-                pValuesForTheCurrentYear[numSpace][column++]
-                  .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-            }
-            for (const auto& reserveDown:
-                 results.data.area->allCapacityReservations.value().areaCapacityReservationsDown)
-            {
-                // Write the data for the current year
-                Yuni::String caption = reserveDown.first;
-                caption << "_UNSP.";
-                results.variableCaption = caption; // VCardType::Caption();
-                pValuesForTheCurrentYear[numSpace][column++]
-                  .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-                caption = reserveDown.first;
+                caption = reserveName;
                 caption << "_SPIL.";
                 results.variableCaption = caption; // VCardType::Caption();
                 pValuesForTheCurrentYear[numSpace][column++]

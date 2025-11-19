@@ -36,6 +36,13 @@ using ReserveName = std::string;
 /// spillage cost
 struct CapacityReservation
 {
+    enum Direction
+    {
+        DOWN,
+        UP
+    };
+
+    Direction direction{Direction::DOWN};
     double unsuppliedCost = 0.;
     double spillageCost = 0.;
     double powerActivationRatio = 0.;
@@ -71,17 +78,14 @@ struct AllCapacityReservations
     std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
       reserveGroupPartSTS;
 
-    std::map<ReserveName, CapacityReservation> areaCapacityReservationsUp;
-    std::map<ReserveName, CapacityReservation> areaCapacityReservationsDown;
+    std::map<ReserveName, CapacityReservation> areaCapacityReservations;
 
-    /// @brief Check if the capacity reservation name already exist in both the up and down
-    /// reserves
+    /// @brief Check if the capacity reservation name already exist in the reserves
     /// @param name
     /// @return true if the capacity reservation already existed
     bool contains(ReserveName name) const
     {
-        return areaCapacityReservationsUp.contains(name)
-               || areaCapacityReservationsDown.contains(name);
+        return areaCapacityReservations.contains(name);
     }
 
     /// @brief Get a capacity reservation from both the up and down reserves using its name
@@ -90,13 +94,9 @@ struct AllCapacityReservations
     /// otherwise
     const CapacityReservation* getReserveByName(std::string name) const
     {
-        if (areaCapacityReservationsUp.contains(name))
+        if (areaCapacityReservations.contains(name))
         {
-            return &areaCapacityReservationsUp.at(name);
-        }
-        else if (areaCapacityReservationsDown.contains(name))
-        {
-            return &areaCapacityReservationsDown.at(name);
+            return &areaCapacityReservations.at(name);
         }
         return nullptr;
     }
@@ -105,7 +105,7 @@ struct AllCapacityReservations
     /// @return the number of capacityReservations in the area
     size_t size() const
     {
-        return areaCapacityReservationsUp.size() + areaCapacityReservationsDown.size();
+        return areaCapacityReservations.size();
     }
 
     /// @brief Returns lower case, no space string

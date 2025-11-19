@@ -24,6 +24,9 @@
 #include <map>
 #include <string>
 
+#include "antares/solver/optimisation/ReserveDirection.h"
+using namespace reserve;
+
 const std::string HOUR("hour");
 const std::string DAY("day");
 const std::string WEEK("week");
@@ -228,14 +231,15 @@ void VariableNamer::ParticipationOfSTStorageStoreToReserve(unsigned int variable
                                              reserveName);
 }
 
-void VariableNamer::ParticipationOfSTStorageToReserve(bool isUpReserve,
+void VariableNamer::ParticipationOfSTStorageToReserve(DIRECTION dir,
                                                       unsigned int variable,
                                                       const std::string& clusterName,
                                                       const std::string& reserveName)
 {
     SetSTStorageClusterAndReserveElementName(variable,
-                                             isUpReserve ? "ParticipationOfSTStorageToUpReserve"
-                                                         : "ParticipationOfSTStorageToDownReserve",
+                                             dir == DIRECTION::UP
+                                               ? "ParticipationOfSTStorageToUpReserve"
+                                               : "ParticipationOfSTStorageToDownReserve",
                                              clusterName,
                                              reserveName);
 }
@@ -260,12 +264,12 @@ void VariableNamer::ParticipationOfHydroStoreToReserve(unsigned int variable,
                                   reserveName);
 }
 
-void VariableNamer::ParticipationOfHydroToReserve(bool isUpReserve,
+void VariableNamer::ParticipationOfHydroToReserve(DIRECTION dir,
                                                   unsigned int variable,
                                                   const std::string& clusterName,
                                                   const std::string& reserveName)
 {
-    if (isUpReserve)
+    if (dir == DIRECTION::UP)
     {
         SetHydroAndReserveElementName(variable,
                                       "ParticipationOfHydroToUpReserve",
@@ -655,11 +659,12 @@ void ConstraintNamer::POutBoundMax(unsigned int constraint, const std::string& c
 void ConstraintNamer::STReserveParticipation(unsigned int constraint,
                                              const std::string& clusterName,
                                              const std::string& reserveName,
-                                             bool isUpReserve)
+                                             DIRECTION dir)
 {
     SetSTStorageClusterAndReserveElementName(constraint,
-                                             isUpReserve ? "STReserveUpParticipation"
-                                                         : "STReserveDownParticipation",
+                                             dir == reserve ::DIRECTION::UP
+                                               ? "STReserveUpParticipation"
+                                               : "STReserveDownParticipation",
                                              clusterName,
                                              reserveName);
 }
@@ -749,14 +754,14 @@ void ConstraintNamer::STGlobalEnergyStockLevelReserveParticipationUp(unsigned in
                                    clusterName);
 }
 
-void ConstraintNamer::HydroReserveParticipation(bool isUpReserve,
+void ConstraintNamer::HydroReserveParticipation(DIRECTION dir,
                                                 unsigned int constraint,
                                                 const std::string& clusterName,
                                                 const std::string& reserveName)
 {
     SetHydroAndReserveElementName(constraint,
-                                  isUpReserve ? "HydroReserveUpParticipation"
-                                              : "HydroReserveDownParticipation",
+                                  dir == reserve ::DIRECTION::UP ? "HydroReserveUpParticipation"
+                                                                 : "HydroReserveDownParticipation",
                                   clusterName,
                                   reserveName);
 }
@@ -799,13 +804,13 @@ void ConstraintNamer::HydroStoreCapacityThresholdsDown(unsigned int constraint,
     SetHydroElementName(constraint, "HydroStoreCapacityThresholdsDown", clusterName);
 }
 
-void ConstraintNamer::HydroLevelReserveParticipation(bool isUpReserve,
+void ConstraintNamer::HydroLevelReserveParticipation(DIRECTION dir,
                                                      unsigned int constraint,
                                                      const std::string& clusterName)
 {
     SetHydroElementName(constraint,
-                        isUpReserve ? "HydroLevelReserveParticipationUp"
-                                    : "HydroLevelReserveParticipationDown",
+                        dir == DIRECTION::UP ? "HydroLevelReserveParticipationUp"
+                                             : "HydroLevelReserveParticipationDown",
                         clusterName);
 }
 

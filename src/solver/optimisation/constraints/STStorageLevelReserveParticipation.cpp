@@ -1,4 +1,5 @@
 #include "antares/solver/optimisation/constraints/STStorageLevelReserveParticipation.h"
+using namespace reserve;
 
 void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
@@ -16,14 +17,15 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsDown)
+            for (auto& capacityReservation:
+                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::DOWN))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
                     RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
                       = capacityReservation.AllSTStorageReservesParticipation[cluster];
                     builder.STStorageClusterReserveParticipation(
-                      reserveIsDown,
+                      capacityReservation.direction,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }
@@ -57,14 +59,15 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsUp)
+            for (auto& capacityReservation:
+                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::UP))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
                     RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
                       = capacityReservation.AllSTStorageReservesParticipation[cluster];
                     builder.STStorageClusterReserveParticipation(
-                      reserveIsUp,
+                      capacityReservation.direction,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }

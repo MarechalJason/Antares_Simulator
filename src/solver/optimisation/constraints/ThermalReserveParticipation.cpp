@@ -1,15 +1,14 @@
 #include "antares/solver/optimisation/constraints/ThermalReserveParticipation.h"
+using namespace reserve;
 
-void ThermalReserveParticipation::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void ThermalReserveParticipation::add(int pays, int reserve, int cluster, int pdt)
 {
-    CAPACITY_RESERVATION capacityReservation = isUpReserve
-                                                 ? data.areaReserves[pays]
-                                                     .areaCapacityReservationsUp[reserve]
-                                                 : data.areaReserves[pays]
-                                                     .areaCapacityReservationsDown[reserve];
+    CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]
+                                                 .areaCapacityReservations[reserve];
 
     auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
-    bool offUnitParticipating = isUpReserve && reserveParticipation.maxPowerOff > 0;
+    bool offUnitParticipating = capacityReservation.direction == DIRECTION::UP
+                                && reserveParticipation.maxPowerOff > 0;
     if (!data.Simulation)
     {
         // 17 quinquies / sexies

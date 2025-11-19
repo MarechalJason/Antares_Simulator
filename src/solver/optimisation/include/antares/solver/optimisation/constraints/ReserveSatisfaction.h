@@ -18,9 +18,8 @@ public:
      * @param pays : area
      * @param reserve : index of the reserve inside area
      * @param pdt : timestep
-     * @param isUpReserve : true if ReserveUp, false if ReserveDown
      */
-    void add(int pays, int reserve, int pdt, bool isUpReserve);
+    void add(int pays, int reserve, int pdt);
 
 private:
     ReserveData& data;

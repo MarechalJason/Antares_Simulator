@@ -25,6 +25,7 @@
 #include <memory>
 #include <vector>
 
+#include "antares/solver/optimisation/ReserveDirection.h"
 #include "antares/solver/optimisation/opt_constants.h"
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 #include "antares/solver/utils/optimization_statistics.h"
@@ -359,6 +360,8 @@ struct CAPACITY_RESERVATION
       AllSTStorageReservesParticipation;
     std::vector<RESERVE_PARTICIPATION_HYDRO> AllHydroReservesParticipation;
     std::vector<double> need; //!< Vector size is number of hours in year
+
+    reserve::DIRECTION direction{reserve::DIRECTION::DOWN};
     double unsuppliedCost = 0;
     double spillageCost = 0;
     double powerActivationRatio = 0;
@@ -376,9 +379,6 @@ struct RESERVE_PARTICIPATION_WITH_RESERVE_NAME
     std::reference_wrapper<T> reserveParticipation;
 };
 
-constexpr bool reserveIsUp = true;
-constexpr bool reserveIsDown = false;
-
 // Vector size is number of reserves up or down
 struct AREA_RESERVES_VECTOR
 {
@@ -386,8 +386,7 @@ struct AREA_RESERVES_VECTOR
     double maxGlobalEnergyActivationRatioDown = 1.;
     int referenceGlobalActivationDurationUp = 0;
     int referenceGlobalActivationDurationDown = 0;
-    std::vector<CAPACITY_RESERVATION> areaCapacityReservationsUp;
-    std::vector<CAPACITY_RESERVATION> areaCapacityReservationsDown;
+    std::vector<CAPACITY_RESERVATION> areaCapacityReservations{};
     std::map<
       /*area_clusterId*/ int,
       std::vector<

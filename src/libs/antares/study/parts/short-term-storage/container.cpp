@@ -316,36 +316,18 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationClusterA
 {
     int globalReserveParticipationIdx = 0;
 
-    for (const auto& [reserveUpName, _]:
-         area->allCapacityReservations.value().areaCapacityReservationsUp)
+    for (const auto& reserveName:
+         area->allCapacityReservations.value().areaCapacityReservations | std::views::keys)
     {
         for (auto& cluster: storagesByIndex)
         {
             if (cluster.reserveParticipationContainer
                 && cluster.reserveParticipationContainer.value().isParticipatingInReserve(
-                  reserveUpName))
+                  reserveName))
             {
                 if (globalReserveParticipationIdx == index)
                 {
-                    return {cluster.id, reserveUpName};
-                }
-                globalReserveParticipationIdx++;
-            }
-        }
-    }
-
-    for (const auto& [reserveDownName, _]:
-         area->allCapacityReservations.value().areaCapacityReservationsDown)
-    {
-        for (auto& cluster: storagesByIndex)
-        {
-            if (cluster.reserveParticipationContainer
-                && cluster.reserveParticipationContainer.value().isParticipatingInReserve(
-                  reserveDownName))
-            {
-                if (globalReserveParticipationIdx == index)
-                {
-                    return {cluster.id, reserveDownName};
+                    return {cluster.id, reserveName};
                 }
                 globalReserveParticipationIdx++;
             }
@@ -361,8 +343,8 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
   unsigned int index) const
 {
     int column = 0;
-    for (const auto& [reserveName, _]:
-         area->allCapacityReservations.value().areaCapacityReservationsUp)
+    for (const auto& reserveName:
+         area->allCapacityReservations.value().areaCapacityReservations | std::views::keys)
     {
         if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
         {
@@ -376,21 +358,7 @@ std::pair<std::string, ReserveName> STStorageInput::reserveParticipationGroupAt(
             }
         }
     }
-    for (const auto& [reserveName, _]:
-         area->allCapacityReservations.value().areaCapacityReservationsDown)
-    {
-        if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
-        {
-            for (auto group: area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
-            {
-                if (column == index)
-                {
-                    return {group, reserveName};
-                }
-                column++;
-            }
-        }
-    }
+
     throw std::out_of_range("This group reserve participation index has not been found in all the "
                             "reserve participations");
 }

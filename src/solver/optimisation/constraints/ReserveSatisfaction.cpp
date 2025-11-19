@@ -1,12 +1,10 @@
 #include "antares/solver/optimisation/constraints/ReserveSatisfaction.h"
 
-void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
+void ReserveSatisfaction::add(int pays, int reserve, int pdt)
 {
-    CAPACITY_RESERVATION capacityReservation = isUpReserve
-                                                 ? data.areaReserves[pays]
-                                                     .areaCapacityReservationsUp[reserve]
-                                                 : data.areaReserves[pays]
-                                                     .areaCapacityReservationsDown[reserve];
+    CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                  .areaCapacityReservations[reserve];
+
     int nbTermes = capacityReservation.AllThermalReservesParticipation.size()
                    + capacityReservation.AllSTStorageReservesParticipation.size()
                    + capacityReservation.AllHydroReservesParticipation.size();
@@ -40,7 +38,7 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
                  capacityReservation.AllSTStorageReservesParticipation)
             {
                 builder.STStorageClusterReserveParticipation(
-                  isUpReserve,
+                  capacityReservation.direction,
                   reserveParticipation.globalIndexClusterParticipation,
                   1);
             }
@@ -49,7 +47,7 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt, bool isUpReserve)
             for (auto& reserveParticipation: capacityReservation.AllHydroReservesParticipation)
             {
                 builder.HydroReserveParticipation(
-                  isUpReserve,
+                  capacityReservation.direction,
                   reserveParticipation.globalIndexClusterParticipation,
                   1);
             }

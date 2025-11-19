@@ -19,9 +19,8 @@ public:
      * @param reserve : capacity reservation
      * @param cluster : local index of the cluster
      * @param pdt : timestep
-     * @param isUpReserve : bool
      */
-    void add(int pays, int reserve, int cluster, int pdt, bool isUpReserve);
+    void add(int pays, int reserve, int cluster, int pdt);
 
 private:
     ReserveData& data;

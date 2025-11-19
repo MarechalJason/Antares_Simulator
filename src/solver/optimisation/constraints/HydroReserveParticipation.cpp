@@ -1,6 +1,7 @@
 #include "antares/solver/optimisation/constraints/HydroReserveParticipation.h"
+using namespace reserve;
 
-void HydroReserveParticipation::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void HydroReserveParticipation::add(int pays, int reserve, int cluster, int pdt)
 {
     if (!data.Simulation)
     {
@@ -10,21 +11,19 @@ void HydroReserveParticipation::add(int pays, int reserve, int cluster, int pdt,
         // Π : Store participation to reserve
         // P : Up (e) or down (f) Reserve Participation
 
-        CAPACITY_RESERVATION& capacityReservation = isUpReserve
-                                                      ? data.areaReserves[pays]
-                                                          .areaCapacityReservationsUp[reserve]
-                                                      : data.areaReserves[pays]
-                                                          .areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                      .areaCapacityReservations[reserve];
 
         RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
                                                               .AllHydroReservesParticipation
                                                                 [cluster];
+        bool isUpReserve = capacityReservation.direction == DIRECTION::UP;
         builder.updateHourWithinWeek(pdt)
           .HydroReleaseReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
                                             isUpReserve ? -1.0 : 1.0)
           .HydroStoreReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
                                           isUpReserve ? -1.0 : 1.0)
-          .HydroReserveParticipation(isUpReserve,
+          .HydroReserveParticipation(capacityReservation.direction,
                                      reserveParticipation.globalIndexClusterParticipation,
                                      isUpReserve ? 1.0 : -1.0)
           .equalTo();
@@ -33,7 +32,7 @@ void HydroReserveParticipation::add(int pays, int reserve, int cluster, int pdt,
         const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
         namer.UpdateTimeStep(hourInTheYear);
         namer.UpdateArea(builder.data.NomsDesPays[pays]);
-        namer.HydroReserveParticipation(isUpReserve,
+        namer.HydroReserveParticipation(capacityReservation.direction,
                                         builder.data.nombreDeContraintes,
                                         reserveParticipation.clusterName,
                                         capacityReservation.reserveName);

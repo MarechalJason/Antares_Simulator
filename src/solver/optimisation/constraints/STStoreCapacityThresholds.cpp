@@ -1,4 +1,5 @@
 #include "antares/solver/optimisation/constraints/STStoreCapacityThresholds.h"
+using namespace reserve;
 
 void STStoreCapacityThresholds::add(int pays, int cluster, int pdt)
 {
@@ -17,7 +18,7 @@ void STStoreCapacityThresholds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             for (const auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservationsUp)
+                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::UP))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
@@ -48,7 +49,7 @@ void STStoreCapacityThresholds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             for (const auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservationsDown)
+                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::DOWN))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {

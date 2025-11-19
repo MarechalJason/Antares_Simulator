@@ -20,7 +20,7 @@ public:
      * @param cluster : local index of the cluster
      * @param pdt : timestep
      */
-    void add(int pays, int reserve, int cluster, int pdt, bool isUpReserve);
+    void add(int pays, int reserve, int cluster, int pdt);
 
 private:
     ReserveData& data;

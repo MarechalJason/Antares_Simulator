@@ -1,4 +1,5 @@
 #include "antares/solver/optimisation/constraints/STStorageGlobalEnergyLevelReserveParticipation.h"
+using namespace reserve;
 
 void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
@@ -21,14 +22,14 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
             for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationDown; t++)
             {
                 for (auto& capacityReservation:
-                     data.areaReserves[pays].areaCapacityReservationsDown)
+                     data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::DOWN))
                 {
                     if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                     {
                         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
                           = capacityReservation.AllSTStorageReservesParticipation[cluster];
                         builder.STStorageClusterReserveParticipation(
-                          reserveIsDown,
+                          capacityReservation.direction,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,
@@ -71,14 +72,15 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
 
             for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationUp; t++)
             {
-                for (auto& capacityReservation: data.areaReserves[pays].areaCapacityReservationsUp)
+                for (auto& capacityReservation:
+                     data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::UP))
                 {
                     if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                     {
                         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
                           = capacityReservation.AllSTStorageReservesParticipation[cluster];
                         builder.STStorageClusterReserveParticipation(
-                          reserveIsUp,
+                          capacityReservation.direction,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,

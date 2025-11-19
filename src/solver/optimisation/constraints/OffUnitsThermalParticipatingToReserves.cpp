@@ -1,4 +1,5 @@
 #include "antares/solver/optimisation/constraints/OffUnitsThermalParticipatingToReserves.h"
+using namespace reserve;
 
 void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int cluster, int pdt)
 {
@@ -11,8 +12,8 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
         // unit M : Number of units in the cluster M^on : Number of running units in the cluster
         //
 
-        CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]
-                                                     .areaCapacityReservationsUp[reserve];
+        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                      .areaCapacityReservations[reserve];
 
         auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
 

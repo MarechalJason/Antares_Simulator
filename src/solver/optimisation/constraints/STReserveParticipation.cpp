@@ -1,6 +1,7 @@
 #include "antares/solver/optimisation/constraints/STReserveParticipation.h"
+using namespace reserve;
 
-void STReserveParticipation::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void STReserveParticipation::add(int pays, int reserve, int cluster, int pdt)
 {
     if (!data.Simulation)
     {
@@ -11,29 +12,25 @@ void STReserveParticipation::add(int pays, int reserve, int cluster, int pdt, bo
         // Π : Store participation to reserve
         // P : Up Reserve Participation
 
-        CAPACITY_RESERVATION& capacityReservation = isUpReserve
-                                                      ? data.areaReserves[pays]
-                                                          .areaCapacityReservationsUp[reserve]
-                                                      : data.areaReserves[pays]
-                                                          .areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                      .areaCapacityReservations[reserve];
 
         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation = capacityReservation
                                                                   .AllSTStorageReservesParticipation
                                                                     [cluster];
 
         int globalClusterIdx = data.shortTermStorageOfArea[pays][cluster].clusterGlobalIndex;
-
         builder.updateHourWithinWeek(pdt)
           .STStorageReleaseClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            isUpReserve ? -1.0 : 1.0)
+            capacityReservation.direction == DIRECTION::UP ? -1.0 : 1.0)
           .STStorageStoreClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            isUpReserve ? -1.0 : 1.0)
+            capacityReservation.direction == DIRECTION::UP ? -1.0 : 1.0)
           .STStorageClusterReserveParticipation(
-            isUpReserve,
+            capacityReservation.direction,
             reserveParticipation.globalIndexClusterParticipation,
-            isUpReserve ? 1.0 : -1.0)
+            capacityReservation.direction == DIRECTION::UP ? 1.0 : -1.0)
           .equalTo();
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -43,7 +40,7 @@ void STReserveParticipation::add(int pays, int reserve, int cluster, int pdt, bo
         namer.STReserveParticipation(builder.data.nombreDeContraintes,
                                      reserveParticipation.clusterName,
                                      capacityReservation.reserveName,
-                                     isUpReserve);
+                                     capacityReservation.direction);
         builder.build();
     }
     else

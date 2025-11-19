@@ -1,6 +1,7 @@
 #include "antares/solver/optimisation/constraints/STReleaseMaxReserve.h"
+using namespace reserve;
 
-void STReleaseMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool isUpReserve)
+void STReleaseMaxReserve::add(int pays, int reserve, int cluster, int pdt)
 {
     if (!data.Simulation)
     {
@@ -9,11 +10,8 @@ void STReleaseMaxReserve::add(int pays, int reserve, int cluster, int pdt, bool 
         // participation of the cluster constraint : H <= H^max H : Release power H^max : Maximum
         // accessible power of the cluster for the reserve
 
-        CAPACITY_RESERVATION& capacityReservation = isUpReserve
-                                                      ? data.areaReserves[pays]
-                                                          .areaCapacityReservationsUp[reserve]
-                                                      : data.areaReserves[pays]
-                                                          .areaCapacityReservationsDown[reserve];
+        CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                      .areaCapacityReservations[reserve];
 
         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation = capacityReservation
                                                                   .AllSTStorageReservesParticipation

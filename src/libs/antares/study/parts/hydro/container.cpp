@@ -816,32 +816,18 @@ std::optional<ReserveName> PartHydro::reserveParticipationAt(const Area* area,
 {
     int globalReserveParticipationIdx = 0;
 
-    for (const auto& [reserveUpName, _]:
-         area->allCapacityReservations.value().areaCapacityReservationsUp)
+    for (const auto& reserveName:
+         area->allCapacityReservations.value().areaCapacityReservations | std::views::keys)
     {
-        if (reserveParticipationContainer.value().isParticipatingInReserve(reserveUpName))
+        if (reserveParticipationContainer.value().isParticipatingInReserve(reserveName))
         {
             if (globalReserveParticipationIdx == index)
             {
-                return reserveUpName;
+                return reserveName;
             }
             globalReserveParticipationIdx++;
         }
     }
-
-    for (const auto& [reserveDownName, _]:
-         area->allCapacityReservations.value().areaCapacityReservationsDown)
-    {
-        if (reserveParticipationContainer.value().isParticipatingInReserve(reserveDownName))
-        {
-            if (globalReserveParticipationIdx == index)
-            {
-                return reserveDownName;
-            }
-            globalReserveParticipationIdx++;
-        }
-    }
-
     return std::nullopt;
 }
 

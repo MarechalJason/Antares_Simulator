@@ -239,25 +239,15 @@ public:
         if (state.study.parameters.reservesEnabled)
         {
             const auto& reserves = state.problemeHebdo->allReserves.value()[area->index];
-            for (const auto& reserveUp: reserves.areaCapacityReservationsUp)
+            for (const auto& reserve: reserves.areaCapacityReservations)
             {
                 costForSpilledOrUnsuppliedEnergy
                   += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                         .ValeursHorairesInternalUnsatisfied[reserveUp.areaReserveIndex]
-                       * reserveUp.unsuppliedCost
+                         .ValeursHorairesInternalUnsatisfied[reserve.areaReserveIndex]
+                       * reserve.unsuppliedCost
                      + state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                           .ValeursHorairesInternalExcessReserve[reserveUp.areaReserveIndex]
-                         * reserveUp.spillageCost;
-            }
-            for (const auto& reserveDown: reserves.areaCapacityReservationsDown)
-            {
-                costForSpilledOrUnsuppliedEnergy
-                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                         .ValeursHorairesInternalUnsatisfied[reserveDown.areaReserveIndex]
-                       * reserveDown.unsuppliedCost
-                     + state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                           .ValeursHorairesInternalExcessReserve[reserveDown.areaReserveIndex]
-                         * reserveDown.spillageCost;
+                           .ValeursHorairesInternalExcessReserve[reserve.areaReserveIndex]
+                         * reserve.spillageCost;
             }
         }
 

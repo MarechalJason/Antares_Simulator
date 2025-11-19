@@ -46,6 +46,7 @@ set(RTESOLVER_OPT
 		opt_construction_variables_reserves.cpp
         include/antares/solver/optimisation/opt_export_structure.h
         opt_export_structure.cpp
+        include/antares/solver/optimisation/ReserveDirection.h
         include/antares/solver/optimisation/weekly_optimization.h
         weekly_optimization.cpp
         include/antares/solver/optimisation/optim_post_process_list.h

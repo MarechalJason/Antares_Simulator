@@ -91,8 +91,7 @@ public:
 
         // Get the area
         pSize = study->parameters.reservesEnabled
-                  ? area->allCapacityReservations.value().areaCapacityReservationsUp.size()
-                      + area->allCapacityReservations.value().areaCapacityReservationsDown.size()
+                  ? area->allCapacityReservations.value().areaCapacityReservations.size()
                   : 0;
         if (pSize)
         {
@@ -215,17 +214,11 @@ public:
         if (state.study.parameters.reservesEnabled)
         {
             auto reserves = state.problemeHebdo->allReserves.value()[area->index];
-            for (const auto& reserveUp: reserves.areaCapacityReservationsUp)
+            for (const auto& reserve: reserves.areaCapacityReservations)
             {
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
                   += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                       .CoutsMarginauxHoraires[reserveUp.areaReserveIndex];
-            }
-            for (const auto& reserveDown: reserves.areaCapacityReservationsDown)
-            {
-                pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
-                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                       .CoutsMarginauxHoraires[reserveDown.areaReserveIndex];
+                       .CoutsMarginauxHoraires[reserve.areaReserveIndex];
             }
         }
 
@@ -255,21 +248,12 @@ public:
             results.variableUnit = VCardType::Unit();
             // Write the data for the current year
             int column = 0;
-            for (const auto& reserveUp:
-                 results.data.area->allCapacityReservations.value().areaCapacityReservationsUp)
+            for (const auto& reserveName:
+                 results.data.area->allCapacityReservations.value().areaCapacityReservations
+                   | std::views::keys)
             {
                 // Write the data for the current year
-                Yuni::String caption = reserveUp.first;
-                caption << "_MRG.COST";
-                results.variableCaption = caption; // VCardType::Caption();
-                pValuesForTheCurrentYear[numSpace][column++]
-                  .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-            }
-            for (const auto& reserveDown:
-                 results.data.area->allCapacityReservations.value().areaCapacityReservationsDown)
-            {
-                // Write the data for the current year
-                Yuni::String caption = reserveDown.first;
+                Yuni::String caption = reserveName;
                 caption << "_MRG.COST";
                 results.variableCaption = caption; // VCardType::Caption();
                 pValuesForTheCurrentYear[numSpace][column++]

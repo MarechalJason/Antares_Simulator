@@ -1,17 +1,11 @@
 #include "antares/solver/optimisation/constraints/HydroEnergyLevelReserveParticipation.h"
+using namespace reserve;
 
-void HydroEnergyLevelReserveParticipation::add(int pays,
-                                               int cluster,
-                                               int reserve,
-                                               int pdt,
-                                               bool isUpReserve)
+void HydroEnergyLevelReserveParticipation::add(int pays, int cluster, int reserve, int pdt)
 {
     int globalClusterIdx = data.hydroOfArea[pays].GlobalHydroIndex;
-    CAPACITY_RESERVATION& capacityReservation = isUpReserve
-                                                  ? data.areaReserves[pays]
-                                                      .areaCapacityReservationsUp[reserve]
-                                                  : data.areaReserves[pays]
-                                                      .areaCapacityReservationsDown[reserve];
+    CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
+                                                  .areaCapacityReservations[reserve];
 
     if (capacityReservation.maxActivationDuration > 0)
     {
@@ -25,7 +19,7 @@ void HydroEnergyLevelReserveParticipation::add(int pays,
             // R_{min,res} : max power participation ratio
             // R_up : max stock level
             {
-                double sign = isUpReserve ? -1. : 1.;
+                double sign = capacityReservation.direction == DIRECTION::UP ? -1. : 1.;
 
                 RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
                                                                       .AllHydroReservesParticipation
@@ -36,7 +30,7 @@ void HydroEnergyLevelReserveParticipation::add(int pays,
                 for (int t = 0; t < capacityReservation.maxActivationDuration; t++)
                 {
                     builder.HydroReserveParticipation(
-                      isUpReserve,
+                      capacityReservation.direction,
                       reserveParticipation.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio,
                       t,
