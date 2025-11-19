@@ -96,7 +96,12 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                   p.value.to<double>(reserveParticipation.participationCostOff);
               }
           });
-
+        if (clusterName.empty())
+        {
+            logs.error()
+              << area.name
+              << " : Please provide a cluster name when declaring a capacity reservation";
+        }
         auto cluster = area.thermal.list.findInAll(clusterName);
         auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
 
@@ -107,7 +112,12 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
             {
                 cluster->reserveParticipationContainer.emplace();
             }
-
+            if (cluster->reserveParticipationContainer.value().isParticipatingInReserve(
+                  section.name))
+            {
+                logs.error() << area.name << ", cluster " << cluster->name()
+                               << " : duplicate participation to reserve " << section.name;
+            }
             cluster->reserveParticipationContainer.value()
               .addReserveParticipation(section.name, reserveParticipation);
         }
@@ -115,11 +125,11 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
         {
             if (!reserve)
             {
-                logs.warning() << area.name << ": missing reserve " << section.name;
+                logs.error() << area.name << ": missing reserve " << section.name;
             }
             if (!cluster)
             {
-                logs.warning() << area.name << ": missing cluster " << clusterName;
+                logs.error() << area.name << " : missing cluster" << clusterName;
             }
         }
     }
@@ -131,7 +141,6 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
             std::string clusterName;
             TransformNameIntoID(p->key, clusterName);
             auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
-
             for (auto& sym: symmetries)
             {
                 auto cluster = area.thermal.list.findInAll(clusterName);
@@ -148,7 +157,7 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                 }
                 else
                 {
-                    logs.warning() << "Thermal cluster " << clusterName
+                    logs.error() << "Thermal cluster " << clusterName
                                    << " not participating to reserves of " << area.name;
                 }
             }

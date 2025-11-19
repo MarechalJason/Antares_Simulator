@@ -225,8 +225,6 @@ BOOST_AUTO_TEST_CASE(reserve_add_double)
 BOOST_FIXTURE_TEST_CASE(reserve_one_area, OneProblemWithReservesOneArea)
 {
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().size(), 5);
-    BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().areaCapacityReservations.size(), 2);
-    BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().areaCapacityReservations.size(), 3);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .areaCapacityReservations.at("ReserveUp")
                         .unsuppliedCost,
@@ -265,11 +263,7 @@ BOOST_FIXTURE_TEST_CASE(reserve_one_area, OneProblemWithReservesOneArea)
 BOOST_FIXTURE_TEST_CASE(reserve_up_two_areas, OneProblemWithReservesTwoAreas)
 {
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().size(), 2);
-    BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().areaCapacityReservations.size(), 1);
-    BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().areaCapacityReservations.size(), 1);
     BOOST_CHECK_EQUAL(areaB->allCapacityReservations.value().size(), 2);
-    BOOST_CHECK_EQUAL(areaB->allCapacityReservations.value().areaCapacityReservations.size(), 1);
-    BOOST_CHECK_EQUAL(areaB->allCapacityReservations.value().areaCapacityReservations.size(), 1);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .areaCapacityReservations.at("ReserveUp")
                         .unsuppliedCost,
@@ -484,7 +478,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Cluster_Symme
     file.close();
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(
-      getWarnings().contains("Thermal cluster cluster3 not participating to reserves of A"));
+      getErrors().contains("Thermal cluster cluster3 not participating to reserves of A"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Reserve_Symmetry,
@@ -522,6 +516,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Cluster_Parti
 {
     auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
     addThermalCluster(areaA, "cluster1");
+    addThermalCluster(areaA, "cluster3");
 
     std::ofstream file(studyPath / "myreserve.ini");
     file << "[symmetries]\n";
@@ -545,6 +540,215 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Cluster_Parti
       areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
       checkMessage("This entity is not participating to reserve ReserveDown"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Reserve_Load,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveNull]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains("A: missing reserve ReserveNull"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Delete_Double_Sym_Participation,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    BOOST_CHECK_EXCEPTION(
+      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
+      std::invalid_argument,
+      checkMessage("Detected duplicate in reserves symmetries"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_No_Cluster_Provided,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains(
+      "A : Please provide a cluster name when declaring a capacity reservation"));
+    BOOST_CHECK(getErrors().contains("A : missing cluster"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Cluster_Participation,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(
+      getErrors().contains("A, cluster cluster1 : duplicate participation to reserve ReserveUp"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Only_One_Symmetry,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveUp]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    BOOST_CHECK_EXCEPTION(
+      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
+      std::out_of_range,
+      checkMessage("Must have two distinct reserves to participate to a symmetry"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Triple_Symmetry,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown, MyReserve]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    BOOST_CHECK_EXCEPTION(
+      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
+      std::out_of_range,
+      checkMessage("Must have two distinct reserves to participate to a symmetry"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Symmetry_Same_Line,
+                        OneProblemWithReservesOneArea_withlogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[symmetries]\n";
+    file << "cluster1 = [ReserveUp, ReserveUp]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown]\n";
+    file << "\n";
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 9.9\n";
+    file << "participation-cost = 8.8\n";
+    file << "max-power-off = 7.7\n";
+    file << "participation-cost-off = 6.6\n";
+    file << "\n";
+    file << "[ReserveDown]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file.close();
+    BOOST_CHECK_EXCEPTION(
+      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
+      std::out_of_range,
+      checkMessage("Must have two distinct reserves to participate to a symmetry"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Cluster_Participation_No_Init,

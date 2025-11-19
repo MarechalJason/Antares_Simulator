@@ -58,6 +58,11 @@ public:
         auto symmetryRes = std::vector<ReserveParticipationWithName>();
         for (auto name: names)
         {
+            if (names.size() != 2)
+            {
+                throw std::out_of_range(
+                  "Must have two distinct reserves to participate to a symmetry");
+            }
             if (reservesParticipations.contains(name))
             {
                 symmetryRes.push_back(
@@ -66,6 +71,24 @@ public:
             else
             {
                 throw std::out_of_range("This entity is not participating to reserve " + name);
+            }
+        }
+        for (auto existingSymmetry: reserveParticipationsSymmetries)
+        {
+            int sameNamesCount = 0;
+            for (auto resSym: existingSymmetry)
+            {
+                for (auto name: names)
+                {
+                    if (name == (std::string)resSym.reserveName)
+                    {
+                        sameNamesCount++;
+                    }
+                }
+            }
+            if (sameNamesCount == 2) // The symmetry is already present
+            {
+                throw std::invalid_argument("Detected duplicate in reserves symmetries");
             }
         }
         reserveParticipationsSymmetries.push_back(symmetryRes);
