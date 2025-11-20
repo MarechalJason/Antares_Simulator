@@ -509,4 +509,13 @@ namespace Benchmarking
 class DurationCollector;
 }
 
+namespace reserve
+{
+enum class Direction
+{
+    DOWN,
+    UP
+};
+} // namespace reserve
+
 #endif // __ANTARES_LIBS_STUDY_FWD_H__

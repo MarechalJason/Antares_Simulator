@@ -83,7 +83,7 @@ ConstraintBuilder& ConstraintBuilder::ThermalClusterReserveParticipation(unsigne
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::STStorageClusterReserveParticipation(DIRECTION dir,
+ConstraintBuilder& ConstraintBuilder::STStorageClusterReserveParticipation(Direction dir,
                                                                            unsigned int index,
                                                                            double coeff,
                                                                            int offset,
@@ -120,7 +120,7 @@ ConstraintBuilder& ConstraintBuilder::STStorageStoreClusterReserveParticipation(
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::HydroReserveParticipation(DIRECTION dir,
+ConstraintBuilder& ConstraintBuilder::HydroReserveParticipation(Direction dir,
                                                                 unsigned int index,
                                                                 double coeff,
                                                                 int offset,

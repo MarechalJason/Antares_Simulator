@@ -20,17 +20,14 @@
  */
 #include <ranges>
 
+#include <antares/study/fwd.h>
+
 #pragma once
 
 namespace reserve
 {
-enum class DIRECTION
-{
-    DOWN,
-    UP
-};
 
-inline auto filter(DIRECTION dir)
+inline auto filter(Direction dir)
 {
     return std::views::filter([dir](const auto& r) { return r.direction == dir; });
 }

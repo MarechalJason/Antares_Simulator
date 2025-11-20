@@ -71,14 +71,14 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
 
         // Init costs for a Thermal cluster participation to a reserve up
         void initThermalReserveParticipationCosts(
-          DIRECTION dir,
+          Direction dir,
           const RESERVE_PARTICIPATION_THERMAL& reserveParticipation)
         {
             int var = variableManager.RunningThermalClusterReserveParticipation(
               reserveParticipation.globalIndexClusterParticipation,
               pdtHebdo);
             CoutLineaire[var] = reserveParticipation.participationCost;
-            if (dir == DIRECTION::UP)
+            if (dir == Direction::UP)
             {
                 var = variableManager.OffThermalClusterReserveParticipation(
                   reserveParticipation.globalIndexClusterParticipation,
@@ -89,7 +89,7 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
 
         // Init costs for a ShortTerm cluster participation to a reserve up
         void initSTStorageReserveParticipationCosts(
-          DIRECTION dir,
+          Direction dir,
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation)
         {
             int var = variableManager.STStorageClusterReserveParticipation(
@@ -101,7 +101,7 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
 
         // Init costs for a Hydro participation to a reserve
         void initHydroReserveParticipationCosts(
-          DIRECTION dir,
+          Direction dir,
           const RESERVE_PARTICIPATION_HYDRO& reserveParticipation)
         {
             int var = variableManager.HydroReserveParticipation(

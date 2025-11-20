@@ -80,7 +80,7 @@ struct ReserveVariablesBoundsSetter
     // Set variables bounds for a Thermal cluster participation to a reserve up or down
     void setThermalReserveParticipationBounds(int clusterParticipationIdInArea,
                                               int clusterParticipationId,
-                                              DIRECTION dir)
+                                              Direction dir)
     {
         const auto& indices = varIndices();
         auto& prod = problemeHebdo->ResultatsHoraires[pays].ProductionThermique[pdtHebdo];
@@ -88,7 +88,7 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(indices.runningThermalClusterParticipation[clusterParticipationId],
                      &prod.ParticipationReservesDuPalierOn.value()[clusterParticipationIdInArea]);
 
-        if (dir == DIRECTION::UP)
+        if (dir == Direction::UP)
         {
             setVarBounds(
               indices.offThermalClusterParticipation[clusterParticipationId],
@@ -103,7 +103,7 @@ struct ReserveVariablesBoundsSetter
 
     void setSTStorageReserveParticipationBounds(int clusterParticipationIdInArea,
                                                 int clusterParticipationId,
-                                                DIRECTION dir)
+                                                Direction dir)
     {
         const auto& indices = varIndices();
         auto& st = problemeHebdo->ResultatsHoraires[pays]
@@ -112,7 +112,7 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(indices.STStorageReleaseClusterParticipation[clusterParticipationId], nullptr);
         setVarBounds(indices.STStorageStoreClusterParticipation[clusterParticipationId], nullptr);
 
-        int dirVar = dir == DIRECTION::UP
+        int dirVar = dir == Direction::UP
                        ? indices.STStorageClusterParticipationUp[clusterParticipationId]
                        : indices.STStorageClusterParticipationDown[clusterParticipationId];
 
@@ -122,7 +122,7 @@ struct ReserveVariablesBoundsSetter
     // Set variables bounds for a Hydro participation to a reserve up
     void setHydroReserveParticipationBounds(int clusterParticipationIdInArea,
                                             int clusterParticipationId,
-                                            DIRECTION dir)
+                                            Direction dir)
 
     {
         const auto& indices = varIndices();
@@ -132,7 +132,7 @@ struct ReserveVariablesBoundsSetter
 
         setVarBounds(indices.HydroStoreParticipation[clusterParticipationId], nullptr);
 
-        int dirVar = dir == DIRECTION::UP ? indices.HydroParticipationUp[clusterParticipationId]
+        int dirVar = dir == Direction::UP ? indices.HydroParticipationUp[clusterParticipationId]
                                           : indices.HydroParticipationDown[clusterParticipationId];
 
         setVarBounds(

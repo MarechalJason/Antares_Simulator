@@ -79,7 +79,7 @@ int& VariableManager::ThermalClusterReserveParticipation(unsigned int index,
       .thermalClusterParticipation[index];
 }
 
-int& VariableManager::STStorageClusterReserveParticipation(reserve::DIRECTION dir,
+int& VariableManager::STStorageClusterReserveParticipation(reserve::Direction dir,
                                                            unsigned int index,
                                                            unsigned int hourInWeek,
                                                            int offset,
@@ -87,7 +87,7 @@ int& VariableManager::STStorageClusterReserveParticipation(reserve::DIRECTION di
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
 
-    return dir == reserve::DIRECTION::UP ? CorrespondanceVarNativesVarOptim_[pdt]
+    return dir == reserve::Direction::UP ? CorrespondanceVarNativesVarOptim_[pdt]
                                              .reservesIndices.value()
                                              .STStorageClusterParticipationUp[index]
                                          : CorrespondanceVarNativesVarOptim_[pdt]
@@ -119,14 +119,14 @@ int& VariableManager::STStorageStoreClusterReserveParticipation(unsigned int ind
       .STStorageStoreClusterParticipation[index];
 }
 
-int& VariableManager::HydroReserveParticipation(reserve::DIRECTION dir,
+int& VariableManager::HydroReserveParticipation(reserve::Direction dir,
                                                 unsigned int index,
                                                 unsigned int hourInWeek,
                                                 int offset,
                                                 int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
-    return dir == reserve::DIRECTION::UP ? CorrespondanceVarNativesVarOptim_[pdt]
+    return dir == reserve::Direction::UP ? CorrespondanceVarNativesVarOptim_[pdt]
                                              .reservesIndices.value()
                                              .HydroParticipationUp[index]
                                          : CorrespondanceVarNativesVarOptim_[pdt]

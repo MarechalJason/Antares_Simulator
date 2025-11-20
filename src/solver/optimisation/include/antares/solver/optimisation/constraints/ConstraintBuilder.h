@@ -110,7 +110,7 @@ public:
                                                           int offset = 0,
                                                           int delta = 0);
 
-    ConstraintBuilder& STStorageClusterReserveParticipation(reserve::DIRECTION dir,
+    ConstraintBuilder& STStorageClusterReserveParticipation(reserve::Direction dir,
                                                             unsigned int index,
                                                             double coeff,
                                                             int offset = 0,
@@ -126,7 +126,7 @@ public:
                                                                  int offset = 0,
                                                                  int delta = 0);
 
-    ConstraintBuilder& HydroReserveParticipation(reserve::DIRECTION dir,
+    ConstraintBuilder& HydroReserveParticipation(reserve::Direction dir,
                                                  unsigned int index,
                                                  double coeff,
                                                  int offset = 0,
@@ -384,7 +384,7 @@ struct ReserveData
     {
         int count = 0;
         if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
-                                  | reserve::filter(reserve::DIRECTION::UP),
+                                  | reserve::filter(reserve::Direction::UP),
                                 [&](const auto& r)
                                 { return r.AllThermalReservesParticipation.count(cluster) > 0; }))
         {
@@ -392,7 +392,7 @@ struct ReserveData
         }
 
         if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
-                                  | reserve::filter(reserve::DIRECTION::DOWN),
+                                  | reserve::filter(reserve::Direction::DOWN),
                                 [&](const auto& r)
                                 { return r.AllThermalReservesParticipation.count(cluster) > 0; }))
         {
@@ -409,14 +409,14 @@ struct ReserveData
             || areaReserves[pays].referenceGlobalActivationDurationUp)
         {
             if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
-                                      | reserve::filter(reserve::DIRECTION::UP),
+                                      | reserve::filter(reserve::Direction::UP),
                                     [&](const auto& r)
                                     { return r.AllHydroReservesParticipation.size() > 0; }))
             {
                 count++;
             }
             if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
-                                      | reserve::filter(reserve::DIRECTION::DOWN),
+                                      | reserve::filter(reserve::Direction::DOWN),
                                     [&](const auto& r)
                                     { return r.AllHydroReservesParticipation.size() > 0; }))
             {
@@ -436,7 +436,7 @@ struct ReserveData
             || areaReserves[pays].referenceGlobalActivationDurationUp)
         {
             if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
-                                      | reserve::filter(reserve::DIRECTION::UP),
+                                      | reserve::filter(reserve::Direction::UP),
                                     [&](const auto& r) {
                                         return r.AllSTStorageReservesParticipation.count(cluster)
                                                > 0;
@@ -449,7 +449,7 @@ struct ReserveData
             || areaReserves[pays].referenceGlobalActivationDurationDown)
         {
             if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
-                                      | reserve::filter(reserve::DIRECTION::DOWN),
+                                      | reserve::filter(reserve::Direction::DOWN),
                                     [&](const auto& r) {
                                         return r.AllSTStorageReservesParticipation.count(cluster)
                                                > 0;

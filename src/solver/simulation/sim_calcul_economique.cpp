@@ -60,8 +60,7 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
              area->allCapacityReservations.value().areaCapacityReservations)
         {
             CAPACITY_RESERVATION areaCapacityReservation;
-            areaCapacityReservation.direction = static_cast<reserve::DIRECTION>(
-              reserveCapacity.direction);
+            areaCapacityReservation.direction = reserveCapacity.direction;
             areaCapacityReservation.unsuppliedCost = reserveCapacity.unsuppliedCost;
             areaCapacityReservation.spillageCost = reserveCapacity.spillageCost;
             areaCapacityReservation.powerActivationRatio = reserveCapacity.powerActivationRatio;

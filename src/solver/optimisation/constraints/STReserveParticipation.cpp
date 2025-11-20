@@ -23,14 +23,14 @@ void STReserveParticipation::add(int pays, int reserve, int cluster, int pdt)
         builder.updateHourWithinWeek(pdt)
           .STStorageReleaseClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            capacityReservation.direction == DIRECTION::UP ? -1.0 : 1.0)
+            capacityReservation.direction == Direction::UP ? -1.0 : 1.0)
           .STStorageStoreClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            capacityReservation.direction == DIRECTION::UP ? -1.0 : 1.0)
+            capacityReservation.direction == Direction::UP ? -1.0 : 1.0)
           .STStorageClusterReserveParticipation(
             capacityReservation.direction,
             reserveParticipation.globalIndexClusterParticipation,
-            capacityReservation.direction == DIRECTION::UP ? 1.0 : -1.0)
+            capacityReservation.direction == Direction::UP ? 1.0 : -1.0)
           .equalTo();
 
         ConstraintNamer namer(builder.data.NomDesContraintes);

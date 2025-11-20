@@ -22,7 +22,7 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
             for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationDown; t++)
             {
                 for (auto& capacityReservation:
-                     data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::DOWN))
+                     data.areaReserves[pays].areaCapacityReservations | filter(Direction::DOWN))
                 {
                     if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                     {
@@ -73,7 +73,7 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
             for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationUp; t++)
             {
                 for (auto& capacityReservation:
-                     data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::UP))
+                     data.areaReserves[pays].areaCapacityReservations | filter(Direction::UP))
                 {
                     if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                     {

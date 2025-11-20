@@ -20,7 +20,7 @@ void STReleaseCapacityThresholds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             for (const auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::DOWN))
+                 data.areaReserves[pays].areaCapacityReservations | filter(Direction::DOWN))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
@@ -55,7 +55,7 @@ void STReleaseCapacityThresholds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             for (const auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(DIRECTION::UP))
+                 data.areaReserves[pays].areaCapacityReservations | filter(Direction::UP))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {

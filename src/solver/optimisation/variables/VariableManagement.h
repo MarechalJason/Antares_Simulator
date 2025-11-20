@@ -37,7 +37,7 @@ public:
                                             int offset = 0,
                                             int delta = 0);
 
-    int& STStorageClusterReserveParticipation(reserve::DIRECTION dir,
+    int& STStorageClusterReserveParticipation(reserve::Direction dir,
                                               unsigned int index,
                                               unsigned int hourInWeek,
                                               int offset = 0,
@@ -53,7 +53,7 @@ public:
                                                    int offset = 0,
                                                    int delta = 0);
 
-    int& HydroReserveParticipation(reserve::DIRECTION dir,
+    int& HydroReserveParticipation(reserve::Direction dir,
                                    unsigned int index,
                                    unsigned int hourInWeek,
                                    int offset = 0,

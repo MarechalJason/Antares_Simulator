@@ -236,7 +236,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         void setSTStorageReserveParticipationRightSides(
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation,
           const CAPACITY_RESERVATION& reserve,
-          DIRECTION dir)
+          Direction dir)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -264,7 +264,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             {
                 auto& cluster = problemeHebdo
                                   ->ShortTermStorage[pays][reserveParticipation.clusterIdInArea];
-                if (dir == DIRECTION::UP)
+                if (dir == Direction::UP)
                 {
                     double level_min = cluster.reservoirCapacity
                                        * cluster.series->lowerRuleCurve[pdtGlobal];
@@ -357,7 +357,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         void setHydroReserveParticipationRightSides(
           const RESERVE_PARTICIPATION_HYDRO& reserveParticipation,
           const CAPACITY_RESERVATION& reserve,
-          DIRECTION dir)
+          Direction dir)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -384,7 +384,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             if (cnt >= 0)
             {
                 auto& hydroCluster = problemeHebdo->CaracteristiquesHydrauliques[pays];
-                if (dir == DIRECTION::UP)
+                if (dir == Direction::UP)
                 {
                     double level_min = hydroCluster.NiveauHoraireInf[pdtHebdo];
 
@@ -427,7 +427,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                 reserveVariablesRightSidesSetter.setReserveRightSides(areaReserve);
 
                 // Thermal Cluster
-                if (areaReserve.direction == DIRECTION::UP)
+                if (areaReserve.direction == Direction::UP)
                 {
                     for (const auto& [clusterId, clusterReserveParticipation]:
                          areaReserve.AllThermalReservesParticipation)

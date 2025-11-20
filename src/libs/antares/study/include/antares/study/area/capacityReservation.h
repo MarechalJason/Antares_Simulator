@@ -27,6 +27,8 @@
 #include <set>
 #include <vector>
 
+#include <antares/study/fwd.h>
+
 namespace fs = std::filesystem;
 
 //! Name of a reserve
@@ -36,13 +38,7 @@ using ReserveName = std::string;
 /// spillage cost
 struct CapacityReservation
 {
-    enum Direction
-    {
-        DOWN,
-        UP
-    };
-
-    Direction direction{Direction::DOWN};
+    reserve::Direction direction{reserve::Direction::DOWN};
     double unsuppliedCost = 0.;
     double spillageCost = 0.;
     double powerActivationRatio = 0.;

@@ -19,7 +19,7 @@ void HydroEnergyLevelReserveParticipation::add(int pays, int cluster, int reserv
             // R_{min,res} : max power participation ratio
             // R_up : max stock level
             {
-                double sign = capacityReservation.direction == DIRECTION::UP ? -1. : 1.;
+                double sign = capacityReservation.direction == Direction::UP ? -1. : 1.;
 
                 RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
                                                                       .AllHydroReservesParticipation

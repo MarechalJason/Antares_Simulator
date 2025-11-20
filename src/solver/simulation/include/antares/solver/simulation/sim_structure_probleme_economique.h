@@ -361,7 +361,7 @@ struct CAPACITY_RESERVATION
     std::vector<RESERVE_PARTICIPATION_HYDRO> AllHydroReservesParticipation;
     std::vector<double> need; //!< Vector size is number of hours in year
 
-    reserve::DIRECTION direction{reserve::DIRECTION::DOWN};
+    reserve::Direction direction{reserve::Direction::DOWN};
     double unsuppliedCost = 0;
     double spillageCost = 0;
     double powerActivationRatio = 0;
