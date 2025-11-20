@@ -20,6 +20,8 @@
  */
 #pragma once
 
+#include <boost/algorithm/string.hpp>
+
 #include <antares/inifile/inifile.h>
 #include <antares/study/area/area.h>
 
@@ -95,6 +97,12 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
               {
                   p.value.to<double>(reserveParticipation.participationCostOff);
               }
+              else
+              {
+                  logs.warning() << area.name
+                                 << " : invalid property in thermal reserves implementation : "
+                                 << p.key;
+              }
           });
         if (clusterName.empty())
         {
@@ -125,11 +133,13 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
         {
             if (!reserve)
             {
-                logs.error() << area.name << ": missing reserve " << section.name;
+                logs.error() << area.name << ": missing reserve " << section.name
+                             << " when loading thermal reserve participations";
             }
             if (!cluster)
             {
-                logs.error() << area.name << " : missing cluster " << clusterName;
+                logs.error() << area.name << " : missing cluster " << clusterName
+                             << " when loading thermal reserve participations";
             }
         }
     }
@@ -150,7 +160,7 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
                     {
                         throw std::out_of_range(
                           "Area " + area.name + ", " + clusterName
-                          + " : trying to add symmetries without any reserves");
+                          + " : trying to add symmetries without any reserves participations");
                     }
                     cluster->reserveParticipationContainer.value().addReserveParticipationSymmetry(
                       sym);
@@ -191,6 +201,12 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
               {
                   p.value.to<double>(reserveParticipation.participationCost);
               }
+              else
+              {
+                  logs.warning() << area.name
+                                 << " : invalid property in STS reserves implementation : "
+                                 << p.key;
+              }
           });
 
         auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
@@ -216,11 +232,13 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
         {
             if (!reserve)
             {
-                logs.error() << area.name << ": missing reserve " << section.name;
+                logs.error() << area.name << ": missing reserve " << section.name
+                             << " when loading STS reserve participations";
             }
             if (!cluster)
             {
-                logs.error() << area.name << " : missing cluster " << clusterName;
+                logs.error() << area.name << " : missing cluster " << clusterName
+                             << " when loading STS reserve participations";
             }
         }
     }
@@ -243,9 +261,9 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
                 }
                 else
                 {
-                    throw std::out_of_range(
-                      "Area " + area.name + ", " + clusterName
-                      + " : trying to add symmetries to a non existing cluster or participation");
+                    logs.error()
+                      << "Area " << area.name << ", " << clusterName
+                      << " : trying to add symmetries to a non existing cluster or participation";
                 }
             }
         }
@@ -273,6 +291,12 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
               {
                   p.value.to<double>(reserveParticipation.participationCost);
               }
+              else
+              {
+                  logs.warning() << area.name
+                                 << " : invalid property in hydro reserves implementation : "
+                                 << p.key;
+              }
           });
 
         auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
@@ -288,6 +312,11 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
             reserveParticipationContainer.value().addReserveParticipation(section.name,
                                                                           reserveParticipation);
         }
+        else
+        {
+            logs.error() << area.name << ": missing reserve " << section.name
+                         << " when loading hydro reserve participations";
+        }
     }
 
     void readSymmetrySection(Area& area, const IniFile::Section& section) override
@@ -295,11 +324,19 @@ class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
         auto& reserveParticipationContainer = area.hydro.reserveParticipationContainer;
         if (!area.hydro.reserveParticipationContainer)
         {
-            throw std::out_of_range("Area " + area.name
-                                    + ", hydro : trying to add symmetries without any reserves");
+            throw std::out_of_range(
+              "Area " + area.name
+              + ", hydro : trying to add symmetries without any reserves participations");
         }
         for (auto* p = section.firstProperty; p; p = p->next)
         {
+            std::string clusterName;
+            TransformNameIntoID(p->key, clusterName);
+            if (!(boost::iequals(clusterName, "hydro") || boost::iequals(clusterName, "lt")))
+            {
+                logs.error() << area.name << " : invalid cluster name for hydro symmetry "
+                             << clusterName << " please use 'hydro' or 'lt'";
+            }
             auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
             for (auto& sym: symmetries)
             {
