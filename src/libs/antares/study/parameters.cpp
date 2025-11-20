@@ -31,8 +31,6 @@
 #include <antares/exception/AssertionError.hpp>
 #include <antares/inifile/inifile.h>
 #include <antares/logs/logs.h>
-#include "antares/antares/Enum.hpp"
-#include "antares/antares/constants.h"
 #include "antares/solver/variable/economy/all.h"
 #include "antares/study/load-options.h"
 
@@ -623,6 +621,10 @@ static bool SGDIntLoadFamily_Output(Parameters& d,
     if (key == "result-format")
     {
         return ConvertCStrToResultFormat(value, d.resultFormat);
+    }
+    if (key == "remix-storage-debug")
+    {
+        return value.to<bool>(d.remixStorageDebug);
     }
     return false;
 }
@@ -1750,6 +1752,10 @@ void Parameters::saveToINI(IniFile& ini) const
         if (hydroDebug)
         {
             section->add("hydro-debug", hydroDebug);
+        }
+        if (remixStorageDebug)
+        {
+            section->add("remix-storage-debug", remixStorageDebug);
         }
         ParametersSaveTimeSeries(section, "archives", timeSeriesToArchive);
         ParametersSaveResultFormat(section, resultFormat);

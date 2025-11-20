@@ -1128,7 +1128,7 @@ toc_depth: 2
 * Give Oracle Linux 8 assets a proper name instead of "unknown" (#1438)
 * Don't build tools (study-updater, etc.) by default (#1442)
 
-#### Bugfixs
+#### Bugfixes
 
 * Fix error when writing files over 80Mb into a zip (#1488)
 * Fix memory leaks (#1468)
