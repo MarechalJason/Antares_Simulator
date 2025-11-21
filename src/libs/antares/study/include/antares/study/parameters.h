@@ -504,7 +504,7 @@ const char* CompatibilityHydroPmaxToCString(const Parameters::Compatibility::Hyd
 bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax&, const std::string& text);
 
 const std::string ReservesToString(bool reservesEnabled);
-bool StringToCompatibilityReserves(const std::string& text);
+bool StringToReservesEnabled(const std::string& text);
 
 } // namespace Antares::Data
 

@@ -240,7 +240,7 @@ const std::string ReservesToString(bool reservesEnabled)
     return reservesEnabled ? "enabled" : "disabled";
 }
 
-bool StringToCompatibilityReserves(bool& reservesEnabled, const std::string& text)
+bool StringToReservesEnabled(bool& reservesEnabled, const std::string& text)
 {
     if (text.empty() || text == "disabled")
     {
@@ -600,6 +600,11 @@ static bool SGDIntLoadFamily_General(Parameters& d,
     if (key == "year-by-year")
     {
         return value.to<bool>(d.yearByYear);
+    }
+
+    if (key == "reserves")
+    {
+        return StringToReservesEnabled(d.reservesEnabled, value);
     }
     return false;
 }
@@ -1087,10 +1092,6 @@ static bool SGDIntLoadFamily_Compatibility(Parameters& d,
     if (key == "hydro-pmax")
     {
         return StringToCompatibilityHydroPmax(d.compatibility.hydroPmax, value);
-    }
-    else if (key == "reserves")
-    {
-        return StringToCompatibilityReserves(d.reservesEnabled, value);
     }
 
     return false;
