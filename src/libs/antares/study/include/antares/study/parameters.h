@@ -119,14 +119,6 @@ public:
     ** \brief Reset to default all seeds
     */
     void resetSeeds();
-    /*!
-    ** \brief Reset to default all threshold values in adequacy patch
-    */
-    void resetThresholdsAdqPatch();
-    /*!
-    ** \brief Reset to default all adequacy patch values
-    */
-    void resetAdqPatchParameters();
 
     /*!
     ** \brief Try to detect then fix any bad value
@@ -436,8 +428,6 @@ public:
         HydroPricingMode hpMode;
     } hydroPricing;
 
-    // TODO VP: remove this comment
-    // This parameters does nothing right now, it will be implemented later in 9.3.x
     bool accurateShavePeaksIncludeShortTermStorage = false;
 
     //! Transmission capacities
@@ -462,6 +452,9 @@ public:
     //@}
 
     bool hydroDebug;
+
+    /// Used to create debug informations for both hydro and short term storages
+    bool remixStorageDebug = false;
 
     //! \name Seeds
     //@{
