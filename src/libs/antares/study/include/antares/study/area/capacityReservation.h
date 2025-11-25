@@ -65,10 +65,9 @@ struct CapacityReservation
 /// @brief Stores all the Capacity reservations in two maps for the up and down reserves
 struct AllCapacityReservations
 {
-    double maxGlobalEnergyActivationRatioUp = 1.;
-    double maxGlobalEnergyActivationRatioDown = 1.;
-    int referenceGlobalActivationDurationUp = 1;
-    int referenceGlobalActivationDurationDown = 1;
+    double maxGlobalEnergyActivationRatio[(int)reserve::Direction::SIZE] = {1., 1.};
+    int referenceGlobalActivationDuration[(int)reserve::Direction::SIZE] = {1, 1};
+
     std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
       reserveGroupPartThermal;
     std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>

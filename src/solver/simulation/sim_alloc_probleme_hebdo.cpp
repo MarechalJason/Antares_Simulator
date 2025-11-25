@@ -200,12 +200,16 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
             variablesMapping.reservesIndices.value().thermalClusterParticipation.assign(
               study.runtime.counts.thermalPlants * study.runtime.counts.capacityReservations,
               0);
-            variablesMapping.reservesIndices.value().STStorageClusterParticipationUp.assign(
-              study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
-              0);
-            variablesMapping.reservesIndices.value().STStorageClusterParticipationDown.assign(
-              study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
-              0);
+            variablesMapping.reservesIndices.value()
+              .STStorageClusterParticipation[(int)reserve::Direction::DOWN]
+              .assign(study.runtime.counts.shortTermStorages
+                        * study.runtime.counts.capacityReservations,
+                      0);
+            variablesMapping.reservesIndices.value()
+              .STStorageClusterParticipation[(int)reserve::Direction::UP]
+              .assign(study.runtime.counts.shortTermStorages
+                        * study.runtime.counts.capacityReservations,
+                      0);
             variablesMapping.reservesIndices.value().STStorageReleaseClusterParticipation.assign(
               study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
               0);
@@ -213,12 +217,12 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               study.runtime.counts.shortTermStorages * study.runtime.counts.capacityReservations,
               0);
 
-            variablesMapping.reservesIndices.value().HydroParticipationUp.assign(
-              study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
-              0);
-            variablesMapping.reservesIndices.value().HydroParticipationDown.assign(
-              study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
-              0);
+            variablesMapping.reservesIndices.value()
+              .HydroParticipation[(int)reserve::Direction::UP]
+              .assign(study.runtime.counts.hydros * study.runtime.counts.capacityReservations, 0);
+            variablesMapping.reservesIndices.value()
+              .HydroParticipation[(int)reserve::Direction::DOWN]
+              .assign(study.runtime.counts.hydros * study.runtime.counts.capacityReservations, 0);
             variablesMapping.reservesIndices.value().HydroReleaseParticipation.assign(
               study.runtime.counts.hydros * study.runtime.counts.capacityReservations,
               0);
@@ -329,10 +333,12 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
-              .STStorageLevelParticipationDown.assign(study.runtime.counts.shortTermStorages, -1);
+              .STStorageLevelParticipation[(int)reserve::Direction::DOWN]
+              .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
-              .STStorageLevelParticipationUp.assign(study.runtime.counts.shortTermStorages, -1);
+              .STStorageLevelParticipation[(int)reserve::Direction::UP]
+              .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
               .STStorageEnergyLevelParticipation.assign(
@@ -340,11 +346,11 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
                 -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
-              .STStorageGlobalStockEnergyLevelParticipationUp
+              .STStorageGlobalStockEnergyLevelParticipation[(int)reserve::Direction::UP]
               .assign(study.runtime.counts.shortTermStorages, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
-              .STStorageGlobalStockEnergyLevelParticipationDown
+              .STStorageGlobalStockEnergyLevelParticipation[(int)reserve::Direction::DOWN]
               .assign(study.runtime.counts.shortTermStorages, -1);
 
             problem.CorrespondanceCntNativesCntOptim[k]
@@ -368,10 +374,12 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               .HydroStoreCapacityThresholds.assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
-              .HydroLevelParticipationDown.assign(study.runtime.counts.hydros, -1);
+              .HydroLevelParticipation[(int)reserve::Direction::DOWN]
+              .assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
-              .HydroLevelParticipationUp.assign(study.runtime.counts.hydros, -1);
+              .HydroLevelParticipation[(int)reserve::Direction::DOWN]
+              .assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
               .HydroEnergyLevelParticipation.assign(study.runtime.counts.hydros

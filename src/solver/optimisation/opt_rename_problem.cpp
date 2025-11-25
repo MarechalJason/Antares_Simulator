@@ -713,18 +713,22 @@ void ConstraintNamer::STStoreCapacityThresholdsDown(unsigned int constraint,
     SetSTStorageClusterElementName(constraint, "STStoreCapacityThresholdsDown", clusterName);
 }
 
-void ConstraintNamer::STStorageLevelReserveParticipationUp(unsigned int constraint,
-                                                           const std::string& clusterName)
+void ConstraintNamer::STStorageLevelReserveParticipation(unsigned int constraint,
+                                                         const std::string& clusterName,
+                                                         reserve::Direction dir)
 {
-    SetSTStorageClusterElementName(constraint, "STStorageLevelReserveParticipationUp", clusterName);
-}
-
-void ConstraintNamer::STStorageLevelReserveParticipationDown(unsigned int constraint,
-                                                             const std::string& clusterName)
-{
-    SetSTStorageClusterElementName(constraint,
-                                   "STStorageLevelReserveParticipationDown",
-                                   clusterName);
+    if (dir == reserve::Direction::DOWN)
+    {
+        SetSTStorageClusterElementName(constraint,
+                                       "STStorageLevelReserveParticipationDown",
+                                       clusterName);
+    }
+    else if (dir == reserve::Direction::UP)
+    {
+        SetSTStorageClusterElementName(constraint,
+                                       "STStorageLevelReserveParticipationUP",
+                                       clusterName);
+    }
 }
 
 void ConstraintNamer::STEnergyStockLevelReserveParticipation(unsigned int constraint,
@@ -737,21 +741,27 @@ void ConstraintNamer::STEnergyStockLevelReserveParticipation(unsigned int constr
                                              reserveName);
 }
 
-void ConstraintNamer::STGlobalEnergyStockLevelReserveParticipationDown(
-  unsigned int constraint,
-  const std::string& clusterName)
+void ConstraintNamer::STGlobalEnergyStockLevelReserveParticipation(unsigned int constraint,
+                                                                   const std::string& clusterName,
+                                                                   reserve::Direction dir)
 {
-    SetSTStorageClusterElementName(constraint,
-                                   "STGlobalEnergyStockLevelReserveParticipationDown",
-                                   clusterName);
-}
-
-void ConstraintNamer::STGlobalEnergyStockLevelReserveParticipationUp(unsigned int constraint,
-                                                                     const std::string& clusterName)
-{
-    SetSTStorageClusterElementName(constraint,
-                                   "STGlobalEnergyStockLevelReserveParticipationUp",
-                                   clusterName);
+    if (dir == reserve::Direction::DOWN)
+    {
+        SetSTStorageClusterElementName(constraint,
+                                       "STGlobalEnergyStockLevelReserveParticipationDown",
+                                       clusterName);
+    }
+    else if (dir == reserve::Direction::UP)
+    {
+        SetSTStorageClusterElementName(constraint,
+                                       "STGlobalEnergyStockLevelReserveParticipationUp",
+                                       clusterName);
+    }
+    else
+    {
+        throw std::runtime_error(
+          "Wrong direction inside STGlobalEnergyStockLevelReserveParticipation");
+    }
 }
 
 void ConstraintNamer::HydroReserveParticipation(Direction dir,

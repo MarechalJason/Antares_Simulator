@@ -14,39 +14,6 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // P_{res} : power participation for reserve down res
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
-        {
-            builder.updateHourWithinWeek(pdt);
-            for (auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(Direction::DOWN))
-            {
-                if (capacityReservation.AllHydroReservesParticipation.size())
-                {
-                    RESERVE_PARTICIPATION_HYDRO reserveParticipations
-                      = capacityReservation.AllHydroReservesParticipation[cluster];
-                    builder.HydroReserveParticipation(
-                      Direction::DOWN,
-                      reserveParticipations.globalIndexClusterParticipation,
-                      capacityReservation.powerActivationRatio);
-                }
-            }
-            if (builder.NumberOfVariables() > 0)
-            {
-                builder.HydroLevel(globalClusterIdx, 1.);
-                builder.lessThan();
-                data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices.value()
-                  .HydroLevelParticipationDown[globalClusterIdx]
-                  = builder.data.nombreDeContraintes;
-                ConstraintNamer namer(builder.data.NomDesContraintes);
-                const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
-                namer.UpdateTimeStep(hourInTheYear);
-                namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.HydroLevelReserveParticipation(Direction::DOWN,
-                                                     builder.data.nombreDeContraintes,
-                                                     "Hydro");
-                builder.build();
-            }
-        }
 
         // 15 (r) (2)
         // Participation of up reserves requires a sufficient level of stock
@@ -55,35 +22,35 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // P_{res} : power participation for reserve up res
         // R_{min,res} : max power participation ratio
         // R_down : min stock level
+        for (auto dir: {Direction::DOWN, Direction::UP})
         {
             builder.updateHourWithinWeek(pdt);
-
             for (auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(Direction::UP))
+                 data.areaReserves[pays].areaCapacityReservations | filter(dir))
             {
                 if (capacityReservation.AllHydroReservesParticipation.size())
                 {
                     RESERVE_PARTICIPATION_HYDRO reserveParticipations
                       = capacityReservation.AllHydroReservesParticipation[cluster];
                     builder.HydroReserveParticipation(
-                      Direction::UP,
+                      dir,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }
             }
             if (builder.NumberOfVariables() > 0)
             {
-                builder.HydroLevel(globalClusterIdx, -1.);
+                builder.HydroLevel(globalClusterIdx, dir == Direction::DOWN ? 1. : -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .HydroLevelParticipationUp[globalClusterIdx]
+                  .HydroLevelParticipation[(int)dir][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.HydroLevelReserveParticipation(Direction::UP,
+                namer.HydroLevelReserveParticipation(dir,
                                                      builder.data.nombreDeContraintes,
                                                      "Hydro");
                 builder.build();

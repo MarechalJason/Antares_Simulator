@@ -242,17 +242,15 @@ public:
     void STReleaseCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
     void STStoreCapacityThresholdsUp(unsigned int constraint, const std::string& clusterName);
     void STStoreCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
-    void STStorageLevelReserveParticipationUp(unsigned int constraint,
-                                              const std::string& clusterName);
-    void STStorageLevelReserveParticipationDown(unsigned int constraint,
-                                                const std::string& clusterName);
+    void STStorageLevelReserveParticipation(unsigned int constraint,
+                                            const std::string& clusterName,
+                                            reserve::Direction dir);
     void STEnergyStockLevelReserveParticipation(unsigned int constraint,
                                                 const std::string& clusterName,
                                                 const std::string& reserveName);
-    void STGlobalEnergyStockLevelReserveParticipationDown(unsigned int constraint,
-                                                          const std::string& clusterName);
-    void STGlobalEnergyStockLevelReserveParticipationUp(unsigned int constraint,
-                                                        const std::string& clusterName);
+    void STGlobalEnergyStockLevelReserveParticipation(unsigned int constraint,
+                                                      const std::string& clusterName,
+                                                      reserve::Direction dir);
 
     void HydroReserveParticipation(reserve::Direction dir,
                                    unsigned int constraint,

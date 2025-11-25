@@ -198,7 +198,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                * cluster.series->lowerRuleCurve[pdtGlobal];
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .STStorageLevelParticipationDown[cluster.clusterGlobalIndex];
+                    .STStorageLevelParticipation[(int)reserve::Direction::DOWN]
+                                                [cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = level_max;
@@ -206,7 +207,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .STStorageLevelParticipationUp[cluster.clusterGlobalIndex];
+                    .STStorageLevelParticipation[(int)reserve::Direction::UP]
+                                                [cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = -level_min;
@@ -214,20 +216,28 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .STStorageGlobalStockEnergyLevelParticipationDown[cluster.clusterGlobalIndex];
+                    .STStorageGlobalStockEnergyLevelParticipation[(int)reserve::Direction::DOWN]
+                                                                 [cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserves.referenceGlobalActivationDurationDown
-                                    * reserves.maxGlobalEnergyActivationRatioDown * level_max;
+                SecondMembre[cnt] = reserves.referenceGlobalActivationDuration[(
+                                      int)reserve::Direction::DOWN]
+                                    * reserves.maxGlobalEnergyActivationRatio[(
+                                      int)reserve::Direction::DOWN]
+                                    * level_max;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .STStorageGlobalStockEnergyLevelParticipationUp[cluster.clusterGlobalIndex];
+                    .STStorageGlobalStockEnergyLevelParticipation[(int)reserve::Direction::UP]
+                                                                 [cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = -reserves.referenceGlobalActivationDurationUp
-                                    * reserves.maxGlobalEnergyActivationRatioUp * level_min;
+                SecondMembre[cnt] = -reserves.referenceGlobalActivationDuration[(
+                                      int)reserve::Direction::UP]
+                                    * reserves
+                                        .maxGlobalEnergyActivationRatio[(int)reserve::Direction::UP]
+                                    * level_min;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
         }
@@ -319,7 +329,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             double level_max = hydroCluster.NiveauHoraireSup[pdtHebdo];
             double level_min = hydroCluster.NiveauHoraireInf[pdtHebdo];
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .HydroLevelParticipationDown[globalClusterIdx];
+                    .HydroLevelParticipation[(int)Direction::DOWN][globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.NiveauHoraireSup[pdtHebdo];
@@ -327,7 +337,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .HydroLevelParticipationUp[globalClusterIdx];
+                    .HydroLevelParticipation[(int)Direction::UP][globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.NiveauHoraireInf[pdtHebdo];
@@ -338,8 +348,11 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                     .HydroGlobalEnergyLevelParticipationDown[globalClusterIdx];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserves.referenceGlobalActivationDurationDown
-                                    * reserves.maxGlobalEnergyActivationRatioDown * level_max;
+                SecondMembre[cnt] = reserves.referenceGlobalActivationDuration[(
+                                      int)reserve::Direction::DOWN]
+                                    * reserves.maxGlobalEnergyActivationRatio[(
+                                      int)reserve::Direction::DOWN]
+                                    * level_max;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
 
@@ -347,8 +360,11 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                     .HydroGlobalEnergyLevelParticipationUp[globalClusterIdx];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = -reserves.referenceGlobalActivationDurationUp
-                                    * reserves.maxGlobalEnergyActivationRatioUp * level_min;
+                SecondMembre[cnt] = -reserves.referenceGlobalActivationDuration[(
+                                      int)reserve::Direction::UP]
+                                    * reserves
+                                        .maxGlobalEnergyActivationRatio[(int)reserve::Direction::UP]
+                                    * level_min;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
         }

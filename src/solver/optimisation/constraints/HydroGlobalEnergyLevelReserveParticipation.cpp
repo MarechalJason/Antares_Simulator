@@ -18,15 +18,10 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
         for (Direction dir: {Direction::DOWN, Direction::UP})
         {
             builder.updateHourWithinWeek(pdt);
-            int time = dir == Direction::UP
-                         ? data.areaReserves[pays].referenceGlobalActivationDurationUp
-                         : data.areaReserves[pays].referenceGlobalActivationDurationDown;
-            double maxGlobalEnergyActivationRatio = dir == Direction::UP
-                                                      ? -data.areaReserves[pays]
-                                                           .maxGlobalEnergyActivationRatioUp
-                                                      : data.areaReserves[pays]
-                                                          .maxGlobalEnergyActivationRatioDown;
-            for (int t = 0; t < time; t++)
+            int timeMax = data.areaReserves[pays].referenceGlobalActivationDuration[(int)dir];
+            double maxGlobalEnergyActivationRatio = -data.areaReserves[pays]
+                                                       .maxGlobalEnergyActivationRatio[(int)dir];
+            for (int t = 0; t < timeMax; t++)
             {
                 for (auto& capacityReservation:
                      data.areaReserves[pays].areaCapacityReservations | filter(dir))

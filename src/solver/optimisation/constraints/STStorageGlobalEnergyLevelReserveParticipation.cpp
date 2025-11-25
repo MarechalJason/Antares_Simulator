@@ -15,14 +15,15 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
 
-        // DOWN reserves
+        for (auto dir: {Direction::DOWN, Direction::UP})
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationDown; t++)
+            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDuration[(int)dir];
+                 t++)
             {
                 for (auto& capacityReservation:
-                     data.areaReserves[pays].areaCapacityReservations | filter(Direction::DOWN))
+                     data.areaReserves[pays].areaCapacityReservations | filter(dir))
                 {
                     if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                     {
@@ -38,9 +39,10 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
                 }
                 if (builder.NumberOfVariables() > 0)
                 {
+                    int sign = dir == Direction::UP ? -1 : 1;
                     builder.ShortTermStorageLevel(
                       globalClusterIdx,
-                      data.areaReserves[pays].maxGlobalEnergyActivationRatioDown,
+                      sign * data.areaReserves[pays].maxGlobalEnergyActivationRatio[(int)dir],
                       t,
                       builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }
@@ -52,67 +54,17 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .STStorageGlobalStockEnergyLevelParticipationDown[globalClusterIdx]
+                  .STStorageGlobalStockEnergyLevelParticipation[(int)dir][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STGlobalEnergyStockLevelReserveParticipationDown(
+                namer.STGlobalEnergyStockLevelReserveParticipation(
                   builder.data.nombreDeContraintes,
-                  data.shortTermStorageOfArea[pays][cluster].name);
-                builder.build();
-            }
-        }
-
-        // UP reserves
-        {
-            builder.updateHourWithinWeek(pdt);
-
-            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDurationUp; t++)
-            {
-                for (auto& capacityReservation:
-                     data.areaReserves[pays].areaCapacityReservations | filter(Direction::UP))
-                {
-                    if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
-                    {
-                        RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
-                          = capacityReservation.AllSTStorageReservesParticipation[cluster];
-                        builder.STStorageClusterReserveParticipation(
-                          capacityReservation.direction,
-                          reserveParticipation.globalIndexClusterParticipation,
-                          capacityReservation.powerActivationRatio,
-                          t,
-                          builder.data.NombreDePasDeTempsPourUneOptimisation);
-                    }
-                }
-                if (builder.NumberOfVariables() > 0)
-                {
-                    builder.ShortTermStorageLevel(
-                      globalClusterIdx,
-                      -data.areaReserves[pays].maxGlobalEnergyActivationRatioUp,
-                      t,
-                      builder.data.NombreDePasDeTempsPourUneOptimisation);
-                }
-            }
-
-            if (builder.NumberOfVariables() > 0)
-            {
-                builder.lessThan();
-
-                data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices.value()
-                  .STStorageGlobalStockEnergyLevelParticipationUp[globalClusterIdx]
-                  = builder.data.nombreDeContraintes;
-
-                ConstraintNamer namer(builder.data.NomDesContraintes);
-                const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
-                namer.UpdateTimeStep(hourInTheYear);
-                namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STGlobalEnergyStockLevelReserveParticipationUp(
-                  builder.data.nombreDeContraintes,
-                  data.shortTermStorageOfArea[pays][cluster].name);
+                  data.shortTermStorageOfArea[pays][cluster].name,
+                  dir);
                 builder.build();
             }
         }

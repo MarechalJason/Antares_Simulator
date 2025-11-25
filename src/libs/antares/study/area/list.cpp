@@ -64,7 +64,8 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
         if (key == "energy-activation-ratio-up")
         {
             if (!p->value.to<double>(
-                  area.allCapacityReservations.value().maxGlobalEnergyActivationRatioUp))
+                  area.allCapacityReservations.value()
+                    .maxGlobalEnergyActivationRatio[(int)reserve::Direction::UP]))
             {
                 logs.warning() << area.name
                                << ": invalid maximum energy activation ratio for UP reserves";
@@ -73,7 +74,8 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
         else if (key == "energy-activation-ratio-down")
         {
             if (!p->value.to<double>(
-                  area.allCapacityReservations.value().maxGlobalEnergyActivationRatioDown))
+                  area.allCapacityReservations.value()
+                    .maxGlobalEnergyActivationRatio[(int)reserve::Direction::DOWN]))
             {
                 logs.warning() << area.name
                                << ": invalid maximum energy activation ratio for "
@@ -83,7 +85,8 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
         else if (key == "reference-activation-duration-up")
         {
             if (!p->value.to<int>(
-                  area.allCapacityReservations.value().referenceGlobalActivationDurationUp))
+                  area.allCapacityReservations.value()
+                    .referenceGlobalActivationDuration[(int)reserve::Direction::UP]))
             {
                 logs.warning() << area.name
                                << ": invalid reference energy activation duration "
@@ -93,7 +96,8 @@ void readReservesAreaParameters(Antares::Data::Area& area, const IniFile::Sectio
         else if (key == "reference-activation-duration-down")
         {
             if (!p->value.to<int>(
-                  area.allCapacityReservations.value().referenceGlobalActivationDurationDown))
+                  area.allCapacityReservations.value()
+                    .referenceGlobalActivationDuration[(int)reserve::Direction::DOWN]))
             {
                 logs.warning() << area.name
                                << ": invalid reference energy activation duration "

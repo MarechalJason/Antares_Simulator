@@ -14,40 +14,6 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // P_{res} : power participation for reserve down res
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
-        {
-            builder.updateHourWithinWeek(pdt);
-
-            for (auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(Direction::DOWN))
-            {
-                if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
-                {
-                    RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
-                      = capacityReservation.AllSTStorageReservesParticipation[cluster];
-                    builder.STStorageClusterReserveParticipation(
-                      capacityReservation.direction,
-                      reserveParticipations.globalIndexClusterParticipation,
-                      capacityReservation.powerActivationRatio);
-                }
-            }
-            if (builder.NumberOfVariables() > 0)
-            {
-                builder.ShortTermStorageLevel(globalClusterIdx, 1.);
-                builder.lessThan();
-                data.CorrespondanceCntNativesCntOptim[pdt]
-                  .reservesIndices.value()
-                  .STStorageLevelParticipationDown[globalClusterIdx]
-                  = builder.data.nombreDeContraintes;
-                ConstraintNamer namer(builder.data.NomDesContraintes);
-                const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
-                namer.UpdateTimeStep(hourInTheYear);
-                namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STStorageLevelReserveParticipationDown(
-                  builder.data.nombreDeContraintes,
-                  data.shortTermStorageOfArea[pays][cluster].name);
-                builder.build();
-            }
-        }
 
         // 15 (g) (2)
         // Participation of up reserves requires a sufficient level of stock
@@ -56,11 +22,12 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // P_{res} : power participation for reserve up res
         // R_{min,res} : max power participation ratio
         // R_down : min stock level
+        for (auto dir: {reserve::Direction::DOWN, reserve::Direction::UP})
         {
             builder.updateHourWithinWeek(pdt);
 
             for (auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(Direction::UP))
+                 data.areaReserves[pays].areaCapacityReservations | filter(dir))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
@@ -74,19 +41,21 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
             }
             if (builder.NumberOfVariables() > 0)
             {
-                builder.ShortTermStorageLevel(globalClusterIdx, -1.);
+                builder.ShortTermStorageLevel(globalClusterIdx,
+                                              dir == reserve::Direction::DOWN ? 1. : -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .STStorageLevelParticipationUp[globalClusterIdx]
+                  .STStorageLevelParticipation[(int)dir][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                namer.STStorageLevelReserveParticipationUp(
+                namer.STStorageLevelReserveParticipation(
                   builder.data.nombreDeContraintes,
-                  data.shortTermStorageOfArea[pays][cluster].name);
+                  data.shortTermStorageOfArea[pays][cluster].name,
+                  dir);
                 builder.build();
             }
         }

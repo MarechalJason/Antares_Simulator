@@ -112,9 +112,7 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(indices.STStorageReleaseClusterParticipation[clusterParticipationId], nullptr);
         setVarBounds(indices.STStorageStoreClusterParticipation[clusterParticipationId], nullptr);
 
-        int dirVar = dir == Direction::UP
-                       ? indices.STStorageClusterParticipationUp[clusterParticipationId]
-                       : indices.STStorageClusterParticipationDown[clusterParticipationId];
+        int dirVar = indices.STStorageClusterParticipation[(int)dir][clusterParticipationId];
 
         setVarBounds(dirVar, &st.reserveParticipationOfCluster.value()[pdtHebdo]);
     }
@@ -132,11 +130,8 @@ struct ReserveVariablesBoundsSetter
 
         setVarBounds(indices.HydroStoreParticipation[clusterParticipationId], nullptr);
 
-        int dirVar = dir == Direction::UP ? indices.HydroParticipationUp[clusterParticipationId]
-                                          : indices.HydroParticipationDown[clusterParticipationId];
-
         setVarBounds(
-          dirVar,
+          indices.HydroParticipation[(int)dir][clusterParticipationId],
           &hydroUsage.reserveParticipationOfCluster.value()[clusterParticipationIdInArea]);
     }
 

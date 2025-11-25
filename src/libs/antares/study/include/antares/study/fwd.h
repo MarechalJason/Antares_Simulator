@@ -513,8 +513,9 @@ namespace reserve
 {
 enum class Direction
 {
-    DOWN,
-    UP
+    DOWN = 0,
+    UP = 1,
+    SIZE = 2
 };
 } // namespace reserve
 
