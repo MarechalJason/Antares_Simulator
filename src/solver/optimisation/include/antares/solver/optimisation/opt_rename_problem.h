@@ -119,7 +119,7 @@ public:
     void ParticipationOfSTStorageStoreToReserve(unsigned int variable,
                                                 const std::string& clusterName,
                                                 const std::string& reserveName);
-    void ParticipationOfSTStorageToReserve(reserve::Direction dir,
+    void ParticipationOfSTStorageToReserve(reserve::Type dir,
                                            unsigned int variable,
                                            const std::string& clusterName,
                                            const std::string& reserveName);
@@ -129,7 +129,7 @@ public:
     void ParticipationOfHydroStoreToReserve(unsigned int variable,
                                             const std::string& clusterName,
                                             const std::string& reserveName);
-    void ParticipationOfHydroToReserve(reserve::Direction dir,
+    void ParticipationOfHydroToReserve(reserve::Type dir,
                                        unsigned int variable,
                                        const std::string& clusterName,
                                        const std::string& reserveName);
@@ -231,7 +231,7 @@ public:
     void STReserveParticipation(unsigned int constraint,
                                 const std::string& clusterName,
                                 const std::string& reserveName,
-                                reserve::Direction dir);
+                                reserve::Type dir);
     void STReleaseMaxReserve(unsigned int constraint,
                              const std::string& clusterName,
                              const std::string& reserveName);
@@ -244,15 +244,15 @@ public:
     void STStoreCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
     void STStorageLevelReserveParticipation(unsigned int constraint,
                                             const std::string& clusterName,
-                                            reserve::Direction dir);
+                                            reserve::Type dir);
     void STEnergyStockLevelReserveParticipation(unsigned int constraint,
                                                 const std::string& clusterName,
                                                 const std::string& reserveName);
     void STGlobalEnergyStockLevelReserveParticipation(unsigned int constraint,
                                                       const std::string& clusterName,
-                                                      reserve::Direction dir);
+                                                      reserve::Type dir);
 
-    void HydroReserveParticipation(reserve::Direction dir,
+    void HydroReserveParticipation(reserve::Type dir,
                                    unsigned int constraint,
                                    const std::string& clusterName,
                                    const std::string& reserveName);
@@ -267,7 +267,7 @@ public:
                                             const std::string& clusterName);
     void HydroStoreCapacityThresholdsUp(unsigned int constraint, const std::string& clusterName);
     void HydroStoreCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
-    void HydroLevelReserveParticipation(reserve::Direction dir,
+    void HydroLevelReserveParticipation(reserve::Type dir,
                                         unsigned int constraint,
                                         const std::string& clusterName);
     void HydroEnergyLevelReserveParticipation(unsigned int constraint,

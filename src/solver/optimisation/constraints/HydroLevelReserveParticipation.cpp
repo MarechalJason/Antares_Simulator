@@ -22,7 +22,7 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // P_{res} : power participation for reserve up res
         // R_{min,res} : max power participation ratio
         // R_down : min stock level
-        for (auto dir: {Direction::DOWN, Direction::UP})
+        for (auto dir: {Type::DOWN, Type::UP})
         {
             builder.updateHourWithinWeek(pdt);
             for (auto& capacityReservation:
@@ -40,11 +40,11 @@ void HydroLevelReserveParticipation::add(int pays, int cluster, int pdt)
             }
             if (builder.NumberOfVariables() > 0)
             {
-                builder.HydroLevel(globalClusterIdx, dir == Direction::DOWN ? 1. : -1.);
+                builder.HydroLevel(globalClusterIdx, dir == Type::DOWN ? 1. : -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .HydroLevelParticipation[(int)dir][globalClusterIdx]
+                  .HydroLevelParticipation[dir][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;

@@ -7,7 +7,7 @@ void ThermalReserveParticipation::add(int pays, int reserve, int cluster, int pd
                                                  .areaCapacityReservations[reserve];
 
     auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation[cluster];
-    bool offUnitParticipating = capacityReservation.direction == Direction::UP
+    bool offUnitParticipating = capacityReservation.direction == Type::UP
                                 && reserveParticipation.maxPowerOff > 0;
     if (!data.Simulation)
     {

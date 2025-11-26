@@ -71,10 +71,10 @@ struct CORRESPONDANCES_DES_VARIABLES
         std::vector<int> runningThermalClusterParticipation;
         std::vector<int> thermalClusterParticipation;
         std::vector<int> offThermalClusterParticipation;
-        std::vector<int> STStorageClusterParticipation[(int)reserve::Direction::SIZE];
+        reserve::ReserveDirectionData<std::vector<int>> STStorageClusterParticipation;
         std::vector<int> STStorageReleaseClusterParticipation;
         std::vector<int> STStorageStoreClusterParticipation;
-        std::vector<int> HydroParticipation[(int)reserve::Direction::SIZE];
+        reserve::ReserveDirectionData<std::vector<int>> HydroParticipation;
         std::vector<int> HydroReleaseParticipation;
         std::vector<int> HydroStoreParticipation;
 
@@ -130,16 +130,16 @@ struct CORRESPONDANCES_DES_CONTRAINTES
         std::vector<int> maxPowerOffUnitsInThermalCluster;
         std::vector<int> thermalClusterPOutBoundMin;
         std::vector<int> thermalClusterPOutBoundMax;
-        std::vector<int> STStorageLevelParticipation[(int)reserve::Direction::SIZE];
+        reserve::ReserveDirectionData<std::vector<int>> STStorageLevelParticipation;
         std::vector<int> STStorageEnergyLevelParticipation;
-        std::vector<int>
-          STStorageGlobalStockEnergyLevelParticipation[(int)reserve::Direction::SIZE];
+        reserve::ReserveDirectionData<std::vector<int>>
+          STStorageGlobalStockEnergyLevelParticipation;
         std::vector<int> STStorageClusterMaxReleaseParticipation;
         std::vector<int> STStorageClusterMaxStoreParticipation;
         std::vector<int> STStorageClusterReleaseCapacityThresholdsMax;
         std::vector<int> STStorageClusterReleaseCapacityThresholdsMin;
         std::vector<int> STStorageClusterStoreCapacityThresholds;
-        std::vector<int> HydroLevelParticipation[(int)reserve::Direction::SIZE];
+        reserve::ReserveDirectionData<std::vector<int>> HydroLevelParticipation;
         std::vector<int> HydroEnergyLevelParticipation;
         std::vector<int> HydroGlobalEnergyLevelParticipationUp;
         std::vector<int> HydroGlobalEnergyLevelParticipationDown;
@@ -357,7 +357,7 @@ struct CAPACITY_RESERVATION
     std::vector<RESERVE_PARTICIPATION_HYDRO> AllHydroReservesParticipation;
     std::vector<double> need; //!< Vector size is number of hours in year
 
-    reserve::Direction direction{reserve::Direction::DOWN};
+    reserve::Type direction{reserve::Type::DOWN};
     double unsuppliedCost = 0;
     double spillageCost = 0;
     double powerActivationRatio = 0;
@@ -378,8 +378,8 @@ struct RESERVE_PARTICIPATION_WITH_RESERVE_NAME
 // Vector size is number of reserves up or down
 struct AREA_RESERVES_VECTOR
 {
-    double maxGlobalEnergyActivationRatio[(int)reserve::Direction::SIZE] = {1., 1.};
-    int referenceGlobalActivationDuration[(int)reserve::Direction::SIZE] = {0, 0};
+    reserve::ReserveDirectionData<double> maxGlobalEnergyActivationRatio{1., 1.};
+    reserve::ReserveDirectionData<int> referenceGlobalActivationDuration{0, 0};
     std::vector<CAPACITY_RESERVATION> areaCapacityReservations{};
     std::map<
       /*area_clusterId*/ int,

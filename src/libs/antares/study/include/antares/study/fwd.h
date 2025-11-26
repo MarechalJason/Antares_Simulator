@@ -511,11 +511,28 @@ class DurationCollector;
 
 namespace reserve
 {
-enum class Direction
+enum class Type
 {
     DOWN = 0,
-    UP = 1,
-    SIZE = 2
+    UP = 1
+};
+
+template<typename T>
+struct ReserveDirectionData
+{
+    T up;
+    T down;
+
+    // Optional: array-style access
+    T& operator[](reserve::Type dir)
+    {
+        return (dir == reserve::Type::UP) ? up : down;
+    }
+
+    const T& operator[](reserve::Type dir) const
+    {
+        return (dir == reserve::Type::UP) ? up : down;
+    }
 };
 } // namespace reserve
 

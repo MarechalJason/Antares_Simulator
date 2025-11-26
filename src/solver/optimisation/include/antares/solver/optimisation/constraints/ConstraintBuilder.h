@@ -110,7 +110,7 @@ public:
                                                           int offset = 0,
                                                           int delta = 0);
 
-    ConstraintBuilder& STStorageClusterReserveParticipation(reserve::Direction dir,
+    ConstraintBuilder& STStorageClusterReserveParticipation(reserve::Type dir,
                                                             unsigned int index,
                                                             double coeff,
                                                             int offset = 0,
@@ -126,7 +126,7 @@ public:
                                                                  int offset = 0,
                                                                  int delta = 0);
 
-    ConstraintBuilder& HydroReserveParticipation(reserve::Direction dir,
+    ConstraintBuilder& HydroReserveParticipation(reserve::Type dir,
                                                  unsigned int index,
                                                  double coeff,
                                                  int offset = 0,
@@ -383,7 +383,7 @@ struct ReserveData
     int countNumberOfConstraintsForThermalReserves(int pays, int cluster)
     {
         int count = 0;
-        for (auto dir: {reserve::Direction::UP, reserve::Direction::DOWN})
+        for (auto dir: {reserve::Type::UP, reserve::Type::DOWN})
         {
             if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
                                       | reserve::filter(dir),
@@ -401,10 +401,10 @@ struct ReserveData
                                                  bool accountForGlobalActivationDuration = false)
     {
         int count = 0;
-        for (auto dir: {reserve::Direction::UP, reserve::Direction::DOWN})
+        for (auto dir: {reserve::Type::UP, reserve::Type::DOWN})
         {
             if (!accountForGlobalActivationDuration
-                || areaReserves[pays].referenceGlobalActivationDuration[(int)dir])
+                || areaReserves[pays].referenceGlobalActivationDuration[dir])
             {
                 if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
                                           | reserve::filter(dir),
@@ -425,10 +425,10 @@ struct ReserveData
       bool accountForGlobalActivationDuration = false)
     {
         int count = 0;
-        for (auto dir: {reserve::Direction::UP, reserve::Direction::DOWN})
+        for (auto dir: {reserve::Type::UP, reserve::Type::DOWN})
         {
             if (!accountForGlobalActivationDuration
-                || areaReserves[pays].referenceGlobalActivationDuration[(int)dir])
+                || areaReserves[pays].referenceGlobalActivationDuration[dir])
             {
                 if (std::ranges::any_of(
                       areaReserves[pays].areaCapacityReservations | reserve::filter(dir),

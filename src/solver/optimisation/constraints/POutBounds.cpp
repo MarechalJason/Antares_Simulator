@@ -20,7 +20,7 @@ void POutBounds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             for (const auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(Direction::DOWN))
+                 data.areaReserves[pays].areaCapacityReservations | filter(Type::DOWN))
             {
                 if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
                 {
@@ -58,7 +58,7 @@ void POutBounds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             for (const auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(Direction::UP))
+                 data.areaReserves[pays].areaCapacityReservations | filter(Type::UP))
             {
                 if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
                 {

@@ -17,7 +17,7 @@ void HydroReserveParticipation::add(int pays, int reserve, int cluster, int pdt)
         RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
                                                               .AllHydroReservesParticipation
                                                                 [cluster];
-        bool isUpReserve = capacityReservation.direction == Direction::UP;
+        bool isUpReserve = capacityReservation.direction == Type::UP;
         builder.updateHourWithinWeek(pdt)
           .HydroReleaseReserveParticipation(reserveParticipation.globalIndexClusterParticipation,
                                             isUpReserve ? -1.0 : 1.0)

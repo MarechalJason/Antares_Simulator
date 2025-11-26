@@ -198,8 +198,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                * cluster.series->lowerRuleCurve[pdtGlobal];
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .STStorageLevelParticipation[(int)reserve::Direction::DOWN]
-                                                [cluster.clusterGlobalIndex];
+                    .STStorageLevelParticipation.down[cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = level_max;
@@ -207,8 +206,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .STStorageLevelParticipation[(int)reserve::Direction::UP]
-                                                [cluster.clusterGlobalIndex];
+                    .STStorageLevelParticipation.up[cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = -level_min;
@@ -216,28 +214,20 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .STStorageGlobalStockEnergyLevelParticipation[(int)reserve::Direction::DOWN]
-                                                                 [cluster.clusterGlobalIndex];
+                    .STStorageGlobalStockEnergyLevelParticipation.down[cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserves.referenceGlobalActivationDuration[(
-                                      int)reserve::Direction::DOWN]
-                                    * reserves.maxGlobalEnergyActivationRatio[(
-                                      int)reserve::Direction::DOWN]
-                                    * level_max;
+                SecondMembre[cnt] = reserves.referenceGlobalActivationDuration.down
+                                    * reserves.maxGlobalEnergyActivationRatio.down * level_max;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .STStorageGlobalStockEnergyLevelParticipation[(int)reserve::Direction::UP]
-                                                                 [cluster.clusterGlobalIndex];
+                    .STStorageGlobalStockEnergyLevelParticipation.up[cluster.clusterGlobalIndex];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = -reserves.referenceGlobalActivationDuration[(
-                                      int)reserve::Direction::UP]
-                                    * reserves
-                                        .maxGlobalEnergyActivationRatio[(int)reserve::Direction::UP]
-                                    * level_min;
+                SecondMembre[cnt] = -reserves.referenceGlobalActivationDuration.up
+                                    * reserves.maxGlobalEnergyActivationRatio.up * level_min;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
         }
@@ -246,7 +236,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         void setSTStorageReserveParticipationRightSides(
           const RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation,
           const CAPACITY_RESERVATION& reserve,
-          Direction dir)
+          Type dir)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -274,7 +264,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             {
                 auto& cluster = problemeHebdo
                                   ->ShortTermStorage[pays][reserveParticipation.clusterIdInArea];
-                if (dir == Direction::UP)
+                if (dir == Type::UP)
                 {
                     double level_min = cluster.reservoirCapacity
                                        * cluster.series->lowerRuleCurve[pdtGlobal];
@@ -329,7 +319,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             double level_max = hydroCluster.NiveauHoraireSup[pdtHebdo];
             double level_min = hydroCluster.NiveauHoraireInf[pdtHebdo];
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .HydroLevelParticipation[(int)Direction::DOWN][globalClusterIdx];
+                    .HydroLevelParticipation.down[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.NiveauHoraireSup[pdtHebdo];
@@ -337,7 +327,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             }
 
             cnt = CorrespondanceCntNativesCntOptim.reservesIndices.value()
-                    .HydroLevelParticipation[(int)Direction::UP][globalClusterIdx];
+                    .HydroLevelParticipation.up[globalClusterIdx];
             if (cnt >= 0)
             {
                 SecondMembre[cnt] = hydroCluster.NiveauHoraireInf[pdtHebdo];
@@ -348,11 +338,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                     .HydroGlobalEnergyLevelParticipationDown[globalClusterIdx];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = reserves.referenceGlobalActivationDuration[(
-                                      int)reserve::Direction::DOWN]
-                                    * reserves.maxGlobalEnergyActivationRatio[(
-                                      int)reserve::Direction::DOWN]
-                                    * level_max;
+                SecondMembre[cnt] = reserves.referenceGlobalActivationDuration.down
+                                    * reserves.maxGlobalEnergyActivationRatio.down * level_max;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
 
@@ -360,11 +347,8 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                     .HydroGlobalEnergyLevelParticipationUp[globalClusterIdx];
             if (cnt >= 0)
             {
-                SecondMembre[cnt] = -reserves.referenceGlobalActivationDuration[(
-                                      int)reserve::Direction::UP]
-                                    * reserves
-                                        .maxGlobalEnergyActivationRatio[(int)reserve::Direction::UP]
-                                    * level_min;
+                SecondMembre[cnt] = -reserves.referenceGlobalActivationDuration.up
+                                    * reserves.maxGlobalEnergyActivationRatio.up * level_min;
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
         }
@@ -373,7 +357,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
         void setHydroReserveParticipationRightSides(
           const RESERVE_PARTICIPATION_HYDRO& reserveParticipation,
           const CAPACITY_RESERVATION& reserve,
-          Direction dir)
+          Type dir)
         {
             const auto& CorrespondanceCntNativesCntOptim = problemeHebdo
                                                              ->CorrespondanceCntNativesCntOptim
@@ -400,7 +384,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
             if (cnt >= 0)
             {
                 auto& hydroCluster = problemeHebdo->CaracteristiquesHydrauliques[pays];
-                if (dir == Direction::UP)
+                if (dir == Type::UP)
                 {
                     double level_min = hydroCluster.NiveauHoraireInf[pdtHebdo];
 
@@ -443,7 +427,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                 reserveVariablesRightSidesSetter.setReserveRightSides(areaReserve);
 
                 // Thermal Cluster
-                if (areaReserve.direction == Direction::UP)
+                if (areaReserve.direction == Type::UP)
                 {
                     for (const auto& [clusterId, clusterReserveParticipation]:
                          areaReserve.AllThermalReservesParticipation)

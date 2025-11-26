@@ -15,12 +15,11 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
 
-        for (auto dir: {Direction::DOWN, Direction::UP})
+        for (auto dir: {Type::DOWN, Type::UP})
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDuration[(int)dir];
-                 t++)
+            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDuration[dir]; t++)
             {
                 for (auto& capacityReservation:
                      data.areaReserves[pays].areaCapacityReservations | filter(dir))
@@ -39,10 +38,10 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
                 }
                 if (builder.NumberOfVariables() > 0)
                 {
-                    int sign = dir == Direction::UP ? -1 : 1;
+                    int sign = dir == Type::UP ? -1 : 1;
                     builder.ShortTermStorageLevel(
                       globalClusterIdx,
-                      sign * data.areaReserves[pays].maxGlobalEnergyActivationRatio[(int)dir],
+                      sign * data.areaReserves[pays].maxGlobalEnergyActivationRatio[dir],
                       t,
                       builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }
@@ -54,7 +53,7 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .STStorageGlobalStockEnergyLevelParticipation[(int)dir][globalClusterIdx]
+                  .STStorageGlobalStockEnergyLevelParticipation[dir][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);

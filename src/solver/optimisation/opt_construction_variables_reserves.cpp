@@ -84,7 +84,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a Thermal cluster participation to a reserve up or down
         void initThermalReserveParticipation(
-          Direction dir,
+          Type dir,
           int pdt,
           const RESERVE_PARTICIPATION_THERMAL& clusterReserveParticipation,
           const std::string& reserveName)
@@ -92,8 +92,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
             const auto& clusterName = clusterReserveParticipation.clusterName;
             if (Simulation)
             {
-                NombreDeVariables += (dir == Direction::UP ? 4
-                                                           : 2); // 4 for up reserves, 2 for down
+                NombreDeVariables += (dir == Type::UP ? 4 : 2); // 4 for up reserves, 2 for down
             }
             else
             {
@@ -109,8 +108,8 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                                                                    reserveName);
                 NombreDeVariables++;
 
-                if (dir == Direction::UP) // For off units in cluster (off units can not participate
-                                          // to down reserves)
+                if (dir == Type::UP) // For off units in cluster (off units can not participate
+                                     // to down reserves)
                 {
                     variableManager.OffThermalClusterReserveParticipation(
                       clusterReserveParticipation.globalIndexClusterParticipation,
@@ -153,7 +152,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a ShortTerm cluster participation to a reserve
         void initSTStorageReserveParticipation(
-          Direction dir,
+          Type dir,
           int pdt,
           const RESERVE_PARTICIPATION_STSTORAGE& clusterReserveParticipation,
           const std::string& reserveName)
@@ -208,7 +207,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a Hydro participation to a reserve
         void initHydroReserveParticipation(
-          Direction dir,
+          Type dir,
           int pdt,
           const RESERVE_PARTICIPATION_HYDRO& clusterReserveParticipation,
           const std::string& reserveName)

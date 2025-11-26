@@ -22,7 +22,7 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // P_{res} : power participation for reserve up res
         // R_{min,res} : max power participation ratio
         // R_down : min stock level
-        for (auto dir: {reserve::Direction::DOWN, reserve::Direction::UP})
+        for (auto dir: {reserve::Type::DOWN, reserve::Type::UP})
         {
             builder.updateHourWithinWeek(pdt);
 
@@ -42,11 +42,11 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
             if (builder.NumberOfVariables() > 0)
             {
                 builder.ShortTermStorageLevel(globalClusterIdx,
-                                              dir == reserve::Direction::DOWN ? 1. : -1.);
+                                              dir == reserve::Type::DOWN ? 1. : -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .STStorageLevelParticipation[(int)dir][globalClusterIdx]
+                  .STStorageLevelParticipation[dir][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;

@@ -27,7 +27,7 @@
 namespace reserve
 {
 
-inline auto filter(Direction dir)
+inline auto filter(Type dir)
 {
     return std::views::filter([dir](const auto& r) { return r.direction == dir; });
 }
