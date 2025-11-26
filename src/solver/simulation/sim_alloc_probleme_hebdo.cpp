@@ -378,7 +378,7 @@ void SIM_AllocationProblemePasDeTemps(PROBLEME_HEBDO& problem,
               .assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
-              .HydroLevelParticipation[(int)reserve::Direction::DOWN]
+              .HydroLevelParticipation[(int)reserve::Direction::UP]
               .assign(study.runtime.counts.hydros, -1);
             problem.CorrespondanceCntNativesCntOptim[k]
               .reservesIndices.value()
