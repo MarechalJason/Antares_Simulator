@@ -69,6 +69,7 @@ set(SRC_STUDY_PART_COMMON
         include/antares/study/parts/common/makeGroupsOfSymmetriesFromString.h
         include/antares/study/parts/common/SymmetryCollectorVisitor.h
         parts/common/cluster_list.cpp
+        include/antares/study/parts/common/CustomErrorListener.h
         parts/common/makeGroupsofSymmettriesFromString.cpp
 
 )
@@ -121,6 +122,7 @@ set(SRC_STUDY_PART_SHORT_TERM_STORAGE
         include/antares/study/parts/short-term-storage/additionalConstraints.h
         parts/short-term-storage/cluster.cpp
         parts/short-term-storage/additionalConstraints.cpp
+        include/antares/study/parts/common/CustomErrorListener.h
 )
 source_group("study\\part\\short-term-storage" FILES ${SRC_STUDY_PART_SHORT_TERM_SOTRAGE})
 

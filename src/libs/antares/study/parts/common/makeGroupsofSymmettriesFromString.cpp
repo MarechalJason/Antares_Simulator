@@ -20,6 +20,7 @@
  */
 #include <boost/algorithm/string.hpp>
 
+#include "antares/study/parts/common/CustomErrorListener.h"
 #include "antares/study/parts/common/SymmetryCollectorVisitor.h"
 #include "antares/study/parts/common/makeGroupsOfSymmetriesFromString.h"
 
@@ -27,22 +28,6 @@
 
 namespace Antares::Data::Symmetries
 {
-
-void CustomErrorListener::syntaxError(antlr4::Recognizer* recognizer,
-                                      antlr4::Token* offendingSymbol,
-                                      size_t line,
-                                      size_t charPositionInLine,
-                                      const std::string& msg,
-                                      std::exception_ptr e)
-{
-    std::ostringstream os;
-    os << "Syntax error at line " << line << ":" << charPositionInLine << " - " << msg << std::endl;
-    if (offendingSymbol)
-    {
-        os << "Offending symbol: " << offendingSymbol->getText() << std::endl;
-    }
-    throw SymmetriesError(os.str());
-}
 
 class GroupsSymmetries
 {
@@ -67,7 +52,7 @@ public:
 
 private:
     std::string symmetriesField_;
-    CustomErrorListener customErrorListener_;
+    CustomErrorListener<SymmetriesError> customErrorListener_;
     antlr4::ANTLRInputStream stream_;
     SymmetryFieldLexer lexer_;
     antlr4::CommonTokenStream tokens_;
