@@ -122,7 +122,7 @@ void ReserveParticipationGroup::BuildConstraints()
                             // 16 bis
                             pMaxReserve.add(pays, reserve, clusterId, pdt);
 
-                            if (areaReserve.direction == Type::UP
+                            if (areaReserve.type == Type::UP
                                 && clusterReserveParticipation.maxPowerOff > 0)
                             {
                                 // 16 ter

@@ -23,14 +23,14 @@ void STReserveParticipation::add(int pays, int reserve, int cluster, int pdt)
         builder.updateHourWithinWeek(pdt)
           .STStorageReleaseClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            capacityReservation.direction == Type::UP ? -1.0 : 1.0)
+            capacityReservation.type == Type::UP ? -1.0 : 1.0)
           .STStorageStoreClusterReserveParticipation(
             reserveParticipation.globalIndexClusterParticipation,
-            capacityReservation.direction == Type::UP ? -1.0 : 1.0)
+            capacityReservation.type == Type::UP ? -1.0 : 1.0)
           .STStorageClusterReserveParticipation(
-            capacityReservation.direction,
+            capacityReservation.type,
             reserveParticipation.globalIndexClusterParticipation,
-            capacityReservation.direction == Type::UP ? 1.0 : -1.0)
+            capacityReservation.type == Type::UP ? 1.0 : -1.0)
           .equalTo();
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -40,7 +40,7 @@ void STReserveParticipation::add(int pays, int reserve, int cluster, int pdt)
         namer.STReserveParticipation(builder.data.nombreDeContraintes,
                                      reserveParticipation.clusterName,
                                      capacityReservation.reserveName,
-                                     capacityReservation.direction);
+                                     capacityReservation.type);
         builder.build();
     }
     else

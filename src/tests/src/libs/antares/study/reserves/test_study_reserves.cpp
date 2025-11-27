@@ -62,31 +62,31 @@ public:
         CAPACITY_RESERVATION areaCapacityReservations;
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
-        tmpCapacityReservationUp.direction = Type::UP;
+        tmpCapacityReservationUp.type = Type::UP;
         tmpCapacityReservationUp.unsuppliedCost = 1;
         tmpCapacityReservationUp.referenceActivationHours = 2;
         tmpCapacityReservationUp.powerActivationRatio = 3;
         tmpCapacityReservationUp.energyActivationRatio = 4;
 
-        tmpCapacityReservationUpTwo.direction = Type::UP;
+        tmpCapacityReservationUpTwo.type = Type::UP;
         tmpCapacityReservationUpTwo.unsuppliedCost = 11;
         tmpCapacityReservationUpTwo.referenceActivationHours = 12;
         tmpCapacityReservationUpTwo.powerActivationRatio = 13;
         tmpCapacityReservationUpTwo.energyActivationRatio = 14;
 
-        tmpCapacityReservationUpThree.direction = Type::UP;
+        tmpCapacityReservationUpThree.type = Type::UP;
         tmpCapacityReservationUpThree.unsuppliedCost = 21;
         tmpCapacityReservationUpThree.referenceActivationHours = 22;
         tmpCapacityReservationUpThree.powerActivationRatio = 23;
         tmpCapacityReservationUpThree.energyActivationRatio = 24;
 
-        tmpCapacityReservationDown.direction = Type::DOWN;
+        tmpCapacityReservationDown.type = Type::DOWN;
         tmpCapacityReservationDown.unsuppliedCost = 5;
         tmpCapacityReservationDown.referenceActivationHours = 6;
         tmpCapacityReservationDown.powerActivationRatio = 7;
         tmpCapacityReservationDown.energyActivationRatio = 8;
 
-        tmpCapacityReservationDownTwo.direction = Type::DOWN;
+        tmpCapacityReservationDownTwo.type = Type::DOWN;
         tmpCapacityReservationDownTwo.unsuppliedCost = 15;
         tmpCapacityReservationDownTwo.referenceActivationHours = 16;
         tmpCapacityReservationDownTwo.powerActivationRatio = 17;
@@ -135,25 +135,25 @@ struct OneProblemWithReservesTwoAreas
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
 
-        tmpCapacityReservationUp.direction = Type::UP;
+        tmpCapacityReservationUp.type = Type::UP;
         tmpCapacityReservationUp.unsuppliedCost = 1;
         tmpCapacityReservationUp.referenceActivationHours = 2;
         tmpCapacityReservationUp.powerActivationRatio = 3;
         tmpCapacityReservationUp.energyActivationRatio = 4;
 
-        tmpCapacityReservationDown.direction = Type::DOWN;
+        tmpCapacityReservationDown.type = Type::DOWN;
         tmpCapacityReservationDown.unsuppliedCost = 5;
         tmpCapacityReservationDown.referenceActivationHours = 6;
         tmpCapacityReservationDown.powerActivationRatio = 7;
         tmpCapacityReservationDown.energyActivationRatio = 8;
 
-        tmpCapacityReservationUpB.direction = Type::UP;
+        tmpCapacityReservationUpB.type = Type::UP;
         tmpCapacityReservationUpB.unsuppliedCost = 11;
         tmpCapacityReservationUpB.referenceActivationHours = 12;
         tmpCapacityReservationUpB.powerActivationRatio = 13;
         tmpCapacityReservationUpB.energyActivationRatio = 14;
 
-        tmpCapacityReservationDownB.direction = Type::DOWN;
+        tmpCapacityReservationDownB.type = Type::DOWN;
         tmpCapacityReservationDownB.unsuppliedCost = 15;
         tmpCapacityReservationDownB.referenceActivationHours = 16;
         tmpCapacityReservationDownB.powerActivationRatio = 17;
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(reserve_add)
     auto study = std::make_unique<Study>();
     const auto areaA = study->areaAdd("A");
     CapacityReservation tmpCapacityReservationUp;
-    tmpCapacityReservationUp.direction = Type::UP;
+    tmpCapacityReservationUp.type = Type::UP;
     tmpCapacityReservationUp.unsuppliedCost = 0;
     areaA->allCapacityReservations = AllCapacityReservations();
     areaA->allCapacityReservations.value()

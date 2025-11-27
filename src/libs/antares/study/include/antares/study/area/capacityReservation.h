@@ -38,7 +38,7 @@ using ReserveName = std::string;
 /// spillage cost
 struct CapacityReservation
 {
-    reserve::Type direction{reserve::Type::DOWN};
+    reserve::Type type{reserve::Type::DOWN};
     double unsuppliedCost = 0.;
     double spillageCost = 0.;
     double powerActivationRatio = 0.;
@@ -65,8 +65,8 @@ struct CapacityReservation
 /// @brief Stores all the Capacity reservations in two maps for the up and down reserves
 struct AllCapacityReservations
 {
-    reserve::ReserveDirectionData<double> maxGlobalEnergyActivationRatio{1., 1.};
-    reserve::ReserveDirectionData<int> referenceGlobalActivationDuration{1, 1};
+    reserve::ReserveTypeData<double> maxGlobalEnergyActivationRatio{1., 1.};
+    reserve::ReserveTypeData<int> referenceGlobalActivationDuration{1, 1};
 
     std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
       reserveGroupPartThermal;

@@ -29,7 +29,7 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
                         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
                           = capacityReservation.AllSTStorageReservesParticipation[cluster];
                         builder.STStorageClusterReserveParticipation(
-                          capacityReservation.direction,
+                          capacityReservation.type,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,

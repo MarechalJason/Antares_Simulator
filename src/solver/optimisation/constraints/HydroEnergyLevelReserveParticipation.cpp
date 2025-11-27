@@ -19,7 +19,7 @@ void HydroEnergyLevelReserveParticipation::add(int pays, int cluster, int reserv
             // R_{min,res} : max power participation ratio
             // R_up : max stock level
             {
-                double sign = capacityReservation.direction == Type::UP ? -1. : 1.;
+                double sign = capacityReservation.type == Type::UP ? -1. : 1.;
 
                 RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
                                                                       .AllHydroReservesParticipation
@@ -30,7 +30,7 @@ void HydroEnergyLevelReserveParticipation::add(int pays, int cluster, int reserv
                 for (int t = 0; t < capacityReservation.maxActivationDuration; t++)
                 {
                     builder.HydroReserveParticipation(
-                      capacityReservation.direction,
+                      capacityReservation.type,
                       reserveParticipation.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio,
                       t,

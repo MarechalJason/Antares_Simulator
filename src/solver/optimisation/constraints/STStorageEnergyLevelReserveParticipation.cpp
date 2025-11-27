@@ -19,7 +19,7 @@ void STStorageEnergyLevelReserveParticipation::add(int pays, int cluster, int re
             // R_{min,res} : max power participation ratio
             // R_up : max stock level
             {
-                double sign = capacityReservation.direction == Type::UP ? -1.0 : 1.0;
+                double sign = capacityReservation.type == Type::UP ? -1.0 : 1.0;
 
                 RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
                   = capacityReservation.AllSTStorageReservesParticipation[cluster];
@@ -29,7 +29,7 @@ void STStorageEnergyLevelReserveParticipation::add(int pays, int cluster, int re
                 for (int t = 0; t < capacityReservation.maxActivationDuration; t++)
                 {
                     builder.STStorageClusterReserveParticipation(
-                      capacityReservation.direction,
+                      capacityReservation.type,
                       reserveParticipation.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio,
                       t,

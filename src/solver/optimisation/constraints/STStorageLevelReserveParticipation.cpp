@@ -34,7 +34,7 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
                     RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
                       = capacityReservation.AllSTStorageReservesParticipation[cluster];
                     builder.STStorageClusterReserveParticipation(
-                      capacityReservation.direction,
+                      capacityReservation.type,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }

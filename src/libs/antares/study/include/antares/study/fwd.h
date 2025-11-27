@@ -23,6 +23,7 @@
 
 #include <bit>
 #include <map>
+#include <ranges>
 
 #include <yuni/yuni.h>
 #include <yuni/core/string.h>
@@ -518,22 +519,27 @@ enum class Type
 };
 
 template<typename T>
-struct ReserveDirectionData
+struct ReserveTypeData
 {
     T up;
     T down;
 
     // Optional: array-style access
-    T& operator[](reserve::Type dir)
+    T& operator[](reserve::Type type)
     {
-        return (dir == reserve::Type::UP) ? up : down;
+        return (type == reserve::Type::UP) ? up : down;
     }
 
-    const T& operator[](reserve::Type dir) const
+    const T& operator[](reserve::Type type) const
     {
-        return (dir == reserve::Type::UP) ? up : down;
+        return (type == reserve::Type::UP) ? up : down;
     }
 };
+
+inline auto filter(Type type)
+{
+    return std::views::filter([type](const auto& r) { return r.type == type; });
+}
 } // namespace reserve
 
 #endif // __ANTARES_LIBS_STUDY_FWD_H__

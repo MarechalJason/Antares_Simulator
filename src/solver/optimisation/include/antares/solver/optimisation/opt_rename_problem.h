@@ -19,7 +19,8 @@
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
 #pragma once
-#include "antares/solver/optimisation/ReserveDirection.h"
+
+#include <antares/study/fwd.h>
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 
 #include "opt_export_structure.h"

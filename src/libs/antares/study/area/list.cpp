@@ -167,11 +167,11 @@ void readReserveParameters(fs::path& folderInput,
         {
             if (p->value == "up")
             {
-                capacityReservation.direction = reserve::Type::UP;
+                capacityReservation.type = reserve::Type::UP;
             }
             else if (p->value == "down")
             {
-                capacityReservation.direction = reserve::Type::DOWN;
+                capacityReservation.type = reserve::Type::DOWN;
             }
             else
             {

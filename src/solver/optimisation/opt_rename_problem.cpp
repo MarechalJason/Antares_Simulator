@@ -24,7 +24,6 @@
 #include <map>
 #include <string>
 
-#include "antares/solver/optimisation/ReserveDirection.h"
 using namespace reserve;
 
 const std::string HOUR("hour");
@@ -759,8 +758,7 @@ void ConstraintNamer::STGlobalEnergyStockLevelReserveParticipation(unsigned int 
     }
     else
     {
-        throw std::runtime_error(
-          "Wrong direction inside STGlobalEnergyStockLevelReserveParticipation");
+        throw std::runtime_error("Wrong type inside STGlobalEnergyStockLevelReserveParticipation");
     }
 }
 

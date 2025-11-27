@@ -287,7 +287,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                      areaReserve.AllThermalReservesParticipation)
                 {
                     reserveVariablesInitializer.initThermalReserveParticipation(
-                      areaReserve.direction,
+                      areaReserve.type,
                       pdt,
                       clusterReserveParticipation,
                       areaReserve.reserveName);
@@ -298,7 +298,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                      areaReserve.AllSTStorageReservesParticipation)
                 {
                     reserveVariablesInitializer.initSTStorageReserveParticipation(
-                      areaReserve.direction,
+                      areaReserve.type,
                       pdt,
                       clusterReserveParticipation,
                       areaReserve.reserveName);
@@ -308,7 +308,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                 for (auto& clusterReserveParticipation: areaReserve.AllHydroReservesParticipation)
                 {
                     reserveVariablesInitializer.initHydroReserveParticipation(
-                      areaReserve.direction,
+                      areaReserve.type,
                       pdt,
                       clusterReserveParticipation,
                       areaReserve.reserveName);

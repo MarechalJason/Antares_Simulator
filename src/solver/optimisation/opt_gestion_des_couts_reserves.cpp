@@ -130,7 +130,7 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                      areaReserve.AllThermalReservesParticipation)
                 {
                     reserveCostsInitializer.initThermalReserveParticipationCosts(
-                      areaReserve.direction,
+                      areaReserve.type,
                       clusterReserveParticipation);
                 }
 
@@ -139,7 +139,7 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                      areaReserve.AllSTStorageReservesParticipation)
                 {
                     reserveCostsInitializer.initSTStorageReserveParticipationCosts(
-                      areaReserve.direction,
+                      areaReserve.type,
                       clusterReserveParticipation);
                 }
 
@@ -148,7 +148,7 @@ void OPT_InitialiserLesCoutsLineaireReserves(PROBLEME_HEBDO* problemeHebdo,
                      areaReserve.AllHydroReservesParticipation)
                 {
                     reserveCostsInitializer.initHydroReserveParticipationCosts(
-                      areaReserve.direction,
+                      areaReserve.type,
                       clusterReserveParticipation);
                 }
             }

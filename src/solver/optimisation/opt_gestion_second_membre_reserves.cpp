@@ -427,7 +427,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                 reserveVariablesRightSidesSetter.setReserveRightSides(areaReserve);
 
                 // Thermal Cluster
-                if (areaReserve.direction == Type::UP)
+                if (areaReserve.type == Type::UP)
                 {
                     for (const auto& [clusterId, clusterReserveParticipation]:
                          areaReserve.AllThermalReservesParticipation)
@@ -444,7 +444,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                     reserveVariablesRightSidesSetter.setSTStorageReserveParticipationRightSides(
                       clusterReserveParticipation,
                       areaReserve,
-                      areaReserve.direction);
+                      areaReserve.type);
                 }
 
                 // Hydro
@@ -454,7 +454,7 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                     reserveVariablesRightSidesSetter.setHydroReserveParticipationRightSides(
                       clusterReserveParticipation,
                       areaReserve,
-                      areaReserve.direction);
+                      areaReserve.type);
                 }
             }
 

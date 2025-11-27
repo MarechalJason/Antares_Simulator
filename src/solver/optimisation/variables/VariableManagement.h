@@ -1,6 +1,5 @@
 #pragma once
 
-#include "antares/solver/optimisation/ReserveDirection.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 
 namespace VariableManagement

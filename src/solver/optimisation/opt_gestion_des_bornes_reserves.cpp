@@ -160,21 +160,21 @@ void SetAllReservesBoundsForArea(ReserveVariablesBoundsSetter& setter,
         {
             setter.setThermalReserveParticipationBounds(thermal.areaIndexClusterParticipation,
                                                         thermal.globalIndexClusterParticipation,
-                                                        areaReserve.direction);
+                                                        areaReserve.type);
         }
 
         for (const auto& [clusterId, stStorage]: areaReserve.AllSTStorageReservesParticipation)
         {
             setter.setSTStorageReserveParticipationBounds(stStorage.areaIndexClusterParticipation,
                                                           stStorage.globalIndexClusterParticipation,
-                                                          areaReserve.direction);
+                                                          areaReserve.type);
         }
 
         for (const auto& hydro: areaReserve.AllHydroReservesParticipation)
         {
             setter.setHydroReserveParticipationBounds(hydro.areaIndexClusterParticipation,
                                                       hydro.globalIndexClusterParticipation,
-                                                      areaReserve.direction);
+                                                      areaReserve.type);
         }
     }
 }
