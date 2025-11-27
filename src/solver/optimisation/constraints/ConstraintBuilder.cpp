@@ -83,15 +83,15 @@ ConstraintBuilder& ConstraintBuilder::ThermalClusterReserveParticipation(unsigne
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::STStorageClusterReserveParticipation(Type dir,
+ConstraintBuilder& ConstraintBuilder::STStorageClusterReserveParticipation(Type type,
                                                                            unsigned int index,
                                                                            double coeff,
                                                                            int offset,
                                                                            int delta)
 {
-    AddVariable(
-      variableManager_.STStorageClusterReserveParticipation(dir, index, hourInWeek_, offset, delta),
-      coeff);
+    AddVariable(variableManager_
+                  .STStorageClusterReserveParticipation(type, index, hourInWeek_, offset, delta),
+                coeff);
     return *this;
 }
 
@@ -120,13 +120,13 @@ ConstraintBuilder& ConstraintBuilder::STStorageStoreClusterReserveParticipation(
     return *this;
 }
 
-ConstraintBuilder& ConstraintBuilder::HydroReserveParticipation(Type dir,
+ConstraintBuilder& ConstraintBuilder::HydroReserveParticipation(Type type,
                                                                 unsigned int index,
                                                                 double coeff,
                                                                 int offset,
                                                                 int delta)
 {
-    AddVariable(variableManager_.HydroReserveParticipation(dir, index, hourInWeek_, offset, delta),
+    AddVariable(variableManager_.HydroReserveParticipation(type, index, hourInWeek_, offset, delta),
                 coeff);
     return *this;
 }

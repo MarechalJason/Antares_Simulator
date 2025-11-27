@@ -84,7 +84,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a Thermal cluster participation to a reserve up or down
         void initThermalReserveParticipation(
-          Type dir,
+          Type type,
           int pdt,
           const RESERVE_PARTICIPATION_THERMAL& clusterReserveParticipation,
           const std::string& reserveName)
@@ -92,7 +92,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
             const auto& clusterName = clusterReserveParticipation.clusterName;
             if (Simulation)
             {
-                NombreDeVariables += (dir == Type::UP ? 4 : 2); // 4 for up reserves, 2 for down
+                NombreDeVariables += (type == Type::UP ? 4 : 2); // 4 for up reserves, 2 for down
             }
             else
             {
@@ -108,8 +108,8 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                                                                    reserveName);
                 NombreDeVariables++;
 
-                if (dir == Type::UP) // For off units in cluster (off units can not participate
-                                     // to down reserves)
+                if (type == Type::UP) // For off units in cluster (off units can not participate
+                                      // to down reserves)
                 {
                     variableManager.OffThermalClusterReserveParticipation(
                       clusterReserveParticipation.globalIndexClusterParticipation,
@@ -152,7 +152,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a ShortTerm cluster participation to a reserve
         void initSTStorageReserveParticipation(
-          Type dir,
+          Type type,
           int pdt,
           const RESERVE_PARTICIPATION_STSTORAGE& clusterReserveParticipation,
           const std::string& reserveName)
@@ -190,12 +190,12 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
                 // For Short Term Storage participation to the up reserves
                 variableManager.STStorageClusterReserveParticipation(
-                  dir,
+                  type,
                   clusterReserveParticipation.globalIndexClusterParticipation,
                   pdt)
                   = NombreDeVariables;
 
-                variableNamer.ParticipationOfSTStorageToReserve(dir,
+                variableNamer.ParticipationOfSTStorageToReserve(type,
                                                                 NombreDeVariables,
                                                                 clusterName,
                                                                 reserveName);
@@ -207,7 +207,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
         // Init variables for a Hydro participation to a reserve
         void initHydroReserveParticipation(
-          Type dir,
+          Type type,
           int pdt,
           const RESERVE_PARTICIPATION_HYDRO& clusterReserveParticipation,
           const std::string& reserveName)
@@ -245,14 +245,14 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
 
                 // For Hydro participation to the reserves
                 variableManager.HydroReserveParticipation(
-                  dir,
+                  type,
                   clusterReserveParticipation.globalIndexClusterParticipation,
                   pdt)
                   = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
 
-                variableNamer.ParticipationOfHydroToReserve(dir,
+                variableNamer.ParticipationOfHydroToReserve(type,
                                                             NombreDeVariables,
                                                             clusterName,
                                                             reserveName);

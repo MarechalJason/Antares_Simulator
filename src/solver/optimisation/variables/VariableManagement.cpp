@@ -79,7 +79,7 @@ int& VariableManager::ThermalClusterReserveParticipation(unsigned int index,
       .thermalClusterParticipation[index];
 }
 
-int& VariableManager::STStorageClusterReserveParticipation(reserve::Type dir,
+int& VariableManager::STStorageClusterReserveParticipation(reserve::Type type,
                                                            unsigned int index,
                                                            unsigned int hourInWeek,
                                                            int offset,
@@ -89,7 +89,7 @@ int& VariableManager::STStorageClusterReserveParticipation(reserve::Type dir,
 
     return CorrespondanceVarNativesVarOptim_[pdt]
       .reservesIndices.value()
-      .STStorageClusterParticipation[dir][index];
+      .STStorageClusterParticipation[type][index];
 }
 
 int& VariableManager::STStorageReleaseClusterReserveParticipation(unsigned int index,
@@ -116,14 +116,14 @@ int& VariableManager::STStorageStoreClusterReserveParticipation(unsigned int ind
       .STStorageStoreClusterParticipation[index];
 }
 
-int& VariableManager::HydroReserveParticipation(reserve::Type dir,
+int& VariableManager::HydroReserveParticipation(reserve::Type type,
                                                 unsigned int index,
                                                 unsigned int hourInWeek,
                                                 int offset,
                                                 int delta)
 {
     auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
-    return CorrespondanceVarNativesVarOptim_[pdt].reservesIndices.value().HydroParticipation[dir]
+    return CorrespondanceVarNativesVarOptim_[pdt].reservesIndices.value().HydroParticipation[type]
                                                                                             [index];
 }
 

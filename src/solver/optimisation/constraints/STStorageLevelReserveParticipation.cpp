@@ -22,12 +22,12 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // P_{res} : power participation for reserve up res
         // R_{min,res} : max power participation ratio
         // R_down : min stock level
-        for (auto dir: {reserve::Type::DOWN, reserve::Type::UP})
+        for (auto type: {reserve::Type::DOWN, reserve::Type::UP})
         {
             builder.updateHourWithinWeek(pdt);
 
             for (auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(dir))
+                 data.areaReserves[pays].areaCapacityReservations | filter(type))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
@@ -42,11 +42,11 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
             if (builder.NumberOfVariables() > 0)
             {
                 builder.ShortTermStorageLevel(globalClusterIdx,
-                                              dir == reserve::Type::DOWN ? 1. : -1.);
+                                              type == reserve::Type::DOWN ? 1. : -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .STStorageLevelParticipation[dir][globalClusterIdx]
+                  .STStorageLevelParticipation[type][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
@@ -55,7 +55,7 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 namer.STStorageLevelReserveParticipation(
                   builder.data.nombreDeContraintes,
                   data.shortTermStorageOfArea[pays][cluster].name,
-                  dir);
+                  type);
                 builder.build();
             }
         }

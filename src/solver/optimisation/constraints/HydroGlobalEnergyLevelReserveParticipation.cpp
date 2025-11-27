@@ -15,24 +15,24 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
 
-        for (Type dir: {Type::DOWN, Type::UP})
+        for (Type type: {Type::DOWN, Type::UP})
         {
             builder.updateHourWithinWeek(pdt);
-            int timeMax = data.areaReserves[pays].referenceGlobalActivationDuration[dir];
-            double maxGlobalEnergyActivationRatio = (dir == Type::UP ? -1 : 1)
+            int timeMax = data.areaReserves[pays].referenceGlobalActivationDuration[type];
+            double maxGlobalEnergyActivationRatio = (type == Type::UP ? -1 : 1)
                                                     * data.areaReserves[pays]
-                                                        .maxGlobalEnergyActivationRatio[dir];
+                                                        .maxGlobalEnergyActivationRatio[type];
             for (int t = 0; t < timeMax; t++)
             {
                 for (auto& capacityReservation:
-                     data.areaReserves[pays].areaCapacityReservations | filter(dir))
+                     data.areaReserves[pays].areaCapacityReservations | filter(type))
                 {
                     if (capacityReservation.AllHydroReservesParticipation.size())
                     {
                         RESERVE_PARTICIPATION_HYDRO& reserveParticipation
                           = capacityReservation.AllHydroReservesParticipation[cluster];
                         builder.HydroReserveParticipation(
-                          dir,
+                          type,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,
@@ -52,7 +52,7 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
             {
                 builder.lessThan();
 
-                if (dir == Type::UP)
+                if (type == Type::UP)
                 {
                     data.CorrespondanceCntNativesCntOptim[pdt]
                       .reservesIndices.value()
@@ -71,7 +71,7 @@ void HydroGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int 
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
                 namer.UpdateTimeStep(hourInTheYear);
                 namer.UpdateArea(builder.data.NomsDesPays[pays]);
-                if (dir == Type::UP)
+                if (type == Type::UP)
                 {
                     namer.HydroGlobalEnergyLevelReserveParticipationUp(
                       builder.data.nombreDeContraintes,

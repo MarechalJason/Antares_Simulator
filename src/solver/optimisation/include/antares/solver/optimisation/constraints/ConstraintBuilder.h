@@ -110,7 +110,7 @@ public:
                                                           int offset = 0,
                                                           int delta = 0);
 
-    ConstraintBuilder& STStorageClusterReserveParticipation(reserve::Type dir,
+    ConstraintBuilder& STStorageClusterReserveParticipation(reserve::Type type,
                                                             unsigned int index,
                                                             double coeff,
                                                             int offset = 0,
@@ -126,7 +126,7 @@ public:
                                                                  int offset = 0,
                                                                  int delta = 0);
 
-    ConstraintBuilder& HydroReserveParticipation(reserve::Type dir,
+    ConstraintBuilder& HydroReserveParticipation(reserve::Type type,
                                                  unsigned int index,
                                                  double coeff,
                                                  int offset = 0,
@@ -383,10 +383,10 @@ struct ReserveData
     int countNumberOfConstraintsForThermalReserves(int pays, int cluster)
     {
         int count = 0;
-        for (auto dir: {reserve::Type::UP, reserve::Type::DOWN})
+        for (auto type: {reserve::Type::UP, reserve::Type::DOWN})
         {
             if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
-                                      | reserve::filter(dir),
+                                      | reserve::filter(type),
                                     [&](const auto& r) {
                                         return r.AllThermalReservesParticipation.count(cluster) > 0;
                                     }))
@@ -401,13 +401,13 @@ struct ReserveData
                                                  bool accountForGlobalActivationDuration = false)
     {
         int count = 0;
-        for (auto dir: {reserve::Type::UP, reserve::Type::DOWN})
+        for (auto type: {reserve::Type::UP, reserve::Type::DOWN})
         {
             if (!accountForGlobalActivationDuration
-                || areaReserves[pays].referenceGlobalActivationDuration[dir])
+                || areaReserves[pays].referenceGlobalActivationDuration[type])
             {
                 if (std::ranges::any_of(areaReserves[pays].areaCapacityReservations
-                                          | reserve::filter(dir),
+                                          | reserve::filter(type),
                                         [&](const auto& r)
                                         { return r.AllHydroReservesParticipation.size() > 0; }))
                 {
@@ -425,13 +425,13 @@ struct ReserveData
       bool accountForGlobalActivationDuration = false)
     {
         int count = 0;
-        for (auto dir: {reserve::Type::UP, reserve::Type::DOWN})
+        for (auto type: {reserve::Type::UP, reserve::Type::DOWN})
         {
             if (!accountForGlobalActivationDuration
-                || areaReserves[pays].referenceGlobalActivationDuration[dir])
+                || areaReserves[pays].referenceGlobalActivationDuration[type])
             {
                 if (std::ranges::any_of(
-                      areaReserves[pays].areaCapacityReservations | reserve::filter(dir),
+                      areaReserves[pays].areaCapacityReservations | reserve::filter(type),
                       [&](const auto& r)
                       { return r.AllSTStorageReservesParticipation.count(cluster) > 0; }))
                 {

@@ -46,13 +46,14 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
         int areaReserveIndex = 0;
         auto area = areas[areaIndex];
         auto& areaReserves = problem.allReserves.value()[areaIndex];
-        for (auto dir: {reserve::Type::DOWN, reserve::Type::UP})
+        for (auto type: {reserve::Type::DOWN, reserve::Type::UP})
         {
-            areaReserves.referenceGlobalActivationDuration[dir]
-              = area->allCapacityReservations.value().referenceGlobalActivationDuration[dir];
-            areaReserves.maxGlobalEnergyActivationRatio[dir] = area->allCapacityReservations.value()
-                                                                 .maxGlobalEnergyActivationRatio
-                                                                   [dir];
+            areaReserves.referenceGlobalActivationDuration[type]
+              = area->allCapacityReservations.value().referenceGlobalActivationDuration[type];
+            areaReserves.maxGlobalEnergyActivationRatio[type] = area->allCapacityReservations
+                                                                  .value()
+                                                                  .maxGlobalEnergyActivationRatio
+                                                                    [type];
         }
 
         for (const auto& [reserveName, reserveCapacity]:
