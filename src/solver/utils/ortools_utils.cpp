@@ -413,6 +413,5 @@ MPSolver* MPSolverFactory(const bool isMip, const std::string& solverName)
         throw std::invalid_argument("Solver " + solverName + " (" + *internalSolverName
                                     + ") could not be loaded by OR-Tools MPSolver.");
     }
-
     return solver;
 }
