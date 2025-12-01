@@ -348,7 +348,7 @@ bool ClusterList<ClusterT>::loadDataSeriesFromFolder(Study& s, const std::filesy
 template<class ClusterT>
 bool ClusterList<ClusterT>::loadReserveParticipations(Area& area, const std::filesystem::path& file)
 {
-    ThermalReserveLoader<ClusterT> loader;
+    ThermalReserveLoader loader;
     return loader.load(area, file);
 }
 
