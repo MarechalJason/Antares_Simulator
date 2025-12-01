@@ -419,7 +419,10 @@ void Areas<NextT>::weekForEachArea(State& state, uint numSpace)
 
           // Initializing the state for the current area
           state.initFromAreaIndex(area.index, numSpace);
-
+          if (state.study.parameters.reservesEnabled)
+          {
+              state.initReserveParticipationIndexMaps();
+          }
           auto& variablesForArea = pAreas[area.index];
 
           // DTG MRG
@@ -501,16 +504,6 @@ void Areas<NextT>::weekBegin(State& state)
     for (uint i = 0; i != pAreaCount; ++i)
     {
         pAreas[i].weekBegin(state);
-    }
-
-    if (state.study.parameters.reservesEnabled)
-    {
-        state.study.areas.each(
-          [&state](Data::Area& area)
-          {
-              state.area = &area;
-              state.initReserveParticipationIndexMaps();
-          });
     }
 }
 
