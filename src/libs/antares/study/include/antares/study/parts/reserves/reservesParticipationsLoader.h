@@ -46,7 +46,6 @@ public:
               {
                   auto& derivedObj = derived();
                   auto [participation, clusterName] = derivedObj.readCapacityReservationSection(
-                    area,
                     section);
                   derivedObj.validateCapacityInputs(participation, clusterName);
                   derivedObj.addCapacityReservation(area, section.name, participation);
@@ -97,7 +96,7 @@ void static throwIfNegativeValue(const std::string& propertyName,
 template<typename Derived, typename ParticipationT>
 class ReserveLoaderMixin: public ReserveParticipationLoader<Derived>
 {
-protected:
+public:
     using participation_type = ParticipationT;
 
     std::pair<ParticipationT, std::optional<std::string>> readCapacityReservationSection(
