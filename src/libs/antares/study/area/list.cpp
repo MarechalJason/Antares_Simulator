@@ -195,7 +195,7 @@ bool loadReservesParameters(fs::path& folderInput, Antares::Data::Area& area)
     fs::path reservesIni = folderInput / "reserves" / area.id.to<std::string>() / "reserves.ini";
     IniFile ini;
 
-    area.allCapacityReservations = AllCapacityReservations();
+    area.allCapacityReservations.emplace();
     if (ini.open(reservesIni, false))
     {
         ini.each(
