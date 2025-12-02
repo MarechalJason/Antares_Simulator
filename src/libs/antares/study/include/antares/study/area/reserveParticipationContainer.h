@@ -58,10 +58,10 @@ public:
         auto symmetryRes = std::vector<ReserveParticipationWithName>();
         for (auto name: names)
         {
-            if (names.size() != 2)
+            if (names.size() < 2)
             {
                 throw std::out_of_range(
-                  "Must have two distinct reserves to participate to a symmetry");
+                  "Must have at least two distinct reserves to participate to a symmetry");
             }
             if (reservesParticipations.contains(name))
             {

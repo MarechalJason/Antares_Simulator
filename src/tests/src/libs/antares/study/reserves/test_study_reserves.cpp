@@ -713,7 +713,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Only_One_Symmetry
     BOOST_CHECK_EXCEPTION(
       areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
-      checkMessage("Must have two distinct reserves to participate to a symmetry"));
+      checkMessage("Must have at least two distinct reserves to participate to a symmetry"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Triple_Symmetry,
@@ -743,7 +743,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Triple_Symmetry,
     BOOST_CHECK_EXCEPTION(
       areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
-      checkMessage("Must have two distinct reserves to participate to a symmetry"));
+      checkMessage("Must have at least two distinct reserves to participate to a symmetry"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Symmetry_Same_Line,
@@ -774,7 +774,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Symmetry_S
     BOOST_CHECK_EXCEPTION(
       areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::out_of_range,
-      checkMessage("Must have two distinct reserves to participate to a symmetry"));
+      checkMessage("Must have at least two distinct reserves to participate to a symmetry"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Cluster_Participation_No_Init,
