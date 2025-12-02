@@ -712,7 +712,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Only_One_Symmetry
     file.close();
     BOOST_CHECK_EXCEPTION(
       areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::out_of_range,
+      std::runtime_error,
       checkMessage("Must have at least two distinct reserves to participate to a symmetry"));
 }
 
@@ -808,7 +808,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Symmetry_S
     file.close();
     BOOST_CHECK_EXCEPTION(
       areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::out_of_range,
+      std::runtime_error,
       checkMessage("Must have at least two distinct reserves to participate to a symmetry"));
 }
 
@@ -824,7 +824,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Cluster_Participa
     file.close();
     BOOST_CHECK_EXCEPTION(
       areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::out_of_range,
+      std::runtime_error,
       checkMessage(
         "Area A, cluster1 : trying to add symmetries without any reserves participations"));
 }
@@ -902,7 +902,7 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_no_reserve,
     file.close();
     BOOST_CHECK_EXCEPTION(
       areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::out_of_range,
+      std::runtime_error,
       checkMessage("Area A, hydro : trying to add symmetries without any reserves participations"));
 }
 
