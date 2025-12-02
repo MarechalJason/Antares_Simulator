@@ -724,7 +724,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Triple_Symmetry,
 
     std::ofstream file(studyPath / "myreserve.ini");
     file << "[symmetries]\n";
-    file << "cluster1 = [ReserveUp, ReserveDown, MyReserve]\n";
+    file << "cluster1 = [ReserveUp, ReserveDown, ReserveDownTwo]\n";
     file << "\n";
     file << "[ReserveUp]\n";
     file << "cluster-name = cluster1\n";
@@ -733,6 +733,13 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Triple_Symmetry,
     file << "max-power-off = 7.7\n";
     file << "participation-cost-off = 6.6\n";
     file << "\n";
+    file << "[ReserveDownTwo]\n";
+    file << "cluster-name = cluster1\n";
+    file << "max-power = 1.1\n";
+    file << "participation-cost = 2.2\n";
+    file << "max-power-off = 3.3\n";
+    file << "participation-cost-off = 4.4\n";
+    file << "\n";
     file << "[ReserveDown]\n";
     file << "cluster-name = cluster1\n";
     file << "max-power = 1.1\n";
@@ -740,10 +747,38 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Triple_Symmetry,
     file << "max-power-off = 3.3\n";
     file << "participation-cost-off = 4.4\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::out_of_range,
-      checkMessage("Must have at least two distinct reserves to participate to a symmetry"));
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK_EQUAL(getErrors().size(), 0);
+    BOOST_CHECK_EQUAL(getWarnings().size(), 0);
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .symmetricalIndices("ReserveUp")
+                        .size(),
+                      1);
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .symmetricalIndices("ReserveDown")
+                        .size(),
+                      1);
+    BOOST_CHECK_EQUAL(areaA->thermal.list.findInAll("cluster1")
+                        ->reserveParticipationContainer.value()
+                        .symmetricalIndices("ReserveDownTwo")
+                        .size(),
+                      1);
+    int symUp = areaA->thermal.list.findInAll("cluster1")
+                  ->reserveParticipationContainer.value()
+                  .symmetricalIndices("ReserveUp")
+                  .at(0);
+    int symDown = areaA->thermal.list.findInAll("cluster1")
+                    ->reserveParticipationContainer.value()
+                    .symmetricalIndices("ReserveDown")
+                    .at(0);
+    int symDownTwo = areaA->thermal.list.findInAll("cluster1")
+                       ->reserveParticipationContainer.value()
+                       .symmetricalIndices("ReserveDownTwo")
+                       .at(0);
+    BOOST_CHECK_EQUAL(symUp, symDown);
+    BOOST_CHECK_EQUAL(symUp, symDownTwo); // all of them are participating to the same symmetry
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Symmetry_Same_Line,
