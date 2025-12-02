@@ -1322,15 +1322,21 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_parameters_values,
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
     BOOST_CHECK_EQUAL(getWarnings().size(), 10);
     BOOST_CHECK(getWarnings().contains("A: invalid type for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid reference activation duration for reserve ReserveUp"));
+    BOOST_CHECK(
+      getWarnings().contains("A: invalid reference activation duration for reserve ReserveUp"));
     BOOST_CHECK(getWarnings().contains("A: invalid energy activation ratio for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid maximum activation ratio for reserve ReserveUp"));
+    BOOST_CHECK(
+      getWarnings().contains("A: invalid maximum activation ratio for reserve ReserveUp"));
     BOOST_CHECK(getWarnings().contains("A: invalid spillage cost for reserve ReserveUp"));
     BOOST_CHECK(getWarnings().contains("A: invalid failure cost for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid maximum energy activation ratio for UP reserves"));
-    BOOST_CHECK(getWarnings().contains("A: invalid maximum energy activation ratio for DOWN reserves"));
-    BOOST_CHECK(getWarnings().contains("A: invalid reference energy activation duration for UP reserves"));
-    BOOST_CHECK(getWarnings().contains("A: invalid reference energy activation duration for DOWN reserves"));
+    BOOST_CHECK(
+      getWarnings().contains("A: invalid maximum energy activation ratio for UP reserves"));
+    BOOST_CHECK(
+      getWarnings().contains("A: invalid maximum energy activation ratio for DOWN reserves"));
+    BOOST_CHECK(
+      getWarnings().contains("A: invalid reference energy activation duration for UP reserves"));
+    BOOST_CHECK(
+      getWarnings().contains("A: invalid reference energy activation duration for DOWN reserves"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version
