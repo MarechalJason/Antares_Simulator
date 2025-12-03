@@ -510,10 +510,6 @@ bool loadReservesParameters(fs::path& folderInput, Area& area)
               }
           });
     }
-    else
-    {
-        logs.error() << "Failed to open file " << reservesIni.string();
-    }
     return ret;
 }
 } // namespace accessForTests

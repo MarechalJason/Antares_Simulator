@@ -1115,21 +1115,6 @@ BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_Invalid_Cluster,
       getErrors().contains("A : missing cluster cluster4 when loading STS reserve participations"));
 }
 
-BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_file, OneProblemWithoutReservesOneAreaWithLogger)
-{
-    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
-    std::ofstream file(studyPath / "reserves" / "a" / "bad.ini");
-    file << "[ReserveUp]\n";
-    file << "cluster-name = cluster1\n";
-    file << "\n";
-    file << "[ReserveDown]\n";
-    file << "cluster-name = cluster4\n";
-    file.close();
-    accessForTests::loadReservesParameters(studyPath, *areaA);
-    BOOST_CHECK(getErrors().contains("Failed to open file "
-                                     + (studyPath / "reserves" / "a" / "reserves.ini").string()));
-}
-
 BOOST_FIXTURE_TEST_CASE(test_readReserve_ok_file_missing_needs,
                         OneProblemWithoutReservesOneAreaWithLogger)
 {
@@ -1209,12 +1194,10 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_ini, OneProblemWithoutReservesOneAr
     fileNeeds.close();
     accessForTests::loadReservesParameters(studyPath, *areaA);
 
-    BOOST_CHECK_EQUAL(getErrors().size(), 3);
+    BOOST_CHECK_EQUAL(getErrors().size(), 2);
     BOOST_CHECK_EQUAL(getWarnings().size(), 0);
     BOOST_CHECK(getErrors().contains("INI content : unknown format for line \'a\'"));
     BOOST_CHECK(getErrors().contains("Invalid INI file : "
-                                     + (studyPath / "reserves" / "a" / "reserves.ini").string()));
-    BOOST_CHECK(getErrors().contains("Failed to open file "
                                      + (studyPath / "reserves" / "a" / "reserves.ini").string()));
 }
 
