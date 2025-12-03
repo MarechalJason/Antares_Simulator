@@ -20,10 +20,10 @@ void POutBounds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             ReserveData::addRunningThermalClusterReserveParticipationToBuilder(data,
-                                                                    pays,
-                                                                    cluster,
-                                                                    Type::DOWN,
-                                                                    builder);
+                                                                               pays,
+                                                                               cluster,
+                                                                               Type::DOWN,
+                                                                               builder);
 
             if (builder.NumberOfVariables() > 0)
             {
@@ -51,10 +51,10 @@ void POutBounds::add(int pays, int cluster, int pdt)
             builder.updateHourWithinWeek(pdt);
 
             ReserveData::addRunningThermalClusterReserveParticipationToBuilder(data,
-                                                                    pays,
-                                                                    cluster,
-                                                                    Type::UP,
-                                                                    builder);
+                                                                               pays,
+                                                                               cluster,
+                                                                               Type::UP,
+                                                                               builder);
 
             if (builder.NumberOfVariables() > 0)
             {
