@@ -56,6 +56,7 @@ static void toLower(std::string& str)
 
 bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
 {
+    bool ret = true;
     for (auto* p = section.firstProperty; p; p = p->next)
     {
         std::string key = p->key;
@@ -68,7 +69,7 @@ bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
             {
                 logs.warning() << area.name
                                << ": invalid maximum energy activation ratio for UP reserves";
-                return false;
+                ret = false;
             }
         }
         else if (key == "energy-activation-ratio-down")
@@ -79,7 +80,7 @@ bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
                 logs.warning() << area.name
                                << ": invalid maximum energy activation ratio for "
                                   "DOWN reserves";
-                return false;
+                ret = false;
             }
         }
         else if (key == "reference-activation-duration-up")
@@ -90,7 +91,7 @@ bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
                 logs.warning() << area.name
                                << ": invalid reference energy activation duration "
                                   "for UP reserves";
-                return false;
+                ret = false;
             }
         }
         else if (key == "reference-activation-duration-down")
@@ -101,21 +102,22 @@ bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
                 logs.warning() << area.name
                                << ": invalid reference energy activation duration "
                                   "for DOWN reserves";
-                return false;
+                ret = false;
             }
         }
         else
         {
             logs.warning() << area.name << " : invalid key " << key
                            << " inside global reserve parameters";
-            return false;
+            ret = false;
         }
     }
-    return true;
+    return ret;
 }
 
 bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFile::Section& section)
 {
+    bool ret = true;
     if (area.allCapacityReservations.value().contains(section.name))
     {
         logs.error() << area.name << " : reserve name already exists for reserve " << section.name;
@@ -135,6 +137,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
             {
                 logs.warning() << area.name << ": invalid failure cost for reserve "
                                << section.name;
+                ret = false;
             }
         }
         else if (key == "spillage-cost")
@@ -143,6 +146,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
             {
                 logs.warning() << area.name << ": invalid spillage cost for reserve "
                                << section.name;
+                ret = false;
             }
         }
         else if (key == "power-activation-ratio")
@@ -151,6 +155,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
             {
                 logs.warning() << area.name << ": invalid maximum activation ratio for reserve "
                                << section.name;
+                ret = false;
             }
         }
         else if (key == "energy-activation-ratio")
@@ -159,6 +164,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
             {
                 logs.warning() << area.name << ": invalid energy activation ratio for reserve "
                                << section.name;
+                ret = false;
             }
         }
         else if (key == "reference-activation-duration")
@@ -168,6 +174,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
                 logs.warning() << area.name
                                << ": invalid reference activation duration for reserve "
                                << section.name;
+                ret = false;
             }
         }
         else if (key == "type")
@@ -183,12 +190,14 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
             else
             {
                 logs.warning() << area.name << ": invalid type for reserve " << section.name;
+                ret = false;
             }
         }
         else
         {
             logs.warning() << area.name << " : invalid key " << key
                            << " inside reserve parameters for " << section.name;
+            ret = false;
         }
     }
     fs::path filePath = folderInput / "reserves" / area.id.to<std::string>()
@@ -196,7 +205,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
     capacityReservation.loadNeedFromFile(filePath);
     area.allCapacityReservations.value().areaCapacityReservations.emplace(section.name,
                                                                           capacityReservation);
-    return true;
+    return ret;
 }
 
 static bool AreaListLoadThermalDataFromFile(AreaList& list, const fs::path& filename)
