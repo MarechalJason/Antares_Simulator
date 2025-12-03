@@ -441,4 +441,24 @@ struct ReserveData
         }
         return count;
     }
+
+    static void addRunningThermalClusterReserveParticipationToBuilder(ReserveData& data,
+                                                           int pays,
+                                                           int cluster,
+                                                           reserve::Type type,
+                                                           ConstraintBuilder& builder)
+    {
+        for (const auto& capacityReservation:
+             data.areaReserves[pays].areaCapacityReservations | filter(type))
+        {
+            if (capacityReservation.AllThermalReservesParticipation.contains(cluster))
+            {
+                auto& reserveParticipation = capacityReservation.AllThermalReservesParticipation.at(
+                  cluster);
+                builder.RunningThermalClusterReserveParticipation(
+                  reserveParticipation.globalIndexClusterParticipation,
+                  1);
+            }
+        }
+    }
 };
