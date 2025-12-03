@@ -1162,7 +1162,7 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok_file_missing_needs,
     BOOST_CHECK_EXCEPTION(
       accessForTests::loadReservesParameters(studyPath, *areaA),
       std::runtime_error,
-      checkMessage("Could not open " + (studyPath / "reserves" / "a" / "reserveup.txt").string()));
+      checkMessage("Could not open " + (studyPath / "reserves" / "a" / "ReserveUp.txt").string()));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_readReserve_ok_minimal, OneProblemWithoutReservesOneAreaWithLogger)
@@ -1173,7 +1173,7 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok_minimal, OneProblemWithoutReservesOn
     file << "[ReserveUp]\n";
     file.close();
 
-    std::ofstream fileNeeds(studyPath / "reserves" / "a" / "reserveup.txt");
+    std::ofstream fileNeeds(studyPath / "reserves" / "a" / "ReserveUp.txt");
     fileNeeds << "\n";
     fileNeeds.close();
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.has_value(), false);
@@ -1225,7 +1225,7 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_ini, OneProblemWithoutReservesOneAr
     file << "a\n ";
     file.close();
 
-    std::ofstream fileNeeds(studyPath / "reserves" / "a" / "reserveup.txt");
+    std::ofstream fileNeeds(studyPath / "reserves" / "a" / "ReserveUp.txt");
     fileNeeds << "\n";
     fileNeeds.close();
     accessForTests::loadReservesParameters(studyPath, *areaA);
@@ -1249,7 +1249,7 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_parameters, OneProblemWithoutReserv
     file << "b = 2.1\n ";
     file.close();
 
-    std::ofstream fileNeeds(studyPath / "reserves" / "a" / "reserveup.txt");
+    std::ofstream fileNeeds(studyPath / "reserves" / "a" / "ReserveUp.txt");
     fileNeeds << "\n";
     fileNeeds.close();
     accessForTests::loadReservesParameters(studyPath, *areaA);
@@ -1283,12 +1283,12 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok, OneProblemWithoutReservesOneAreaWit
     file << "type = down\n ";
     file.close();
 
-    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "reserveup.txt");
+    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "ReserveUp.txt");
     fileNeedsUp << "2\n";
     fileNeedsUp << "3\n";
     fileNeedsUp.close();
 
-    std::ofstream fileNeedsDown(studyPath / "reserves" / "a" / "reservedown.txt");
+    std::ofstream fileNeedsDown(studyPath / "reserves" / "a" / "ReserveDown.txt");
     fileNeedsDown << "4\n";
     fileNeedsDown << "5\n";
     fileNeedsDown << "6\n";
@@ -1367,10 +1367,10 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_parameters_values,
     file << "reference-activation-duration-down = 1.1\n ";
     file.close();
 
-    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "reserveup.txt");
+    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "ReserveUp.txt");
     fileNeedsUp.close();
 
-    std::ofstream fileNeedsDown(studyPath / "reserves" / "a" / "reservedown.txt");
+    std::ofstream fileNeedsDown(studyPath / "reserves" / "a" / "ReserveDown.txt");
     fileNeedsDown.close();
     accessForTests::loadReservesParameters(studyPath, *areaA);
     BOOST_CHECK_EQUAL(getErrors().size(), 0);

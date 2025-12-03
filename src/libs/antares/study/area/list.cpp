@@ -46,20 +46,20 @@ namespace Antares::Data
 {
 namespace // anonymous
 {
-
-enum tristate : uint8_t
+static void toLower(std::string& str)
 {
-    False = 0,
-    True = 1,
-    Undefined = 2
-};
+    for (char& c: str)
+    {
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+}
 
-void readReservesAreaParameters(Area& area, const IniFile::Section& section)
+bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
 {
     for (auto* p = section.firstProperty; p; p = p->next)
     {
         std::string key = p->key;
-        std::ranges::transform(key, key.begin(), [](unsigned char c) { return std::tolower(c); });
+        toLower(key);
 
         if (key == "energy-activation-ratio-up")
         {
@@ -68,6 +68,7 @@ void readReservesAreaParameters(Area& area, const IniFile::Section& section)
             {
                 logs.warning() << area.name
                                << ": invalid maximum energy activation ratio for UP reserves";
+                return false;
             }
         }
         else if (key == "energy-activation-ratio-down")
@@ -78,6 +79,7 @@ void readReservesAreaParameters(Area& area, const IniFile::Section& section)
                 logs.warning() << area.name
                                << ": invalid maximum energy activation ratio for "
                                   "DOWN reserves";
+                return false;
             }
         }
         else if (key == "reference-activation-duration-up")
@@ -88,6 +90,7 @@ void readReservesAreaParameters(Area& area, const IniFile::Section& section)
                 logs.warning() << area.name
                                << ": invalid reference energy activation duration "
                                   "for UP reserves";
+                return false;
             }
         }
         else if (key == "reference-activation-duration-down")
@@ -98,34 +101,33 @@ void readReservesAreaParameters(Area& area, const IniFile::Section& section)
                 logs.warning() << area.name
                                << ": invalid reference energy activation duration "
                                   "for DOWN reserves";
+                return false;
             }
         }
         else
         {
             logs.warning() << area.name << " : invalid key " << key
                            << " inside global reserve parameters";
+            return false;
         }
     }
+    return true;
 }
 
-void readReserveParameters(fs::path& folderInput,
-                           Area& area,
-                           const IniFile::Section& section,
-                           bool* ret)
+bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFile::Section& section)
 {
     if (area.allCapacityReservations.value().contains(section.name))
     {
         logs.error() << area.name << " : reserve name already exists for reserve " << section.name;
-        return;
+        return false;
     }
 
     CapacityReservation capacityReservation;
-    std::string file_name = AllCapacityReservations::toFilename(section.name);
 
     for (auto* p = section.firstProperty; p; p = p->next)
     {
         std::string key = p->key;
-        std::ranges::transform(key, key.begin(), [](unsigned char c) { return std::tolower(c); });
+        toLower(key);
 
         if (key == "failure-cost")
         {
@@ -189,10 +191,12 @@ void readReserveParameters(fs::path& folderInput,
                            << " inside reserve parameters for " << section.name;
         }
     }
-    fs::path filePath = folderInput / "reserves" / area.id.to<std::string>() / (file_name + ".txt");
+    fs::path filePath = folderInput / "reserves" / area.id.to<std::string>()
+                        / (section.name.to<std::string>() + ".txt");
     capacityReservation.loadNeedFromFile(filePath);
     area.allCapacityReservations.value().areaCapacityReservations.emplace(section.name,
                                                                           capacityReservation);
+    return true;
 }
 
 static bool AreaListLoadThermalDataFromFile(AreaList& list, const fs::path& filename)
@@ -501,11 +505,11 @@ bool loadReservesParameters(fs::path& folderInput, Area& area)
           {
               if (section.name == "globalparameters")
               {
-                  readReservesAreaParameters(area, section);
+                  ret = readReservesAreaParameters(area, section) && ret;
               }
               else
               {
-                  readReserveParameters(folderInput, area, section, &ret);
+                  ret = readReserveParameters(folderInput, area, section) && ret;
               }
           });
     }
@@ -1039,7 +1043,6 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
     area.spreadSpilledEnergyCost = 0.;
 
     bool ret = true;
-    IniFile ini;
     const auto studyVersion = study.header.version;
 
     // DSM, Reserves, D-1
@@ -1268,6 +1271,7 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
     fs::path nodalPath = study.folderInput / "areas" / area.id.to<std::string>()
                          / "optimization.ini";
 
+    IniFile ini;
     if (!ini.open(nodalPath))
     {
         return false;

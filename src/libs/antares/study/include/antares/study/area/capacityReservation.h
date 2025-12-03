@@ -78,7 +78,7 @@ struct AllCapacityReservations
     /// @brief Check if the capacity reservation name already exist in the reserves
     /// @param name
     /// @return true if the capacity reservation already existed
-    bool contains(ReserveName name) const
+    bool contains(const ReserveName& name) const
     {
         return areaCapacityReservations.contains(name);
     }
@@ -87,12 +87,13 @@ struct AllCapacityReservations
     /// @param name
     /// @return the capacity reservation reference if the reserve was found, and a nullptr
     /// otherwise
-    const CapacityReservation* getReserveByName(std::string name) const
+    const CapacityReservation* getReserveByName(const std::string& name) const
     {
-        if (areaCapacityReservations.contains(name))
+        if (auto it = areaCapacityReservations.find(name); it != areaCapacityReservations.end())
         {
-            return &areaCapacityReservations.at(name);
+            return &it->second;
         }
+
         return nullptr;
     }
 
@@ -101,16 +102,5 @@ struct AllCapacityReservations
     size_t size() const
     {
         return areaCapacityReservations.size();
-    }
-
-    /// @brief Returns lower case, no space string
-    /// @param name
-    /// @return A string usable for file naming
-    static std::string toFilename(std::string name)
-    {
-        std::string file_name = name;
-        std::replace(file_name.begin(), file_name.end(), ' ', '_');
-        std::transform(file_name.begin(), file_name.end(), file_name.begin(), ::tolower);
-        return file_name;
     }
 };
