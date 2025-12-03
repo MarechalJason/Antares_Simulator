@@ -349,6 +349,25 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_One_No_Symmetries
                       6.6);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_One_Bad_Parameter,
+                        OneProblemWithReservesOneAreaWithLogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    addThermalCluster(areaA, "cluster1");
+    addThermalCluster(areaA, "cluster2");
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[ReserveUp]\n";
+    file << "cluster-name = cluster1\n";
+    file << "bad = 9.9\n";
+    file.close();
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK_EQUAL(getErrors().size(), 0);
+    BOOST_CHECK_EQUAL(getWarnings().size(), 1);
+    BOOST_CHECK(
+      getWarnings().contains("A : invalid property in thermal reserves implementation : bad"));
+}
+
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Symmetries,
                         OneProblemWithReservesOneAreaWithLogger)
 {
@@ -943,6 +962,23 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_cluster,
       "A : invalid cluster name for hydro symmetry cluster1 please use 'hydro' or 'lt'"));
 }
 
+BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_property,
+                        OneProblemWithReservesOneAreaWithLogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+
+    std::ofstream file(studyPath / "myreserve.ini");
+    file << "[ReserveUp]\n";
+    file << "bad = 9.9\n";
+    file << "\n";
+    file.close();
+    areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK_EQUAL(getErrors().size(), 0);
+    BOOST_CHECK_EQUAL(getWarnings().size(), 1);
+    BOOST_CHECK(
+      getWarnings().contains("A : invalid property in hydro reserves implementation : bad"));
+}
+
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_reserve,
                         OneProblemWithReservesOneArea)
 {
@@ -1355,6 +1391,26 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_parameters_values,
       getWarnings().contains("A: invalid reference energy activation duration for UP reserves"));
     BOOST_CHECK(
       getWarnings().contains("A: invalid reference energy activation duration for DOWN reserves"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_readReserve_duplicated, OneProblemWithoutReservesOneAreaWithLogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    std::filesystem::create_directories(studyPath / "reserves" / "a");
+    std::ofstream file(studyPath / "reserves" / "a" / "reserves.ini");
+    file << "[ReserveUp]\n";
+    file << "\n ";
+    file << "[ReserveUp]\n";
+    file << "\n ";
+    file << "[globalparameters]\n";
+    file.close();
+
+    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "reserveup.txt");
+    fileNeedsUp.close();
+    accessForTests::loadReservesParameters(studyPath, *areaA);
+    BOOST_CHECK_EQUAL(getErrors().size(), 1);
+    BOOST_CHECK_EQUAL(getWarnings().size(), 0);
+    BOOST_CHECK(getErrors().contains("A : reserve name already exists for reserve ReserveUp"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version

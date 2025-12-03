@@ -115,8 +115,7 @@ void readReserveParameters(fs::path& folderInput,
 {
     if (area.allCapacityReservations.value().contains(section.name))
     {
-        logs.warning() << area.name << " : reserve name already exists for reserve "
-                       << section.name;
+        logs.error() << area.name << " : reserve name already exists for reserve " << section.name;
         return;
     }
 
