@@ -447,7 +447,7 @@ struct ReserveData
     static void addRunningThermalClusterReserveParticipationToBuilder(ReserveData& data,
                                                                       int pays,
                                                                       int cluster,
-                                                                      reserve::Type type,
+                                                                      ReserveType type,
                                                                       ConstraintBuilder& builder)
     {
         for (const auto& capacityReservation:

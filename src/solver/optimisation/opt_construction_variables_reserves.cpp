@@ -91,7 +91,8 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
             const auto& clusterName = clusterReserveParticipation.clusterName;
             if (Simulation)
             {
-                NombreDeVariables += (type == ReserveType::UP ? 4 : 2); // 4 for up reserves, 2 for down
+                NombreDeVariables += (type == ReserveType::UP ? 4
+                                                              : 2); // 4 for up reserves, 2 for down
             }
             else
             {
@@ -107,8 +108,8 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireReserves(
                                                                    reserveName);
                 NombreDeVariables++;
 
-                if (type == ReserveType::UP) // For off units in cluster (off units can not participate
-                                      // to down reserves)
+                if (type == ReserveType::UP) // For off units in cluster (off units can not
+                                             // participate to down reserves)
                 {
                     variableManager.OffThermalClusterReserveParticipation(
                       clusterReserveParticipation.globalIndexClusterParticipation,

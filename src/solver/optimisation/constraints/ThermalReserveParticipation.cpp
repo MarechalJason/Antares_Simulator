@@ -1,6 +1,5 @@
 #include "antares/solver/optimisation/constraints/ThermalReserveParticipation.h"
 
-
 void ThermalReserveParticipation::add(int pays, int reserve, int cluster, int pdt)
 {
     CAPACITY_RESERVATION capacityReservation = data.areaReserves[pays]

@@ -34,7 +34,6 @@
 using Antares::UnitTests::CaptureAntaresLogs;
 using namespace Antares::Data;
 
-
 void addThermalCluster(Data::Area* area, const std::string& name)
 {
     auto c = std::make_shared<ThermalCluster>(area);
