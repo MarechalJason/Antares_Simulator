@@ -1,5 +1,4 @@
 #include "antares/solver/optimisation/constraints/HydroEnergyLevelReserveParticipation.h"
-using namespace reserve;
 
 void HydroEnergyLevelReserveParticipation::add(int pays, int cluster, int reserve, int pdt)
 {
@@ -19,7 +18,7 @@ void HydroEnergyLevelReserveParticipation::add(int pays, int cluster, int reserv
             // R_{min,res} : max power participation ratio
             // R_up : max stock level
             {
-                double sign = capacityReservation.type == Type::UP ? -1. : 1.;
+                double sign = capacityReservation.type == ReserveType::UP ? -1. : 1.;
 
                 RESERVE_PARTICIPATION_HYDRO& reserveParticipation = capacityReservation
                                                                       .AllHydroReservesParticipation

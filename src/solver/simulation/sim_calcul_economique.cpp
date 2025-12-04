@@ -46,7 +46,7 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
         int areaReserveIndex = 0;
         auto area = areas[areaIndex];
         auto& areaReserves = problem.allReserves.value()[areaIndex];
-        for (auto type: {reserve::Type::DOWN, reserve::Type::UP})
+        for (auto type: {ReserveType::DOWN, ReserveType::UP})
         {
             areaReserves.referenceGlobalActivationDuration[type]
               = area->allCapacityReservations.value().referenceGlobalActivationDuration[type];

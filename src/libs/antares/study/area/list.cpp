@@ -181,11 +181,11 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
         {
             if (p->value == "up")
             {
-                capacityReservation.type = reserve::Type::UP;
+                capacityReservation.type = ReserveType::UP;
             }
             else if (p->value == "down")
             {
-                capacityReservation.type = reserve::Type::DOWN;
+                capacityReservation.type = ReserveType::DOWN;
             }
             else
             {

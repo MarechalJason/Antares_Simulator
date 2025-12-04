@@ -1,5 +1,4 @@
 #include "antares/solver/optimisation/constraints/POutBounds.h"
-using namespace reserve;
 
 void POutBounds::add(int pays, int cluster, int pdt)
 {
@@ -22,7 +21,7 @@ void POutBounds::add(int pays, int cluster, int pdt)
             ReserveData::addRunningThermalClusterReserveParticipationToBuilder(data,
                                                                                pays,
                                                                                cluster,
-                                                                               Type::DOWN,
+                                                                               ReserveType::DOWN,
                                                                                builder);
 
             if (builder.NumberOfVariables() > 0)
@@ -53,7 +52,7 @@ void POutBounds::add(int pays, int cluster, int pdt)
             ReserveData::addRunningThermalClusterReserveParticipationToBuilder(data,
                                                                                pays,
                                                                                cluster,
-                                                                               Type::UP,
+                                                                               ReserveType::UP,
                                                                                builder);
 
             if (builder.NumberOfVariables() > 0)

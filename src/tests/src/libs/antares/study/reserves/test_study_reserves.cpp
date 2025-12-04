@@ -33,7 +33,7 @@
 #include "antares/study/study.h"
 using Antares::UnitTests::CaptureAntaresLogs;
 using namespace Antares::Data;
-using namespace reserve;
+
 
 void addThermalCluster(Data::Area* area, const std::string& name)
 {
@@ -84,31 +84,31 @@ public:
         CAPACITY_RESERVATION areaCapacityReservations;
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
-        tmpCapacityReservationUp.type = Type::UP;
+        tmpCapacityReservationUp.type = ReserveType::UP;
         tmpCapacityReservationUp.unsuppliedCost = 1;
         tmpCapacityReservationUp.referenceActivationHours = 2;
         tmpCapacityReservationUp.powerActivationRatio = 3;
         tmpCapacityReservationUp.energyActivationRatio = 4;
 
-        tmpCapacityReservationUpTwo.type = Type::UP;
+        tmpCapacityReservationUpTwo.type = ReserveType::UP;
         tmpCapacityReservationUpTwo.unsuppliedCost = 11;
         tmpCapacityReservationUpTwo.referenceActivationHours = 12;
         tmpCapacityReservationUpTwo.powerActivationRatio = 13;
         tmpCapacityReservationUpTwo.energyActivationRatio = 14;
 
-        tmpCapacityReservationUpThree.type = Type::UP;
+        tmpCapacityReservationUpThree.type = ReserveType::UP;
         tmpCapacityReservationUpThree.unsuppliedCost = 21;
         tmpCapacityReservationUpThree.referenceActivationHours = 22;
         tmpCapacityReservationUpThree.powerActivationRatio = 23;
         tmpCapacityReservationUpThree.energyActivationRatio = 24;
 
-        tmpCapacityReservationDown.type = Type::DOWN;
+        tmpCapacityReservationDown.type = ReserveType::DOWN;
         tmpCapacityReservationDown.unsuppliedCost = 5;
         tmpCapacityReservationDown.referenceActivationHours = 6;
         tmpCapacityReservationDown.powerActivationRatio = 7;
         tmpCapacityReservationDown.energyActivationRatio = 8;
 
-        tmpCapacityReservationDownTwo.type = Type::DOWN;
+        tmpCapacityReservationDownTwo.type = ReserveType::DOWN;
         tmpCapacityReservationDownTwo.unsuppliedCost = 15;
         tmpCapacityReservationDownTwo.referenceActivationHours = 16;
         tmpCapacityReservationDownTwo.powerActivationRatio = 17;
@@ -156,25 +156,25 @@ struct OneProblemWithReservesTwoAreas
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
 
-        tmpCapacityReservationUp.type = Type::UP;
+        tmpCapacityReservationUp.type = ReserveType::UP;
         tmpCapacityReservationUp.unsuppliedCost = 1;
         tmpCapacityReservationUp.referenceActivationHours = 2;
         tmpCapacityReservationUp.powerActivationRatio = 3;
         tmpCapacityReservationUp.energyActivationRatio = 4;
 
-        tmpCapacityReservationDown.type = Type::DOWN;
+        tmpCapacityReservationDown.type = ReserveType::DOWN;
         tmpCapacityReservationDown.unsuppliedCost = 5;
         tmpCapacityReservationDown.referenceActivationHours = 6;
         tmpCapacityReservationDown.powerActivationRatio = 7;
         tmpCapacityReservationDown.energyActivationRatio = 8;
 
-        tmpCapacityReservationUpB.type = Type::UP;
+        tmpCapacityReservationUpB.type = ReserveType::UP;
         tmpCapacityReservationUpB.unsuppliedCost = 11;
         tmpCapacityReservationUpB.referenceActivationHours = 12;
         tmpCapacityReservationUpB.powerActivationRatio = 13;
         tmpCapacityReservationUpB.energyActivationRatio = 14;
 
-        tmpCapacityReservationDownB.type = Type::DOWN;
+        tmpCapacityReservationDownB.type = ReserveType::DOWN;
         tmpCapacityReservationDownB.unsuppliedCost = 15;
         tmpCapacityReservationDownB.referenceActivationHours = 16;
         tmpCapacityReservationDownB.powerActivationRatio = 17;
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(reserve_add)
     auto study = std::make_unique<Study>();
     const auto areaA = study->areaAdd("A");
     CapacityReservation tmpCapacityReservationUp;
-    tmpCapacityReservationUp.type = Type::UP;
+    tmpCapacityReservationUp.type = ReserveType::UP;
     tmpCapacityReservationUp.unsuppliedCost = 0;
     areaA->allCapacityReservations = AllCapacityReservations();
     areaA->allCapacityReservations.value()
@@ -1190,7 +1190,7 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok_minimal, OneProblemWithoutReservesOn
                       1);
     BOOST_CHECK(areaA->allCapacityReservations.value().getReserveByName("ReserveUp") != nullptr);
     BOOST_CHECK(areaA->allCapacityReservations.value().getReserveByName("ReserveUp")->type
-                == reserve::Type::DOWN);
+                == ReserveType::DOWN);
     BOOST_CHECK_EQUAL(
       areaA->allCapacityReservations.value().getReserveByName("ReserveUp")->energyActivationRatio,
       1);
@@ -1308,9 +1308,9 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok, OneProblemWithoutReservesOneAreaWit
     BOOST_CHECK(areaA->allCapacityReservations.value().getReserveByName("ReserveUp") != nullptr);
     BOOST_CHECK(areaA->allCapacityReservations.value().getReserveByName("ReserveDown") != nullptr);
     BOOST_CHECK(areaA->allCapacityReservations.value().getReserveByName("ReserveUp")->type
-                == reserve::Type::UP);
+                == ReserveType::UP);
     BOOST_CHECK(areaA->allCapacityReservations.value().getReserveByName("ReserveDown")->type
-                == reserve::Type::DOWN);
+                == ReserveType::DOWN);
     BOOST_CHECK_EQUAL(
       areaA->allCapacityReservations.value().getReserveByName("ReserveUp")->energyActivationRatio,
       2.2);
@@ -1405,7 +1405,7 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_duplicated, OneProblemWithoutReservesOn
     file << "[globalparameters]\n";
     file.close();
 
-    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "reserveup.txt");
+    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "ReserveUp.txt");
     fileNeedsUp.close();
     accessForTests::loadReservesParameters(studyPath, *areaA);
     BOOST_CHECK_EQUAL(getErrors().size(), 1);

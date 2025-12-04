@@ -24,6 +24,8 @@
 
 #include <antares/study/area/reserveParticipation.h>
 
+namespace Antares::Data
+{
 template<typename T>
 concept DerivedFromReserveParticipationBase = std::is_base_of_v<ReserveParticipationBase, T>;
 
@@ -216,3 +218,5 @@ public:
         return reservesParticipations.at(name).maxStore;
     }
 };
+
+}; // namespace Antares::Data

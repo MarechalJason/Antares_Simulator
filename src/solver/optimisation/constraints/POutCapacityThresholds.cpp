@@ -1,5 +1,4 @@
 #include "antares/solver/optimisation/constraints/POutCapacityThresholds.h"
-using namespace reserve;
 
 void POutCapacityThresholds::add(int pays, int cluster, int pdt)
 {
@@ -23,7 +22,7 @@ void POutCapacityThresholds::add(int pays, int cluster, int pdt)
             ReserveData::addRunningThermalClusterReserveParticipationToBuilder(data,
                                                                                pays,
                                                                                cluster,
-                                                                               Type::DOWN,
+                                                                               ReserveType::DOWN,
                                                                                builder);
 
             if (builder.NumberOfVariables() > 0)
@@ -52,7 +51,7 @@ void POutCapacityThresholds::add(int pays, int cluster, int pdt)
             ReserveData::addRunningThermalClusterReserveParticipationToBuilder(data,
                                                                                pays,
                                                                                cluster,
-                                                                               Type::UP,
+                                                                               ReserveType::UP,
                                                                                builder);
 
             if (builder.NumberOfVariables() > 0)
