@@ -28,9 +28,12 @@
 #include <boost/test/unit_test_suite.hpp>
 
 #include <antares/logs/logs.h>
+#include <antares/solver/simulation/forTestsOnlySimCalculEco.h>
 #include <antares/solver/simulation/sim_structure_probleme_economique.h>
+#include <antares/solver/simulation/simulation.h>
 #include "antares/study/area/forTestsOnlyList.h"
 #include "antares/study/study.h"
+
 using Antares::UnitTests::CaptureAntaresLogs;
 using namespace Antares::Data;
 
@@ -85,31 +88,31 @@ public:
         study->parameters.simulationDays.end = 7;
         tmpCapacityReservationUp.type = ReserveType::UP;
         tmpCapacityReservationUp.unsuppliedCost = 1;
-        tmpCapacityReservationUp.referenceActivationHours = 2;
+        tmpCapacityReservationUp.referenceActivationDuration = 2;
         tmpCapacityReservationUp.powerActivationRatio = 3;
         tmpCapacityReservationUp.energyActivationRatio = 4;
 
         tmpCapacityReservationUpTwo.type = ReserveType::UP;
         tmpCapacityReservationUpTwo.unsuppliedCost = 11;
-        tmpCapacityReservationUpTwo.referenceActivationHours = 12;
+        tmpCapacityReservationUpTwo.referenceActivationDuration = 12;
         tmpCapacityReservationUpTwo.powerActivationRatio = 13;
         tmpCapacityReservationUpTwo.energyActivationRatio = 14;
 
         tmpCapacityReservationUpThree.type = ReserveType::UP;
         tmpCapacityReservationUpThree.unsuppliedCost = 21;
-        tmpCapacityReservationUpThree.referenceActivationHours = 22;
+        tmpCapacityReservationUpThree.referenceActivationDuration = 22;
         tmpCapacityReservationUpThree.powerActivationRatio = 23;
         tmpCapacityReservationUpThree.energyActivationRatio = 24;
 
         tmpCapacityReservationDown.type = ReserveType::DOWN;
         tmpCapacityReservationDown.unsuppliedCost = 5;
-        tmpCapacityReservationDown.referenceActivationHours = 6;
+        tmpCapacityReservationDown.referenceActivationDuration = 6;
         tmpCapacityReservationDown.powerActivationRatio = 7;
         tmpCapacityReservationDown.energyActivationRatio = 8;
 
         tmpCapacityReservationDownTwo.type = ReserveType::DOWN;
         tmpCapacityReservationDownTwo.unsuppliedCost = 15;
-        tmpCapacityReservationDownTwo.referenceActivationHours = 16;
+        tmpCapacityReservationDownTwo.referenceActivationDuration = 16;
         tmpCapacityReservationDownTwo.powerActivationRatio = 17;
         tmpCapacityReservationDownTwo.energyActivationRatio = 18;
 
@@ -148,34 +151,36 @@ struct OneProblemWithReservesTwoAreas
 {
     OneProblemWithReservesTwoAreas()
     {
+        problemeHebdo = std::make_unique<PROBLEME_HEBDO>();
         study = std::make_unique<Study>();
         areaA = study->areaAdd("A");
         areaB = study->areaAdd("B");
         CAPACITY_RESERVATION areaCapacityReservations;
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
+        study->parameters.reservesEnabled = true;
 
         tmpCapacityReservationUp.type = ReserveType::UP;
         tmpCapacityReservationUp.unsuppliedCost = 1;
-        tmpCapacityReservationUp.referenceActivationHours = 2;
+        tmpCapacityReservationUp.referenceActivationDuration = 2;
         tmpCapacityReservationUp.powerActivationRatio = 3;
         tmpCapacityReservationUp.energyActivationRatio = 4;
 
         tmpCapacityReservationDown.type = ReserveType::DOWN;
         tmpCapacityReservationDown.unsuppliedCost = 5;
-        tmpCapacityReservationDown.referenceActivationHours = 6;
+        tmpCapacityReservationDown.referenceActivationDuration = 6;
         tmpCapacityReservationDown.powerActivationRatio = 7;
         tmpCapacityReservationDown.energyActivationRatio = 8;
 
         tmpCapacityReservationUpB.type = ReserveType::UP;
         tmpCapacityReservationUpB.unsuppliedCost = 11;
-        tmpCapacityReservationUpB.referenceActivationHours = 12;
+        tmpCapacityReservationUpB.referenceActivationDuration = 12;
         tmpCapacityReservationUpB.powerActivationRatio = 13;
         tmpCapacityReservationUpB.energyActivationRatio = 14;
 
         tmpCapacityReservationDownB.type = ReserveType::DOWN;
         tmpCapacityReservationDownB.unsuppliedCost = 15;
-        tmpCapacityReservationDownB.referenceActivationHours = 16;
+        tmpCapacityReservationDownB.referenceActivationDuration = 16;
         tmpCapacityReservationDownB.powerActivationRatio = 17;
         tmpCapacityReservationDownB.energyActivationRatio = 18;
 
@@ -192,6 +197,7 @@ struct OneProblemWithReservesTwoAreas
           .areaCapacityReservations.emplace("ReserveDown", tmpCapacityReservationDownB);
     }
 
+    std::unique_ptr<PROBLEME_HEBDO> problemeHebdo;
     std::unique_ptr<Study> study;
     Area* areaA;
     Area* areaB;
@@ -251,7 +257,7 @@ BOOST_FIXTURE_TEST_CASE(reserve_one_area, OneProblemWithReservesOneArea)
                       1);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .areaCapacityReservations.at("ReserveUp")
-                        .referenceActivationHours,
+                        .referenceActivationDuration,
                       2);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .areaCapacityReservations.at("ReserveUp")
@@ -268,7 +274,7 @@ BOOST_FIXTURE_TEST_CASE(reserve_one_area, OneProblemWithReservesOneArea)
                       5);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .areaCapacityReservations.at("ReserveDown")
-                        .referenceActivationHours,
+                        .referenceActivationDuration,
                       6);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .areaCapacityReservations.at("ReserveDown")
@@ -1198,7 +1204,7 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok_minimal, OneProblemWithoutReservesOn
       0);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .getReserveByName("ReserveUp")
-                        ->referenceActivationHours,
+                        ->referenceActivationDuration,
                       1);
     BOOST_CHECK_EQUAL(
       areaA->allCapacityReservations.value().getReserveByName("ReserveUp")->spillageCost,
@@ -1318,7 +1324,7 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok, OneProblemWithoutReservesOneAreaWit
       3.3);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .getReserveByName("ReserveUp")
-                        ->referenceActivationHours,
+                        ->referenceActivationDuration,
                       2);
     BOOST_CHECK_EQUAL(
       areaA->allCapacityReservations.value().getReserveByName("ReserveUp")->spillageCost,
@@ -1410,6 +1416,55 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_duplicated, OneProblemWithoutReservesOn
     BOOST_CHECK_EQUAL(getErrors().size(), 1);
     BOOST_CHECK_EQUAL(getWarnings().size(), 0);
     BOOST_CHECK(getErrors().contains("A : reserve name already exists for reserve ReserveUp"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_importCapacityReservation_allGood, OneProblemWithReservesTwoAreas)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.has_value(), false);
+    importCapacityReservations(study->areas, *problemeHebdo);
+    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.has_value(), true);
+    int indexA = study->areas.find("a")->index;
+    int indexB = study->areas.find("b")->index;
+    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.value()[indexA].areaCapacityReservations.size(),
+                      2);
+    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.value()[indexB].areaCapacityReservations.size(),
+                      2);
+    for (auto& reserve: problemeHebdo->allReserves.value()[indexA].areaCapacityReservations)
+    {
+        if (reserve.type == Antares::Data::ReserveType::UP)
+        {
+            BOOST_CHECK_EQUAL(reserve.unsuppliedCost, 1);
+            BOOST_CHECK_EQUAL(reserve.referenceActivationDuration, 2);
+            BOOST_CHECK_EQUAL(reserve.powerActivationRatio, 3);
+            BOOST_CHECK_EQUAL(reserve.energyActivationRatio, 4);
+        }
+        else
+        {
+            BOOST_CHECK_EQUAL(reserve.unsuppliedCost, 5);
+            BOOST_CHECK_EQUAL(reserve.referenceActivationDuration, 6);
+            BOOST_CHECK_EQUAL(reserve.powerActivationRatio, 7);
+            BOOST_CHECK_EQUAL(reserve.energyActivationRatio, 8);
+        }
+    }
+
+    for (auto& reserve: problemeHebdo->allReserves.value()[indexB].areaCapacityReservations)
+    {
+        if (reserve.type == Antares::Data::ReserveType::UP)
+        {
+            BOOST_CHECK_EQUAL(reserve.unsuppliedCost, 11);
+            BOOST_CHECK_EQUAL(reserve.referenceActivationDuration, 12);
+            BOOST_CHECK_EQUAL(reserve.powerActivationRatio, 13);
+            BOOST_CHECK_EQUAL(reserve.energyActivationRatio, 14);
+        }
+        else
+        {
+            BOOST_CHECK_EQUAL(reserve.unsuppliedCost, 15);
+            BOOST_CHECK_EQUAL(reserve.referenceActivationDuration, 16);
+            BOOST_CHECK_EQUAL(reserve.powerActivationRatio, 17);
+            BOOST_CHECK_EQUAL(reserve.energyActivationRatio, 18);
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version

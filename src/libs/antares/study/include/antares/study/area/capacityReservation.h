@@ -46,7 +46,7 @@ struct CapacityReservation
     double spillageCost = 0.;
     double powerActivationRatio = 0.;
     double energyActivationRatio = 1.;
-    int referenceActivationHours = 1.;
+    int referenceActivationDuration = 1.;
     std::vector<double> need = {};
 
     void loadNeedFromFile(const fs::path& path)

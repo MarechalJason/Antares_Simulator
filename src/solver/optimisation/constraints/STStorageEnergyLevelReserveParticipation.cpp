@@ -6,7 +6,7 @@ void STStorageEnergyLevelReserveParticipation::add(int pays, int cluster, int re
     CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
                                                   .areaCapacityReservations[reserve];
 
-    if (capacityReservation.maxActivationDuration > 0)
+    if (capacityReservation.referenceActivationDuration > 0)
     {
         if (!data.Simulation)
         {
@@ -25,7 +25,7 @@ void STStorageEnergyLevelReserveParticipation::add(int pays, int cluster, int re
 
                 builder.updateHourWithinWeek(pdt);
 
-                for (int t = 0; t < capacityReservation.maxActivationDuration; t++)
+                for (int t = 0; t < capacityReservation.referenceActivationDuration; t++)
                 {
                     builder.STStorageClusterReserveParticipation(
                       capacityReservation.type,

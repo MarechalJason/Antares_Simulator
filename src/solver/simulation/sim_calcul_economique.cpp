@@ -37,7 +37,7 @@ using namespace Antares::Data;
 
 constexpr double LEVEL_TOLERANCE_MWH = 1.e-6;
 
-static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
+void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
 {
     int globalReserveIndex = 0;
     problem.allReserves = std::vector<::AREA_RESERVES_VECTOR>(areas.size());
@@ -65,8 +65,8 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
             areaCapacityReservation.spillageCost = reserveCapacity.spillageCost;
             areaCapacityReservation.powerActivationRatio = reserveCapacity.powerActivationRatio;
             areaCapacityReservation.energyActivationRatio = reserveCapacity.energyActivationRatio;
-            areaCapacityReservation.maxActivationDuration = reserveCapacity
-                                                              .referenceActivationHours;
+            areaCapacityReservation.referenceActivationDuration = reserveCapacity
+                                                                    .referenceActivationDuration;
             areaCapacityReservation.reserveName = reserveName;
             areaCapacityReservation.globalReserveIndex = globalReserveIndex;
             areaCapacityReservation.areaReserveIndex = areaReserveIndex;
@@ -205,7 +205,7 @@ static void importShortTermStorages(Data::Parameters parameters,
     }
 }
 
-static void importHydrosReserves(AreaList& areas, PROBLEME_HEBDO& problem)
+void importHydrosReserves(AreaList& areas, PROBLEME_HEBDO& problem)
 {
     int globalReserveIndex = 0;
     int globalHydroParticipationIndex = 0;

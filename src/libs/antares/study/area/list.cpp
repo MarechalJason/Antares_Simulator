@@ -169,7 +169,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
         }
         else if (key == "reference-activation-duration")
         {
-            if (!p->value.to<int>(capacityReservation.referenceActivationHours))
+            if (!p->value.to<int>(capacityReservation.referenceActivationDuration))
             {
                 logs.warning() << area.name
                                << ": invalid reference activation duration for reserve "

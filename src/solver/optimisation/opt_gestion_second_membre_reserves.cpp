@@ -269,14 +269,14 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                                        * cluster.series->lowerRuleCurve[pdtGlobal];
 
                     SecondMembre[cnt] = -reserve.energyActivationRatio
-                                        * reserve.maxActivationDuration * level_min;
+                                        * reserve.referenceActivationDuration * level_min;
                 }
                 else
                 {
                     double level_max = cluster.reservoirCapacity
                                        * cluster.series->upperRuleCurve[pdtGlobal];
                     SecondMembre[cnt] = reserve.energyActivationRatio
-                                        * reserve.maxActivationDuration * level_max;
+                                        * reserve.referenceActivationDuration * level_max;
                 }
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;
             }
@@ -388,13 +388,13 @@ void OPT_InitialiserLeSecondMembreDuProblemeLineaireReserves(PROBLEME_HEBDO* pro
                     double level_min = hydroCluster.NiveauHoraireInf[pdtHebdo];
 
                     SecondMembre[cnt] = -reserve.energyActivationRatio
-                                        * reserve.maxActivationDuration * level_min;
+                                        * reserve.referenceActivationDuration * level_min;
                 }
                 else
                 {
                     double level_max = hydroCluster.NiveauHoraireSup[pdtHebdo];
                     SecondMembre[cnt] = reserve.energyActivationRatio
-                                        * reserve.maxActivationDuration * level_max;
+                                        * reserve.referenceActivationDuration * level_max;
                 }
 
                 AdresseOuPlacerLaValeurDesCoutsMarginaux[cnt] = nullptr;

@@ -360,7 +360,7 @@ struct CAPACITY_RESERVATION
     double spillageCost = 0;
     double powerActivationRatio = 0;
     double energyActivationRatio = 1;
-    int maxActivationDuration = 0;
+    int referenceActivationDuration = 0;
     std::string reserveName;
     int globalReserveIndex;
     int areaReserveIndex;
