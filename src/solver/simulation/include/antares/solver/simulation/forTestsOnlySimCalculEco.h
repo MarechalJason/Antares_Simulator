@@ -19,9 +19,9 @@
  * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
  */
 #pragma once
+#include <antares/solver/simulation/sim_structure_probleme_economique.h>
+#include <antares/study/area/area.h>
 
-using namespace Antares::Data;
+void importCapacityReservations(Antares::Data::AreaList& areas, PROBLEME_HEBDO& problem);
 
-void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem);
-
-void importHydrosReserves(AreaList& areas, PROBLEME_HEBDO& problem);
+void importHydrosReserves(Antares::Data::AreaList& areas, PROBLEME_HEBDO& problem);
