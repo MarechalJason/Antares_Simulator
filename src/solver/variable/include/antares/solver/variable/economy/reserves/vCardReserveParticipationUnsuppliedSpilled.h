@@ -31,8 +31,8 @@
 namespace Antares::Solver::Variable::Economy::Reserves
 {
 
-using VCardReserveParticipationUnsuppliedSpilled = VCardReserveParticipationBase<
-  UnsuppliedSpilledTraits>;
+using VCardReserveParticipationUnsuppliedSpilled = Reserves::VCardReserveParticipationBase<
+  Reserves::UnsuppliedSpilledTraits>;
 
 inline std::string unsuppliedSpilledToString(ThermalCluster::UnsuppliedSpilled idx)
 {
