@@ -205,7 +205,7 @@ static void importShortTermStorages(Data::Parameters parameters,
     }
 }
 
-void importHydrosReserves(AreaList& areas, PROBLEME_HEBDO& problem)
+void importHydroReserves(AreaList& areas, PROBLEME_HEBDO& problem)
 {
     int globalReserveIndex = 0;
     int globalHydroParticipationIndex = 0;
@@ -417,7 +417,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
     if (parameters.reservesEnabled)
     {
         importCapacityReservations(study.areas, problem);
-        importHydrosReserves(study.areas, problem);
+        importHydroReserves(study.areas, problem);
     }
 
     importShortTermStorages(study.parameters, study.areas, problem.ShortTermStorage, problem);

@@ -24,4 +24,4 @@
 
 void importCapacityReservations(Antares::Data::AreaList& areas, PROBLEME_HEBDO& problem);
 
-void importHydrosReserves(Antares::Data::AreaList& areas, PROBLEME_HEBDO& problem);
+void importHydroReserves(Antares::Data::AreaList& areas, PROBLEME_HEBDO& problem);
