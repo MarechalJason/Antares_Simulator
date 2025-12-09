@@ -59,7 +59,7 @@ public:
         return area->hydro.reserveParticipationsCount();
     }
 
-    void populateHourlyValues(State& state, unsigned int numSpace)
+    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace)
     {
         if (state.study.parameters.reservesEnabled
             && !state.area->reserveParticipationIndexMaps.value().Hydro.empty())
@@ -87,8 +87,8 @@ public:
                              int precision,
                              unsigned int numSpace) const
     {
-        auto reserveName = results.data.area->reserveParticipationIndexMaps.value().Hydro.right.at(
-          i);
+        const auto reserveName = results.data.area->reserveParticipationIndexMaps.value()
+                                   .Hydro.right.at(i);
         results.variableCaption = reserveName + "_Hydro";
         results.variableUnit = VCardType::Unit();
         pValuesForTheCurrentYear[numSpace][i]

@@ -204,7 +204,7 @@ public:
         if (state.study.parameters.reservesEnabled
             && state.area->allCapacityReservations.has_value())
         {
-            auto& area = state.area;
+            const auto& area = state.area;
             auto& thermal = state.thermal;
             int column = 0;
             for (const auto& reserveName:
@@ -229,7 +229,7 @@ public:
 
     [[nodiscard]] Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
-      unsigned int numSpace) const override
+      unsigned int numSpace) const noexcept override
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }

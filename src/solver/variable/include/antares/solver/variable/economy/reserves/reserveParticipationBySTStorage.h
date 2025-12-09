@@ -59,7 +59,7 @@ public:
         return area->shortTermStorage.reserveParticipationsCount();
     }
 
-    void populateHourlyValues(State& state, unsigned int numSpace)
+    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace)
     {
         if (state.study.parameters.reservesEnabled
             && !state.area->reserveParticipationIndexMaps.value().STStorageClusters.empty())
