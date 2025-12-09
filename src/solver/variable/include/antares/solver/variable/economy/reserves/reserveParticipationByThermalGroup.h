@@ -29,7 +29,7 @@
 #include "../../variable.h"
 #include "./vCardReserveParticipationByThermalGroup.h"
 
-namespace Antares::Solver::Variable::Economy
+namespace Antares::Solver::Variable::Economy::Reserves
 {
 
 /*!
@@ -38,8 +38,8 @@ namespace Antares::Solver::Variable::Economy
 template<class NextT = Container::EndOfList>
 class ReserveParticipationByThermalGroup
     : public IVariable<ReserveParticipationByThermalGroup<NextT>,
-                                 NextT,
-                                 VCardReserveParticipationByThermalGroup>
+                       NextT,
+                       VCardReserveParticipationByThermalGroup>
 {
 public:
     //! Type of the next static variable
@@ -47,8 +47,7 @@ public:
     //! VCard
     typedef VCardReserveParticipationByThermalGroup VCardType;
     //! Ancestor
-    typedef IVariable<ReserveParticipationByThermalGroup<NextT>, NextT, VCardType>
-      AncestorType;
+    typedef IVariable<ReserveParticipationByThermalGroup<NextT>, NextT, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -293,4 +292,4 @@ private:
 
 }; // class ReserveParticipationByThermalGroup
 
-} // namespace Antares::Solver::Variable::Economy
+} // namespace Antares::Solver::Variable::Economy::Reserves

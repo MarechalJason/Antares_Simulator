@@ -29,7 +29,7 @@
 #include "../../variable.h"
 #include "./vCardReserveParticipationBySTStorageGroup.h"
 
-namespace Antares::Solver::Variable::Economy
+namespace Antares::Solver::Variable::Economy::Reserves
 {
 
 /*!
@@ -289,4 +289,4 @@ private:
 
 }; // class ReserveParticipationBySTStorageGroup
 
-} // namespace Antares::Solver::Variable::Economy
+} // namespace Antares::Solver::Variable::Economy::Reserves

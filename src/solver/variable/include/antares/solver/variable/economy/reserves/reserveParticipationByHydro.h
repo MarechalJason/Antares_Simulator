@@ -3,12 +3,11 @@
 #include "../../variable.h"
 #include "./vCardReserveParticipationByHydro.h"
 
-namespace Antares::Solver::Variable::Economy
+namespace Antares::Solver::Variable::Economy::Reserves
 {
 template<class NextT = Container::EndOfList>
-class ReserveParticipationByHydro: public IVariable<ReserveParticipationByHydro<NextT>,
-                                                              NextT,
-                                                              VCardReserveParticipationByHydro>
+class ReserveParticipationByHydro
+    : public IVariable<ReserveParticipationByHydro<NextT>, NextT, VCardReserveParticipationByHydro>
 {
 public:
     typedef NextT NextType;
@@ -201,4 +200,4 @@ private:
 
 }; // class ReserveParticipationByHydro
 
-} // namespace Antares::Solver::Variable::Economy
+} // namespace Antares::Solver::Variable::Economy::Reserves

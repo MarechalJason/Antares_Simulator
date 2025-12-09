@@ -28,7 +28,7 @@
 
 #include "../../variable.h"
 
-namespace Antares::Solver::Variable::Economy
+namespace Antares::Solver::Variable::Economy::Reserves
 {
 struct VCardReserveParticipationCost
 {
@@ -101,9 +101,8 @@ struct VCardReserveParticipationCost
 **   the thermal dispatchable clusters
 */
 template<class NextT = Container::EndOfList>
-class ReserveParticipationCost: public IVariable<ReserveParticipationCost<NextT>,
-                                                           NextT,
-                                                           VCardReserveParticipationCost>
+class ReserveParticipationCost
+    : public IVariable<ReserveParticipationCost<NextT>, NextT, VCardReserveParticipationCost>
 {
 public:
     //! Type of the next static variable
@@ -269,4 +268,4 @@ private:
 
 }; // class RampingCost
 
-} // namespace Antares::Solver::Variable::Economy
+} // namespace Antares::Solver::Variable::Economy::Reserves
