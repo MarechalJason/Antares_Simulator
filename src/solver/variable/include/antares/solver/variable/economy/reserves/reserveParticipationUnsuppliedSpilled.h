@@ -37,7 +37,7 @@ namespace Antares::Solver::Variable::Economy
 */
 template<class NextT = Container::EndOfList>
 class ReserveParticipationUnsuppliedSpilled
-    : public Variable::IVariable<ReserveParticipationUnsuppliedSpilled<NextT>,
+    : public IVariable<ReserveParticipationUnsuppliedSpilled<NextT>,
                                  NextT,
                                  VCardReserveParticipationUnsuppliedSpilled>
 {
@@ -47,7 +47,7 @@ public:
     //! VCard
     typedef VCardReserveParticipationUnsuppliedSpilled VCardType;
     //! Ancestor
-    typedef Variable::IVariable<ReserveParticipationUnsuppliedSpilled<NextT>, NextT, VCardType>
+    typedef IVariable<ReserveParticipationUnsuppliedSpilled<NextT>, NextT, VCardType>
       AncestorType;
 
     //! List of expected results
@@ -77,7 +77,7 @@ public:
 public:
     ReserveParticipationUnsuppliedSpilled() = default;
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
+    void initializeFromArea(Study* study, Area* area)
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -207,7 +207,7 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
-    Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
       unsigned int numSpace) const
     {

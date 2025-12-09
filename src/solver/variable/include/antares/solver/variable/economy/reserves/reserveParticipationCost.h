@@ -101,7 +101,7 @@ struct VCardReserveParticipationCost
 **   the thermal dispatchable clusters
 */
 template<class NextT = Container::EndOfList>
-class ReserveParticipationCost: public Variable::IVariable<ReserveParticipationCost<NextT>,
+class ReserveParticipationCost: public IVariable<ReserveParticipationCost<NextT>,
                                                            NextT,
                                                            VCardReserveParticipationCost>
 {
@@ -111,7 +111,7 @@ public:
     //! VCard
     typedef VCardReserveParticipationCost VCardType;
     //! Ancestor
-    typedef Variable::IVariable<ReserveParticipationCost<NextT>, NextT, VCardType> AncestorType;
+    typedef IVariable<ReserveParticipationCost<NextT>, NextT, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -138,7 +138,7 @@ public:
     };
 
 public:
-    void initializeFromStudy(Data::Study& study)
+    void initializeFromStudy(Study& study)
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
 
@@ -155,18 +155,18 @@ public:
     }
 
     template<class R>
-    static void InitializeResultsFromStudy(R& results, Data::Study& study)
+    static void InitializeResultsFromStudy(R& results, Study& study)
     {
         VariableAccessorType::InitializeAndReset(results, study);
     }
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
+    void initializeFromArea(Study* study, Area* area)
     {
         // Next
         NextType::initializeFromArea(study, area);
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink(Study* study, AreaLink* link)
     {
         // Next
         NextType::initializeFromAreaLink(study, link);
@@ -237,7 +237,7 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
-    Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int,
       unsigned int numSpace) const
     {
