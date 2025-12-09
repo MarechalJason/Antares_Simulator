@@ -70,9 +70,10 @@ public:
         };
     };
 
+public:
     ReserveParticipationByThermalGroup() = default;
 
-    void initializeFromArea(Study* study, Area* area) override
+    void initializeFromArea(Study* study, Area* area)
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -81,8 +82,7 @@ public:
         // Get the number of potential group reserve participation
         if (study->parameters.reservesEnabled)
         {
-            for (auto& setGroups:
-                 area->allCapacityReservations->reserveGroupPartThermal | std::views::values)
+            for (auto& [resName, setGroups]: area->allCapacityReservations->reserveGroupPartThermal)
             {
                 pSize += setGroups.size();
             }
@@ -122,24 +122,24 @@ public:
         NextType::initializeFromArea(study, area);
     }
 
-    [[nodiscard]] size_t getMaxNumberColumns() const override
+    size_t getMaxNumberColumns() const
     {
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink(Study* study, AreaLink* link) override
+    void initializeFromLink(Study* study, AreaLink* link)
     {
         // Next
         NextType::initializeFromAreaLink(study, link);
     }
 
-    void simulationBegin() override
+    void simulationBegin()
     {
         // Next
         NextType::simulationBegin();
     }
 
-    void simulationEnd() override
+    void simulationEnd()
     {
         NextType::simulationEnd();
     }
@@ -156,13 +156,13 @@ public:
         NextType::yearBegin(year, numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace) override
+    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
     {
         // Next variable
         NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
     }
 
-    void yearEndBuild(State& state, unsigned int year) override
+    void yearEndBuild(State& state, unsigned int year)
     {
         // Next variable
         NextType::yearEndBuild(state, year);
@@ -194,18 +194,18 @@ public:
         NextType::computeSummary(year, numSpace);
     }
 
-    void hourBegin(unsigned int hourInTheYear) override
+    void hourBegin(unsigned int hourInTheYear)
     {
         // Next variable
         NextType::hourBegin(hourInTheYear);
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace) override
+    void hourForEachArea(State& state, unsigned int numSpace)
     {
         if (state.study.parameters.reservesEnabled
             && state.area->allCapacityReservations.has_value())
         {
-            const auto& area = state.area;
+            auto& area = state.area;
             auto& thermal = state.thermal;
             int column = 0;
             for (const auto& reserveName:
@@ -213,7 +213,7 @@ public:
             {
                 if (area->allCapacityReservations->reserveGroupPartThermal.contains(reserveName))
                 {
-                    for (const auto& group:
+                    for (auto group:
                          area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
                     {
                         pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
@@ -228,9 +228,9 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
-    [[nodiscard]] Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
-      unsigned int numSpace) const override
+      unsigned int numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }
@@ -245,7 +245,7 @@ public:
 
         if (AncestorType::isPrinted[0] && results.data.area->allCapacityReservations)
         {
-            assert(nullptr != results.data.area);
+            assert(NULL != results.data.area);
             // Write the data for the current year
             int column = 0;
             for (const auto& reserveName:
