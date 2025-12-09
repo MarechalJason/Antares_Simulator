@@ -29,17 +29,16 @@
 #include "../../variable.h"
 #include "./vCardReserveParticipationMarginalCost.h"
 
-namespace Antares::Solver::Variable::Economy
+namespace Antares::Solver::Variable::Economy::Reserves
 {
 
 /*!
 ** \brief Reserve participation unsupplied and spilled volumes for an area
 */
 template<class NextT = Container::EndOfList>
-class ReserveParticipationMarginalCost
-    : public IVariable<ReserveParticipationMarginalCost<NextT>,
-                                 NextT,
-                                 VCardReserveParticipationMarginalCost>
+class ReserveParticipationMarginalCost: public IVariable<ReserveParticipationMarginalCost<NextT>,
+                                                         NextT,
+                                                         VCardReserveParticipationMarginalCost>
 {
 public:
     //! Type of the next static variable
@@ -47,8 +46,7 @@ public:
     //! VCard
     typedef VCardReserveParticipationMarginalCost VCardType;
     //! Ancestor
-    typedef IVariable<ReserveParticipationMarginalCost<NextT>, NextT, VCardType>
-      AncestorType;
+    typedef IVariable<ReserveParticipationMarginalCost<NextT>, NextT, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -264,4 +262,4 @@ private:
 
 }; // class ReserveParticipationMarginalCost
 
-} // namespace Antares::Solver::Variable::Economy
+} // namespace Antares::Solver::Variable::Economy::Reserves
