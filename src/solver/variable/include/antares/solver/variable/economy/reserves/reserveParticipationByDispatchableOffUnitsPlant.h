@@ -67,8 +67,9 @@ public:
         if (state.study.parameters.reservesEnabled
             && !state.area->reserveParticipationIndexMaps.value().thermalClusters.empty())
         {
-            for (auto& [clusterName, _]:
-                 state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear])
+            for (const auto& clusterName:
+                 state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
+                   | std::views::keys)
             {
                 for (const auto& [reserveName, reserveParticipation]:
                      state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
