@@ -26,9 +26,6 @@
 */
 #pragma once
 
-#include "../../variable.h"
-#include "./vCardReserveParticipationBySTStorageGroup.h"
-
 namespace Antares::Solver::Variable::Economy::Reserves
 {
 
