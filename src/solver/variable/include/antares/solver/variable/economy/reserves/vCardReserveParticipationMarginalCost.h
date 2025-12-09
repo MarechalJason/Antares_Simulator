@@ -33,7 +33,7 @@ namespace Antares::Solver::Variable::Economy::Reserves
 
 using VCardReserveParticipationMarginalCost = VCardReserveParticipationBase<MarginalCostTraits>;
 
-static std::string marginalCostToString()
+inline std::string marginalCostToString()
 {
     return "MRG.COST";
 }
