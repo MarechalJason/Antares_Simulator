@@ -38,9 +38,9 @@ namespace Antares::Solver::Variable::Economy
 */
 template<class NextT = Container::EndOfList>
 class ReserveParticipationByDispatchableOffUnitsPlant
-    : public Variable::IVariable<ReserveParticipationByDispatchableOffUnitsPlant<NextT>,
-                                 NextT,
-                                 VCardReserveParticipationByDispatchableOffUnitsPlant>
+    : public IVariable<ReserveParticipationByDispatchableOffUnitsPlant<NextT>,
+                       NextT,
+                       VCardReserveParticipationByDispatchableOffUnitsPlant>
 {
 public:
     //! Type of the next static variable
@@ -48,9 +48,8 @@ public:
     //! VCard
     typedef VCardReserveParticipationByDispatchableOffUnitsPlant VCardType;
     //! Ancestor
-    typedef Variable::
-      IVariable<ReserveParticipationByDispatchableOffUnitsPlant<NextT>, NextT, VCardType>
-        AncestorType;
+    typedef IVariable<ReserveParticipationByDispatchableOffUnitsPlant<NextT>, NextT, VCardType>
+      AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -79,7 +78,7 @@ public:
 public:
     ReserveParticipationByDispatchableOffUnitsPlant() = default;
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
+    void initializeFromArea(Study* study, Area* area)
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -125,7 +124,7 @@ public:
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink(Study* study, AreaLink* link)
     {
         // Next
         NextType::initializeFromAreaLink(study, link);
@@ -224,7 +223,7 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
-    Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
       unsigned int numSpace) const
     {

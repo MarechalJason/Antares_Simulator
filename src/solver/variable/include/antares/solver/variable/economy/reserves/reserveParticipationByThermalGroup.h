@@ -37,7 +37,7 @@ namespace Antares::Solver::Variable::Economy
 */
 template<class NextT = Container::EndOfList>
 class ReserveParticipationByThermalGroup
-    : public Variable::IVariable<ReserveParticipationByThermalGroup<NextT>,
+    : public IVariable<ReserveParticipationByThermalGroup<NextT>,
                                  NextT,
                                  VCardReserveParticipationByThermalGroup>
 {
@@ -47,7 +47,7 @@ public:
     //! VCard
     typedef VCardReserveParticipationByThermalGroup VCardType;
     //! Ancestor
-    typedef Variable::IVariable<ReserveParticipationByThermalGroup<NextT>, NextT, VCardType>
+    typedef IVariable<ReserveParticipationByThermalGroup<NextT>, NextT, VCardType>
       AncestorType;
 
     //! List of expected results
@@ -77,7 +77,7 @@ public:
 public:
     ReserveParticipationByThermalGroup() = default;
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
+    void initializeFromArea(Study* study, Area* area)
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -131,7 +131,7 @@ public:
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink(Study* study, AreaLink* link)
     {
         // Next
         NextType::initializeFromAreaLink(study, link);
@@ -232,7 +232,7 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
-    Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
       unsigned int numSpace) const
     {

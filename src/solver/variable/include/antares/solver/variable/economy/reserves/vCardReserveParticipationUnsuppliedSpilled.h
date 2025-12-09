@@ -91,7 +91,7 @@ struct VCardReserveParticipationUnsuppliedSpilled
 
 }; // class VCard
 
-static std::string unsuppliedSpilledToString(Data::ThermalCluster::UnsuppliedSpilled idx)
+static std::string unsuppliedSpilledToString(ThermalCluster::UnsuppliedSpilled idx)
 {
     switch (idx)
     {
