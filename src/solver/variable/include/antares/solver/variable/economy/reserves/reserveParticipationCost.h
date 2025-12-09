@@ -134,7 +134,8 @@ public:
         };
     };
 
-    void initializeFromStudy(Study& study) override
+public:
+    void initializeFromStudy(Study& study)
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
 
@@ -156,25 +157,25 @@ public:
         VariableAccessorType::InitializeAndReset(results, study);
     }
 
-    void initializeFromArea(Study* study, Area* area) override
+    void initializeFromArea(Study* study, Area* area)
     {
         // Next
         NextType::initializeFromArea(study, area);
     }
 
-    void initializeFromLink(Study* study, AreaLink* link) override
+    void initializeFromLink(Study* study, AreaLink* link)
     {
         // Next
         NextType::initializeFromAreaLink(study, link);
     }
 
-    void simulationBegin() override
+    void simulationBegin()
     {
         // Next
         NextType::simulationBegin();
     }
 
-    void simulationEnd() override
+    void simulationEnd()
     {
         NextType::simulationEnd();
     }
@@ -187,13 +188,13 @@ public:
         NextType::yearBegin(year, numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace) override
+    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
     {
         // Next variable
         NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
     }
 
-    void yearEndBuild(State& state, unsigned int year) override
+    void yearEndBuild(State& state, unsigned int year)
     {
         // Next variable
         NextType::yearEndBuild(state, year);
@@ -217,13 +218,13 @@ public:
         NextType::computeSummary(year, numSpace);
     }
 
-    void hourBegin(unsigned int hourInTheYear) override
+    void hourBegin(unsigned int hourInTheYear)
     {
         // Next variable
         NextType::hourBegin(hourInTheYear);
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace) override
+    void hourForEachArea(State& state, unsigned int numSpace)
     {
         pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
           = state.reserveParticipationCostForYear
@@ -235,7 +236,7 @@ public:
 
     [[nodiscard]] Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int,
-      unsigned int numSpace) const override
+      unsigned int numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace].hour;
     }

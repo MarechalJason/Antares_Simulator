@@ -70,9 +70,10 @@ public:
         };
     };
 
+public:
     ReserveParticipationUnsuppliedSpilled() = default;
 
-    void initializeFromArea(Study* study, Area* area) override
+    void initializeFromArea(Study* study, Area* area)
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -118,7 +119,7 @@ public:
         NextType::initializeFromArea(study, area);
     }
 
-    [[nodiscard]] size_t getMaxNumberColumns() const override
+    size_t getMaxNumberColumns() const
     {
         return pSize * ResultsType::count;
     }
@@ -135,13 +136,13 @@ public:
         NextType::yearBegin(year, numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace) override
+    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
     {
         // Next variable
         NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
     }
 
-    void yearEndBuild(State& state, unsigned int year) override
+    void yearEndBuild(State& state, unsigned int year)
     {
         // Next variable
         NextType::yearEndBuild(state, year);
@@ -173,20 +174,20 @@ public:
         NextType::computeSummary(year, numSpace);
     }
 
-    void hourBegin(unsigned int hourInTheYear) override
+    void hourBegin(unsigned int hourInTheYear)
     {
         // Next variable
         NextType::hourBegin(hourInTheYear);
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace) override
+    void hourForEachArea(State& state, unsigned int numSpace)
     {
-        const auto& area = state.area;
+        auto& area = state.area;
+        int column = 0;
 
         if (state.study.parameters.reservesEnabled)
         {
-            int column = 0;
-            const auto reserves = state.problemeHebdo->allReserves.value()[area->index];
+            auto reserves = state.problemeHebdo->allReserves.value()[area->index];
             for (const auto& reserve: reserves.areaCapacityReservations)
             {
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]
@@ -202,9 +203,9 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
-    [[nodiscard]] Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
-      unsigned int numSpace) const override
+      unsigned int numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }
@@ -219,7 +220,7 @@ public:
 
         if (AncestorType::isPrinted[0] && results.data.area->allCapacityReservations)
         {
-            assert(nullptr != results.data.area);
+            assert(NULL != results.data.area);
             const auto& thermal = results.data.area->thermal;
             results.variableUnit = VCardType::Unit();
             // Write the data for the current year

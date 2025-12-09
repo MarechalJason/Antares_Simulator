@@ -39,7 +39,6 @@ template<class VCardType, class NextT, class DerivedType>
 class ReserveParticipationBase: public IVariable<DerivedType, NextT, VCardType>
 {
 public:
-    ~ReserveParticipationBase() override = default;
     //! Type of the next static variable
     typedef NextT NextType;
     //! VCard
@@ -73,7 +72,7 @@ public:
 
     ReserveParticipationBase() = default;
 
-    void initializeFromArea(Study* study, Area* area) override
+    void initializeFromArea(Study* study, Area* area)
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -113,24 +112,24 @@ public:
         NextType::initializeFromArea(study, area);
     }
 
-    [[nodiscard]] size_t getMaxNumberColumns() const override
+    [[nodiscard]] size_t getMaxNumberColumns() const
     {
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink(Study* study, AreaLink* link) override
+    void initializeFromLink(Study* study, AreaLink* link)
     {
         // Next
         NextType::initializeFromAreaLink(study, link);
     }
 
-    void simulationBegin() override
+    void simulationBegin()
     {
         // Next
         NextType::simulationBegin();
     }
 
-    void simulationEnd() override
+    void simulationEnd()
     {
         NextType::simulationEnd();
     }
@@ -147,13 +146,13 @@ public:
         NextType::yearBegin(year, numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace) override
+    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
     {
         // Next variable
         NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
     }
 
-    void yearEndBuild(State& state, unsigned int year) override
+    void yearEndBuild(State& state, unsigned int year)
     {
         // Next variable
         NextType::yearEndBuild(state, year);
@@ -182,14 +181,14 @@ public:
         NextType::computeSummary(year, numSpace);
     }
 
-    void hourBegin(unsigned int hourInTheYear) override
+    void hourBegin(unsigned int hourInTheYear)
     {
         // Next variable
         NextType::hourBegin(hourInTheYear);
     }
 
     // This method must be implemented by derived classes
-    void hourForEachArea(State& state, unsigned int numSpace) override
+    void hourForEachArea(State& state, unsigned int numSpace)
     {
         static_cast<DerivedType*>(this)->hourForEachAreaImpl(state, numSpace);
         NextType::hourForEachArea(state, numSpace);
@@ -197,7 +196,7 @@ public:
 
     [[nodiscard]] Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
-      unsigned int numSpace) const override
+      unsigned int numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }
