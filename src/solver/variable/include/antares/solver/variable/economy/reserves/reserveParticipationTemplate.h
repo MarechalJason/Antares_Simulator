@@ -218,13 +218,13 @@ public:
         if (AncestorType::isPrinted[0])
         {
             assert(results.data.area != nullptr);
+            const auto* derived = const_cast<const DerivedType*>(
+              static_cast<DerivedType*>(const_cast<ReserveParticipationTemplate*>(this)));
 
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
             {
-                auto* derived = const_cast<DerivedType*>(static_cast<const DerivedType*>(this));
-                // Cast away const on results.data.area (it's safe here as we don't modify area)
-                if (derived->hasIndexMapping(const_cast<Area*>(results.data.area), i))
+                if (derived->hasIndexMapping(results.data.area, i))
                 {
                     derived->buildReportForIndex(results, i, fileLevel, precision, numSpace);
                 }
