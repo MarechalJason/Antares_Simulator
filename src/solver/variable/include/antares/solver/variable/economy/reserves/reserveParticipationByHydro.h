@@ -59,21 +59,7 @@ public:
         return area->hydro.reserveParticipationsCount();
     }
 
-    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace)
-    {
-        if (state.study.parameters.reservesEnabled
-            && !state.area->reserveParticipationIndexMaps.value().Hydro.empty())
-        {
-            for (const auto& [reserveName, reserveParticipation]:
-                 state.reserveParticipationPerHydroForYear[state.hourInTheYear]["Hydro"])
-            {
-                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()
-                                                     .Hydro.left.at(reserveName)]
-                  .hour[state.hourInTheYear]
-                  = reserveParticipation;
-            }
-        }
-    }
+    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace);
 
     bool hasIndexMapping(const Area* area, uint /*i*/) const
     {
@@ -96,5 +82,22 @@ public:
     }
 
 }; // class ReserveParticipationByHydro
+
+template<class NextT>
+void ReserveParticipationByHydro<NextT>::populateHourlyValues(State& state, unsigned int numSpace)
+{
+    if (state.study.parameters.reservesEnabled
+        && !state.area->reserveParticipationIndexMaps.value().Hydro.empty())
+    {
+        for (const auto& [reserveName, reserveParticipation]:
+             state.reserveParticipationPerHydroForYear[state.hourInTheYear]["Hydro"])
+        {
+            pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()
+                                                 .Hydro.left.at(reserveName)]
+              .hour[state.hourInTheYear]
+              = reserveParticipation;
+        }
+    }
+}
 
 } // namespace Antares::Solver::Variable::Economy::Reserves
