@@ -19,6 +19,7 @@
  * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
  */
 #pragma once
+#include "antares/solver/variable/variable.h"
 
 namespace Antares::Solver::Variable::Economy::Reserves
 {
@@ -31,13 +32,14 @@ namespace Antares::Solver::Variable::Economy::Reserves
  * in the hourForEachArea method.
  *
  * @tparam VCardType The VCard type describing this variable
- * @tparam NextType The next variable in the chain
+ * @tparam NextT The next variable in the chain
  * @tparam DerivedType The derived class type (CRTP pattern)
  */
 template<class VCardType, class NextT, class DerivedType>
 class ReserveParticipationBase: public IVariable<DerivedType, NextT, VCardType>
 {
 public:
+    ~ReserveParticipationBase() override = default;
     //! Type of the next static variable
     typedef NextT NextType;
     //! VCard
@@ -69,10 +71,9 @@ public:
         };
     };
 
-public:
     ReserveParticipationBase() = default;
 
-    void initializeFromArea(Study* study, Area* area)
+    void initializeFromArea(Study* study, Area* area) override
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -112,24 +113,24 @@ public:
         NextType::initializeFromArea(study, area);
     }
 
-    size_t getMaxNumberColumns() const
+    size_t getMaxNumberColumns() const override
     {
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink(Study* study, AreaLink* link)
+    void initializeFromLink(Study* study, AreaLink* link) override
     {
         // Next
         NextType::initializeFromAreaLink(study, link);
     }
 
-    void simulationBegin()
+    void simulationBegin() override
     {
         // Next
         NextType::simulationBegin();
     }
 
-    void simulationEnd()
+    void simulationEnd() override
     {
         NextType::simulationEnd();
     }
@@ -146,13 +147,13 @@ public:
         NextType::yearBegin(year, numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
+    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace) override
     {
         // Next variable
         NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
     }
 
-    void yearEndBuild(State& state, unsigned int year)
+    void yearEndBuild(State& state, unsigned int year) override
     {
         // Next variable
         NextType::yearEndBuild(state, year);
@@ -181,14 +182,14 @@ public:
         NextType::computeSummary(year, numSpace);
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin(unsigned int hourInTheYear) override
     {
         // Next variable
         NextType::hourBegin(hourInTheYear);
     }
 
     // This method must be implemented by derived classes
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, unsigned int numSpace) override
     {
         static_cast<DerivedType*>(this)->hourForEachAreaImpl(state, numSpace);
         NextType::hourForEachArea(state, numSpace);
@@ -196,7 +197,7 @@ public:
 
     Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
-      unsigned int numSpace) const
+      unsigned int numSpace) const override
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }

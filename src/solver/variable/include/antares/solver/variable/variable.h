@@ -106,7 +106,7 @@ public:
     IVariable();
     //@}
 
-    ~IVariable();
+    virtual ~IVariable();
 
     //! \name Initialize the variable
     //@{
@@ -115,9 +115,9 @@ public:
     **
     ** \param study The attached study
     */
-    void initializeFromStudy(Data::Study& study);
+    virtual void initializeFromStudy(Data::Study& study);
 
-    size_t getMaxNumberColumns() const;
+    virtual size_t getMaxNumberColumns() const;
 
     /*!
     ** \brief Initialize the variable with a specific area
@@ -125,7 +125,7 @@ public:
     ** \param study The attached study
     ** \param area The area for this variable
     */
-    void initializeFromArea(Data::Study* study, Data::Area* area);
+    virtual void initializeFromArea(Data::Study* study, Data::Area* area);
 
     /*!
     ** \brief Initialize the variable with a specific link between two areas
@@ -133,7 +133,7 @@ public:
     ** \param study The attached study
     ** \param link The link
     */
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link);
+    virtual void initializeFromLink(Data::Study* study, Data::AreaLink* link);
 
     /*!
     ** \brief Initialize the variable with a specific thermal cluster
@@ -154,12 +154,12 @@ public:
     /*!
     ** \brief Notify to all variables that the simulation is about to begin
     */
-    void simulationBegin();
+    virtual void simulationBegin();
 
     /*!
     ** \brief Notify to all variables that the simulation has finished
     */
-    void simulationEnd();
+    virtual void simulationEnd();
     //@}
 
     //! \name Year
@@ -179,7 +179,7 @@ public:
     ** \param state The current thermal cluster
     ** \param year The current year
     */
-    void yearEndBuild(State& state, uint year);
+    virtual void yearEndBuild(State& state, uint year);
 
     /*!
     ** \brief Notify to all variables to prepare data for the close to year end calculations for
@@ -200,7 +200,7 @@ public:
     ** \param state The current thermal cluster
     ** \param year The current year
     */
-    void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace);
+    virtual void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace);
 
     /*!
     ** \brief Notify to all variables that the year is now over
@@ -227,11 +227,11 @@ public:
     //! \name Simulation Hours in the year
     //@{
     //! Event: A new hour in the year has just began
-    void hourBegin(uint hourInTheYear);
+    virtual void hourBegin(uint hourInTheYear);
     //! Event: For a given hour in the year, walking through all areas
     void hourForEachArea(State& state);
 
-    void hourForEachArea(State& state, unsigned int numSpace);
+    virtual void hourForEachArea(State& state, unsigned int numSpace);
 
     //! Event: For a given hour in the year, walking through all links
     // for a given area
@@ -310,7 +310,7 @@ public:
     void retrieveResultsForLink(typename Storage<VCardToFindT>::ResultsType** result,
                                 const Data::AreaLink* link);
 
-    Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    virtual Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       uint column,
       uint) const;
     //@}

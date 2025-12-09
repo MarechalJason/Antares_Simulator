@@ -70,10 +70,9 @@ public:
         };
     };
 
-public:
     ReserveParticipationUnsuppliedSpilled() = default;
 
-    void initializeFromArea(Study* study, Area* area)
+    void initializeFromArea(Study* study, Area* area) override
     {
         // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -119,7 +118,7 @@ public:
         NextType::initializeFromArea(study, area);
     }
 
-    size_t getMaxNumberColumns() const
+    size_t getMaxNumberColumns() const override
     {
         return pSize * ResultsType::count;
     }
@@ -136,13 +135,13 @@ public:
         NextType::yearBegin(year, numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
+    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace) override
     {
         // Next variable
         NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
     }
 
-    void yearEndBuild(State& state, unsigned int year)
+    void yearEndBuild(State& state, unsigned int year) override
     {
         // Next variable
         NextType::yearEndBuild(state, year);
@@ -174,13 +173,13 @@ public:
         NextType::computeSummary(year, numSpace);
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin(unsigned int hourInTheYear) override
     {
         // Next variable
         NextType::hourBegin(hourInTheYear);
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, unsigned int numSpace) override
     {
         auto& area = state.area;
         int column = 0;
@@ -205,7 +204,7 @@ public:
 
     Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
-      unsigned int numSpace) const
+      unsigned int numSpace) const override
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }
