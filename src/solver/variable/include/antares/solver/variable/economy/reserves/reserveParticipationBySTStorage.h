@@ -64,8 +64,9 @@ public:
         if (state.study.parameters.reservesEnabled
             && !state.area->reserveParticipationIndexMaps.value().STStorageClusters.empty())
         {
-            for (auto& [clusterName, _]:
-                 state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear])
+            for (const auto& clusterName:
+                 state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
+                   | std::views::keys)
             {
                 for (const auto& [reserveName, reserveParticipation]:
                      state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
