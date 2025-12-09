@@ -80,7 +80,8 @@ public:
         // Get the number of potential group reserve participation
         if (study->parameters.reservesEnabled)
         {
-            for (auto& [resName, setGroups]: area->allCapacityReservations->reserveGroupPartSTS)
+            for (auto& setGroups:
+                 area->allCapacityReservations->reserveGroupPartSTS | std::views::values)
             {
                 pSize += setGroups.size();
             }
