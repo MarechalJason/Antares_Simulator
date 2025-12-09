@@ -230,7 +230,7 @@ public:
 
     [[nodiscard]] Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
-      unsigned int numSpace) const noexcept override
+      unsigned int numSpace) const override
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }
