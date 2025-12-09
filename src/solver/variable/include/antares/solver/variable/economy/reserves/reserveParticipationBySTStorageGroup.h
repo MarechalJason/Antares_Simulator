@@ -210,7 +210,7 @@ public:
             {
                 if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
                 {
-                    for (auto group:
+                    for (const auto& group:
                          area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
                     {
                         pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
@@ -262,7 +262,7 @@ public:
                          group++)
                     {
                         // Write the data for the current year
-                        std::string tmp = *group;
+                        const std::string& tmp = *group;
                         Yuni::String caption = reserveName;
                         caption << "_" << tmp;
                         results.variableCaption = caption; // VCardType::Caption();
