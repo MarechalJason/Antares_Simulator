@@ -85,6 +85,7 @@ public:
             }
         }
 
+        // Check if symmetry already existed
         if (std::find(reserveParticipationsSymmetries.begin(),
                       reserveParticipationsSymmetries.end(),
                       symmetryRes)
@@ -101,15 +102,14 @@ public:
     std::vector<int> symmetricalIndices(const ReserveName& name) const
     {
         std::vector<int> indices;
-        for (int i = 0; i < reserveParticipationsSymmetries.size(); i++)
+
+        for (int i = 0; const auto& list: reserveParticipationsSymmetries)
         {
-            for (const auto& reserveParticipation: reserveParticipationsSymmetries.at(i))
+            if (std::ranges::any_of(list, [&](const auto& rp) { return rp.reserveName == name; }))
             {
-                if (reserveParticipation.reserveName == name)
-                {
-                    indices.push_back(i);
-                }
+                indices.push_back(i);
             }
+            ++i;
         }
 
         return indices;
