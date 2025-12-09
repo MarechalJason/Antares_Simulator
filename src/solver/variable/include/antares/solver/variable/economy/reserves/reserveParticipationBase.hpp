@@ -212,7 +212,7 @@ public:
 
         if (AncestorType::isPrinted[0])
         {
-            assert(NULL != results.data.area);
+            assert(nullptr != results.data.area);
 
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
