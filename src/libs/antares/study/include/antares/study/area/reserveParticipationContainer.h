@@ -34,25 +34,9 @@ concept DerivedFromReserveParticipationBase = std::is_base_of_v<ReserveParticipa
 template<DerivedFromReserveParticipationBase T>
 class ReserveParticipationContainerBase
 {
-    struct ReserveParticipationWithName
-    {
-        T* reserveParticipation;
-        ReserveName reserveName;
-
-        bool operator==(const ReserveParticipationWithName& other) const
-        {
-            return reserveName == other.reserveName;
-        }
-
-        bool operator<(const ReserveParticipationWithName& other) const
-        {
-            return reserveName < other.reserveName;
-        }
-    };
-
 protected:
     std::map<ReserveName, T> reservesParticipations;
-    std::vector<std::set<ReserveParticipationWithName>> reserveParticipationsSymmetries;
+    std::vector<std::set<ReserveName>> reserveParticipationsSymmetries;
 
 public:
     /// @brief Add a reserve participation to the container for a given reserve name
@@ -72,12 +56,12 @@ public:
             throw std::runtime_error(
               "Must have at least two distinct reserves to participate to a symmetry");
         }
-        std::set<ReserveParticipationWithName> symmetryRes;
+        std::set<ReserveName> symmetryRes;
         for (const auto& name: names)
         {
             if (auto it = reservesParticipations.find(name); it != reservesParticipations.end())
             {
-                symmetryRes.insert(ReserveParticipationWithName{&it->second, name});
+                symmetryRes.insert({name});
             }
             else
             {
@@ -105,7 +89,7 @@ public:
 
         for (int i = 0; const auto& list: reserveParticipationsSymmetries)
         {
-            if (std::ranges::any_of(list, [&](const auto& rp) { return rp.reserveName == name; }))
+            if (list.contains(name))
             {
                 indices.push_back(i);
             }
