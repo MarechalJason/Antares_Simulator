@@ -1,148 +1,68 @@
+/*
+** Copyright 2007-2023 RTE
+** Authors: Antares_Simulator Team
+**
+** This file is part of Antares_Simulator.
+**
+** Antares_Simulator is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** There are special exceptions to the terms and conditions of the
+** license as they are applied to this software. View the full text of
+** the exceptions in file COPYING.txt in the directory of this software
+** distribution
+**
+** Antares_Simulator is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with Antares_Simulator. If not, see <http://www.gnu.org/licenses/>.
+**
+** SPDX-License-Identifier: licenceRef-GPL3_WITH_RTE-Exceptions
+*/
 #pragma once
+
+#include "reserveParticipationTemplate.h"
 
 namespace Antares::Solver::Variable::Economy::Reserves
 {
+
+/*!
+** \brief Reserve Participation from hydro
+*/
 template<class NextT = Container::EndOfList>
 class ReserveParticipationByHydro
-    : public IVariable<ReserveParticipationByHydro<NextT>, NextT, VCardReserveParticipationByHydro>
+    : public ReserveParticipationTemplate<ReserveParticipationByHydro<NextT>,
+                                          VCardReserveParticipationByHydro,
+                                          NextT>
 {
 public:
+    //! Type of the next static variable
     typedef NextT NextType;
+    //! VCard
     typedef VCardReserveParticipationByHydro VCardType;
-    typedef IVariable<ReserveParticipationByHydro<NextT>, NextT, VCardType> AncestorType;
+    //! Ancestor
+    typedef ReserveParticipationTemplate<ReserveParticipationByHydro<NextT>, VCardType, NextT>
+      AncestorType;
 
-    typedef typename VCardType::ResultsType ResultsType;
+    using AncestorType::pSize;
+    using AncestorType::pValuesForTheCurrentYear;
 
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
-
-    enum
-    {
-        count = 1 + NextT::count,
-    };
-
-    template<int CDataLevel, int CFile>
-    struct Statistics
-    {
-        enum
-        {
-            count = ((VCardType::categoryDataLevel & CDataLevel
-                      && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
-        };
-    };
-
-public:
     ReserveParticipationByHydro() = default;
 
-    void initializeFromArea(Study* study, Area* area)
+    size_t getSizeFromArea(Study* /*study*/, Area* area)
     {
-        pNbYearsParallel = study->maxNbYearsInParallel;
-        pValuesForTheCurrentYear.resize(pNbYearsParallel);
-
-        // Get the number of Hydro reserveParticipations
-        pSize = study->parameters.reservesEnabled ? area->hydro.reserveParticipationsCount() : 0;
-        if (pSize)
-        {
-            AncestorType::pResults.resize(pSize);
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-            {
-                pValuesForTheCurrentYear[numSpace].resize(pSize);
-            }
-
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
-            {
-                for (unsigned int i = 0; i != pSize; ++i)
-                {
-                    pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
-                }
-            }
-
-            for (unsigned int i = 0; i != pSize; ++i)
-            {
-                AncestorType::pResults[i].initializeFromStudy(*study);
-                AncestorType::pResults[i].reset();
-            }
-        }
-        else
-        {
-            AncestorType::pResults.clear();
-        }
-
-        NextType::initializeFromArea(study, area);
+        return area->hydro.reserveParticipationsCount();
     }
 
-    size_t getMaxNumberColumns() const
-    {
-        return pSize * ResultsType::count;
-    }
-
-    void initializeFromLink(Study* study, AreaLink* link)
-    {
-        NextType::initializeFromAreaLink(study, link);
-    }
-
-    void simulationBegin()
-    {
-        NextType::simulationBegin();
-    }
-
-    void simulationEnd()
-    {
-        NextType::simulationEnd();
-    }
-
-    void yearBegin(unsigned int year, unsigned int numSpace)
-    {
-        for (unsigned int i = 0; i != pSize; ++i)
-        {
-            pValuesForTheCurrentYear[numSpace][i].reset();
-        }
-
-        NextType::yearBegin(year, numSpace);
-    }
-
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
-    {
-        NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
-    }
-
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
-    {
-        NextType::yearEndBuild(state, year, numSpace);
-    }
-
-    void yearEnd(unsigned int year, unsigned int numSpace)
-    {
-        for (unsigned int i = 0; i < pSize; ++i)
-        {
-            pValuesForTheCurrentYear[numSpace][i].computeStatisticsForTheCurrentYear();
-        }
-        NextType::yearEnd(year, numSpace);
-    }
-
-    void computeSummary(unsigned int year, unsigned int numSpace)
-    {
-        // Merge all those values with the global results
-
-        VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
-                                             AncestorType::pResults,
-                                             year);
-
-        // Next variable
-        NextType::computeSummary(year, numSpace);
-    }
-
-    void hourBegin(unsigned int hourInTheYear)
-    {
-        NextType::hourBegin(hourInTheYear);
-    }
-
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void populateHourlyValues(State& state, unsigned int numSpace)
     {
         if (state.study.parameters.reservesEnabled
-            && state.area->reserveParticipationIndexMaps.value().Hydro.size())
+            && !state.area->reserveParticipationIndexMaps.value().Hydro.empty())
         {
             for (const auto& [reserveName, reserveParticipation]:
                  state.reserveParticipationPerHydroForYear[state.hourInTheYear]["Hydro"])
@@ -153,47 +73,27 @@ public:
                   = reserveParticipation;
             }
         }
-
-        NextType::hourForEachArea(state, numSpace);
     }
 
-    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int column,
-      unsigned int numSpace) const
+    bool hasIndexMapping(Area* area, uint /*i*/) const
     {
-        return pValuesForTheCurrentYear[numSpace][column].hour;
+        return area->reserveParticipationIndexMaps
+               && !area->reserveParticipationIndexMaps.value().Hydro.empty();
     }
 
-    void localBuildAnnualSurveyReport(SurveyResults& results,
-                                      int fileLevel,
-                                      int precision,
-                                      unsigned int numSpace) const
+    void buildReportForIndex(SurveyResults& results,
+                             uint i,
+                             int fileLevel,
+                             int precision,
+                             unsigned int numSpace) const
     {
-        results.isCurrentVarNA = AncestorType::isNonApplicable;
-        if (AncestorType::isPrinted[0])
-        {
-            assert(NULL != results.data.area);
-            for (uint i = 0; i < pSize; ++i)
-            {
-                if (results.data.area->reserveParticipationIndexMaps
-                    && results.data.area->reserveParticipationIndexMaps.value()
-                         .Hydro.size()) // Bimap is not empty
-                {
-                    auto reserveName = results.data.area->reserveParticipationIndexMaps.value()
-                                         .Hydro.right.at(i);
-                    results.variableCaption = reserveName + "_Hydro"; // VCardType::Caption();
-                    results.variableUnit = VCardType::Unit();
-                    pValuesForTheCurrentYear[numSpace][i]
-                      .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-                }
-            }
-        }
+        auto reserveName = results.data.area->reserveParticipationIndexMaps.value().Hydro.right.at(
+          i);
+        results.variableCaption = reserveName + "_Hydro";
+        results.variableUnit = VCardType::Unit();
+        pValuesForTheCurrentYear[numSpace][i]
+          .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
     }
-
-private:
-    typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    size_t pSize = 0;
-    unsigned int pNbYearsParallel = 0;
 
 }; // class ReserveParticipationByHydro
 

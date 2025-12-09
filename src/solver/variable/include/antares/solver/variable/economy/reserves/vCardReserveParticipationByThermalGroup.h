@@ -31,6 +31,7 @@
 namespace Antares::Solver::Variable::Economy::Reserves
 {
 
-using VCardReserveParticipationByThermalGroup = VCardReserveParticipationBase<ThermalGroupTraits>;
+using VCardReserveParticipationByThermalGroup = Reserves::VCardReserveParticipationBase<
+  Reserves::ThermalGroupTraits>;
 
 } // namespace Antares::Solver::Variable::Economy::Reserves
