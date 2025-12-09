@@ -196,12 +196,12 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace) override
     {
-        auto& area = state.area;
+        const auto& area = state.area;
         int column = 0;
 
         if (state.study.parameters.reservesEnabled)
         {
-            auto reserves = state.problemeHebdo->allReserves.value()[area->index];
+            const auto reserves = state.problemeHebdo->allReserves.value()[area->index];
             for (const auto& reserve: reserves.areaCapacityReservations)
             {
                 pValuesForTheCurrentYear[numSpace][column++].hour[state.hourInTheYear]

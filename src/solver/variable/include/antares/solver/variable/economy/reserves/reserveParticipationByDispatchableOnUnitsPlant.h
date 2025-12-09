@@ -61,7 +61,7 @@ public:
         return area->thermal.list.reserveParticipationsCount();
     }
 
-    void populateHourlyValues(State& state, unsigned int numSpace)
+    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace)
     {
         if (state.study.parameters.reservesEnabled
             && !state.area->reserveParticipationIndexMaps.value().thermalClusters.empty())
