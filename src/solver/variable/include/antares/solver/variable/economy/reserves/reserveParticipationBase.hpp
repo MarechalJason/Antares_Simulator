@@ -35,8 +35,7 @@ namespace Antares::Solver::Variable::Economy::Reserves
  * @tparam DerivedType The derived class type (CRTP pattern)
  */
 template<class VCardType, class NextT, class DerivedType>
-class ReserveParticipationBase
-    : public IVariable<DerivedType, NextT, VCardType>
+class ReserveParticipationBase: public IVariable<DerivedType, NextT, VCardType>
 {
 public:
     //! Type of the next static variable
@@ -233,9 +232,10 @@ protected:
                                      uint i,
                                      int fileLevel,
                                      int precision,
-                                     unsigned int numSpace) const = 0;
+                                     unsigned int numSpace) const
+      = 0;
 
-    virtual bool hasIndexMapping(Area* area, uint i) const = 0;
+    virtual bool hasIndexMapping(const Area* area, uint i) const = 0;
 
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
@@ -245,4 +245,3 @@ protected:
 }; // class ReserveParticipationBase
 
 } // namespace Antares::Solver::Variable::Economy::Reserves
-

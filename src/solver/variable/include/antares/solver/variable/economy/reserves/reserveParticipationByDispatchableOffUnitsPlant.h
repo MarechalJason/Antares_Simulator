@@ -85,7 +85,7 @@ public:
         }
     }
 
-    bool hasIndexMapping(Area* area, uint /*i*/) const
+    bool hasIndexMapping(const Area* area, uint /*i*/) const
     {
         return area->reserveParticipationIndexMaps
                && !area->reserveParticipationIndexMaps.value().thermalClusters.empty();
