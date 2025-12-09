@@ -29,13 +29,7 @@
 #include "../../variable.h"
 #include "./vCardReserveParticipationByDispatchableOffUnitsPlant.h"
 
-namespace Antares
-{
-namespace Solver
-{
-namespace Variable
-{
-namespace Economy
+namespace Antares::Solver::Variable::Economy
 {
 
 /*!
@@ -278,7 +272,4 @@ private:
 
 }; // class ReserveParticipationByDispatchableOffUnitsPlant
 
-} // namespace Economy
-} // namespace Variable
-} // namespace Solver
-} // namespace Antares
+} // namespace Antares::Solver::Variable::Economy

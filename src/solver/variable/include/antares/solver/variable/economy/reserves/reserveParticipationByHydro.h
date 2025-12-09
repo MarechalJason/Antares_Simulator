@@ -3,13 +3,7 @@
 #include "../../variable.h"
 #include "./vCardReserveParticipationByHydro.h"
 
-namespace Antares
-{
-namespace Solver
-{
-namespace Variable
-{
-namespace Economy
+namespace Antares::Solver::Variable::Economy
 {
 template<class NextT = Container::EndOfList>
 class ReserveParticipationByHydro: public Variable::IVariable<ReserveParticipationByHydro<NextT>,
@@ -207,7 +201,4 @@ private:
 
 }; // class ReserveParticipationByHydro
 
-} // namespace Economy
-} // namespace Variable
-} // namespace Solver
-} // namespace Antares
+} // namespace Antares::Solver::Variable::Economy

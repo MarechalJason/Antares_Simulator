@@ -29,13 +29,7 @@
 #include "../../variable.h"
 #include "./vCardReserveParticipationMarginalCost.h"
 
-namespace Antares
-{
-namespace Solver
-{
-namespace Variable
-{
-namespace Economy
+namespace Antares::Solver::Variable::Economy
 {
 
 /*!
@@ -270,7 +264,4 @@ private:
 
 }; // class ReserveParticipationMarginalCost
 
-} // namespace Economy
-} // namespace Variable
-} // namespace Solver
-} // namespace Antares
+} // namespace Antares::Solver::Variable::Economy
