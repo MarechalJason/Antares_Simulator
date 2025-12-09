@@ -28,13 +28,7 @@
 
 #include "../../storage/results.h"
 
-namespace Antares
-{
-namespace Solver
-{
-namespace Variable
-{
-namespace Economy
+namespace Antares::Solver::Variable::Economy
 {
 struct VCardReserveParticipationMarginalCost
 {
@@ -102,7 +96,4 @@ static std::string marginalCostToString()
     return "MRG.COST";
 }
 
-} // namespace Economy
-} // namespace Variable
-} // namespace Solver
-} // namespace Antares
+} // namespace Antares::Solver::Variable::Economy

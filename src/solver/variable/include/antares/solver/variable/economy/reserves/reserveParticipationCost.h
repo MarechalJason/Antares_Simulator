@@ -28,13 +28,7 @@
 
 #include "../../variable.h"
 
-namespace Antares
-{
-namespace Solver
-{
-namespace Variable
-{
-namespace Economy
+namespace Antares::Solver::Variable::Economy
 {
 struct VCardReserveParticipationCost
 {
@@ -275,7 +269,4 @@ private:
 
 }; // class RampingCost
 
-} // namespace Economy
-} // namespace Variable
-} // namespace Solver
-} // namespace Antares
+} // namespace Antares::Solver::Variable::Economy
