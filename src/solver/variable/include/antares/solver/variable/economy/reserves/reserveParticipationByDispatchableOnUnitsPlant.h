@@ -61,29 +61,7 @@ public:
         return area->thermal.list.reserveParticipationsCount();
     }
 
-    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace)
-    {
-        if (state.study.parameters.reservesEnabled
-            && !state.area->reserveParticipationIndexMaps.value().thermalClusters.empty())
-        {
-            for (const auto& clusterName:
-                 state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
-                   | std::views::keys)
-            {
-                for (const auto& [reserveName, reserveParticipation]:
-                     state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
-                                                                       [clusterName])
-                {
-                    pValuesForTheCurrentYear[numSpace]
-                                            [state.area->reserveParticipationIndexMaps.value()
-                                               .thermalClusters.left.at(
-                                                 std::make_pair(reserveName, clusterName))]
-                                              .hour[state.hourInTheYear]
-                      = reserveParticipation.onUnitsParticipation;
-                }
-            }
-        }
-    }
+    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace);
 
     bool hasIndexMapping(const Area* area, uint /*i*/) const
     {
@@ -106,5 +84,31 @@ public:
     }
 
 }; // class ReserveParticipationByDispatchableOnUnitsPlant
+
+template<class NextT>
+void ReserveParticipationByDispatchableOnUnitsPlant<NextT>::populateHourlyValues(
+  State& state,
+  unsigned int numSpace)
+{
+    if (state.study.parameters.reservesEnabled
+        && !state.area->reserveParticipationIndexMaps.value().thermalClusters.empty())
+    {
+        for (const auto& clusterName:
+             state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
+               | std::views::keys)
+        {
+            for (const auto& [reserveName, reserveParticipation]:
+                 state
+                   .reserveParticipationPerThermalClusterForYear[state.hourInTheYear][clusterName])
+            {
+                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()
+                                                     .thermalClusters.left.at(
+                                                       std::make_pair(reserveName, clusterName))]
+                  .hour[state.hourInTheYear]
+                  = reserveParticipation.onUnitsParticipation;
+            }
+        }
+    }
+}
 
 } // namespace Antares::Solver::Variable::Economy::Reserves

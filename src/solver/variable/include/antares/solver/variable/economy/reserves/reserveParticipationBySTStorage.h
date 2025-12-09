@@ -59,29 +59,7 @@ public:
         return area->shortTermStorage.reserveParticipationsCount();
     }
 
-    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace)
-    {
-        if (state.study.parameters.reservesEnabled
-            && !state.area->reserveParticipationIndexMaps.value().STStorageClusters.empty())
-        {
-            for (const auto& clusterName:
-                 state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
-                   | std::views::keys)
-            {
-                for (const auto& [reserveName, reserveParticipation]:
-                     state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
-                                                                         [clusterName])
-                {
-                    pValuesForTheCurrentYear[numSpace]
-                                            [state.area->reserveParticipationIndexMaps.value()
-                                               .STStorageClusters.left.at(
-                                                 std::make_pair(reserveName, clusterName))]
-                                              .hour[state.hourInTheYear]
-                      = reserveParticipation;
-                }
-            }
-        }
-    }
+    void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace);
 
     bool hasIndexMapping(const Area* area, uint /*i*/) const
     {
@@ -104,5 +82,30 @@ public:
     }
 
 }; // class ReserveParticipationBySTStorage
+
+template<class NextT>
+void ReserveParticipationBySTStorage<NextT>::populateHourlyValues(State& state,
+                                                                  unsigned int numSpace)
+{
+    if (state.study.parameters.reservesEnabled
+        && !state.area->reserveParticipationIndexMaps.value().STStorageClusters.empty())
+    {
+        for (const auto& clusterName:
+             state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
+               | std::views::keys)
+        {
+            for (const auto& [reserveName, reserveParticipation]:
+                 state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
+                                                                     [clusterName])
+            {
+                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()
+                                                     .STStorageClusters.left.at(
+                                                       std::make_pair(reserveName, clusterName))]
+                  .hour[state.hourInTheYear]
+                  = reserveParticipation;
+            }
+        }
+    }
+}
 
 } // namespace Antares::Solver::Variable::Economy::Reserves
