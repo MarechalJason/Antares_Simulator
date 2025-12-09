@@ -213,7 +213,7 @@ public:
             {
                 if (area->allCapacityReservations->reserveGroupPartThermal.contains(reserveName))
                 {
-                    for (auto group:
+                    for (const auto& group:
                          area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
                     {
                         pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
