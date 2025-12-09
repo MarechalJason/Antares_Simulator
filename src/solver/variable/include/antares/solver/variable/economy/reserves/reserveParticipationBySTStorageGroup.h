@@ -120,7 +120,7 @@ public:
         NextType::initializeFromArea(study, area);
     }
 
-    size_t getMaxNumberColumns() const override
+    [[nodiscard]] size_t getMaxNumberColumns() const override
     {
         return pSize * ResultsType::count;
     }
@@ -224,7 +224,7 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
-    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    [[nodiscard]] Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int column,
       unsigned int numSpace) const override
     {

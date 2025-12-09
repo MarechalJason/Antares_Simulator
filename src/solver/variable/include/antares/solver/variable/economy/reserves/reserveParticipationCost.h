@@ -233,7 +233,7 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
-    Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
+    [[nodiscard]] Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int,
       unsigned int numSpace) const override
     {
