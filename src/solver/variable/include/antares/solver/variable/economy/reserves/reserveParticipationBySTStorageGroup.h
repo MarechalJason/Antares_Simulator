@@ -241,7 +241,7 @@ public:
 
         if (AncestorType::isPrinted[0] && results.data.area->allCapacityReservations)
         {
-            assert(NULL != results.data.area);
+            assert(nullptr != results.data.area);
             // Write the data for the current year
             int column = 0;
             for (const auto& reserveName:
