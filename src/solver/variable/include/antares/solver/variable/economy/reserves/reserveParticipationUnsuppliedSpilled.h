@@ -26,9 +26,6 @@
 */
 #pragma once
 
-#include "../../variable.h"
-#include "./vCardReserveParticipationUnsuppliedSpilled.h"
-
 namespace Antares::Solver::Variable::Economy::Reserves
 {
 

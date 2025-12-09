@@ -1,8 +1,5 @@
 #pragma once
 
-#include "../../variable.h"
-#include "./vCardReserveParticipationByHydro.h"
-
 namespace Antares::Solver::Variable::Economy::Reserves
 {
 template<class NextT = Container::EndOfList>

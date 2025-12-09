@@ -26,8 +26,6 @@
 */
 #pragma once
 
-#include "../../variable.h"
-
 namespace Antares::Solver::Variable::Economy::Reserves
 {
 struct VCardReserveParticipationCost
