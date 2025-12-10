@@ -31,7 +31,6 @@
 namespace Antares::Solver::Variable::Economy::Reserves
 {
 
-using VCardReserveParticipationByDispatchableOffUnitsPlant = Reserves::
-  VCardReserveParticipationBase<Reserves::DispatchableOffTraits>;
+using VCardReserveParticipationByDispatchableOffUnitsPlant = VCardReserveParticipationBase<DispatchableOffTraits>;
 
 } // namespace Antares::Solver::Variable::Economy::Reserves
