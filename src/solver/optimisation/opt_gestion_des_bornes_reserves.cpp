@@ -28,7 +28,6 @@
 
 #include "variables/VariableManagement.h"
 #include "variables/VariableManagerUtils.h"
-using namespace reserve;
 
 struct ReserveVariablesBoundsSetter
 {
@@ -80,7 +79,7 @@ struct ReserveVariablesBoundsSetter
     // Set variables bounds for a Thermal cluster participation to a reserve up or down
     void setThermalReserveParticipationBounds(int clusterParticipationIdInArea,
                                               int clusterParticipationId,
-                                              Direction dir)
+                                              ReserveType type)
     {
         const auto& indices = varIndices();
         auto& prod = problemeHebdo->ResultatsHoraires[pays].ProductionThermique[pdtHebdo];
@@ -88,7 +87,7 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(indices.runningThermalClusterParticipation[clusterParticipationId],
                      &prod.ParticipationReservesDuPalierOn.value()[clusterParticipationIdInArea]);
 
-        if (dir == Direction::UP)
+        if (type == ReserveType::UP)
         {
             setVarBounds(
               indices.offThermalClusterParticipation[clusterParticipationId],
@@ -103,7 +102,7 @@ struct ReserveVariablesBoundsSetter
 
     void setSTStorageReserveParticipationBounds(int clusterParticipationIdInArea,
                                                 int clusterParticipationId,
-                                                Direction dir)
+                                                ReserveType type)
     {
         const auto& indices = varIndices();
         auto& st = problemeHebdo->ResultatsHoraires[pays]
@@ -112,7 +111,7 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(indices.STStorageReleaseClusterParticipation[clusterParticipationId], nullptr);
         setVarBounds(indices.STStorageStoreClusterParticipation[clusterParticipationId], nullptr);
 
-        int dirVar = indices.STStorageClusterParticipation[(int)dir][clusterParticipationId];
+        int dirVar = indices.STStorageClusterParticipation[type][clusterParticipationId];
 
         setVarBounds(dirVar, &st.reserveParticipationOfCluster.value()[pdtHebdo]);
     }
@@ -120,7 +119,7 @@ struct ReserveVariablesBoundsSetter
     // Set variables bounds for a Hydro participation to a reserve up
     void setHydroReserveParticipationBounds(int clusterParticipationIdInArea,
                                             int clusterParticipationId,
-                                            Direction dir)
+                                            ReserveType type)
 
     {
         const auto& indices = varIndices();
@@ -131,7 +130,7 @@ struct ReserveVariablesBoundsSetter
         setVarBounds(indices.HydroStoreParticipation[clusterParticipationId], nullptr);
 
         setVarBounds(
-          indices.HydroParticipation[(int)dir][clusterParticipationId],
+          indices.HydroParticipation[type][clusterParticipationId],
           &hydroUsage.reserveParticipationOfCluster.value()[clusterParticipationIdInArea]);
     }
 
@@ -160,21 +159,21 @@ void SetAllReservesBoundsForArea(ReserveVariablesBoundsSetter& setter,
         {
             setter.setThermalReserveParticipationBounds(thermal.areaIndexClusterParticipation,
                                                         thermal.globalIndexClusterParticipation,
-                                                        areaReserve.direction);
+                                                        areaReserve.type);
         }
 
         for (const auto& [clusterId, stStorage]: areaReserve.AllSTStorageReservesParticipation)
         {
             setter.setSTStorageReserveParticipationBounds(stStorage.areaIndexClusterParticipation,
                                                           stStorage.globalIndexClusterParticipation,
-                                                          areaReserve.direction);
+                                                          areaReserve.type);
         }
 
         for (const auto& hydro: areaReserve.AllHydroReservesParticipation)
         {
             setter.setHydroReserveParticipationBounds(hydro.areaIndexClusterParticipation,
                                                       hydro.globalIndexClusterParticipation,
-                                                      areaReserve.direction);
+                                                      areaReserve.type);
         }
     }
 }

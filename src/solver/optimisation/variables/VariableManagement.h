@@ -1,6 +1,5 @@
 #pragma once
 
-#include "antares/solver/optimisation/ReserveDirection.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 
 namespace VariableManagement
@@ -37,7 +36,7 @@ public:
                                             int offset = 0,
                                             int delta = 0);
 
-    int& STStorageClusterReserveParticipation(reserve::Direction dir,
+    int& STStorageClusterReserveParticipation(ReserveType type,
                                               unsigned int index,
                                               unsigned int hourInWeek,
                                               int offset = 0,
@@ -53,7 +52,7 @@ public:
                                                    int offset = 0,
                                                    int delta = 0);
 
-    int& HydroReserveParticipation(reserve::Direction dir,
+    int& HydroReserveParticipation(ReserveType type,
                                    unsigned int index,
                                    unsigned int hourInWeek,
                                    int offset = 0,

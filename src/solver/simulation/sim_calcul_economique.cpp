@@ -37,7 +37,7 @@ using namespace Antares::Data;
 
 constexpr double LEVEL_TOLERANCE_MWH = 1.e-6;
 
-static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
+void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
 {
     int globalReserveIndex = 0;
     problem.allReserves = std::vector<::AREA_RESERVES_VECTOR>(areas.size());
@@ -46,26 +46,27 @@ static void importCapacityReservations(AreaList& areas, PROBLEME_HEBDO& problem)
         int areaReserveIndex = 0;
         auto area = areas[areaIndex];
         auto& areaReserves = problem.allReserves.value()[areaIndex];
-        for (int dir: {(int)reserve::Direction::DOWN, (int)reserve::Direction::UP})
+        for (auto type: {ReserveType::DOWN, ReserveType::UP})
         {
-            areaReserves.referenceGlobalActivationDuration[dir]
-              = area->allCapacityReservations.value().referenceGlobalActivationDuration[dir];
-            areaReserves.maxGlobalEnergyActivationRatio[dir] = area->allCapacityReservations.value()
-                                                                 .maxGlobalEnergyActivationRatio
-                                                                   [dir];
+            areaReserves.referenceGlobalActivationDuration[type]
+              = area->allCapacityReservations.value().referenceGlobalActivationDuration[type];
+            areaReserves.maxGlobalEnergyActivationRatio[type] = area->allCapacityReservations
+                                                                  .value()
+                                                                  .maxGlobalEnergyActivationRatio
+                                                                    [type];
         }
 
         for (const auto& [reserveName, reserveCapacity]:
              area->allCapacityReservations.value().areaCapacityReservations)
         {
             CAPACITY_RESERVATION areaCapacityReservation;
-            areaCapacityReservation.direction = reserveCapacity.direction;
+            areaCapacityReservation.type = reserveCapacity.type;
             areaCapacityReservation.unsuppliedCost = reserveCapacity.unsuppliedCost;
             areaCapacityReservation.spillageCost = reserveCapacity.spillageCost;
             areaCapacityReservation.powerActivationRatio = reserveCapacity.powerActivationRatio;
             areaCapacityReservation.energyActivationRatio = reserveCapacity.energyActivationRatio;
-            areaCapacityReservation.maxActivationDuration = reserveCapacity
-                                                              .referenceActivationHours;
+            areaCapacityReservation.referenceActivationDuration = reserveCapacity
+                                                                    .referenceActivationDuration;
             areaCapacityReservation.reserveName = reserveName;
             areaCapacityReservation.globalReserveIndex = globalReserveIndex;
             areaCapacityReservation.areaReserveIndex = areaReserveIndex;
@@ -204,7 +205,7 @@ static void importShortTermStorages(Data::Parameters parameters,
     }
 }
 
-static void importHydrosReserves(AreaList& areas, PROBLEME_HEBDO& problem)
+void importHydroReserves(AreaList& areas, PROBLEME_HEBDO& problem)
 {
     int globalReserveIndex = 0;
     int globalHydroParticipationIndex = 0;
@@ -416,7 +417,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
     if (parameters.reservesEnabled)
     {
         importCapacityReservations(study.areas, problem);
-        importHydrosReserves(study.areas, problem);
+        importHydroReserves(study.areas, problem);
     }
 
     importShortTermStorages(study.parameters, study.areas, problem.ShortTermStorage, problem);
@@ -640,14 +641,7 @@ void SIM_RenseignementProblemeHebdo(const Study& study,
             problem.CoutDeTransport[k].IntercoGereeAvecDesCouts = false;
         }
 
-        if (lnk->useLoopFlow)
-        {
-            problem.CoutDeTransport[k].IntercoGereeAvecLoopFlow = true;
-        }
-        else
-        {
-            problem.CoutDeTransport[k].IntercoGereeAvecLoopFlow = false;
-        }
+        problem.CoutDeTransport[k].IntercoGereeAvecLoopFlow = lnk->useLoopFlow;
     }
 
     int weekDayIndex[8];

@@ -23,6 +23,7 @@
 
 #include <bit>
 #include <map>
+#include <ranges>
 
 #include <yuni/yuni.h>
 #include <yuni/core/string.h>
@@ -509,14 +510,36 @@ namespace Benchmarking
 class DurationCollector;
 }
 
-namespace reserve
+namespace Antares::Data
 {
-enum class Direction
+enum class ReserveType
 {
     DOWN = 0,
-    UP = 1,
-    SIZE = 2
+    UP = 1
 };
-} // namespace reserve
+
+template<typename T>
+struct ReserveTypeData
+{
+    T up;
+    T down;
+
+    // Optional: array-style access
+    T& operator[](ReserveType type)
+    {
+        return (type == ReserveType::UP) ? up : down;
+    }
+
+    const T& operator[](ReserveType type) const
+    {
+        return (type == ReserveType::UP) ? up : down;
+    }
+};
+
+inline auto filter(ReserveType type)
+{
+    return std::views::filter([type](const auto& r) { return r.type == type; });
+}
+} // namespace Antares::Data
 
 #endif // __ANTARES_LIBS_STUDY_FWD_H__

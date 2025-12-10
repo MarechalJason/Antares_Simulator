@@ -1,5 +1,4 @@
 #include "antares/solver/optimisation/constraints/STStorageGlobalEnergyLevelReserveParticipation.h"
-using namespace reserve;
 
 void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
@@ -15,22 +14,22 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
         // R_{min,res} : max power participation ratio
         // R_up : max stock level
 
-        for (auto dir: {Direction::DOWN, Direction::UP})
+        for (auto type: {ReserveType::DOWN, ReserveType::UP})
         {
             builder.updateHourWithinWeek(pdt);
 
-            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDuration[(int)dir];
+            for (int t = 0; t < data.areaReserves[pays].referenceGlobalActivationDuration[type];
                  t++)
             {
                 for (auto& capacityReservation:
-                     data.areaReserves[pays].areaCapacityReservations | filter(dir))
+                     data.areaReserves[pays].areaCapacityReservations | filter(type))
                 {
                     if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                     {
                         RESERVE_PARTICIPATION_STSTORAGE& reserveParticipation
                           = capacityReservation.AllSTStorageReservesParticipation[cluster];
                         builder.STStorageClusterReserveParticipation(
-                          capacityReservation.direction,
+                          capacityReservation.type,
                           reserveParticipation.globalIndexClusterParticipation,
                           capacityReservation.powerActivationRatio,
                           t,
@@ -39,10 +38,10 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
                 }
                 if (builder.NumberOfVariables() > 0)
                 {
-                    int sign = dir == Direction::UP ? -1 : 1;
+                    int sign = type == ReserveType::UP ? -1 : 1;
                     builder.ShortTermStorageLevel(
                       globalClusterIdx,
-                      sign * data.areaReserves[pays].maxGlobalEnergyActivationRatio[(int)dir],
+                      sign * data.areaReserves[pays].maxGlobalEnergyActivationRatio[type],
                       t,
                       builder.data.NombreDePasDeTempsPourUneOptimisation);
                 }
@@ -54,7 +53,7 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
 
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .STStorageGlobalStockEnergyLevelParticipation[(int)dir][globalClusterIdx]
+                  .STStorageGlobalStockEnergyLevelParticipation[type][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
 
                 ConstraintNamer namer(builder.data.NomDesContraintes);
@@ -64,7 +63,7 @@ void STStorageGlobalEnergyLevelReserveParticipation::add(int pays, int cluster, 
                 namer.STGlobalEnergyStockLevelReserveParticipation(
                   builder.data.nombreDeContraintes,
                   data.shortTermStorageOfArea[pays][cluster].name,
-                  dir);
+                  type);
                 builder.build();
             }
         }
