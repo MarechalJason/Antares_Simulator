@@ -213,6 +213,7 @@ public:
           {
               if (p.key == "cluster-name")
               {
+                  clusterName.emplace();
                   TransformNameIntoID(p.value, clusterName.value());
               }
               else if (p.key == "participation-cost")
@@ -312,6 +313,7 @@ public:
           {
               if (p.key == "cluster-name")
               {
+                  clusterName.emplace();
                   TransformNameIntoID(p.value, clusterName.value());
               }
               else if (p.key == "participation-cost")
