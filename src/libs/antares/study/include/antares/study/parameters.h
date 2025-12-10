@@ -496,7 +496,7 @@ bool StringToSimulationMode(SimulationMode& mode, Yuni::CString<20, false> text)
 const char* CompatibilityHydroPmaxToCString(const Parameters::Compatibility::HydroPmax);
 bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax&, const std::string& text);
 
-const std::string ReservesToString(bool reservesEnabled);
+std::string ReservesToString(bool reservesEnabled);
 bool StringToReservesEnabled(const std::string& text);
 
 } // namespace Antares::Data

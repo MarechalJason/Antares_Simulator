@@ -235,7 +235,7 @@ bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax& mode,
     return false;
 }
 
-const std::string ReservesToString(bool reservesEnabled)
+std::string ReservesToString(bool reservesEnabled)
 {
     return reservesEnabled ? "enabled" : "disabled";
 }

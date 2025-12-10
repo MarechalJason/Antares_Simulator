@@ -28,7 +28,6 @@
 
 #include <antares/inifile/inifile.h>
 #include <antares/logs/logs.h>
-#include <antares/study/area/capacityReservation.h>
 #include <antares/study/parts/hydro/series.h>
 
 using namespace Yuni;
