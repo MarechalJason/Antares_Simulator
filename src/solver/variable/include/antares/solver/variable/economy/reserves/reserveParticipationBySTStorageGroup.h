@@ -210,7 +210,7 @@ public:
             {
                 if (area->allCapacityReservations->reserveGroupPartSTS.contains(reserveName))
                 {
-                    for (auto group:
+                    for (const auto& group:
                          area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
                     {
                         pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
