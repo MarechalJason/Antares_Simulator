@@ -329,3 +329,38 @@ BOOST_FIXTURE_TEST_CASE(constraint_does_not_exist_in_model___exception_raised,
                           std::runtime_error,
                           checkMessage("No constraint 'some_constraint' found."));
 }
+
+BOOST_AUTO_TEST_CASE(locationToString)
+{
+    BOOST_CHECK_EQUAL(LocationToStr(Location::MASTER), "master");
+    BOOST_CHECK_EQUAL(LocationToStr(Location::MASTER_AND_SUBPROBLEMS), "master-and-subproblems");
+    BOOST_CHECK_EQUAL(LocationToStr(Location::SUBPROBLEMS), "subproblems");
+}
+
+BOOST_AUTO_TEST_CASE(locationsCompatibleForFillers)
+{
+    BOOST_CHECK(AreLocationsCompatibleForFillers(Location::MASTER, Location::MASTER));
+    BOOST_CHECK(AreLocationsCompatibleForFillers(Location::SUBPROBLEMS, Location::SUBPROBLEMS));
+    BOOST_CHECK(!AreLocationsCompatibleForFillers(Location::SUBPROBLEMS, Location::MASTER));
+    BOOST_CHECK(!AreLocationsCompatibleForFillers(Location::MASTER, Location::SUBPROBLEMS));
+    BOOST_CHECK(
+      AreLocationsCompatibleForFillers(Location::MASTER_AND_SUBPROBLEMS, Location::MASTER));
+    BOOST_CHECK(
+      AreLocationsCompatibleForFillers(Location::MASTER_AND_SUBPROBLEMS, Location::SUBPROBLEMS));
+    BOOST_CHECK(AreLocationsCompatibleForFillers(Location::MASTER_AND_SUBPROBLEMS,
+                                                 Location::MASTER_AND_SUBPROBLEMS));
+}
+
+BOOST_AUTO_TEST_CASE(locationsCompatibleForExpressions)
+{
+    BOOST_CHECK(AreLocationsCompatibleForExpressions(Location::MASTER, Location::MASTER));
+    BOOST_CHECK(AreLocationsCompatibleForExpressions(Location::SUBPROBLEMS, Location::SUBPROBLEMS));
+    BOOST_CHECK(AreLocationsCompatibleForExpressions(Location::MASTER_AND_SUBPROBLEMS,
+                                                     Location::MASTER_AND_SUBPROBLEMS));
+    BOOST_CHECK(
+      !AreLocationsCompatibleForExpressions(Location::MASTER, Location::MASTER_AND_SUBPROBLEMS));
+    BOOST_CHECK(!AreLocationsCompatibleForExpressions(Location::SUBPROBLEMS,
+                                                      Location::MASTER_AND_SUBPROBLEMS));
+    BOOST_CHECK(!AreLocationsCompatibleForExpressions(Location::SUBPROBLEMS, Location::MASTER));
+    BOOST_CHECK(!AreLocationsCompatibleForExpressions(Location::MASTER, Location::SUBPROBLEMS));
+}

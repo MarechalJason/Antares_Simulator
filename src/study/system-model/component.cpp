@@ -111,12 +111,27 @@ std::vector<ConnectionEnd> Component::componentConnectionsViaPort(const std::str
     return {};
 }
 
-const Node* Component::nodeAtPortField(const std::string& portId, const std::string& fieldId) const
+Node* Component::nodeAtPortField(const std::string& portId, const std::string& fieldId) const
 {
     try
     {
         PortFieldKey key(portId, fieldId);
         return getModel()->PortFieldDefinitions().at(key).Definition().RootNode();
+    }
+    catch (const std::out_of_range&)
+    {
+        throw std::invalid_argument("Port field '" + portId + "." + fieldId
+                                    + "' not found in component '" + data_.id + "'");
+    }
+}
+
+const Expression& Component::expressionAtPortField(const std::string& portId,
+                                                   const std::string& fieldId) const
+{
+    try
+    {
+        PortFieldKey key(portId, fieldId);
+        return getModel()->PortFieldDefinitions().at(key).Definition();
     }
     catch (const std::out_of_range&)
     {

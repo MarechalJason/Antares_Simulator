@@ -44,6 +44,7 @@ target_link_libraries(load-modeler-files
         Antares::modeler-lib
         Antares::scenario-group-parser
         Antares::utils
+        Antares::modeler-checks
         fmt::fmt
 )
 

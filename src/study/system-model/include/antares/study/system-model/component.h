@@ -104,8 +104,11 @@ public:
     void addComponentConnection(const std::string localPortId, ConnectionEnd&& connection);
     std::vector<ConnectionEnd> componentConnectionsViaPort(const std::string& portId) const;
 
-    const Expressions::Nodes::Node* nodeAtPortField(const std::string& portId,
-                                                    const std::string& fieldId) const;
+    Expressions::Nodes::Node* nodeAtPortField(const std::string& portId,
+                                              const std::string& fieldId) const;
+
+    const Expression& expressionAtPortField(const std::string& portId,
+                                            const std::string& fieldId) const;
 
     void addAreaConnection(const std::string& localPortId, const std::string& areaId);
 

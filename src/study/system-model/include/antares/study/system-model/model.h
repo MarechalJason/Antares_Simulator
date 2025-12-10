@@ -26,6 +26,7 @@
 
 #include <antares/expressions/expression.h>
 
+#include "connection.h"
 #include "constraint.h"
 #include "extraOutput.h"
 #include "objective.h"
