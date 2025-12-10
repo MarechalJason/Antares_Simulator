@@ -42,10 +42,11 @@ namespace Antares::Solver::Variable
 template<class VCardT>
 struct vcard_caption_traits
 {
-    static constexpr void apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         results.variableCaption = thermal.list.enabledClusterAt(i)->name();
+        return true;
     }
 };
 
@@ -53,80 +54,87 @@ struct vcard_caption_traits
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByDispatchableOnUnitsPlant>
 {
-    static constexpr void apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         auto [clusterName, reserveName] = thermal.list
                                             .reserveParticipationClusterAt(results.data.area, i);
         results.variableCaption = reserveName + "_" + clusterName;
+        return true;
     }
 };
 
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByDispatchableOffUnitsPlant>
 {
-    static constexpr void apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         auto [clusterName, reserveName] = thermal.list
                                             .reserveParticipationClusterAt(results.data.area, i);
         results.variableCaption = reserveName + "_" + clusterName + "_off";
+        return true;
     }
 };
 
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByThermalGroup>
 {
-    static constexpr void apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         auto [groupName, reserveName] = thermal.list.reserveParticipationGroupAt(results.data.area,
                                                                                  i);
         results.variableCaption = reserveName + "_" + groupName;
+        return true;
     }
 };
 
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationBySTStorage>
 {
-    static constexpr void apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults& results, uint i)
     {
         const auto& shortTermStorage = results.data.area->shortTermStorage;
         auto [clusterName, reserveName] = shortTermStorage
                                             .reserveParticipationClusterAt(results.data.area, i);
         results.variableCaption = reserveName + "_" + clusterName;
+        return true;
     }
 };
 
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationBySTStorageGroup>
 {
-    static constexpr void apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults& results, uint i)
     {
         const auto& shortTermStorage = results.data.area->shortTermStorage;
         auto [groupName, reserveName] = shortTermStorage
                                           .reserveParticipationGroupAt(results.data.area, i);
         results.variableCaption = reserveName + "_" + groupName;
+        return true;
     }
 };
 
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByHydro>
 {
-    static constexpr void apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults& results, uint i)
     {
         const auto& hydro = results.data.area->hydro;
         if (const auto reserveName = hydro.reserveParticipationAt(results.data.area, i))
         {
             results.variableCaption = reserveName.value() + "_Hydro";
+            return true;
         }
+        return false;
     }
 };
 
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationUnsuppliedSpilled>
 {
-    static constexpr void apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         auto [unsuppliedOrSpilled, reserveName] = thermal.list
@@ -136,13 +144,14 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationUnsuppli
         results.variableCaption = reserveName + "_"
                                   + Economy::Reserves::unsuppliedSpilledToString(
                                     unsuppliedOrSpilled);
+        return true;
     }
 };
 
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationMarginalCost>
 {
-    static void apply(SurveyResults& results, uint i)
+    static bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         (void)i; // i used only to mirror other signatures
@@ -153,6 +162,7 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationMarginal
                                                       i);
         (void)unsuppliedOrSpilled;
         results.variableCaption = reserveName + "_" + Economy::Reserves::marginalCostToString();
+        return true;
     }
 };
 
