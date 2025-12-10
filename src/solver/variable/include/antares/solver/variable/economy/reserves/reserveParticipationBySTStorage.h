@@ -54,7 +54,7 @@ public:
 
     ReserveParticipationBySTStorage() = default;
 
-    size_t getSizeFromArea(Study* study, Area* area)
+    size_t getSizeFromArea(Study*, Area* area)
     {
         return area->shortTermStorage.reserveParticipationsCount();
     }
