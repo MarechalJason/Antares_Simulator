@@ -38,7 +38,7 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt)
                  capacityReservation.AllSTStorageReservesParticipation)
             {
                 builder.STStorageClusterReserveParticipation(
-                  capacityReservation.direction,
+                  capacityReservation.type,
                   reserveParticipation.globalIndexClusterParticipation,
                   1);
             }
@@ -47,7 +47,7 @@ void ReserveSatisfaction::add(int pays, int reserve, int pdt)
             for (auto& reserveParticipation: capacityReservation.AllHydroReservesParticipation)
             {
                 builder.HydroReserveParticipation(
-                  capacityReservation.direction,
+                  capacityReservation.type,
                   reserveParticipation.globalIndexClusterParticipation,
                   1);
             }

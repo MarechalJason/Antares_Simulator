@@ -18,17 +18,10 @@
  * You should have received a copy of the Mozilla Public Licence 2.0
  * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
  */
-#include <ranges>
-
-#include <antares/study/fwd.h>
-
 #pragma once
+#include <antares/solver/simulation/sim_structure_probleme_economique.h>
+#include <antares/study/area/area.h>
 
-namespace reserve
-{
+void importCapacityReservations(Antares::Data::AreaList& areas, PROBLEME_HEBDO& problem);
 
-inline auto filter(Direction dir)
-{
-    return std::views::filter([dir](const auto& r) { return r.direction == dir; });
-}
-} // namespace reserve
+void importHydroReserves(Antares::Data::AreaList& areas, PROBLEME_HEBDO& problem);

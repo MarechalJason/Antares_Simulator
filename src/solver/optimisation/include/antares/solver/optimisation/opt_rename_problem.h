@@ -19,7 +19,8 @@
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
 #pragma once
-#include "antares/solver/optimisation/ReserveDirection.h"
+
+#include <antares/study/fwd.h>
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 
 #include "opt_export_structure.h"
@@ -105,6 +106,8 @@ public:
     TargetVectorUpdater targetUpdater_;
 };
 
+using namespace Antares::Data;
+
 class VariableNamer: public Namer
 {
 public:
@@ -119,7 +122,7 @@ public:
     void ParticipationOfSTStorageStoreToReserve(unsigned int variable,
                                                 const std::string& clusterName,
                                                 const std::string& reserveName);
-    void ParticipationOfSTStorageToReserve(reserve::Direction dir,
+    void ParticipationOfSTStorageToReserve(ReserveType type,
                                            unsigned int variable,
                                            const std::string& clusterName,
                                            const std::string& reserveName);
@@ -129,7 +132,7 @@ public:
     void ParticipationOfHydroStoreToReserve(unsigned int variable,
                                             const std::string& clusterName,
                                             const std::string& reserveName);
-    void ParticipationOfHydroToReserve(reserve::Direction dir,
+    void ParticipationOfHydroToReserve(ReserveType type,
                                        unsigned int variable,
                                        const std::string& clusterName,
                                        const std::string& reserveName);
@@ -231,7 +234,7 @@ public:
     void STReserveParticipation(unsigned int constraint,
                                 const std::string& clusterName,
                                 const std::string& reserveName,
-                                reserve::Direction dir);
+                                ReserveType type);
     void STReleaseMaxReserve(unsigned int constraint,
                              const std::string& clusterName,
                              const std::string& reserveName);
@@ -244,15 +247,15 @@ public:
     void STStoreCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
     void STStorageLevelReserveParticipation(unsigned int constraint,
                                             const std::string& clusterName,
-                                            reserve::Direction dir);
+                                            ReserveType type);
     void STEnergyStockLevelReserveParticipation(unsigned int constraint,
                                                 const std::string& clusterName,
                                                 const std::string& reserveName);
     void STGlobalEnergyStockLevelReserveParticipation(unsigned int constraint,
                                                       const std::string& clusterName,
-                                                      reserve::Direction dir);
+                                                      ReserveType type);
 
-    void HydroReserveParticipation(reserve::Direction dir,
+    void HydroReserveParticipation(ReserveType type,
                                    unsigned int constraint,
                                    const std::string& clusterName,
                                    const std::string& reserveName);
@@ -267,7 +270,7 @@ public:
                                             const std::string& clusterName);
     void HydroStoreCapacityThresholdsUp(unsigned int constraint, const std::string& clusterName);
     void HydroStoreCapacityThresholdsDown(unsigned int constraint, const std::string& clusterName);
-    void HydroLevelReserveParticipation(reserve::Direction dir,
+    void HydroLevelReserveParticipation(ReserveType type,
                                         unsigned int constraint,
                                         const std::string& clusterName);
     void HydroEnergyLevelReserveParticipation(unsigned int constraint,

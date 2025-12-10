@@ -27,6 +27,8 @@
 //
 #include <BaseErrorListener.h>
 
+#include "antares/study/parts/common/CustomErrorListener.h"
+
 #include "HoursFieldLexer.h"
 //
 #include "antares/study/parts/short-term-storage/makeGroupsOfHoursFromString.h"
@@ -60,27 +62,6 @@ public:
     }
 };
 
-class CustomErrorListener final: public antlr4::BaseErrorListener
-{
-public:
-    void syntaxError(antlr4::Recognizer* recognizer,
-                     antlr4::Token* offendingSymbol,
-                     size_t line,
-                     size_t charPositionInLine,
-                     const std::string& msg,
-                     std::exception_ptr e) override
-    {
-        std::ostringstream os;
-        os << "Syntax error at line " << line << ":" << charPositionInLine << " - " << msg
-           << std::endl;
-        if (offendingSymbol)
-        {
-            os << "Offending symbol: " << offendingSymbol->getText() << std::endl;
-        }
-        throw ShortTermStorageAdditionalConstraintsError(os.str());
-    }
-};
-
 class GroupsHours final
 {
 public:
@@ -104,7 +85,7 @@ public:
 
 private:
     std::string hoursField_;
-    CustomErrorListener customErrorListener_;
+    CustomErrorListener<ShortTermStorageAdditionalConstraintsError> customErrorListener_;
     antlr4::ANTLRInputStream stream_;
     HoursFieldLexer lexer_;
     antlr4::CommonTokenStream tokens_;

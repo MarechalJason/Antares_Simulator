@@ -1,5 +1,4 @@
 #include "antares/solver/optimisation/constraints/STStorageLevelReserveParticipation.h"
-using namespace reserve;
 
 void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
 {
@@ -22,19 +21,19 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
         // P_{res} : power participation for reserve up res
         // R_{min,res} : max power participation ratio
         // R_down : min stock level
-        for (auto dir: {reserve::Direction::DOWN, reserve::Direction::UP})
+        for (auto type: {ReserveType::DOWN, ReserveType::UP})
         {
             builder.updateHourWithinWeek(pdt);
 
             for (auto& capacityReservation:
-                 data.areaReserves[pays].areaCapacityReservations | filter(dir))
+                 data.areaReserves[pays].areaCapacityReservations | filter(type))
             {
                 if (capacityReservation.AllSTStorageReservesParticipation.contains(cluster))
                 {
                     RESERVE_PARTICIPATION_STSTORAGE reserveParticipations
                       = capacityReservation.AllSTStorageReservesParticipation[cluster];
                     builder.STStorageClusterReserveParticipation(
-                      capacityReservation.direction,
+                      capacityReservation.type,
                       reserveParticipations.globalIndexClusterParticipation,
                       capacityReservation.powerActivationRatio);
                 }
@@ -42,11 +41,11 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
             if (builder.NumberOfVariables() > 0)
             {
                 builder.ShortTermStorageLevel(globalClusterIdx,
-                                              dir == reserve::Direction::DOWN ? 1. : -1.);
+                                              type == ReserveType::DOWN ? 1. : -1.);
                 builder.lessThan();
                 data.CorrespondanceCntNativesCntOptim[pdt]
                   .reservesIndices.value()
-                  .STStorageLevelParticipation[(int)dir][globalClusterIdx]
+                  .STStorageLevelParticipation[type][globalClusterIdx]
                   = builder.data.nombreDeContraintes;
                 ConstraintNamer namer(builder.data.NomDesContraintes);
                 const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
@@ -55,7 +54,7 @@ void STStorageLevelReserveParticipation::add(int pays, int cluster, int pdt)
                 namer.STStorageLevelReserveParticipation(
                   builder.data.nombreDeContraintes,
                   data.shortTermStorageOfArea[pays][cluster].name,
-                  dir);
+                  type);
                 builder.build();
             }
         }

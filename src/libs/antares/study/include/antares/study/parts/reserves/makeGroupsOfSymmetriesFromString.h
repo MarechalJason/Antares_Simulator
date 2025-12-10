@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
+ * Copyright 2007-2024, RTE (https://www.rte-france.com)
  * See AUTHORS.txt
  * SPDX-License-Identifier: MPL-2.0
  * This file is part of Antares-Simulator,
@@ -21,13 +21,23 @@
 
 #pragma once
 
-#include <antares/io/inputs/yml-optim-config/OptimConfig.h>
-#include "antares/study/system-model/library.h"
+#include <set>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
-namespace Antares::IO::Inputs::YmlOptimConfig
+namespace antlr4
 {
+class Recognizer;
+}
 
-void updateLibrairies(const OptimConfig& ymlOptimConfig,
-                      std::vector<ModelerStudy::SystemModel::Library>& libraries);
+namespace Antares::Data::Symmetries
+{
+struct SymmetriesError final: std::invalid_argument
+{
+    using std::invalid_argument::invalid_argument;
+};
 
-} // namespace Antares::IO::Inputs::YmlOptimConfig
+std::vector<std::set<std::string>> makeGroupsOfSymmetries(const std::string& symmetriesField);
+
+} // namespace Antares::Data::Symmetries
