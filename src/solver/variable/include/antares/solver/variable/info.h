@@ -42,11 +42,9 @@ namespace Antares::Solver::Variable
 template<class VCardT>
 struct vcard_caption_traits
 {
-    static constexpr bool apply(SurveyResults& results, uint i)
+    static constexpr bool apply(SurveyResults&, uint)
     {
-        const auto& thermal = results.data.area->thermal;
-        results.variableCaption = thermal.list.enabledClusterAt(i)->name();
-        return true;
+        return false;
     }
 };
 
@@ -520,7 +518,10 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
             const auto& hydro = results.data.area->hydro;
             for (uint i = 0; i != container.size(); ++i)
             {
-                vcard_caption_traits<VCardT>::apply(results, i);
+                if (!vcard_caption_traits<VCardT>::apply(results, i))
+                {
+                    results.variableCaption = thermal.list.enabledClusterAt(i)->name();
+                }
 
                 container[i].template buildDigest<VCardT>(results, digestLevel, dataLevel);
             }
