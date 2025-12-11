@@ -96,6 +96,8 @@ void static throwIfNegativeValue(const std::string& propertyName,
     }
 }
 
+class HydroReserveLoader;
+
 template<typename Derived, typename ParticipationT>
 class ReserveLoaderMixin: public ReserveParticipationLoader<Derived>
 {
@@ -117,7 +119,8 @@ public:
                                 const std::optional<std::string>& clusterName,
                                 const std::string& reserveName)
     {
-        if (clusterName.has_value() && clusterName.value().empty())
+        if ((!clusterName || clusterName.value().empty())
+            && !std::is_same<Derived, HydroReserveLoader>::value)
         {
             logs.error()
               << areaName
@@ -152,7 +155,7 @@ public:
         {
             derived().duplicateParticipation(area.name, clusterName.value_or(""), reserveName);
         }
-        else
+        else if (!container)
         {
             container.emplace();
         }
@@ -173,6 +176,7 @@ public:
             if (!cluster)
             {
                 derived().reportInvalidSymmetry(area, clusterName);
+                continue;
             }
             auto& reserveContainer = derived().getContainer(cluster);
             if (!reserveContainer.has_value())
@@ -271,11 +275,13 @@ public:
     {
         if (!reserveOK)
         {
-            logs.error() << area.name << ": missing reserve " << reserveName;
+            logs.error() << area.name << " : missing reserve " << reserveName
+                         << " when loading thermal reserve participations";
         }
         if (!clusterOK)
         {
-            logs.error() << area.name << ": missing thermal cluster " << clusterName;
+            logs.error() << area.name
+                         << " : missing cluster name when loading thermal reserve participations";
         }
     }
 
@@ -289,14 +295,14 @@ public:
 
     static void reportInvalidSymmetry(const Area& area, const std::string& clusterName)
     {
-        logs.error() << "Thermal cluster " << clusterName << " not participating to reserves of "
+        logs.error() << "Thermal cluster " << clusterName << " does not exist in area "
                      << area.name;
     }
 
     static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
     {
-        throw std::out_of_range("Area " + area.name + ", " + clusterName
-                                + " : trying to add symmetries without any reserve participation");
+        throw std::runtime_error("Area " + area.name + ", " + clusterName
+                                 + " : trying to add symmetries without any reserve participation");
     }
 };
 
@@ -375,21 +381,21 @@ public:
         }
         if (!clusterOK)
         {
-            logs.error() << area.name << " : missing STStorage cluster " << clusterName
-                         << " when loading STS reserve participation";
+            logs.error() << area.name
+                         << " : missing STStorage cluster when loading STS reserve participation";
         }
     }
 
     static void reportInvalidSymmetry(Area& area, const std::string& clusterName)
     {
-        logs.error() << "STS cluster " << clusterName
-                     << " invalid or missing when adding symmetries";
+        logs.error() << "ShortTerm Storage cluster " << clusterName << " does not exist in area "
+                     << area.name;
     }
 
     static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
     {
-        throw std::out_of_range("Area " + area.name + ", " + clusterName
-                                + " : trying to add symmetries without any reserve participation");
+        throw std::runtime_error("Area " + area.name + ", " + clusterName
+                                 + " : trying to add symmetries without any reserve participation");
     }
 };
 
@@ -439,8 +445,13 @@ public:
         logs.error() << areaName << ", hydro: duplicate participation to reserve " << reserveName;
     }
 
-    static auto* findCluster(Area& area, const std::string&)
+    static auto* findCluster(Area& area, const std::string& clusterName)
     {
+        if (clusterName != "hydro" && clusterName != "lt" && !clusterName.empty())
+        {
+            logs.error() << area.name << " : invalid cluster name for hydro symmetry "
+                         << clusterName << " please use 'hydro' or 'lt'";
+        }
         return &area.hydro; // unique cluster
     }
 
@@ -457,13 +468,14 @@ public:
     {
         if (!reserveOK)
         {
-            logs.error() << area.name << ": missing reserve " << reserveName;
+            logs.error() << area.name << " : missing reserve " << reserveName
+                         << " when loading hydro reserve participations";
         }
     }
 
     static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
     {
-        throw std::out_of_range(
+        throw std::runtime_error(
           "Area " + area.name
           + ", hydro : trying to add symmetries without any reserve participation");
     }

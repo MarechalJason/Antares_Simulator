@@ -368,8 +368,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_One_Bad_Parameter
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
     BOOST_CHECK_EQUAL(getWarnings().size(), 1);
-    BOOST_CHECK(
-      getWarnings().contains("A : invalid property in thermal reserves implementation : bad"));
+    BOOST_CHECK(getWarnings().contains("invalid thermal reserve property bad"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Symmetries,
@@ -524,8 +523,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Cluster_Symme
     file << "participation-cost-off = 4.4\n";
     file.close();
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
-    BOOST_CHECK(
-      getErrors().contains("Thermal cluster cluster3 not participating to reserves of A"));
+    BOOST_CHECK(getErrors().contains("Thermal cluster cluster3 does not exist in area A"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Reserve_Symmetry,
@@ -612,7 +610,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Reserve_Load,
     file.close();
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(getErrors().contains(
-      "A: missing reserve ReserveNull when loading thermal reserve participations"));
+      "A : missing reserve ReserveNull when loading thermal reserve participations"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Delete_Double_Sym_Participation,
@@ -670,7 +668,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_No_Cluster_Provid
     BOOST_CHECK(getErrors().contains(
       "A : Please provide a cluster name when declaring a capacity reservation"));
     BOOST_CHECK(
-      getErrors().contains("A : missing cluster  when loading thermal reserve participations"));
+      getErrors().contains("A : missing cluster name when loading thermal reserve participations"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Cluster_Participation,
@@ -849,7 +847,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Cluster_Participa
       areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::runtime_error,
       checkMessage(
-        "Area A, cluster1 : trying to add symmetries without any reserves participations"));
+        "Area A, cluster1 : trying to add symmetries without any reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_Symmetries,
@@ -926,7 +924,7 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_no_reserve,
     BOOST_CHECK_EXCEPTION(
       areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
       std::runtime_error,
-      checkMessage("Area A, hydro : trying to add symmetries without any reserves participations"));
+      checkMessage("Area A, hydro : trying to add symmetries without any reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_missing_reserve,
@@ -939,7 +937,7 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_missing_reserve,
     file.close();
     areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(getErrors().contains(
-      "A: missing reserve ReserveNull when loading hydro reserve participations"));
+      "A : missing reserve ReserveNull when loading hydro reserve participations"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_cluster,
@@ -979,8 +977,7 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_property,
     areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
     BOOST_CHECK_EQUAL(getWarnings().size(), 1);
-    BOOST_CHECK(
-      getWarnings().contains("A : invalid property in hydro reserves implementation : bad"));
+    BOOST_CHECK(getWarnings().contains("invalid hydro reserve property bad"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_reserve,
@@ -1057,12 +1054,9 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_Symmetries,
     BOOST_CHECK_EQUAL(resContainer->value().reserveMaxRelease("ReserveUp"), 7.7);
     BOOST_CHECK_EQUAL(getWarnings().size(), 3);
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
-    BOOST_CHECK(
-      getWarnings().contains("A : invalid property in STS reserves implementation : max-power"));
-    BOOST_CHECK(getWarnings().contains(
-      "A : invalid property in STS reserves implementation : max-power-off"));
-    BOOST_CHECK(getWarnings().contains(
-      "A : invalid property in STS reserves implementation : participation-cost-off"));
+    BOOST_CHECK(getWarnings().contains("invalid STS reserve property max-power"));
+    BOOST_CHECK(getWarnings().contains("invalid STS reserve property max-power-off"));
+    BOOST_CHECK(getWarnings().contains("invalid STS reserve property participation-cost-off"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster_symmetry,
@@ -1077,8 +1071,8 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster_symmetry,
     file.close();
 
     areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
-    BOOST_CHECK(getErrors().contains(
-      "Area A, cluster1 : trying to add symmetries to a non existing cluster or participation"));
+    BOOST_CHECK(
+      getErrors().contains("ShortTerm Storage cluster cluster1 does not exist in area A"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_no_reserves,
@@ -1091,9 +1085,11 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_no_reserves,
     file << "[symmetries]\n";
     file << "cluster1 = [ReserveUp, ReserveDown]\n";
     file.close();
-    areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
-    BOOST_CHECK(getErrors().contains(
-      "Area A, cluster1 : trying to add symmetries to a non existing cluster or participation"));
+    BOOST_CHECK_EXCEPTION(
+      areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
+      std::runtime_error,
+      checkMessage(
+        "Area A, cluster1 : trying to add symmetries without any reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_reserve,
@@ -1134,7 +1130,7 @@ BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_No_Cluster_Provided,
     BOOST_CHECK(getErrors().contains(
       "A : Please provide a cluster name when declaring a capacity reservation"));
     BOOST_CHECK(
-      getErrors().contains("A : missing cluster  when loading STS reserve participations"));
+      getErrors().contains("A : missing STStorage cluster when loading STS reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_Invalid_Cluster,
@@ -1152,7 +1148,7 @@ BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_Invalid_Cluster,
     file.close();
     areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(
-      getErrors().contains("A : missing cluster cluster4 when loading STS reserve participations"));
+      getErrors().contains("A : missing STStorage cluster when loading STS reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_readReserve_ok_file_missing_needs,
@@ -1379,22 +1375,23 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_parameters_values,
     accessForTests::loadReservesParameters(studyPath, *areaA);
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
     BOOST_CHECK_EQUAL(getWarnings().size(), 10);
-    BOOST_CHECK(getWarnings().contains("A: invalid type for reserve ReserveUp"));
+    BOOST_CHECK(getWarnings().contains("A : invalid type for reserve ReserveUp"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid reference activation duration for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid energy activation ratio for reserve ReserveUp"));
+      getWarnings().contains("A : invalid reference activation duration for reserve ReserveUp"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid maximum activation ratio for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid spillage cost for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid failure cost for reserve ReserveUp"));
+      getWarnings().contains("A : invalid energy activation ratio for reserve ReserveUp"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid maximum energy activation ratio for UP reserves"));
+      getWarnings().contains("A : invalid maximum activation ratio for reserve ReserveUp"));
+    BOOST_CHECK(getWarnings().contains("A : invalid spillage cost for reserve ReserveUp"));
+    BOOST_CHECK(getWarnings().contains("A : invalid failure cost for reserve ReserveUp"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid maximum energy activation ratio for DOWN reserves"));
+      getWarnings().contains("A : invalid maximum energy activation ratio for UP reserves"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid reference energy activation duration for UP reserves"));
+      getWarnings().contains("A : invalid maximum energy activation ratio for DOWN reserves"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid reference energy activation duration for DOWN reserves"));
+      getWarnings().contains("A : invalid reference energy activation duration for UP reserves"));
+    BOOST_CHECK(
+      getWarnings().contains("A : invalid reference energy activation duration for DOWN reserves"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_readReserve_duplicated, OneProblemWithoutReservesOneAreaWithLogger)

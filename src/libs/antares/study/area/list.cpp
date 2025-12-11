@@ -68,7 +68,7 @@ bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
                   area.allCapacityReservations.value().maxGlobalEnergyActivationRatio.up))
             {
                 logs.warning() << area.name
-                               << ": invalid maximum energy activation ratio for UP reserves";
+                               << " : invalid maximum energy activation ratio for UP reserves";
                 ret = false;
             }
         }
@@ -78,7 +78,7 @@ bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
                   area.allCapacityReservations.value().maxGlobalEnergyActivationRatio.down))
             {
                 logs.warning() << area.name
-                               << ": invalid maximum energy activation ratio for "
+                               << " : invalid maximum energy activation ratio for "
                                   "DOWN reserves";
                 ret = false;
             }
@@ -89,7 +89,7 @@ bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
                   area.allCapacityReservations.value().referenceGlobalActivationDuration.up))
             {
                 logs.warning() << area.name
-                               << ": invalid reference energy activation duration "
+                               << " : invalid reference energy activation duration "
                                   "for UP reserves";
                 ret = false;
             }
@@ -100,7 +100,7 @@ bool readReservesAreaParameters(Area& area, const IniFile::Section& section)
                   area.allCapacityReservations.value().referenceGlobalActivationDuration.down))
             {
                 logs.warning() << area.name
-                               << ": invalid reference energy activation duration "
+                               << " : invalid reference energy activation duration "
                                   "for DOWN reserves";
                 ret = false;
             }
@@ -135,7 +135,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
         {
             if (!p->value.to<double>(capacityReservation.unsuppliedCost))
             {
-                logs.warning() << area.name << ": invalid failure cost for reserve "
+                logs.warning() << area.name << " : invalid failure cost for reserve "
                                << section.name;
                 ret = false;
             }
@@ -144,7 +144,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
         {
             if (!p->value.to<double>(capacityReservation.spillageCost))
             {
-                logs.warning() << area.name << ": invalid spillage cost for reserve "
+                logs.warning() << area.name << " : invalid spillage cost for reserve "
                                << section.name;
                 ret = false;
             }
@@ -153,7 +153,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
         {
             if (!p->value.to<double>(capacityReservation.powerActivationRatio))
             {
-                logs.warning() << area.name << ": invalid maximum activation ratio for reserve "
+                logs.warning() << area.name << " : invalid maximum activation ratio for reserve "
                                << section.name;
                 ret = false;
             }
@@ -162,7 +162,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
         {
             if (!p->value.to<double>(capacityReservation.energyActivationRatio))
             {
-                logs.warning() << area.name << ": invalid energy activation ratio for reserve "
+                logs.warning() << area.name << " : invalid energy activation ratio for reserve "
                                << section.name;
                 ret = false;
             }
@@ -172,7 +172,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
             if (!p->value.to<int>(capacityReservation.referenceActivationDuration))
             {
                 logs.warning() << area.name
-                               << ": invalid reference activation duration for reserve "
+                               << " : invalid reference activation duration for reserve "
                                << section.name;
                 ret = false;
             }
@@ -189,7 +189,7 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
             }
             else
             {
-                logs.warning() << area.name << ": invalid type for reserve " << section.name;
+                logs.warning() << area.name << " : invalid type for reserve " << section.name;
                 ret = false;
             }
         }
