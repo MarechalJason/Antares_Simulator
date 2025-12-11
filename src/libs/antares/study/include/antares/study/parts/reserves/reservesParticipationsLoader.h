@@ -27,7 +27,7 @@
 
 namespace Antares::Data
 {
-template<typename Derived>
+template<typename Derived /*, typename ParticipationT*/>
 class ReserveParticipationLoader
 {
 public:
@@ -44,17 +44,23 @@ public:
           {
               if (section.name != "symmetries")
               {
-                  readCapacityReservationSection(area, section);
+                  auto& derivedObj = derived();
+                  auto [participation, clusterName] = derivedObj.readCapacityReservationSection(
+                    section);
+                  derivedObj.validateCapacityInputs(area.name,
+                                                    participation,
+                                                    clusterName,
+                                                    section.name);
+                  derivedObj.addCapacityReservation(area, participation, clusterName, section.name);
               }
           });
 
-        // Load symmetries after the reserves
         ini.each(
           [&](const IniFile::Section& section)
           {
               if (section.name == "symmetries")
               {
-                  readSymmetrySection(area, section);
+                  derived().readSymmetrySection(area, section);
               }
           });
 
@@ -62,287 +68,422 @@ public:
     }
 
 private:
-    virtual void readCapacityReservationSection(Area& area, const IniFile::Section& section) = 0;
-    virtual void readSymmetrySection(Area& area, const IniFile::Section& section) = 0;
+    Derived& derived()
+    {
+        return static_cast<Derived&>(*this);
+    }
+
+    const Derived& derived() const
+    {
+        return static_cast<const Derived&>(*this);
+    }
 };
 
-template<class ClusterT>
-class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoader<ClusterT>>
+void static throwIfNegativeValue(const std::string& propertyName,
+                                 double value,
+                                 const std::string& areaName,
+                                 const std::optional<std::string>& clusterName,
+                                 const std::string& reserveName)
 {
-    void readCapacityReservationSection(Area& area, const IniFile::Section& section) override
+    if (value < 0)
     {
-        std::string clusterName;
-        ThermalClusterReserveParticipation reserveParticipation;
+        std::ostringstream os;
+        os << "in area: " << areaName
+           << (clusterName.has_value() ? ", cluster: " + clusterName.value() : "")
+           << ", reservation capacity in reserve: " << reserveName << ", " << propertyName
+           << " can not be negative";
+        throw std::invalid_argument(os.str());
+    }
+}
 
+class HydroReserveLoader;
+
+template<typename Derived, typename ParticipationT>
+class ReserveLoaderMixin: public ReserveParticipationLoader<Derived>
+{
+public:
+    using participation_type = ParticipationT;
+
+    std::pair<ParticipationT, std::optional<std::string>> readCapacityReservationSection(
+      const IniFile::Section& section)
+    {
+        participation_type rp{};
+        std::optional<std::string> clusterName;
+
+        derived().readProperties(section, clusterName, rp);
+        return {rp, clusterName};
+    }
+
+    void validateCapacityInputs(const std::string& areaName,
+                                const participation_type& rp,
+                                const std::optional<std::string>& clusterName,
+                                const std::string& reserveName)
+    {
+        if ((!clusterName || clusterName.value().empty())
+            && !std::is_same<Derived, HydroReserveLoader>::value)
+        {
+            logs.error()
+              << areaName
+              << " : Please provide a cluster name when declaring a capacity reservation";
+        }
+        throwIfNegativeValue("participation-cost",
+                             rp.participationCost,
+                             areaName,
+                             clusterName,
+                             reserveName);
+        derived().validateSpecificInputs(areaName, rp, clusterName.value_or(""), reserveName);
+    }
+
+    void addCapacityReservation(Area& area,
+                                participation_type& rp,
+                                const std::optional<std::string>& clusterName,
+                                const std::string& reserveName)
+    {
+        const auto* reserve = area.allCapacityReservations.value().getReserveByName(reserveName);
+        auto* cluster = derived().findCluster(area, clusterName.value_or(""));
+
+        if (!reserve || !cluster)
+        {
+            derived().reportMissing(area, reserveName, clusterName.value_or(""), reserve, cluster);
+            return;
+        }
+
+        rp.capacityReservation = reserve;
+
+        auto& container = derived().getContainer(cluster);
+        if (container && container->isParticipatingInReserve(reserveName))
+        {
+            derived().duplicateParticipation(area.name, clusterName.value_or(""), reserveName);
+        }
+        else if (!container)
+        {
+            container.emplace();
+        }
+
+        container->addReserveParticipation(reserveName, rp);
+    }
+
+    void readSymmetrySection(Area& area, const IniFile::Section& section)
+    {
+        for (auto* p = section.firstProperty; p; p = p->next)
+        {
+            std::string clusterName;
+            TransformNameIntoID(p->key, clusterName);
+
+            auto symGroups = Symmetries::makeGroupsOfSymmetries(p->value);
+
+            auto* cluster = derived().findCluster(area, clusterName);
+            if (!cluster)
+            {
+                derived().reportInvalidSymmetry(area, clusterName);
+                continue;
+            }
+            auto& reserveContainer = derived().getContainer(cluster);
+            if (!reserveContainer.has_value())
+            {
+                derived().reportLackOfReserveParticipation(area, clusterName);
+            }
+
+            for (const auto& sym: symGroups)
+            {
+                reserveContainer->addReserveParticipationSymmetry(sym);
+            }
+        }
+    }
+
+private:
+    Derived& derived()
+    {
+        return static_cast<Derived&>(*this);
+    }
+
+    const Derived& derived() const
+    {
+        return static_cast<const Derived&>(*this);
+    }
+};
+
+class ThermalReserveLoader
+    : public ReserveLoaderMixin<ThermalReserveLoader, ThermalClusterReserveParticipation>
+{
+public:
+    // lire les propriétés spécifiques au thermal
+    static void readProperties(const IniFile::Section& section,
+                               std::optional<std::string>& clusterName,
+                               ThermalClusterReserveParticipation& rp)
+    {
         section.each(
           [&](const IniFile::Property& p)
           {
               if (p.key == "cluster-name")
               {
-                  TransformNameIntoID(p.value, clusterName);
+                  clusterName.emplace();
+                  TransformNameIntoID(p.value, clusterName.value());
+              }
+              else if (p.key == "participation-cost")
+              {
+                  p.value.to(rp.participationCost);
               }
               else if (p.key == "max-power")
               {
-                  p.value.to<double>(reserveParticipation.maxPower);
-              }
-              else if (p.key == "participation-cost")
-              {
-                  p.value.to<double>(reserveParticipation.participationCost);
+                  p.value.to(rp.maxPower);
               }
               else if (p.key == "max-power-off")
               {
-                  p.value.to<double>(reserveParticipation.maxPowerOff);
+                  p.value.to(rp.maxPowerOff);
               }
               else if (p.key == "participation-cost-off")
               {
-                  p.value.to<double>(reserveParticipation.participationCostOff);
+                  p.value.to(rp.participationCostOff);
               }
               else
               {
-                  logs.warning() << area.name
-                                 << " : invalid property in thermal reserves implementation : "
-                                 << p.key;
+                  logs.warning() << "invalid thermal reserve property " << p.key;
               }
           });
-        if (clusterName.empty())
-        {
-            logs.error()
-              << area.name
-              << " : Please provide a cluster name when declaring a capacity reservation";
-        }
-        auto cluster = area.thermal.list.findInAll(clusterName);
-        auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
+    }
 
-        if (reserve && cluster)
+    static void validateSpecificInputs(const std::string& areaName,
+                                       const ThermalClusterReserveParticipation& rp,
+                                       const std::string& clusterName,
+                                       const std::string& reserveName)
+    {
+        throwIfNegativeValue("max-power", rp.maxPower, areaName, clusterName, reserveName);
+        throwIfNegativeValue("max-power-off", rp.maxPowerOff, areaName, clusterName, reserveName);
+        throwIfNegativeValue("participation-cost-off",
+                             rp.participationCostOff,
+                             areaName,
+                             clusterName,
+                             reserveName);
+    }
+
+    static auto* findCluster(const Area& area, const std::string& name)
+    {
+        return area.thermal.list.findInAll(name);
+    }
+
+    static auto& getContainer(auto* cluster)
+    {
+        return cluster->reserveParticipationContainer;
+    }
+
+    static void reportMissing(const Area& area,
+                              const std::string& reserveName,
+                              const std::string& clusterName,
+                              bool reserveOK,
+                              bool clusterOK)
+    {
+        if (!reserveOK)
         {
-            reserveParticipation.capacityReservation = reserve;
-            if (!cluster->reserveParticipationContainer)
-            {
-                cluster->reserveParticipationContainer.emplace();
-            }
-            if (cluster->reserveParticipationContainer.value().isParticipatingInReserve(
-                  section.name))
-            {
-                logs.error() << area.name << ", cluster " << cluster->name()
-                             << " : duplicate participation to reserve " << section.name;
-            }
-            cluster->reserveParticipationContainer.value()
-              .addReserveParticipation(section.name, reserveParticipation);
+            logs.error() << area.name << " : missing reserve " << reserveName
+                         << " when loading thermal reserve participations";
         }
-        else
+        if (!clusterOK)
         {
-            if (!reserve)
-            {
-                logs.error() << area.name << ": missing reserve " << section.name
-                             << " when loading thermal reserve participations";
-            }
-            if (!cluster)
-            {
-                logs.error() << area.name << " : missing cluster " << clusterName
-                             << " when loading thermal reserve participations";
-            }
+            logs.error() << area.name
+                         << " : missing cluster name when loading thermal reserve participations";
         }
     }
 
-    void readSymmetrySection(Area& area, const IniFile::Section& section) override
+    static void duplicateParticipation(const std::string& areaName,
+                                       const std::string& clusterName,
+                                       const std::string& reserveName)
     {
-        for (auto* p = section.firstProperty; p; p = p->next)
-        {
-            std::string clusterName;
-            TransformNameIntoID(p->key, clusterName);
-            auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
-            for (auto& sym: symmetries)
-            {
-                auto cluster = area.thermal.list.findInAll(clusterName);
-                if (cluster)
-                {
-                    if (!cluster->reserveParticipationContainer)
-                    {
-                        throw std::runtime_error(
-                          "Area " + area.name + ", " + clusterName
-                          + " : trying to add symmetries without any reserves participations");
-                    }
-                    cluster->reserveParticipationContainer.value().addReserveParticipationSymmetry(
-                      sym);
-                }
-                else
-                {
-                    logs.error() << "Thermal cluster " << clusterName
-                                 << " not participating to reserves of " << area.name;
-                }
-            }
-        }
+        logs.error() << areaName << ", cluster " << clusterName
+                     << " : duplicate participation to reserve " << reserveName;
+    }
+
+    static void reportInvalidSymmetry(const Area& area, const std::string& clusterName)
+    {
+        logs.error() << "Thermal cluster " << clusterName << " does not exist in area "
+                     << area.name;
+    }
+
+    static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
+    {
+        throw std::runtime_error("Area " + area.name + ", " + clusterName
+                                 + " : trying to add symmetries without any reserve participation");
     }
 };
 
-class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserveLoader>
+class STStorageReserveLoader
+    : public ReserveLoaderMixin<STStorageReserveLoader, StorageClusterReserveParticipation>
 {
-    void readCapacityReservationSection(Area& area, const IniFile::Section& section) override
+public:
+    static void readProperties(const IniFile::Section& section,
+                               std::optional<std::string>& clusterName,
+                               StorageClusterReserveParticipation& rp)
     {
-        std::string clusterName;
-        StorageClusterReserveParticipation reserveParticipation;
-
         section.each(
           [&](const IniFile::Property& p)
           {
               if (p.key == "cluster-name")
               {
-                  TransformNameIntoID(p.value, clusterName);
+                  clusterName.emplace();
+                  TransformNameIntoID(p.value, clusterName.value());
+              }
+              else if (p.key == "participation-cost")
+              {
+                  p.value.to(rp.participationCost);
               }
               else if (p.key == "max-release")
               {
-                  p.value.to<double>(reserveParticipation.maxRelease);
+                  p.value.to(rp.maxRelease);
               }
               else if (p.key == "max-store")
               {
-                  p.value.to<double>(reserveParticipation.maxStore);
-              }
-              else if (p.key == "participation-cost")
-              {
-                  p.value.to<double>(reserveParticipation.participationCost);
+                  p.value.to(rp.maxStore);
               }
               else
               {
-                  logs.warning() << area.name
-                                 << " : invalid property in STS reserves implementation : "
-                                 << p.key;
+                  logs.warning() << "invalid STS reserve property " << p.key;
               }
           });
+    }
 
-        auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
-        auto cluster = area.shortTermStorage.findInAll(clusterName);
-        if (clusterName.empty())
-        {
-            logs.error()
-              << area.name
-              << " : Please provide a cluster name when declaring a capacity reservation";
-        }
-        if (reserve && cluster)
-        {
-            reserveParticipation.capacityReservation = reserve;
-            if (!cluster->reserveParticipationContainer)
-            {
-                cluster->reserveParticipationContainer.emplace();
-            }
+    static void validateSpecificInputs(const std::string& areaName,
+                                       const StorageClusterReserveParticipation& rp,
+                                       const std::string& clusterName,
+                                       const std::string& reserveName)
+    {
+        throwIfNegativeValue("max-release", rp.maxRelease, areaName, clusterName, reserveName);
+        throwIfNegativeValue("max-store", rp.maxStore, areaName, clusterName, reserveName);
+    }
 
-            cluster->reserveParticipationContainer.value()
-              .addReserveParticipation(section.name, reserveParticipation);
-        }
-        else
+    static void duplicateParticipation(const std::string& areaName,
+                                       const std::string& clusterName,
+                                       const std::string& reserveName)
+    {
+        logs.error() << areaName << ", cluster " << clusterName
+                     << " : duplicate participation to reserve " << reserveName;
+    }
+
+    static auto* findCluster(Area& area, const std::string& name)
+    {
+        return area.shortTermStorage.findInAll(name);
+    }
+
+    static auto& getContainer(auto* cluster)
+    {
+        return cluster->reserveParticipationContainer;
+    }
+
+    static void reportMissing(const Area& area,
+                              const std::string& reserveName,
+                              const std::string& clusterName,
+                              bool reserveOK,
+                              bool clusterOK)
+    {
+        if (!reserveOK)
         {
-            if (!reserve)
-            {
-                logs.error() << area.name << ": missing reserve " << section.name
-                             << " when loading STS reserve participations";
-            }
-            if (!cluster)
-            {
-                logs.error() << area.name << " : missing cluster " << clusterName
-                             << " when loading STS reserve participations";
-            }
+            logs.error() << area.name << ": missing reserve " << reserveName
+                         << " when loading STS reserve participation";
+        }
+        if (!clusterOK)
+        {
+            logs.error() << area.name
+                         << " : missing STStorage cluster when loading STS reserve participation";
         }
     }
 
-    void readSymmetrySection(Area& area, const IniFile::Section& section) override
+    static void reportInvalidSymmetry(Area& area, const std::string& clusterName)
     {
-        for (auto* p = section.firstProperty; p; p = p->next)
-        {
-            std::string clusterName;
-            TransformNameIntoID(p->key, clusterName);
-            auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
+        logs.error() << "ShortTerm Storage cluster " << clusterName << " does not exist in area "
+                     << area.name;
+    }
 
-            for (auto& sym: symmetries)
-            {
-                auto cluster = area.shortTermStorage.findInAll(clusterName);
-                if (cluster && cluster->reserveParticipationContainer)
-                {
-                    cluster->reserveParticipationContainer.value().addReserveParticipationSymmetry(
-                      sym);
-                }
-                else
-                {
-                    logs.error()
-                      << "Area " << area.name << ", " << clusterName
-                      << " : trying to add symmetries to a non existing cluster or participation";
-                }
-            }
-        }
+    static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
+    {
+        throw std::runtime_error("Area " + area.name + ", " + clusterName
+                                 + " : trying to add symmetries without any reserve participation");
     }
 };
 
-class HydroReserveLoader: public ReserveParticipationLoader<HydroReserveLoader>
+class HydroReserveLoader
+    : public ReserveLoaderMixin<HydroReserveLoader, StorageClusterReserveParticipation>
 {
-    void readCapacityReservationSection(Area& area, const IniFile::Section& section) override
+public:
+    static void readProperties(const IniFile::Section& section,
+                               std::optional<std::string>& /*hydro: ignore clusterName*/,
+                               StorageClusterReserveParticipation& rp)
     {
-        StorageClusterReserveParticipation reserveParticipation;
-
         section.each(
           [&](const IniFile::Property& p)
           {
-              if (p.key == "max-release")
+              if (p.key == "participation-cost")
               {
-                  p.value.to<double>(reserveParticipation.maxRelease);
+                  p.value.to(rp.participationCost);
+              }
+              else if (p.key == "max-release")
+              {
+                  p.value.to(rp.maxRelease);
               }
               else if (p.key == "max-store")
               {
-                  p.value.to<double>(reserveParticipation.maxStore);
-              }
-              else if (p.key == "participation-cost")
-              {
-                  p.value.to<double>(reserveParticipation.participationCost);
+                  p.value.to(rp.maxStore);
               }
               else
               {
-                  logs.warning() << area.name
-                                 << " : invalid property in hydro reserves implementation : "
-                                 << p.key;
+                  logs.warning() << "invalid hydro reserve property " << p.key;
               }
           });
+    }
 
-        auto reserve = area.allCapacityReservations.value().getReserveByName(section.name);
-        if (reserve)
+    static void validateSpecificInputs(const std::string& areaName,
+                                       const StorageClusterReserveParticipation& rp,
+                                       const std::string& clusterName,
+                                       const std::string& reserveName)
+    {
+        throwIfNegativeValue("max-release", rp.maxRelease, areaName, clusterName, reserveName);
+        throwIfNegativeValue("max-store", rp.maxStore, areaName, clusterName, reserveName);
+    }
+
+    static void duplicateParticipation(const std::string& areaName,
+                                       const std::string&,
+                                       const std::string& reserveName)
+    {
+        logs.error() << areaName << ", hydro: duplicate participation to reserve " << reserveName;
+    }
+
+    static auto* findCluster(Area& area, const std::string& clusterName)
+    {
+        if (clusterName != "hydro" && clusterName != "lt" && !clusterName.empty())
         {
-            reserveParticipation.capacityReservation = reserve;
-            auto& reserveParticipationContainer = area.hydro.reserveParticipationContainer;
-            if (!reserveParticipationContainer)
-            {
-                reserveParticipationContainer.emplace();
-            }
-
-            reserveParticipationContainer.value().addReserveParticipation(section.name,
-                                                                          reserveParticipation);
+            logs.error() << area.name << " : invalid cluster name for hydro symmetry "
+                         << clusterName << " please use 'hydro' or 'lt'";
         }
-        else
+        return &area.hydro; // unique cluster
+    }
+
+    static auto& getContainer(auto* hydro)
+    {
+        return hydro->reserveParticipationContainer;
+    }
+
+    static void reportMissing(const Area& area,
+                              const std::string& reserveName,
+                              const std::string&,
+                              bool reserveOK,
+                              bool)
+    {
+        if (!reserveOK)
         {
-            logs.error() << area.name << ": missing reserve " << section.name
+            logs.error() << area.name << " : missing reserve " << reserveName
                          << " when loading hydro reserve participations";
         }
     }
 
-    void readSymmetrySection(Area& area, const IniFile::Section& section) override
+    static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
     {
-        auto& reserveParticipationContainer = area.hydro.reserveParticipationContainer;
-        if (!area.hydro.reserveParticipationContainer)
-        {
-            throw std::runtime_error(
-              "Area " + area.name
-              + ", hydro : trying to add symmetries without any reserves participations");
-        }
-        for (auto* p = section.firstProperty; p; p = p->next)
-        {
-            std::string clusterName;
-            TransformNameIntoID(p->key, clusterName);
-            if (!(boost::iequals(clusterName, "hydro") || boost::iequals(clusterName, "lt")))
-            {
-                logs.error() << area.name << " : invalid cluster name for hydro symmetry "
-                             << clusterName << " please use 'hydro' or 'lt'";
-            }
-            auto symmetries = Symmetries::makeGroupsOfSymmetries(p->value);
-            for (auto& sym: symmetries)
-            {
-                reserveParticipationContainer.value().addReserveParticipationSymmetry(sym);
-            }
-        }
+        throw std::runtime_error(
+          "Area " + area.name
+          + ", hydro : trying to add symmetries without any reserve participation");
+    }
+
+    static void reportInvalidSymmetry(const Area& area, const std::string& clusterName)
+    {
+        logs.error() << area.name << " : invalid hydro symmetry cluster " << clusterName;
     }
 };
+
 } // namespace Antares::Data
