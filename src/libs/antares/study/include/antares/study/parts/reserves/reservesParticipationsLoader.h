@@ -79,7 +79,7 @@ private:
     }
 };
 
-void static throwIfNegativeValue(const std::string& propertyName,
+void static errorIfNegativeValue(const std::string& propertyName,
                                  double value,
                                  const std::string& areaName,
                                  const std::optional<std::string>& clusterName,
@@ -87,12 +87,10 @@ void static throwIfNegativeValue(const std::string& propertyName,
 {
     if (value < 0)
     {
-        std::ostringstream os;
-        os << "in area: " << areaName
-           << (clusterName.has_value() ? ", cluster: " + clusterName.value() : "")
-           << ", reservation capacity in reserve: " << reserveName << ", " << propertyName
-           << " can not be negative";
-        throw std::invalid_argument(os.str());
+        logs.error() << "in area " << areaName
+                     << (clusterName.has_value() ? ", cluster: " + clusterName.value() : "")
+                     << ", reservation capacity in reserve: " << reserveName << ", " << propertyName
+                     << " can not be negative";
     }
 }
 
@@ -126,7 +124,7 @@ public:
               << areaName
               << " : Please provide a cluster name when declaring a capacity reservation";
         }
-        throwIfNegativeValue("participation-cost",
+        errorIfNegativeValue("participation-cost",
                              rp.participationCost,
                              areaName,
                              clusterName,
@@ -183,10 +181,12 @@ public:
             {
                 derived().reportLackOfReserveParticipation(area, clusterName);
             }
-
-            for (const auto& sym: symGroups)
+            else
             {
-                reserveContainer->addReserveParticipationSymmetry(sym);
+                for (const auto& sym: symGroups)
+                {
+                    reserveContainer->addReserveParticipationSymmetry(sym);
+                }
             }
         }
     }
@@ -248,9 +248,9 @@ public:
                                        const std::string& clusterName,
                                        const std::string& reserveName)
     {
-        throwIfNegativeValue("max-power", rp.maxPower, areaName, clusterName, reserveName);
-        throwIfNegativeValue("max-power-off", rp.maxPowerOff, areaName, clusterName, reserveName);
-        throwIfNegativeValue("participation-cost-off",
+        errorIfNegativeValue("max-power", rp.maxPower, areaName, clusterName, reserveName);
+        errorIfNegativeValue("max-power-off", rp.maxPowerOff, areaName, clusterName, reserveName);
+        errorIfNegativeValue("participation-cost-off",
                              rp.participationCostOff,
                              areaName,
                              clusterName,
@@ -301,8 +301,8 @@ public:
 
     static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
     {
-        throw std::runtime_error("Area " + area.name + ", " + clusterName
-                                 + " : trying to add symmetries without any reserve participation");
+        logs.error() << "Area " << area.name << ", " << clusterName
+                     << " : trying to add symmetries without any reserve participation";
     }
 };
 
@@ -346,8 +346,8 @@ public:
                                        const std::string& clusterName,
                                        const std::string& reserveName)
     {
-        throwIfNegativeValue("max-release", rp.maxRelease, areaName, clusterName, reserveName);
-        throwIfNegativeValue("max-store", rp.maxStore, areaName, clusterName, reserveName);
+        errorIfNegativeValue("max-release", rp.maxRelease, areaName, clusterName, reserveName);
+        errorIfNegativeValue("max-store", rp.maxStore, areaName, clusterName, reserveName);
     }
 
     static void duplicateParticipation(const std::string& areaName,
@@ -394,8 +394,8 @@ public:
 
     static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
     {
-        throw std::runtime_error("Area " + area.name + ", " + clusterName
-                                 + " : trying to add symmetries without any reserve participation");
+        logs.error() << "Area " << area.name << ", " << clusterName
+                     << " : trying to add symmetries without any reserve participation";
     }
 };
 
@@ -434,8 +434,8 @@ public:
                                        const std::string& clusterName,
                                        const std::string& reserveName)
     {
-        throwIfNegativeValue("max-release", rp.maxRelease, areaName, clusterName, reserveName);
-        throwIfNegativeValue("max-store", rp.maxStore, areaName, clusterName, reserveName);
+        errorIfNegativeValue("max-release", rp.maxRelease, areaName, clusterName, reserveName);
+        errorIfNegativeValue("max-store", rp.maxStore, areaName, clusterName, reserveName);
     }
 
     static void duplicateParticipation(const std::string& areaName,
@@ -475,9 +475,8 @@ public:
 
     static void reportLackOfReserveParticipation(const Area& area, const std::string& clusterName)
     {
-        throw std::runtime_error(
-          "Area " + area.name
-          + ", hydro : trying to add symmetries without any reserve participation");
+        logs.error() << "Area " << area.name
+                     << ", hydro : trying to add symmetries without any reserve participation";
     }
 
     static void reportInvalidSymmetry(const Area& area, const std::string& clusterName)
