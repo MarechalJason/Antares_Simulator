@@ -8,7 +8,7 @@ add_boost_test(test_study_reserves_load
   LIBS Antares::study
   test_utils_unit)
 
-  add_boost_test(test_study_reserves_import_pb_hebdo
+add_boost_test(test_study_reserves_import_pb_hebdo
   SRC test_study_reserves_import_pb_hebdo.cpp
   LIBS Antares::study
   test_utils_unit)

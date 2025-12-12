@@ -53,8 +53,7 @@ public:
     {
         if (names.size() < 2)
         {
-            throw std::runtime_error(
-              "Must have at least two distinct reserves to participate to a symmetry");
+            logs.error() << "Must have at least two distinct reserves to participate to a symmetry";
         }
         std::set<ReserveName> symmetryRes;
         for (const auto& name: names)
@@ -65,7 +64,7 @@ public:
             }
             else
             {
-                throw std::out_of_range("This entity is not participating to reserve " + name);
+                logs.error() << "This entity is not participating to reserve " << name;
             }
         }
 
@@ -75,7 +74,7 @@ public:
                       symmetryRes)
             != reserveParticipationsSymmetries.end())
         {
-            throw std::invalid_argument("Detected duplicate in reserves symmetries");
+            logs.error() << "Detected duplicate in reserves symmetries";
         }
         reserveParticipationsSymmetries.push_back(symmetryRes);
     }
