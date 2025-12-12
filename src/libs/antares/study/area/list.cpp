@@ -208,6 +208,47 @@ bool readReserveParameters(const fs::path& folderInput, Area& area, const IniFil
     return ret;
 }
 
+void validateCapacityReservations(const Area& area)
+{
+    if (area.allCapacityReservations)
+    {
+        errorIfNegativeValue("maxGlobalEnergyActivationRatio up",
+                             area.allCapacityReservations.value().maxGlobalEnergyActivationRatio.up,
+                             area.name);
+        errorIfNegativeValue(
+          "maxGlobalEnergyActivationRatio down",
+          area.allCapacityReservations.value().maxGlobalEnergyActivationRatio.down,
+          area.name);
+        errorIfNegativeValue(
+          "referenceGlobalActivationDuration up",
+          area.allCapacityReservations.value().referenceGlobalActivationDuration.up,
+          area.name);
+        errorIfNegativeValue(
+          "referenceGlobalActivationDuration down",
+          area.allCapacityReservations.value().referenceGlobalActivationDuration.down,
+          area.name);
+        for (const auto& [resName, capacityRes]:
+             area.allCapacityReservations.value().areaCapacityReservations)
+        {
+            errorIfNegativeValue("energyActivationRatio",
+                                 capacityRes.energyActivationRatio,
+                                 area.name,
+                                 std::nullopt,
+                                 resName);
+            errorIfNegativeValue("powerActivationRatio",
+                                 capacityRes.powerActivationRatio,
+                                 area.name,
+                                 std::nullopt,
+                                 resName);
+            errorIfNegativeValue("referenceActivationDuration",
+                                 capacityRes.referenceActivationDuration,
+                                 area.name,
+                                 std::nullopt,
+                                 resName);
+        }
+    }
+}
+
 static bool AreaListLoadThermalDataFromFile(AreaList& list, const fs::path& filename)
 {
     // Reset to 0
@@ -521,6 +562,7 @@ bool loadReservesParameters(fs::path& folderInput, Area& area)
                   ret = readReserveParameters(folderInput, area, section) && ret;
               }
           });
+        validateCapacityReservations(area);
     }
     return ret;
 }

@@ -1329,6 +1329,50 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok, OneProblemWithoutReservesOneAreaWit
       4);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_readReserve_negative_parameters_values,
+                        OneProblemWithoutReservesOneAreaWithLogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    std::filesystem::create_directories(studyPath / "reserves" / "a");
+    std::ofstream file(studyPath / "reserves" / "a" / "reserves.ini");
+    file << "[ReserveUp]\n";
+    file << "type = up\n ";
+    file << "reference-activation-duration = -1\n ";
+    file << "energy-activation-ratio = -2\n ";
+    file << "power-activation-ratio = -3\n ";
+    file << "spillage-cost = 10\n ";
+    file << "failure-cost = 10\n ";
+    file << "\n ";
+    file << "[globalparameters]\n";
+    file << "energy-activation-ratio-up = -1\n ";
+    file << "energy-activation-ratio-down = -1\n ";
+    file << "reference-activation-duration-up = -2\n ";
+    file << "reference-activation-duration-down = -2\n ";
+    file.close();
+
+    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "ReserveUp.txt");
+    fileNeedsUp.close();
+
+    std::ofstream fileNeedsDown(studyPath / "reserves" / "a" / "ReserveDown.txt");
+    fileNeedsDown.close();
+    accessForTests::loadReservesParameters(studyPath, *areaA);
+    BOOST_CHECK_EQUAL(getErrors().size(), 7);
+    BOOST_CHECK(
+      getErrors().contains("A : invalid maxGlobalEnergyActivationRatio down can not be negative"));
+    BOOST_CHECK(
+      getErrors().contains("A : invalid maxGlobalEnergyActivationRatio up can not be negative"));
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid referenceGlobalActivationDuration down can not be negative"));
+    BOOST_CHECK(
+      getErrors().contains("A : invalid referenceGlobalActivationDuration up can not be negative"));
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid energyActivationRatio can not be negative, for reserve ReserveUp"));
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid powerActivationRatio can not be negative, for reserve ReserveUp"));
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid referenceActivationDuration can not be negative, for reserve ReserveUp"));
+}
+
 BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_parameters_values,
                         OneProblemWithoutReservesOneAreaWithLogger)
 {
