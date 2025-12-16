@@ -462,3 +462,15 @@ Feature: reserves tests
     And the annual system cost is 6.686e+06
     And in area "AREA", during year 1, loss of load lasts 3 hours
 
+@fast @short
+# Lot 3
+  Scenario: LT_1_up_down_reserves_test1
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/LT_1_reserves"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", total reserve participation power is 1008 MWh
+	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is 1680 MWh
+    And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", on "1 JAN 06:00", reserve participation power is 6 MWh
+	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", on "1 JAN 06:00", reserve participation power is 10 MWh
+    And the annual system cost is 2.15084e+06
