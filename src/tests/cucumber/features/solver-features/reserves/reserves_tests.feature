@@ -464,7 +464,7 @@ Feature: reserves tests
 
 @fast @short
 # Lot 3
-  Scenario: LT_1_up_down_reserves_test1
+  Scenario: LT_1_up_down_reserves_without_power_activation_ratio_empty
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/LT_1_reserves"
     When I run antares simulator
     Then the simulation succeeds
@@ -474,3 +474,26 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", on "1 JAN 06:00", reserve participation power is 6 MWh
 	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", on "1 JAN 06:00", reserve participation power is 10 MWh
     And the annual system cost is 2.15084e+06
+	
+@fast @short
+# Lot 3
+  Scenario: LT_2_up_down_reserves_with_power_activation_ratio_empty
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/LT_2_reserves"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", total reserve participation power is inferior to 1000 MWh
+	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is 1680 MWh
+    And the annual system cost is 2.155768e+06
+
+
+@fast @short
+# Lot 3
+  Scenario: LT_3_up_down_reserves_with_power_activation_ratio_full
+    Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/LT_3_reserves"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the simulation takes less than 20 seconds
+    And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", total reserve participation power is 1008 MWh
+	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is inferior to 1680 MWh
+    And the annual system cost is 2.157607e+06
