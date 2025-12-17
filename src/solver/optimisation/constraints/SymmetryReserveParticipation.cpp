@@ -77,12 +77,13 @@ void SymmetryReserveParticipation::applyReserveParticipationSymmetry(
         auto targetMaxRelease = reserveParticipationWithName.reserveParticipation.get().maxRelease;
         auto refMaxStore = reserveParticipationRefWithName.reserveParticipation.get().maxStore;
         auto targetMaxStore = reserveParticipationWithName.reserveParticipation.get().maxStore;
+        
         if (abs(refMaxRelease) > 10e-4 && abs(targetMaxRelease) > 10e-4)
         {
             builder.HydroReleaseReserveParticipation(refIndex, 1 / refMaxRelease)
               .HydroReleaseReserveParticipation(targetIndex, -1 / targetMaxRelease);
         }
-        if (abs(refMaxStore) > 10e-4 && abs(refMaxStore) > 10e-4)
+        if (abs(refMaxStore) > 10e-4 && abs(targetMaxStore) > 10e-4)
         {
             builder.HydroStoreReserveParticipation(refIndex, 1 / refMaxStore)
               .HydroStoreReserveParticipation(targetIndex, -1 / targetMaxStore);
