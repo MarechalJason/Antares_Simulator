@@ -68,6 +68,7 @@ Feature: reserves tests
 
 @fast @short
 # Lot 2 : Intégration de la participation du thermique éteint et des stockage CT et LT
+# Un cluster qui participe avec à une réserve à la hausse avec des unités off
   Scenario: ST_4_off_cluster_participation
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_4_reserves"
     When I run antares simulator
@@ -81,6 +82,7 @@ Feature: reserves tests
 
 @fast @short
 # Lot 2
+# Un cluster qui participe avec à deux réserves à la hausse avec des unités off, on vérifié qu'il priviligie la plus rentable
   Scenario: ST_5_off_cluster_participation_multiple_res
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_5_reserves"
     When I run antares simulator
@@ -95,6 +97,11 @@ Feature: reserves tests
     And in area "AREA", overall cost on "1 JAN 06:00" of year 1 is of 80050 Euro 
     And in area "AREA", unsupplied energy on "2 JAN 09:00" of year 1 is of 100 MW
     And the annual system cost is 1.34484e+07
+
+
+#
+# Pour les tests du lot 3 : se référer au document "Schema_de_tests_des_réserves_3_nov_2024.pptx"
+#
 
 @fast @short
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
@@ -412,6 +419,8 @@ Feature: reserves tests
 
 @fast @short
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
+# Thermal cluster n'est pas diponible au départ : la batterie participe aux réserves, puis se vide pour limiter le loss of load, et se remplit quand le cluster se rallume
+# Lot 3 non actif
   Scenario: ST_3UP_unavailable_reserves_test1
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_1.ini"
@@ -425,6 +434,11 @@ Feature: reserves tests
 
 @fast @short
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
+# Thermal cluster n'est pas diponible au départ : la batterie participe aux réserves, puis se vide pour limiter le loss of load, et se remplit quand le cluster se rallume
+# energy-activation-ratio-up = 1
+# energy-activation-ratio = 1
+# power-activation-ratio = 1
+# reference-activation-duration = 2
   Scenario: ST_3UP_unavailable_reserves_test2
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_2.ini"
@@ -440,7 +454,12 @@ Feature: reserves tests
 
 @fast @short
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
-  Scenario: ST_3UP_unavailable_reserves_test3
+# Thermal cluster n'est pas diponible au départ : la batterie participe aux réserves, puis se vide pour limiter le loss of load, et se remplit quand le cluster se rallume
+# energy-activation-ratio-up = 0.5
+# energy-activation-ratio = 0.5
+# reference-activation-duration = 2
+# power-activation-ratio = 0.5 
+Scenario: ST_3UP_unavailable_reserves_test3
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_3.ini"
     When I run antares simulator
@@ -455,6 +474,12 @@ Feature: reserves tests
 
 @fast @short
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
+# Thermal cluster n'est pas diponible au départ : la batterie participe aux réserves, puis se vide pour limiter le loss of load, et se remplit quand le cluster se rallume
+# energy-activation-ratio-up = 0.5
+# reference-activation-duration-up = 2
+# energy-activation-ratio = 0.5
+# power-activation-ratio = 1
+# reference-activation-duration = 2
   Scenario: ST_3UP_unavailable_reserves_test4
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_3_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_unavailable_prod_4.ini"
