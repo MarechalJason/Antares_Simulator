@@ -55,28 +55,16 @@ public:
         {
             logs.error() << "Must have at least two distinct reserves to participate to a symmetry";
         }
-        std::set<ReserveName> symmetryRes;
-        for (const auto& name: names)
-        {
-            if (auto it = reservesParticipations.find(name); it != reservesParticipations.end())
-            {
-                symmetryRes.insert({name});
-            }
-            else
-            {
-                logs.error() << "This entity is not participating to reserve " << name;
-            }
-        }
 
         // Check if symmetry already existed
         if (std::find(reserveParticipationsSymmetries.begin(),
                       reserveParticipationsSymmetries.end(),
-                      symmetryRes)
+                      names)
             != reserveParticipationsSymmetries.end())
         {
             logs.error() << "Detected duplicate in reserves symmetries";
         }
-        reserveParticipationsSymmetries.push_back(symmetryRes);
+        reserveParticipationsSymmetries.push_back(names);
     }
 
     /// @brief Get the indices of the lists that contains reserveParticipation to the reserve name
