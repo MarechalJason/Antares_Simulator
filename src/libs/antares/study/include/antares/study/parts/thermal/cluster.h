@@ -83,7 +83,7 @@ public:
         Unsupplied,
 
         //! The highest value
-        UnsuppliedSpilledMax
+        Count
     };
 
     Pollutant emissions;

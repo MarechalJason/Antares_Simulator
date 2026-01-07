@@ -34,7 +34,7 @@ namespace Antares::Solver::Variable::Economy::Reserves
 using VCardReserveParticipationUnsuppliedSpilled = VCardReserveParticipationBase<
   UnsuppliedSpilledTraits>;
 
-inline std::string unsuppliedSpilledToString(ThermalCluster::UnsuppliedSpilled idx)
+inline std::string unsuppliedSpilledToString(Data::ThermalCluster::UnsuppliedSpilled idx)
 {
     switch (idx)
     {
@@ -43,7 +43,8 @@ inline std::string unsuppliedSpilledToString(ThermalCluster::UnsuppliedSpilled i
     case 1:
         return "SPIL.";
     default:
-        return "<unknown>";
+        throw std::invalid_argument("idx " + std::to_string(idx)
+                                    + " should be 0 (UNSP.) or 1 (SPIL.)");
     }
 }
 

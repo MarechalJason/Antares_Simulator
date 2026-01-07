@@ -42,7 +42,7 @@ namespace Antares::Solver::Variable
 template<class VCardT>
 struct vcard_caption_traits
 {
-    static constexpr bool apply(SurveyResults&, uint)
+    static bool apply(SurveyResults&, uint)
     {
         return false;
     }
@@ -52,7 +52,7 @@ struct vcard_caption_traits
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByDispatchableOnUnitsPlant>
 {
-    static constexpr bool apply(SurveyResults& results, uint i)
+    static bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         auto [clusterName, reserveName] = thermal.list
@@ -65,7 +65,7 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByDispat
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByDispatchableOffUnitsPlant>
 {
-    static constexpr bool apply(SurveyResults& results, uint i)
+    static bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         auto [clusterName, reserveName] = thermal.list
@@ -78,7 +78,7 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByDispat
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByThermalGroup>
 {
-    static constexpr bool apply(SurveyResults& results, uint i)
+    static bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         auto [groupName, reserveName] = thermal.list.reserveParticipationGroupAt(results.data.area,
@@ -91,7 +91,7 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByTherma
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationBySTStorage>
 {
-    static constexpr bool apply(SurveyResults& results, uint i)
+    static bool apply(SurveyResults& results, uint i)
     {
         const auto& shortTermStorage = results.data.area->shortTermStorage;
         auto [clusterName, reserveName] = shortTermStorage
@@ -104,7 +104,7 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationBySTStor
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationBySTStorageGroup>
 {
-    static constexpr bool apply(SurveyResults& results, uint i)
+    static bool apply(SurveyResults& results, uint i)
     {
         const auto& shortTermStorage = results.data.area->shortTermStorage;
         auto [groupName, reserveName] = shortTermStorage
@@ -117,7 +117,7 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationBySTStor
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByHydro>
 {
-    static constexpr bool apply(SurveyResults& results, uint i)
+    static bool apply(SurveyResults& results, uint i)
     {
         const auto& hydro = results.data.area->hydro;
         if (const auto reserveName = hydro.reserveParticipationAt(results.data.area, i))
@@ -132,7 +132,7 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByHydro>
 template<>
 struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationUnsuppliedSpilled>
 {
-    static constexpr bool apply(SurveyResults& results, uint i)
+    static bool apply(SurveyResults& results, uint i)
     {
         const auto& thermal = results.data.area->thermal;
         auto [unsuppliedOrSpilled, reserveName] = thermal.list
