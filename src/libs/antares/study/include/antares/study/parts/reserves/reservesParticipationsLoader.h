@@ -128,6 +128,8 @@ class ThermalReserveLoader: public ReserveParticipationLoader<ThermalReserveLoad
             }
             cluster->reserveParticipationContainer.value()
               .addReserveParticipation(section.name, reserveParticipation);
+            area.allCapacityReservations.value().reserveGroupPartThermal[section.name].insert(
+              cluster->getGroup());
         }
         else
         {
@@ -227,6 +229,8 @@ class STStorageReserveLoader: public ReserveParticipationLoader<STStorageReserve
 
             cluster->reserveParticipationContainer.value()
               .addReserveParticipation(section.name, reserveParticipation);
+            area.allCapacityReservations.value().reserveGroupPartSTS[section.name].insert(
+              cluster->getGroup());
         }
         else
         {

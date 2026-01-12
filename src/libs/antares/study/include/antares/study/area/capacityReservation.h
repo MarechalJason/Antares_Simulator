@@ -80,10 +80,8 @@ struct AllCapacityReservations
     ReserveTypeData<double> maxGlobalEnergyActivationRatio{1., 1.};
     ReserveTypeData<int> referenceGlobalActivationDuration{1, 1};
 
-    std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
-      reserveGroupPartThermal;
-    std::map<std::string /*reserveName*/, std::set<std::string /*name of the group*/>>
-      reserveGroupPartSTS;
+    std::map<ReserveName, std::set<std::string /*name of the group*/>> reserveGroupPartThermal;
+    std::map<ReserveName, std::set<std::string /*name of the group*/>> reserveGroupPartSTS;
 
     std::map<ReserveName, CapacityReservation> areaCapacityReservations;
 

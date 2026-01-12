@@ -226,43 +226,68 @@ public:
         NextType::hourBegin(hourInTheYear);
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    double calculateEnergyDeficitCost(const State& state)
     {
-        auto& area = state.area;
-        double costForSpilledOrUnsuppliedEnergy =
-          // Total UnsupliedEnergy emissions
-          (state.hourlyResults->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek]
-           * state.area->thermal.unsuppliedEnergyCost)
-          + (state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
-             * state.area->thermal.spilledEnergyCost);
+        const auto& hourlyResults = *state.hourlyResults;
+        const auto hourInWeek = state.hourInTheWeek;
+        const auto& thermal = state.area->thermal;
 
-        if (state.study.parameters.reservesEnabled)
+        double unsuppliedCost = hourlyResults.ValeursHorairesDeDefaillancePositive[hourInWeek]
+                                * thermal.unsuppliedEnergyCost;
+
+        double spilledCost = hourlyResults.ValeursHorairesDeDefaillanceNegative[hourInWeek]
+                             * thermal.spilledEnergyCost;
+
+        return unsuppliedCost + spilledCost;
+    }
+
+    double calculateReservesCost(const State& state)
+    {
+        if (!state.study.parameters.reservesEnabled)
         {
-            const auto& reserves = state.problemeHebdo->allReserves.value()[area->index];
-            for (const auto& reserve: reserves.areaCapacityReservations)
-            {
-                costForSpilledOrUnsuppliedEnergy
-                  += state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                         .ValeursHorairesInternalUnsatisfied[reserve.areaReserveIndex]
-                       * reserve.unsuppliedCost
-                     + state.hourlyResults->Reserves.value()[state.hourInTheWeek]
-                           .ValeursHorairesInternalExcessReserve[reserve.areaReserveIndex]
-                         * reserve.spillageCost;
-            }
+            return 0.0;
         }
 
-        pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
-          += costForSpilledOrUnsuppliedEnergy
-             + (state.reserveParticipationCostForYear
-                  ? state.reserveParticipationCostForYear.value()[state.hourInTheYear]
-                  : 0);
+        const auto& reserves = state.problemeHebdo->allReserves.value()[state.area->index];
+        const auto& hourlyReserves = state.hourlyResults->Reserves.value()[state.hourInTheWeek];
 
-        // Incrementing annual system cost (to be printed in output into a separate file)
-        state.annualSystemCost += costForSpilledOrUnsuppliedEnergy
-                                  + (state.reserveParticipationCostForYear
-                                       ? state.reserveParticipationCostForYear
-                                           .value()[state.hourInTheYear]
-                                       : 0);
+        double totalReservesCost = 0.0;
+
+        for (const auto& reserve: reserves.areaCapacityReservations)
+        {
+            double unsatisfiedCost = hourlyReserves
+                                       .ValeursHorairesInternalUnsatisfied[reserve.areaReserveIndex]
+                                     * reserve.unsuppliedCost;
+
+            double excessCost = hourlyReserves
+                                  .ValeursHorairesInternalExcessReserve[reserve.areaReserveIndex]
+                                * reserve.spillageCost;
+
+            totalReservesCost += unsatisfiedCost + excessCost;
+        }
+
+        return totalReservesCost;
+    }
+
+    double getReserveParticipationCost(const State& state)
+    {
+        return state.reserveParticipationCostForYear
+                 ? state.reserveParticipationCostForYear.value()[state.hourInTheYear]
+                 : 0.0;
+    }
+
+    void hourForEachArea(State& state, unsigned int numSpace)
+    {
+        auto& currentHourValue = pValuesForTheCurrentYear[numSpace][state.hourInTheYear];
+
+        double energyDeficitCost = calculateEnergyDeficitCost(state);
+        double reservesCost = calculateReservesCost(state);
+        double reserveParticipationCost = getReserveParticipationCost(state);
+
+        double totalCost = energyDeficitCost + reservesCost + reserveParticipationCost;
+
+        currentHourValue += totalCost;
+        state.annualSystemCost += totalCost;
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
