@@ -90,7 +90,8 @@ void ReserveParticipationByHydro<NextT>::populateHourlyValues(State& state, unsi
         && !state.area->reserveParticipationIndexMaps.value().Hydro.empty())
     {
         for (const auto& [reserveName, reserveParticipation]:
-             state.reserveParticipationPerHydroForYear[state.hourInTheYear]["Hydro"])
+             state.reserveData.value()
+               .reserveParticipationPerHydroForYear[state.hourInTheYear]["Hydro"])
         {
             pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()
                                                  .Hydro.left.at(reserveName)]

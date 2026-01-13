@@ -249,14 +249,15 @@ public:
                                    - area->hydro.pumpingEfficiency
                                        * hourlyResults.PompageHoraire[hourInWeek]);
 
-        double storageReserveCost = state.STStorageClusterReserveParticipationCostForYear
-                                      ? state.STStorageClusterReserveParticipationCostForYear
-                                          .value()[state.hourInTheYear]
+        double storageReserveCost = state.reserveData
+                                      ? state.reserveData.value()
+                                          .STStorageClusterReserveParticipationCostForYear
+                                            [state.hourInTheYear]
                                       : 0.0;
 
-        double hydroReserveCost = state.HydroReserveParticipationCostForYear
-                                    ? state.HydroReserveParticipationCostForYear
-                                        .value()[state.hourInTheYear]
+        double hydroReserveCost = state.reserveData
+                                    ? state.reserveData.value()
+                                        .HydroReserveParticipationCostForYear[state.hourInTheYear]
                                     : 0.0;
 
         return waterValueCost + storageReserveCost + hydroReserveCost;

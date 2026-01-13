@@ -94,11 +94,12 @@ void ReserveParticipationByDispatchableOnUnitsPlant<NextT>::populateHourlyValues
         && !state.area->reserveParticipationIndexMaps.value().thermalClusters.empty())
     {
         for (const auto& clusterName:
-             state.reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
+             state.reserveData.value()
+                 .reserveParticipationPerThermalClusterForYear[state.hourInTheYear]
                | std::views::keys)
         {
             for (const auto& [reserveName, reserveParticipation]:
-                 state
+                 state.reserveData.value()
                    .reserveParticipationPerThermalClusterForYear[state.hourInTheYear][clusterName])
             {
                 pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()

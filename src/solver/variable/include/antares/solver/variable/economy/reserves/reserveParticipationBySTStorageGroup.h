@@ -65,7 +65,8 @@ public:
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
                        ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + static_cast<int>(VCardType::columnCount) * static_cast<int>(ResultsType::count))
+                          + static_cast<int>(VCardType::columnCount)
+                              * static_cast<int>(ResultsType::count))
                        : NextType::template Statistics<CDataLevel, CFile>::count),
         };
     };
@@ -214,7 +215,8 @@ public:
                          area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
                     {
                         pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                          += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                          += state.reserveData.value()
+                               .reserveParticipationPerGroupForYear[state.hourInTheYear]
                                .shortTermStorageGroupsReserveParticipation[group][reserveName];
                         column++;
                     }

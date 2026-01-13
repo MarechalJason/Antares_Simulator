@@ -128,9 +128,10 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                   ? (NextType::template Statistics<CDataLevel, CFile>::count
-                      + static_cast<int>(VCardType::columnCount) * static_cast<int>(ResultsType::count))
-                   : NextType::template Statistics<CDataLevel, CFile>::count),
+                       ? (NextType::template Statistics<CDataLevel, CFile>::count
+                          + static_cast<int>(VCardType::columnCount)
+                              * static_cast<int>(ResultsType::count))
+                       : NextType::template Statistics<CDataLevel, CFile>::count),
         };
     };
 
@@ -227,8 +228,8 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
-          = state.reserveParticipationCostForYear
-              ? state.reserveParticipationCostForYear.value()[state.hourInTheYear]
+          = state.reserveData
+              ? state.reserveData.value().reserveParticipationCostForYear[state.hourInTheYear]
               : 0;
         // Next variable
         NextType::hourForEachArea(state, numSpace);

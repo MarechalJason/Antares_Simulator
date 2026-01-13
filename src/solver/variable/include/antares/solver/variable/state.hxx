@@ -26,20 +26,17 @@ namespace Antares::Solver::Variable
 
 inline void State::initReserveVectors()
 {
-    reserveParticipationCostForYear.emplace();
-    reserveParticipationCostForYear.value().resize(HOURS_PER_YEAR, 0);
-    thermalClusterReserveParticipationCostForYear.emplace();
-    thermalClusterReserveParticipationCostForYear.value().resize(HOURS_PER_YEAR, 0);
-    STStorageClusterReserveParticipationCostForYear.emplace();
-    STStorageClusterReserveParticipationCostForYear.value().resize(HOURS_PER_YEAR, 0);
-    HydroReserveParticipationCostForYear.emplace();
-    HydroReserveParticipationCostForYear.value().resize(HOURS_PER_YEAR, 0);
-    reserveParticipationPerSTStorageClusterForYear.clear();
-    reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
-    reserveParticipationPerHydroForYear.clear();
-    reserveParticipationPerHydroForYear.resize(HOURS_PER_YEAR);
-    reserveParticipationPerThermalClusterForYear.clear();
-    reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
+    reserveData.emplace();
+    reserveData.value().reserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
+    reserveData.value().thermalClusterReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
+    reserveData.value().STStorageClusterReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
+    reserveData.value().HydroReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
+    reserveData.value().reserveParticipationPerSTStorageClusterForYear.clear();
+    reserveData.value().reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
+    reserveData.value().reserveParticipationPerHydroForYear.clear();
+    reserveData.value().reserveParticipationPerHydroForYear.resize(HOURS_PER_YEAR);
+    reserveData.value().reserveParticipationPerThermalClusterForYear.clear();
+    reserveData.value().reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
 }
 
 inline void State::startANewYear()
