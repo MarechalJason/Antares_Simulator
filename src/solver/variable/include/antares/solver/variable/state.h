@@ -67,25 +67,14 @@ private:
     std::vector<StateForAnArea> thermal;
 };
 
-struct ReserveParticipationPerGroupForYear
-{
-    //! Reserve Participation for all thermal group types (nuclear / coal / ...) for the whole
-    //! year per reserve
-    std::map<std::string, std::map<ReserveName, double>> thermalGroupsReserveParticipation;
-
-    //! Reserve Participation for all thermal Short Term storages types (PSP / Battery / ...)
-    //! for the whole year per reserve
-    std::map<std::string, std::map<ReserveName, double>> shortTermStorageGroupsReserveParticipation;
-};
-
 class State
 {
 public:
     explicit State(Data::Study& s);
 
     /*!
-     ** \brief Instantiate the BiMaps so that all the data can be accessed afterwards
-     */
+    ** \brief Instantiate the BiMaps so that all the data can be accessed afterwards
+    */
     void initReserveParticipationIndexMaps();
 
     /*!
@@ -116,13 +105,13 @@ public:
     void initFromShortTermStorageClusterIndex(const unsigned int areaWideIndex);
 
     /*!
-     ** \brief Initialize some variable according a Hydro index
-     **
-     ** We assume here that the variables related to an area
-     ** are properly initialized.
-     **
-     ** \param areaWideIndex Index of the Hydro for the current area
-     */
+    ** \brief Initialize some variable according a Hydro index
+    **
+    ** We assume here that the variables related to an area
+    ** are properly initialized.
+    **
+    ** \param areaWideIndex Index of the Hydro for the current area
+    */
     void initFromHydroIndex(const unsigned int areaWideIndex);
 
     /*!
@@ -168,11 +157,6 @@ private:
     ** \param clusterEnabledIndex Index of the thermal cluster for the current area
     */
     void yearEndSmoothDispatchedUnitsCount(const unsigned int clusterEnabledIndex, uint numSpace);
-
-    /*!
-    ** \brief Initialises the reserve vectors
-    */
-    void initReserveVectors();
 
 public:
     /*!
@@ -255,6 +239,18 @@ public:
             }
         };
 
+        struct ReserveParticipationPerGroupForYear
+        {
+            //! Reserve Participation for all thermal group types (nuclear / coal / ...) for
+            //! the whole year per reserve
+            std::map<std::string, std::map<ReserveName, double>> thermalGroupsReserveParticipation;
+
+            //! Reserve Participation for all thermal Short Term storages types (PSP /
+            //! Battery / ...) for the whole year per reserve
+            std::map<std::string, std::map<ReserveName, double>>
+              shortTermStorageGroupsReserveParticipation;
+        };
+
         //! All type of clusters reserves participations
         std::vector<ReserveParticipationPerGroupForYear> reserveParticipationPerGroupForYear{
           HOURS_PER_YEAR};
@@ -282,6 +278,20 @@ public:
 
         //! Reserves participation cost of the Hydro for the whole year
         std::vector<double> HydroReserveParticipationCostForYear;
+
+        ReserveData()
+        {
+            reserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
+            thermalClusterReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
+            STStorageClusterReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
+            HydroReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
+            reserveParticipationPerSTStorageClusterForYear.clear();
+            reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
+            reserveParticipationPerHydroForYear.clear();
+            reserveParticipationPerHydroForYear.resize(HOURS_PER_YEAR);
+            reserveParticipationPerThermalClusterForYear.clear();
+            reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
+        }
     };
 
     ReserveOpt<ReserveData> reserveData;

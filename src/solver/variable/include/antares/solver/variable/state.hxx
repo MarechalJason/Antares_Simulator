@@ -24,31 +24,12 @@
 namespace Antares::Solver::Variable
 {
 
-inline void State::initReserveVectors()
-{
-    reserveData.emplace();
-    reserveData.value().reserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
-    reserveData.value().thermalClusterReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
-    reserveData.value().STStorageClusterReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
-    reserveData.value().HydroReserveParticipationCostForYear.resize(HOURS_PER_YEAR, 0);
-    reserveData.value().reserveParticipationPerSTStorageClusterForYear.clear();
-    reserveData.value().reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
-    reserveData.value().reserveParticipationPerHydroForYear.clear();
-    reserveData.value().reserveParticipationPerHydroForYear.resize(HOURS_PER_YEAR);
-    reserveData.value().reserveParticipationPerThermalClusterForYear.clear();
-    reserveData.value().reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
-}
-
 inline void State::startANewYear()
 {
     hourInTheSimulation = 0u;
 
     memset(thermalClusterProductionForYear, 0, sizeof(thermalClusterProductionForYear));
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
-    if (study.parameters.reservesEnabled)
-    {
-        initReserveVectors();
-    }
     memset(thermalClusterPMinOfTheClusterForYear, 0, sizeof(thermalClusterPMinOfTheClusterForYear));
     memset(thermalClusterDispatchedUnitsCountForYear,
            0,
@@ -69,7 +50,7 @@ inline void State::yearEndResetThermal()
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
     if (study.parameters.reservesEnabled)
     {
-        initReserveVectors();
+        reserveData.emplace();
     }
     memset(thermalClusterNonProportionalCostForYear,
            0,
@@ -86,11 +67,6 @@ inline void State::initFromAreaIndex(const unsigned int areaIndex, uint numSpace
     scratchpad = &area->scratchpad[numSpace];
     thermalCluster = nullptr;
 
-    if (unitCommitmentMode != Data::UnitCommitmentMode::ucHeuristicFast
-        && study.parameters.reservesEnabled)
-    {
-        initReserveVectors();
-    }
     switch (simulationMode)
     {
     case Data::SimulationMode::Adequacy:
