@@ -599,6 +599,10 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
                 res = vcard_caption_traits<VCardType>::apply(results, i);
                 if (!res)
                 {
+                    res = setClusterCaption(results, fileLevel, i);
+                }
+                if (!res)
+                {
                     return;
                 }
                 results.variableUnit = VCardType::Unit();
