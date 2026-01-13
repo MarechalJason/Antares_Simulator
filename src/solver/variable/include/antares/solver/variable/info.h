@@ -120,12 +120,9 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationByHydro>
     static bool apply(SurveyResults& results, uint i)
     {
         const auto& hydro = results.data.area->hydro;
-        if (const auto reserveName = hydro.reserveParticipationAt(results.data.area, i))
-        {
-            results.variableCaption = reserveName.value() + "_Hydro";
-            return true;
-        }
-        return false;
+        auto reserveName = hydro.reserveParticipationAt(results.data.area, i);
+        results.variableCaption = reserveName.value() + "_Hydro";
+        return true;
     }
 };
 
@@ -600,10 +597,6 @@ struct VariableAccessor<ResultsT, Category::dynamicColumns>
             for (uint i = 0; i != container.size(); ++i)
             {
                 res = vcard_caption_traits<VCardType>::apply(results, i);
-                if (!res)
-                {
-                    res = setClusterCaption(results, fileLevel, i);
-                }
                 if (!res)
                 {
                     return;
