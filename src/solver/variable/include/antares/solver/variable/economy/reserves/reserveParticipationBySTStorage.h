@@ -61,10 +61,12 @@ public:
 
     void populateHourlyValues(/*non const*/ State& state, unsigned int numSpace);
 
-    bool hasIndexMapping(const Area* area, uint /*i*/) const
+    bool hasIndexMapping(const Study& study, const Area* area) const
     {
-        return area->reserveParticipationIndexMaps
-               && !area->reserveParticipationIndexMaps.value().STStorageClusters.empty();
+        return study.parameters.reservesEnabled
+               && !study.runtime.reserveParticipationIndexMaps.value()
+                     .at(area->id)
+                     .STStorageClusters.empty();
     }
 
     void buildReportForIndex(SurveyResults& results,
@@ -73,7 +75,9 @@ public:
                              int precision,
                              unsigned int numSpace) const
     {
-        auto [reserveName, clusterName] = results.data.area->reserveParticipationIndexMaps.value()
+        auto [reserveName, clusterName] = results.data.study.runtime.reserveParticipationIndexMaps
+                                            .value()
+                                            .at(results.data.area->id)
                                             .STStorageClusters.right.at(i);
         results.variableCaption = reserveName + "_" + clusterName;
         results.variableUnit = VCardType::Unit();
@@ -87,8 +91,7 @@ template<class NextT>
 void ReserveParticipationBySTStorage<NextT>::populateHourlyValues(State& state,
                                                                   unsigned int numSpace)
 {
-    if (state.study.parameters.reservesEnabled
-        && !state.area->reserveParticipationIndexMaps.value().STStorageClusters.empty())
+    if (hasIndexMapping(state.study, state.area))
     {
         for (const auto& clusterName:
              state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
@@ -98,10 +101,12 @@ void ReserveParticipationBySTStorage<NextT>::populateHourlyValues(State& state,
                  state.reserveParticipationPerSTStorageClusterForYear[state.hourInTheYear]
                                                                      [clusterName])
             {
-                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()
-                                                     .STStorageClusters.left.at(
-                                                       std::make_pair(reserveName, clusterName))]
-                  .hour[state.hourInTheYear]
+                pValuesForTheCurrentYear[numSpace]
+                                        [state.study.runtime.reserveParticipationIndexMaps.value()
+                                           .at(state.area->id)
+                                           .STStorageClusters.left.at(
+                                             std::make_pair(reserveName, clusterName))]
+                                          .hour[state.hourInTheYear]
                   = reserveParticipation;
             }
         }

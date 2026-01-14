@@ -217,7 +217,7 @@ public:
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
             {
-                if (hasIndexMapping(results.data.area, i))
+                if (hasIndexMapping(results.data.study, results.data.area))
                 {
                     buildReportForIndex(results, i, fileLevel, precision, numSpace);
                 }
@@ -236,7 +236,7 @@ protected:
                                      unsigned int numSpace) const
       = 0;
 
-    virtual bool hasIndexMapping(const Area* area, uint i) const = 0;
+    virtual bool hasIndexMapping(const Study& study, const Area* area) const = 0;
 
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;

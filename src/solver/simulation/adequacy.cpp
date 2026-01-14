@@ -95,6 +95,10 @@ bool Adequacy::simulationBegin()
                                             pProblemesHebdo[numSpace],
                                             nbHoursInAWeek,
                                             numSpace);
+            if (study.parameters.reservesEnabled)
+            {
+                study.runtime.initializeReservesIndexMaps(study, pProblemesHebdo[numSpace]);
+            }
         }
     }
 

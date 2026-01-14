@@ -484,7 +484,7 @@ void SIM_InitialisationProblemeHebdo(Study& study,
     {
         int areaReserveIndex = 0;
         int areaClusterParticipationIndex = 0;
-        const auto& area = *(study.areas.byIndex[i]);
+        auto& area = *(study.areas.byIndex[i]);
         auto& pbPalier = problem.PaliersThermiquesDuPays[i];
         unsigned int clusterCount = area.thermal.list.enabledAndNotMustRunCount();
         pbPalier.NombreDePaliersThermiques = clusterCount;
