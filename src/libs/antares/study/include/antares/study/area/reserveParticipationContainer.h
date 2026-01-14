@@ -49,20 +49,17 @@ public:
 
     /// @brief Add a reserve participation symmetry to the container
     /// @param names names of the reserves for which the participation is symmetrical
-    void addReserveParticipationSymmetry(const std::set<ReserveName>& names)
+    void addReserveParticipationSymmetry(std::set<ReserveName> names)
     {
         if (names.size() < 2)
         {
             logs.error() << "Must have at least two distinct reserves to participate to a symmetry";
         }
-        std::set<ReserveName> symmetryRes;
+
+        // Check if entity is participating to reserves
         for (const auto& name: names)
         {
-            if (auto it = reservesParticipations.find(name); it != reservesParticipations.end())
-            {
-                symmetryRes.insert({name});
-            }
-            else
+            if (!reservesParticipations.contains(name))
             {
                 logs.error() << "This entity is not participating to reserve " << name;
             }
@@ -71,12 +68,12 @@ public:
         // Check if symmetry already existed
         if (std::find(reserveParticipationsSymmetries.begin(),
                       reserveParticipationsSymmetries.end(),
-                      symmetryRes)
+                      names)
             != reserveParticipationsSymmetries.end())
         {
             logs.error() << "Detected duplicate in reserves symmetries";
         }
-        reserveParticipationsSymmetries.push_back(symmetryRes);
+        reserveParticipationsSymmetries.push_back(names);
     }
 
     /// @brief Get the indices of the lists that contains reserveParticipation to the reserve name
