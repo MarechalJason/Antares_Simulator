@@ -187,6 +187,9 @@ class solver_output_handler:
 
     def get_hourly_reserve_unsp_energy(self, area: str, year: int, res: str) -> float:
         return self.__get_values_hourly(area, year)[res + "_UNSP."]["MWh"]
+        
+    def get_hourly_reserve_group_energy(self, area: str, year: int, res: str, group: str) -> float:
+        return self.__get_values_hourly(area, year)[res + "_" + group]["MWh"]
 
     def get_reserve_total_participation_for_year_and_cluster(self, area: str, year: int, res: str, cluster: str) -> float:
         return self.__get_details_hourly(area, year)[res + "_" + cluster]["Reserve Participation Power - MWh"].sum()
