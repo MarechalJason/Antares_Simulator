@@ -20,8 +20,8 @@
 */
 #pragma once
 
-#include <antares/expressions/nodes/FunctionNode.h>
-#include <antares/expressions/visitors/NodeVisitor.h>
+#include <algorithm>
+#include <vector>
 
 namespace Antares::Expressions::Visitors
 {
@@ -32,26 +32,9 @@ concept HasSizeMethod = requires(const T& t) {
 };
 
 template<HasSizeMethod T>
-std::size_t getMaxSize(const std::vector<T>& elements)
+std::size_t getMaxSize(const std::vector<T>& v)
 {
-    std::size_t maxSize = 0;
-    for (const auto& element: elements)
-    {
-        maxSize = std::max(maxSize, element.size());
-    }
-    return maxSize;
+    return std::ranges::max_element(v, {}, [](const T& e) { return e.size(); })->size();
 }
 
-template<class R>
-std::vector<R> variadicFunction(NodeVisitor<R>& visitor, const Nodes::FunctionNode* node)
-{
-    const auto& operands = node->getOperands();
-    std::vector<R> result;
-    result.reserve(operands.size());
-    for (const auto* operand: operands)
-    {
-        result.push_back(visitor.dispatch(operand));
-    }
-    return result;
-}
 } // namespace Antares::Expressions::Visitors

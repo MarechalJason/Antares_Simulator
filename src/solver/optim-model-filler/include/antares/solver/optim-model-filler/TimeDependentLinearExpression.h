@@ -21,7 +21,7 @@
 #pragma once
 #include <span>
 
-#include <antares/expressions/visitors/VariadicNodeFunctionVisit.h>
+#include <antares/expressions/visitors/HelpVisitNode.h>
 
 #include "LinearExpression.h"
 
@@ -31,7 +31,6 @@ class TimeDependentLinearExpression final
 {
 public:
     explicit TimeDependentLinearExpression(std::size_t nbTimesteps);
-
     explicit TimeDependentLinearExpression(const std::span<const double>& values);
 
     // Constant expression
@@ -56,21 +55,16 @@ public:
     const_iterator end() const;
 
     LinearExpression& operator[](std::size_t idx);
-
     const LinearExpression& operator[](std::size_t idx) const;
 
     TimeDependentLinearExpression& operator+=(const TimeDependentLinearExpression& other);
-
     TimeDependentLinearExpression& operator-=(const TimeDependentLinearExpression& other);
 
     void rotate(int shift);
 
     TimeDependentLinearExpression& operator*=(double factor);
-
     TimeDependentLinearExpression& operator*=(const TimeDependentLinearExpression& other);
-
     TimeDependentLinearExpression operator-() const;
-
     TimeDependentLinearExpression operator/(const TimeDependentLinearExpression& other) const;
 
 private:
@@ -79,6 +73,10 @@ private:
     std::vector<LinearExpression> v_;
 };
 
+// gp : Multiple applyOperation on vectors. Avoid code duplication ?
+// gp : Note : getMaxSize is used inside each occurrences.
+// gp : So if there is code duplication on applyOperation, it should be defined
+// gp : at the same location.
 template<class Op>
 TimeDependentLinearExpression applyOperation(const std::vector<TimeDependentLinearExpression>& lhs,
                                              Op op)

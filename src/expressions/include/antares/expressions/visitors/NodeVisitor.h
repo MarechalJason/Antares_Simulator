@@ -19,10 +19,14 @@
 ** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
 */
 #pragma once
+
+#include <algorithm>
+#include <ranges>
 #include <typeindex>
 #include <unordered_map>
 
 #include <antares/expressions/IName.h>
+#include <antares/expressions/nodes/FunctionNode.h>
 #include <antares/expressions/nodes/Node.h>
 #include <antares/expressions/nodes/NodesForwardDeclaration.h>
 #include <antares/expressions/visitors/InvalidNode.h>
@@ -303,6 +307,19 @@ public:
      * @return The result of processing the DualNode.
      */
     virtual R visit(const Nodes::FunctionNode*, Args... args) = 0;
+
+protected:
+    std::vector<R> visitChildrenNodes(const Nodes::ParentNode* node);
 };
+
+template<class R, class... Args>
+std::vector<R> NodeVisitor<R, Args...>::visitChildrenNodes(const Nodes::ParentNode* node)
+{
+    std::vector<R> result;
+    std::ranges::transform(node->getOperands(),
+                           std::back_inserter(result),
+                           [this](auto& arg) { return dispatch(arg); });
+    return result;
+}
 
 } // namespace Antares::Expressions::Visitors

@@ -21,6 +21,8 @@
 
 #include <ExprVisitor.h>
 
+#include <boost/algorithm/string.hpp>
+
 #include <antares/expressions/nodes/ExpressionsNodes.h>
 #include <antares/io/inputs/model-converter/convertorVisitor.h>
 #include "antares/expressions/nodes/TimeSumNode.h"
@@ -32,6 +34,7 @@ namespace Antares::IO::Inputs::ModelConverter
 {
 
 using namespace Antares::Expressions::Nodes;
+using namespace Antares::Optimisation;
 
 /// Visitor to convert ANTLR expressions to Antares::Expressions::Nodes
 class ConvertorVisitor final: public ExprVisitor
@@ -41,7 +44,7 @@ public:
 
     std::any visit(antlr4::tree::ParseTree* tree) override;
 
-    Node* convertIdentifier(const std::string& identifier) const;
+    Node* convertIdentifier(const std::string& identifier) const; // gp : should be private
     std::any visitIdentifier(ExprParser::IdentifierContext* context) override;
     std::any visitMuldiv(ExprParser::MuldivContext* context) override;
     std::any visitFullexpr(ExprParser::FullexprContext* context) override;
@@ -77,10 +80,13 @@ public:
 private:
     // Methods
     // -------
-    std::any handleDual(ExprParser::ArgListContext* context);
-    std::any handleReducedCost(ExprParser::ArgListContext* context);
-    std::any handleMax(ExprParser::ArgListContext* context);
-    std::any handleMin(ExprParser::ArgListContext* arglist);
+    std::any visitDual(ExprParser::ArgListContext* context);
+    std::any visitReducedCost(ExprParser::ArgListContext* context);
+    std::any visitMax(ExprParser::ArgListContext* context);
+    std::any visitMin(ExprParser::ArgListContext* arglist);
+    std::any visitFloor(ExprParser::ArgListContext* context);
+    std::any visitCeil(ExprParser::ArgListContext* context);
+    Node* extractOneArgument(ExprParser::ArgListContext* context, const std::string& opName);
     std::any buildShiftNode(Node* shifted_expr, ExprParser::ShiftContext* context);
     Node* NodeFromShiftContext(ExprParser::Shift_exprContext* shift_expr);
     PortFieldNode* processPortRule(ExprParser::PortFieldExprContext* context);
@@ -184,10 +190,8 @@ Node* ConvertorVisitor::convertIdentifier(const std::string& identifier) const
     {
         if (param.id == identifier)
         {
-            return static_cast<Node*>(
-              registry_.create<ParameterNode>(param.id,
-                                              Optimisation::variability(param.time_dependent,
-                                                                        param.scenario_dependent)));
+            auto v = variability(param.time_dependent, param.scenario_dependent);
+            return static_cast<Node*>(registry_.create<ParameterNode>(param.id, v));
         }
     }
 
@@ -197,11 +201,8 @@ Node* ConvertorVisitor::convertIdentifier(const std::string& identifier) const
         const auto& var = variables[index];
         if (var.id == identifier)
         {
-            return static_cast<Node*>(
-              registry_.create<VariableNode>(var.id,
-                                             index,
-                                             Optimisation::variability(var.time_dependent,
-                                                                       var.scenario_dependent)));
+            auto v = variability(var.time_dependent, var.scenario_dependent);
+            return static_cast<Node*>(registry_.create<VariableNode>(var.id, index, v));
         }
     }
     throw NoParameterOrVariableWithThisName(identifier);
@@ -296,8 +297,7 @@ public:
     using std::runtime_error::runtime_error;
 };
 
-static bool isThePortIsRegistered(const std::string& portId,
-                                  const std::vector<YmlModel::Port>& ports)
+static bool isPortRegistered(const std::string& portId, const std::vector<YmlModel::Port>& ports)
 {
     for (const auto& [id, _]: ports)
     {
@@ -314,7 +314,7 @@ PortFieldNode* ConvertorVisitor::processPortRule(ExprParser::PortFieldExprContex
     const auto [portId, portField] = std::any_cast<std::pair<std::string, std::string>>(
       context->accept(this));
 
-    if (isThePortIsRegistered(portId, model_.ports))
+    if (isPortRegistered(portId, model_.ports))
     {
         return registry_.create<PortFieldNode>(portId, portField);
     }
@@ -383,22 +383,25 @@ std::any ConvertorVisitor::visitPortFieldSum(ExprParser::PortFieldSumContext* co
     return static_cast<Node*>(registry_.create<PortFieldSumNode>(portName, fieldName));
 }
 
-std::any ConvertorVisitor::handleDual(ExprParser::ArgListContext* context)
+std::vector<std::string> ExpressionsToIds(const std::vector<ExprParser::ExprContext*>& expressions)
 {
-    const auto constraints_ids = context->expr();
+    std::vector<std::string> ids;
+    auto expressionToId = [](auto* expression) { return expression->getText(); };
+    std::ranges::transform(expressions, std::back_inserter(ids), expressionToId);
+    return ids;
+}
 
-    if (constraints_ids.size() != 1) // -> > 1
+std::any ConvertorVisitor::visitDual(ExprParser::ArgListContext* context)
+{
+    std::vector<std::string> argIds = ExpressionsToIds(context->expr());
+
+    if (argIds.size() != 1)
     {
-        std::string params = constraints_ids.at(0)->getText();
-        for (unsigned param = 1; param < constraints_ids.size(); param++)
-        {
-            params += ", " + constraints_ids.at(param)->getText();
-        }
         throw std::invalid_argument("dual operator expects exactly one constraint id got: "
-                                    + params);
+                                    + boost::algorithm::join(argIds, ", "));
     }
 
-    const std::string constraint_id = constraints_ids.at(0)->getText();
+    const std::string constraint_id = argIds[0];
 
     unsigned index = 0;
     const auto search_constraint = [&](const auto& constraints) -> Node*
@@ -430,37 +433,33 @@ std::any ConvertorVisitor::handleDual(ExprParser::ArgListContext* context)
     throw DualNoConstraintWithThisName(model_.id, constraint_id);
 }
 
-std::any ConvertorVisitor::handleReducedCost(ExprParser::ArgListContext* context)
+std::any ConvertorVisitor::visitReducedCost(ExprParser::ArgListContext* context)
 {
-    const auto variables_ids = context->expr();
-    if (variables_ids.size() != 1) // -> > 1
+    std::vector<std::string> argIds = ExpressionsToIds(context->expr());
+
+    if (argIds.size() != 1)
     {
-        std::string params(variables_ids.at(0)->getText());
-        for (unsigned param = 1; param < variables_ids.size(); param++)
-        {
-            params += ", " + variables_ids.at(param)->getText();
-        }
         throw std::invalid_argument("reduced_cost operator expects exactly one variable id got: "
-                                    + params);
+                                    + boost::algorithm::join(argIds, ", "));
     }
 
-    const std::string variable_id = variables_ids.at(0)->getText();
+    const std::string var_id = argIds[0];
 
     unsigned index = 0;
     for (const auto& var: model_.variables)
     {
-        if (var.id == variable_id)
+        if (var.id == var_id)
         {
-            auto* varNode = registry_.create<VariableNode>(variable_id, index);
+            auto* varNode = registry_.create<VariableNode>(var_id, index);
             return static_cast<Node*>(
               registry_.create<FunctionNode>(FunctionNodeType::reduced_cost, varNode));
         }
         ++index;
     }
-    throw ReducedCostNoVariableWithThisName(model_.id, variable_id);
+    throw ReducedCostNoVariableWithThisName(model_.id, var_id);
 }
 
-std::any ConvertorVisitor::handleMax(ExprParser::ArgListContext* context)
+std::any ConvertorVisitor::visitMax(ExprParser::ArgListContext* context)
 {
     const auto nodes = std::any_cast<std::vector<Node*>>(context->accept(this));
     if (nodes.size() < 2)
@@ -471,7 +470,7 @@ std::any ConvertorVisitor::handleMax(ExprParser::ArgListContext* context)
     return static_cast<Node*>(registry_.create<FunctionNode>(FunctionNodeType::max, nodes));
 }
 
-std::any ConvertorVisitor::handleMin(ExprParser::ArgListContext* context)
+std::any ConvertorVisitor::visitMin(ExprParser::ArgListContext* context)
 {
     const auto nodes = std::any_cast<std::vector<Node*>>(context->accept(this));
     if (nodes.size() < 2)
@@ -482,12 +481,36 @@ std::any ConvertorVisitor::handleMin(ExprParser::ArgListContext* context)
     return static_cast<Node*>(registry_.create<FunctionNode>(FunctionNodeType::min, nodes));
 }
 
+Node* ConvertorVisitor::extractOneArgument(ExprParser::ArgListContext* context,
+                                           const std::string& opName)
+{
+    const auto nodes = std::any_cast<std::vector<Node*>>(context->accept(this));
+    if (size_t size = nodes.size(); size > 1)
+    {
+        std::string err_msg = opName + "() expects 1 argument, but has " + std::to_string(size);
+        throw std::invalid_argument(err_msg);
+    }
+    return nodes[0];
+}
+
+std::any ConvertorVisitor::visitFloor(ExprParser::ArgListContext* context)
+{
+    Node* node = extractOneArgument(context, "floor");
+    return static_cast<Node*>(registry_.create<FunctionNode>(FunctionNodeType::floor, node));
+}
+
+std::any ConvertorVisitor::visitCeil(ExprParser::ArgListContext* context)
+{
+    Node* node = extractOneArgument(context, "ceil");
+    return static_cast<Node*>(registry_.create<FunctionNode>(FunctionNodeType::ceil, node));
+}
+
 std::any ConvertorVisitor::visitFunction(ExprParser::FunctionContext* context)
 {
     const auto functionName = context->IDENTIFIER()->getText();
     auto* arglist = context->argList();
 
-    if (!arglist)
+    if (!arglist || arglist->expr().empty())
     {
         std::string err_msg = functionName + " operator expects an argument, got nothing";
         throw std::invalid_argument(err_msg);
@@ -495,19 +518,27 @@ std::any ConvertorVisitor::visitFunction(ExprParser::FunctionContext* context)
 
     if (functionName == "reduced_cost")
     {
-        return handleReducedCost(arglist);
+        return visitReducedCost(arglist);
     }
     else if (functionName == "dual")
     {
-        return handleDual(arglist);
+        return visitDual(arglist);
     }
     else if (functionName == "max")
     {
-        return handleMax(arglist);
+        return visitMax(arglist);
     }
     else if (functionName == "min")
     {
-        return handleMin(arglist);
+        return visitMin(arglist);
+    }
+    else if (functionName == "floor")
+    {
+        return visitFloor(arglist);
+    }
+    else if (functionName == "ceil")
+    {
+        return visitCeil(arglist);
     }
 
     throw std::invalid_argument("Invalid function: '" + functionName + "'");

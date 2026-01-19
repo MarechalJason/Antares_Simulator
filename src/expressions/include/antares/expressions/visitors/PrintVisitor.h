@@ -24,6 +24,9 @@
 
 namespace Antares::Expressions::Visitors
 {
+
+std::string trimAndFormat(std::string s);
+
 /**
  * @brief Represents a visitor for printing nodes in a syntax tree as strings.
  */
@@ -31,7 +34,6 @@ class PrintVisitor: public NodeVisitor<std::string>
 {
 public:
     std::string name() const override;
-    static std::string trimAndFormat(const std::string& in);
 
 private:
     std::string visit(const Nodes::SumNode* node) override;
@@ -51,10 +53,6 @@ private:
     std::string visit(const Nodes::TimeIndexNode* node) override;
     std::string visit(const Nodes::TimeSumNode* node) override;
     std::string visit(const Nodes::AllTimeSumNode* node) override;
-    static std::string handleDual(const Nodes::FunctionNode* node);
-    static std::string handleReducedCost(const Nodes::FunctionNode* node);
-    std::string ProcessOtherFunction(const Nodes::FunctionNode* node);
-    std::string handlePow(const Nodes::FunctionNode* node);
     std::string visit(const Nodes::FunctionNode* node) override;
 };
 } // namespace Antares::Expressions::Visitors

@@ -205,7 +205,7 @@ EvaluationResult EvalVisitor::visit(const Nodes::AllTimeSumNode* node)
     return expression.alltimeSum(fillContext_.getLocalNumberOfTimeSteps());
 }
 
-EvaluationResult EvalVisitor::handleDual(const Nodes::FunctionNode* node)
+EvaluationResult EvalVisitor::visitDual(const Nodes::FunctionNode* node)
 {
     const auto indexNode = dynamic_cast<Nodes::LiteralNode*>(node->getOperands().at(1));
     unsigned int cstrIndex = static_cast<unsigned int>(indexNode->value());
@@ -234,14 +234,28 @@ EvaluationResult EvalVisitor::handleDual(const Nodes::FunctionNode* node)
     return EvaluationResult{constraintValues};
 }
 
-EvaluationResult EvalVisitor::handlePow(const Nodes::FunctionNode* node)
+auto PowerOp = [](const auto& a, const auto& b) { return std::pow(a, b); };
+auto FloorOp = [](double d) { return std::floor(d); };
+auto CeilOp = [](double d) { return std::ceil(d); };
+
+EvaluationResult EvalVisitor::visitPow(const Nodes::FunctionNode* node)
 {
     const auto numbers = node->getOperands();
     auto base = dispatch(numbers.at(0));
     auto exponent = dispatch(numbers.at(1));
-    return base.evaluateBinaryOperation(exponent,
-                                        [](const auto& a, const auto& b)
-                                        { return std::pow(a, b); });
+    return base.evaluateBinaryOperation(exponent, PowerOp);
+}
+
+EvaluationResult EvalVisitor::visitFloor(const Nodes::FunctionNode* node)
+{
+    auto* floor_arg = node->getOperands()[0];
+    return dispatch(floor_arg).evaluateUnaryOperation(FloorOp);
+}
+
+EvaluationResult EvalVisitor::visitCeil(const Nodes::FunctionNode* node)
+{
+    auto* ceil_arg = node->getOperands()[0];
+    return dispatch(ceil_arg).evaluateUnaryOperation(CeilOp);
 }
 
 EvaluationResult EvalVisitor::visit(const Nodes::FunctionNode* node)
@@ -249,31 +263,31 @@ EvaluationResult EvalVisitor::visit(const Nodes::FunctionNode* node)
     switch (node->type())
     {
     case Nodes::FunctionNodeType::reduced_cost:
-        return handleReducedCost(node);
+        return visitReducedCost(node);
     case Nodes::FunctionNodeType::dual:
-        return handleDual(node);
+        return visitDual(node);
     case Nodes::FunctionNodeType::max:
-        return applyOperation(variadicFunction(*this, node),
-                              [](const auto& elements)
-                              { return *std::max_element(elements.begin(), elements.end()); });
+        return applyOperation(visitChildrenNodes(node),
+                              [](const auto& v) { return *std::ranges::max_element(v); });
     case Nodes::FunctionNodeType::min:
-        return applyOperation(variadicFunction(*this, node),
-                              [](const auto& elements)
-                              { return *std::min_element(elements.begin(), elements.end()); });
+        return applyOperation(visitChildrenNodes(node),
+                              [](const auto& v) { return *std::ranges::min_element(v); });
     case Nodes::FunctionNodeType::pow:
-        return handlePow(node);
+        return visitPow(node);
+    case Nodes::FunctionNodeType::floor:
+        return visitFloor(node);
+    case Nodes::FunctionNodeType::ceil:
+        return visitCeil(node);
     default:
         return EvaluationResult(0);
     }
 }
 
-EvaluationResult EvalVisitor::handleReducedCost(const Nodes::FunctionNode* node)
+EvaluationResult EvalVisitor::visitReducedCost(const Nodes::FunctionNode* node)
 {
     const auto varNode = dynamic_cast<Nodes::VariableNode*>(node->getOperands().at(0));
 
-    if (const auto timeIndex = varNode->variability();
-        timeIndex == Optimisation::VariabilityType::CONSTANT_IN_TIME_AND_SCENARIO
-        || timeIndex == Optimisation::VariabilityType::VARYING_IN_SCENARIO_ONLY)
+    if (isTimeConstant(varNode->variability()))
     {
         const std::span componentVariables = optimContainer_.getComponentVariable(
           component_,
@@ -281,9 +295,10 @@ EvaluationResult EvalVisitor::handleReducedCost(const Nodes::FunctionNode* node)
           1 /* single timestep*/);
         return EvaluationResult(componentVariables[0]->reducedCost());
     }
-    // VARYING_IN_TIME_ONLY or VARYING_IN_TIME_AND_SCENARIO)
+
+    // The variable depends on time
     const unsigned nbTimeStep = fillContext_.getLocalNumberOfTimeSteps();
-    std::vector<double> varValues(nbTimeStep, 0.0);
+    std::vector<double> varValues(nbTimeStep, 0.);
     const std::span componentVariables = optimContainer_.getComponentVariable(component_,
                                                                               varNode->Index(),
                                                                               nbTimeStep);
@@ -347,6 +362,16 @@ EvaluationResult::EvaluationResult(const std::variant<double, std::vector<double
 {
 }
 
+double shift(double value, int)
+{
+    return value;
+}
+
+std::vector<double> shift(const std::vector<double>& values, int timeShift)
+{
+    return shiftVector(values, timeShift);
+}
+
 EvaluationResult EvaluationResult::timeShift(int time_shift) const
 {
     return EvaluationResult(
@@ -387,11 +412,6 @@ EvaluationResult EvaluationResult::operator[](int timeIndex) const
         throw EvalResultTimeIndexOutOfRange("timeIndex is out of range");
     }
     return EvaluationResult(vec.at(timeIndex));
-}
-
-std::vector<double> EvaluationResult::shift(const std::vector<double>& values, int timeShift)
-{
-    return shiftVector(values, timeShift);
 }
 
 } // namespace Antares::Expressions::Visitors

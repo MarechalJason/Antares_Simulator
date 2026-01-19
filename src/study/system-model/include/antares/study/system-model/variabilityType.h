@@ -54,16 +54,9 @@ constexpr VariabilityType operator|(const VariabilityType& left, const Variabili
                                         | static_cast<unsigned int>(right));
 }
 
-// to silent warning, convert bool to unsigned int
-static constexpr unsigned int convertBool(bool in)
-{
-    return in ? 1 : 0;
-}
-
 constexpr VariabilityType variability(bool timedependent, bool scenariodependent)
 {
-    return static_cast<VariabilityType>((convertBool(scenariodependent) << 1)
-                                        | convertBool(timedependent));
+    return static_cast<VariabilityType>((unsigned)scenariodependent << 1 | (unsigned)timedependent);
 }
 
 constexpr bool isTimeDependent(VariabilityType variability)
@@ -79,6 +72,12 @@ constexpr bool isScenarioDependent(VariabilityType variability)
 }
 
 constexpr bool isTimeConstant(VariabilityType variability)
+{
+    return variability == VariabilityType::CONSTANT_IN_TIME_AND_SCENARIO
+           || variability == VariabilityType::VARYING_IN_SCENARIO_ONLY;
+}
+
+constexpr bool isConstant(VariabilityType variability)
 {
     return variability == VariabilityType::CONSTANT_IN_TIME_AND_SCENARIO;
 }
