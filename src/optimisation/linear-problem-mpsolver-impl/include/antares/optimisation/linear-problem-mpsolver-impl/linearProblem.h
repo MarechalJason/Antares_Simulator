@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include <antares/optimisation/linear-problem-api/linearProblem.h>
 #include <antares/optimisation/linear-problem-mpsolver-impl/mipConstraint.h>
 #include <antares/optimisation/linear-problem-mpsolver-impl/mipSolution.h>
@@ -119,10 +121,9 @@ public:
     friend void Write(const OrtoolsLinearProblem& problem, const std::filesystem::path& path);
 
 protected:
-    [[nodiscard]] operations_research::MPSolver* MpSolver() const;
+    std::shared_ptr<operations_research::MPSolver> mpSolver_;
 
 private:
-    operations_research::MPSolver* mpSolver_{nullptr};
     operations_research::MPObjective* objective_{nullptr};
     operations_research::MPSolverParameters params_;
 

@@ -43,7 +43,7 @@ void Write(const OrtoolsLinearProblem& problem, const std::filesystem::path& pat
 }
 
 OrtoolsLinearProblem::OrtoolsLinearProblem(bool isMip, const std::string& solverName):
-    mpSolver_(MPSolverFactory(isMip, solverName)),
+    mpSolver_(std::shared_ptr<MPSolver>(MPSolverFactory(isMip, solverName))),
     objective_(mpSolver_->MutableObjective()),
     isLP_(!isMip)
 {
@@ -213,11 +213,6 @@ bool OrtoolsLinearProblem::isMaximization() const
     return objective_->maximization();
 }
 
-MPSolver* OrtoolsLinearProblem::MpSolver() const
-{
-    return mpSolver_;
-}
-
 OrtoolsMipSolution* OrtoolsLinearProblem::solve(bool verboseSolver)
 {
     if (verboseSolver)
@@ -227,7 +222,7 @@ OrtoolsMipSolution* OrtoolsLinearProblem::solve(bool verboseSolver)
 
     auto mpStatus = mpSolver_->Solve(params_);
 
-    solution_ = std::make_unique<OrtoolsMipSolution>(mpStatus, mpSolver_);
+    solution_ = std::make_unique<OrtoolsMipSolution>(mpStatus, mpSolver_.get());
     return solution_.get();
 }
 
@@ -242,7 +237,7 @@ OrtoolsMipSolution* OrtoolsLinearProblem::solution(bool verboseSolver)
 
 double OrtoolsLinearProblem::objectiveValue() const
 {
-    return ::getObjectiveValue(mpSolver_);
+    return ::getObjectiveValue(mpSolver_.get());
 }
 
 double OrtoolsLinearProblem::infinity() const

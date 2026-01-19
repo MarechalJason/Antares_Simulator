@@ -36,9 +36,9 @@ public:
         // nothing else to do
     }
 
-    MPSolver* getMpSolver()
+    std::shared_ptr<operations_research::MPSolver> getMpSolver()
     {
-        return MpSolver();
+        return mpSolver_;
     }
 };
 
