@@ -31,6 +31,7 @@ using Antares::Optimization::UnfeasibilityAnalysis;
 using Antares::Optimization::UnfeasiblePbAnalyzer;
 using Antares::Optimization::VariableBounds;
 using Antares::Optimization::VariablesBoundsConsistency;
+using namespace Antares::IO::Outputs;
 
 bool variableEquals(const VariableBounds& lhs, const VariableBounds& rhs)
 {
@@ -406,7 +407,7 @@ public:
     {
     }
 
-    std::string buffer() const override
+    [[nodiscard]] std::string buffer() const override
     {
         return "";
     }

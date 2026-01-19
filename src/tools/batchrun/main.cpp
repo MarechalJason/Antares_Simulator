@@ -1,15 +1,12 @@
 // Copyright 2007-2026, RTE (https://www.rte-france.com)
 // SPDX-License-Identifier: MPL-2.0
 
-#include <iostream>
 #include <map>
 #include <string>
 
 #include <yuni/core/getopt.h>
-#include <yuni/core/nullable.h>
 #include <yuni/core/string.h>
 
-#include <antares/antares/version.h>
 #include <antares/args/args_to_utf8.h>
 #include <antares/locale/locale.h>
 #include <antares/logs/logs.h>
@@ -24,7 +21,6 @@
 #include <process.h>
 #endif
 
-using namespace Yuni;
 using namespace Antares;
 
 namespace fs = std::filesystem;
@@ -34,19 +30,19 @@ namespace // anonymous
 class MyStudyFinder final: public Data::StudyFinder
 {
 public:
-    void onStudyFound(const String& folder, const Data::StudyVersion&) override
+    void onStudyFound(const Yuni::String& folder, const Data::StudyVersion&) override
     {
         logs.info() << "Found: " << folder;
         list.push_back(folder);
     }
 
 public:
-    String::Vector list;
+    Yuni::String::Vector list;
 };
 
 } // anonymous namespace
 
-String sendToNull()
+Yuni::String sendToNull()
 {
 #ifdef __linux__
     return " > /dev/null";
@@ -87,7 +83,7 @@ int main(int argc, const char* argv[])
         // Source Folder
         logs.debug() << "Folder : `" << optInput << '`';
 
-        String solver;
+        Yuni::String solver;
         Solver::FindLocation(solver);
         if (solver.empty())
         {
@@ -110,10 +106,10 @@ int main(int argc, const char* argv[])
             logs.info() << "Starting...";
 
             // The folder that contains the solver
-            String dirname;
-            IO::parent_path(dirname, solver);
+            Yuni::String dirname;
+            Yuni::IO::parent_path(dirname, solver);
 
-            String cmd;
+            Yuni::String cmd;
 
             uint studyIndx = 0;
             foreach (auto& studypath, finder.list)
@@ -134,7 +130,7 @@ int main(int argc, const char* argv[])
                 }
 
                 cmd.clear();
-                if (not System::windows)
+                if (!Yuni::System::windows)
                 {
                     cmd << "nice ";
                 }
@@ -170,7 +166,7 @@ int main(int argc, const char* argv[])
                 }
 
                 // Changing the current working directory
-                IO::Directory::Current::Set(dirname);
+                Yuni::IO::Directory::Current::Set(dirname);
                 // Executing the converter
                 if (optVerbose)
                 {

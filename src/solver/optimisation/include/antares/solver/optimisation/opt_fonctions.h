@@ -8,6 +8,7 @@
 #include <antares/solver/utils/opt_period_string_generator.h>
 #include <antares/writer/i_writer.h>
 #include "antares/config/config.h"
+#include "antares/io/outputs/SimulationTableCsv.h"
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 #include "antares/solver/simulation/ISimulationObserver.h"
 #include "antares/study/parameters/adq-patch-params.h"
@@ -17,7 +18,11 @@
 using AdqPatchParams = Antares::Data::AdequacyPatch::AdqPatchParams;
 using OptimizationOptions = Antares::Solver::Optimization::OptimizationOptions;
 using SingleOptimOptions = Antares::Solver::Optimization::SingleOptimOptions;
+
+namespace Antares::IO::Outputs
+{
 class ISimulationTable;
+}
 class OptimisationsSimulationTable;
 void OPT_OptimisationHebdomadaireLineaire(
   const OptimizationOptions& options,
@@ -59,7 +64,7 @@ bool OPT_AppelDuSimplexe(const SingleOptimOptions& options,
                          const int,
                          const OptPeriodStringGenerator&,
                          Antares::Solver::IResultWriter& writer,
-                         ISimulationTable* simulationTable);
+                         Antares::IO::Outputs::ISimulationTable* simulationTable);
 
 bool OPT_OptimisationLineaire(const OptimizationOptions& options,
                               PROBLEME_HEBDO* problemeHebdo,

@@ -14,16 +14,6 @@
 namespace Antares::Optimisation::LinearProblemMpsolverImpl
 {
 
-void Write(const OrtoolsLinearProblem& problem, const std::filesystem::path& path)
-{
-    std::string out;
-    problem.mpSolver_->ExportModelAsMpsFormat(/* fixed_format (ignored) */ false,
-                                              /* obfuscate */ false,
-                                              &out);
-    std::ofstream of(path);
-    of << out;
-}
-
 OrtoolsLinearProblem::OrtoolsLinearProblem(bool isMip, const std::string& solverName):
     mpSolver_(std::shared_ptr<MPSolver>(MPSolverFactory(isMip, solverName))),
     objective_(mpSolver_->MutableObjective()),

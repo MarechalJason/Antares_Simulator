@@ -4,7 +4,7 @@
 #include <filesystem>
 
 #include <antares/logs/logs.h>
-#include <antares/solver/modeler/data.h>
+#include <antares/solver/modeler/ModelerData.h>
 #include "antares/solver/modeler/checks/checkLocation.h"
 #include "antares/solver/modeler/loadFiles/loadFiles.h"
 #include "antares/utils/utils.h"
@@ -14,11 +14,11 @@ using namespace Antares::ModelerStudy;
 namespace Antares::Solver::LoadFiles
 {
 
-Modeler::Data loadAll(const std::filesystem::path& studyPath)
+ModelerData loadAll(const std::filesystem::path& studyPath)
 {
-    Antares::Utils::TimeMeasurement measure;
+    Utils::TimeMeasurement measure;
     logs.info() << "Loading modeler files...";
-    Modeler::Data data;
+    ModelerData data;
 
     data.libraries = loadLibraries(studyPath);
     logs.info() << "Libraries loaded";
@@ -34,7 +34,7 @@ Modeler::Data loadAll(const std::filesystem::path& studyPath)
     logs.info() << "Scenario groups loaded";
     logs.info() << "Modeler loaded in " << measure.toStringInSeconds();
 
-    Modeler::Checks::checkLocations(data);
+    Checks::checkLocations(data);
     logs.info() << "Locations validity OK";
 
     return data;

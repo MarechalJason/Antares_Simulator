@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace Antares::Modeler::Config
+namespace Antares::Solver::Config
 {
 
 enum class Location
@@ -19,4 +19,4 @@ bool AreLocationsCompatibleForFillers(Location lhs, Location rhs);
 // stricter for MASTER_AND_SUBPROLEMS
 bool AreLocationsCompatibleForExpressions(Location lhs, Location rhs);
 
-} // namespace Antares::Modeler::Config
+} // namespace Antares::Solver::Config

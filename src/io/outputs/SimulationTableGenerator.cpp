@@ -13,13 +13,13 @@
 #include "antares/logs/logs.h"
 #include "antares/optimisation/linear-problem-api/linearProblem.h"
 #include "antares/optimisation/linear-problem-api/mipConstraint.h"
-#include "antares/solver/modeler/data.h"
+#include "antares/solver/modeler/ModelerData.h"
 #include "antares/utils/utils.h"
 
 using namespace Antares::Optimisation;
 using namespace Antares::Optimisation::LinearProblemApi;
 
-namespace Antares::IO
+namespace Antares::IO::Outputs
 {
 TimeBlock convertBlockTimeStepToAbsoluteTimeStep(unsigned int timeStep,
                                                  const TimeConversionMode& mode,
@@ -78,7 +78,7 @@ void addVariableEntries(ISimulationTable& simulationTable,
     for (std::size_t varIndex = 0; varIndex < variables.size(); ++varIndex)
     {
         const auto& modelVar = variables[varIndex];
-        if (modelVar.location() != Modeler::Config::Location::SUBPROBLEMS)
+        if (modelVar.location() != Solver::Config::Location::SUBPROBLEMS)
         {
             continue;
         }
@@ -189,7 +189,7 @@ void addConstraintEntries(ISimulationTable& simulationTable,
     unsigned constraintLocalIndex = 0;
     for (const auto& modelConstr: component.getModel()->Constraints())
     {
-        if (modelConstr.location() != Modeler::Config::Location::SUBPROBLEMS)
+        if (modelConstr.location() != Solver::Config::Location::SUBPROBLEMS)
         {
             continue;
         }
@@ -372,7 +372,7 @@ void addExtraOutputEntries(ISimulationTable& simulationTable,
 void FillSimulationTable(ISimulationTable& simulationTable,
                          const ILinearProblem& linearProblem,
                          double objectiveValue,
-                         const Modeler::Data& modelerData,
+                         const Solver::ModelerData& modelerData,
                          const OptimEntityContainer& optimEntityContainer,
                          const FillContext& fillContext,
                          unsigned currentBlock,
@@ -426,4 +426,4 @@ void FillSimulationTable(ISimulationTable& simulationTable,
     measure.tick();
     logs.info() << "Simulation Table is generated in " << measure.toString();
 }
-} // namespace Antares::IO
+} // namespace Antares::IO::Outputs

@@ -21,7 +21,7 @@ OptimEntityContainer::OptimEntityContainer(LinearProblemApi::ILinearProblem& lin
 }
 
 void OptimEntityContainer::addFromSystemComponents(const std::vector<Component>& components,
-                                                   Modeler::Config::Location targetLocation)
+                                                   Solver::Config::Location targetLocation)
 {
     optimComponents_.clear();
     optimComponents_.reserve(components.size());

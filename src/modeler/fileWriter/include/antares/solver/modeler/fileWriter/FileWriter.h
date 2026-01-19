@@ -4,7 +4,7 @@
 #pragma once
 #include <filesystem>
 
-#include "modeler/include/antares/solver/modeler/IWriter.h"
+#include "antares/solver/modeler/IWriter.h"
 
 namespace Antares::Optimisation::LinearProblemApi
 {
@@ -23,9 +23,9 @@ namespace Antares::ModelerStudy::SystemModel
 class Component;
 }
 
-namespace Antares::Modeler
+namespace Antares::Solver
 {
-class FileWriter: public Solver::IWriter
+class FileWriter: public IWriter
 {
 public:
     void init(const std::string& simulationId) override;
@@ -33,7 +33,7 @@ public:
     void writeSimulationTable(
       const Optimisation::LinearProblemApi::ILinearProblem& linearProblem,
       const Optimisation::LinearProblemApi::IMipSolution& solution,
-      const Data& modelerData,
+      const ModelerData& modelerData,
       const Optimisation::OptimEntityContainer& variableContainer,
       const Optimisation::LinearProblemApi::FillContext& fillContext) const override;
     explicit FileWriter(std::filesystem::path path);
@@ -45,4 +45,4 @@ private:
     std::filesystem::path outputPath_;
     std::string simulationId_;
 };
-} // namespace Antares::Modeler
+} // namespace Antares::Solver

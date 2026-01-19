@@ -5,6 +5,8 @@
 
 #include <antares/logs/logs.h>
 
+namespace Antares::IO::Outputs
+{
 SimulationTableCsvFile::SimulationTableCsvFile(const std::filesystem::path& outputFolder,
                                                const std::string& simulationId):
     SimulationTableCsv()
@@ -29,3 +31,4 @@ void SimulationTableCsvFile::write()
     SimulationTableCsv::write();
     file_ << buffer();
 }
+} // namespace Antares::IO::Outputs

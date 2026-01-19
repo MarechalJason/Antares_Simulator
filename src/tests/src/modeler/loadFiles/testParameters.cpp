@@ -20,6 +20,7 @@ BOOST_AUTO_TEST_CASE(read_parameters)
         solver-logs: false
         solver-parameters: PRESOLVE 1
         no-output: true
+        export-mps: true
     )";
     paramStream.close();
 
@@ -28,6 +29,7 @@ BOOST_AUTO_TEST_CASE(read_parameters)
     BOOST_CHECK_EQUAL(params.solverLogs, false);
     BOOST_CHECK_EQUAL(params.solverParameters, "PRESOLVE 1");
     BOOST_CHECK_EQUAL(params.noOutput, true);
+    BOOST_CHECK_EQUAL(params.exportMps, true);
 }
 
 BOOST_AUTO_TEST_CASE(read_parameters_out_of_order)
@@ -39,6 +41,7 @@ BOOST_AUTO_TEST_CASE(read_parameters_out_of_order)
         solver: sirius
         solver-parameters: PRESOLVE 1
         no-output: true
+        export-mps: false
     )";
     paramStream.close();
 
@@ -47,6 +50,7 @@ BOOST_AUTO_TEST_CASE(read_parameters_out_of_order)
     BOOST_CHECK_EQUAL(params.solverLogs, false);
     BOOST_CHECK_EQUAL(params.solverParameters, "PRESOLVE 1");
     BOOST_CHECK_EQUAL(params.noOutput, true);
+    BOOST_CHECK_EQUAL(params.exportMps, false);
 }
 
 BOOST_AUTO_TEST_CASE(parameters_missing)

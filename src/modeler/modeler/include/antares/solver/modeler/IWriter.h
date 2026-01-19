@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
+#include <filesystem>
 
-#include "data.h"
+#include "ModelerData.h"
 
 namespace Antares::Optimization
 {
@@ -46,7 +47,7 @@ public:
     virtual void writeSimulationTable(
       const Optimisation::LinearProblemApi::ILinearProblem& linearProblem,
       const Optimisation::LinearProblemApi::IMipSolution& solution,
-      const Antares::Modeler::Data& modelerData,
+      const ModelerData& modelerData,
       const Optimisation::OptimEntityContainer& variableContainer,
       const Optimisation::LinearProblemApi::FillContext& fillContext) const
       = 0;

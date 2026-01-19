@@ -11,9 +11,9 @@
 
 #include "ISimulationTable.h"
 
-namespace Antares::Modeler
+namespace Antares::Solver
 {
-struct Data;
+struct ModelerData;
 }
 
 namespace Antares::Optimisation
@@ -39,7 +39,7 @@ namespace Antares::ModelerStudy::SystemModel
 class Component;
 }
 
-namespace Antares::IO
+namespace Antares::IO::Outputs
 {
 struct TimeBlock
 {
@@ -132,10 +132,10 @@ void addEntriesForNode(ISimulationTable& simulationTable,
 void FillSimulationTable(ISimulationTable& simulationTable,
                          const Optimisation::LinearProblemApi::ILinearProblem& linearProblem,
                          double objectiveValue,
-                         const Modeler::Data& modelerData,
+                         const Solver::ModelerData& modelerData,
                          const Optimisation::OptimEntityContainer& optimEntityContainer,
                          const Optimisation::LinearProblemApi::FillContext& fillContext,
                          unsigned currentBlock,
                          const TimeConversionMode& timeConversionMode,
                          bool forceExportForScenarioIndex = false);
-} // namespace Antares::IO
+} // namespace Antares::IO::Outputs

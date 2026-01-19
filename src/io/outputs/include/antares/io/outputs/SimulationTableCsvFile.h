@@ -7,6 +7,8 @@
 
 #include "SimulationTableCsv.h"
 
+namespace Antares::IO::Outputs
+{
 class SimulationTableCsvFile final: public SimulationTableCsv
 {
 public:
@@ -18,3 +20,4 @@ public:
 private:
     std::ofstream file_;
 };
+} // namespace Antares::IO::Outputs

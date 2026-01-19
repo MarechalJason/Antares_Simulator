@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
-#include <filesystem>
+#include <antares/optimisation/linear-problem-api/linearProblem.h>
+#include "antares/modeler-optimisation-container/OptimEntityContainer.h"
+#include "antares/solver/modeler/parameters/modelerParameters.h"
+
+#include "ModelerData.h"
 
 namespace Antares::Solver
 {
@@ -13,7 +17,7 @@ class Modeler final
 {
 public:
     Modeler(ILoader& loader, IWriter& writer);
-    void run() const;
+    void run();
 
     class ModelerError: public std::runtime_error
     {
@@ -26,5 +30,24 @@ public:
 
     ILoader& loader_;
     IWriter& writer_;
+
+    [[nodiscard]] const std::unique_ptr<Optimisation::LinearProblemApi::ILinearProblem>&
+    masterProblem() const
+    {
+        return masterProblem_;
+    }
+
+    [[nodiscard]] const std::vector<
+      std::unique_ptr<Optimisation::LinearProblemApi::ILinearProblem>>&
+    subproblems() const
+    {
+        return subproblems_;
+    }
+
+private:
+    std::unique_ptr<Optimisation::LinearProblemApi::ILinearProblem> masterProblem_ = nullptr;
+    std::vector<std::unique_ptr<Optimisation::LinearProblemApi::ILinearProblem>> subproblems_;
+    ModelerParameters parameters_;
+    ModelerData data_;
 };
 } // namespace Antares::Solver

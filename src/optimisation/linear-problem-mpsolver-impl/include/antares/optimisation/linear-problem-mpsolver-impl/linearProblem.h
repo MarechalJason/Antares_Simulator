@@ -100,8 +100,6 @@ public:
     [[nodiscard]] double infinity() const override;
     [[nodiscard]] bool isLP() const override;
 
-    friend void Write(const OrtoolsLinearProblem& problem, const std::filesystem::path& path);
-
 protected:
     std::shared_ptr<operations_research::MPSolver> mpSolver_;
 

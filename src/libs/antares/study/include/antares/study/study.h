@@ -13,7 +13,7 @@
 #include <antares/benchmarking/DurationCollector.h>
 #include <antares/correlation/correlation.h>
 #include <antares/date/date.h>
-#include <antares/solver/modeler/data.h>
+#include <antares/solver/modeler/ModelerData.h>
 #include <antares/study/runtime/runtime.h>
 #include <antares/writer/i_writer.h>
 #include "antares/study/binding_constraint/BindingConstraintGroupRepository.h"
@@ -603,7 +603,7 @@ public:
     */
     const bool usedByTheSolver;
 
-    Antares::Modeler::Data* getModelerData() const
+    Solver::ModelerData* getModelerData() const
     {
         return modelerInput_.get();
     }
@@ -640,7 +640,7 @@ protected:
     //@}
 
 private:
-    std::unique_ptr<Modeler::Data> modelerInput_;
+    std::unique_ptr<Solver::ModelerData> modelerInput_;
 }; // class Study
 
 /*!
