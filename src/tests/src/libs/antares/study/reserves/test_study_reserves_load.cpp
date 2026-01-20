@@ -20,7 +20,6 @@
  */
 
 #define BOOST_TEST_MODULE study
-#include <algorithm>
 #include <files-system.h>
 #include <filesystem>
 #include <unit_test_utils.h>
@@ -29,7 +28,6 @@
 #include <boost/test/unit_test_suite.hpp>
 
 #include <antares/logs/logs.h>
-#include <antares/solver/simulation/forTestsOnlySimCalculEco.h>
 #include <antares/solver/simulation/sim_structure_probleme_economique.h>
 #include <antares/solver/simulation/simulation.h>
 #include "antares/study/area/forTestsOnlyList.h"
@@ -209,7 +207,7 @@ struct OneProblemWithReservesTwoAreas
     CapacityReservation tmpCapacityReservationDownB;
 };
 
-BOOST_AUTO_TEST_SUITE(reserves_operations)
+BOOST_AUTO_TEST_SUITE(reserves_operations_load)
 
 BOOST_AUTO_TEST_CASE(reserve_add)
 {
@@ -370,8 +368,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_One_Bad_Parameter
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
     BOOST_CHECK_EQUAL(getWarnings().size(), 1);
-    BOOST_CHECK(
-      getWarnings().contains("A : invalid property in thermal reserves implementation : bad"));
+    BOOST_CHECK(getWarnings().contains("invalid thermal reserve property bad"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Symmetries,
@@ -526,8 +523,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Cluster_Symme
     file << "participation-cost-off = 4.4\n";
     file.close();
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
-    BOOST_CHECK(
-      getErrors().contains("Thermal cluster cluster3 not participating to reserves of A"));
+    BOOST_CHECK(getErrors().contains("Thermal cluster cluster3 does not exist in area A"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Reserve_Symmetry,
@@ -554,10 +550,8 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Reserve_Symme
     file << "max-power-off = 3.3\n";
     file << "participation-cost-off = 4.4\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::out_of_range,
-      checkMessage("This entity is not participating to reserve ReserveNull"));
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains("This entity is not participating to reserve ReserveNull"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Cluster_Participation,
@@ -585,10 +579,8 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Cluster_Parti
     file << "max-power-off = 3.3\n";
     file << "participation-cost-off = 4.4\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::out_of_range,
-      checkMessage("This entity is not participating to reserve ReserveDown"));
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains("This entity is not participating to reserve ReserveDown"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Reserve_Load,
@@ -614,7 +606,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Bad_Reserve_Load,
     file.close();
     areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(getErrors().contains(
-      "A: missing reserve ReserveNull when loading thermal reserve participations"));
+      "A : missing reserve ReserveNull when loading thermal reserve participations"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Delete_Double_Sym_Participation,
@@ -642,10 +634,8 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Delete_Double_Sym
     file << "max-power-off = 3.3\n";
     file << "participation-cost-off = 4.4\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::invalid_argument,
-      checkMessage("Detected duplicate in reserves symmetries"));
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains("Detected duplicate in reserves symmetries"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_No_Cluster_Provided,
@@ -672,7 +662,7 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_No_Cluster_Provid
     BOOST_CHECK(getErrors().contains(
       "A : Please provide a cluster name when declaring a capacity reservation"));
     BOOST_CHECK(
-      getErrors().contains("A : missing cluster  when loading thermal reserve participations"));
+      getErrors().contains("A : missing cluster name when loading thermal reserve participations"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Cluster_Participation,
@@ -735,10 +725,9 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Only_One_Symmetry
     file << "max-power-off = 3.3\n";
     file << "participation-cost-off = 4.4\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::runtime_error,
-      checkMessage("Must have at least two distinct reserves to participate to a symmetry"));
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains(
+      "Must have at least two distinct reserves to participate to a symmetry"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Triple_Symmetry,
@@ -831,10 +820,9 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Double_Symmetry_S
     file << "max-power-off = 3.3\n";
     file << "participation-cost-off = 4.4\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::runtime_error,
-      checkMessage("Must have at least two distinct reserves to participate to a symmetry"));
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains(
+      "Must have at least two distinct reserves to participate to a symmetry"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Cluster_Participation_No_Init,
@@ -847,11 +835,9 @@ BOOST_FIXTURE_TEST_CASE(test_thermal_loadReserveParticipations_Cluster_Participa
     file << "[symmetries]\n";
     file << "cluster1 = [ReserveUp, ReserveDown]\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::runtime_error,
-      checkMessage(
-        "Area A, cluster1 : trying to add symmetries without any reserves participations"));
+    areaA->thermal.list.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains(
+      "Area A, cluster1 : trying to add symmetries without any reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_Symmetries,
@@ -917,7 +903,7 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_Symmetries,
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_no_reserve,
-                        OneProblemWithReservesOneArea)
+                        OneProblemWithReservesOneAreaWithLogger)
 {
     auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
 
@@ -925,10 +911,9 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_no_reserve,
     file << "[symmetries]\n";
     file << "hydro = [ReserveUp, ReserveDown]\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::runtime_error,
-      checkMessage("Area A, hydro : trying to add symmetries without any reserves participations"));
+    areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains(
+      "Area A, hydro : trying to add symmetries without any reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_missing_reserve,
@@ -941,7 +926,7 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_missing_reserve,
     file.close();
     areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(getErrors().contains(
-      "A: missing reserve ReserveNull when loading hydro reserve participations"));
+      "A : missing reserve ReserveNull when loading hydro reserve participations"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_cluster,
@@ -981,12 +966,11 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_property,
     areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
     BOOST_CHECK_EQUAL(getWarnings().size(), 1);
-    BOOST_CHECK(
-      getWarnings().contains("A : invalid property in hydro reserves implementation : bad"));
+    BOOST_CHECK(getWarnings().contains("invalid hydro reserve property bad"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_reserve,
-                        OneProblemWithReservesOneArea)
+                        OneProblemWithReservesOneAreaWithLogger)
 {
     auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
 
@@ -1005,10 +989,8 @@ BOOST_FIXTURE_TEST_CASE(test_hydro_loadReserveParticipations_bad_reserve,
     file << "max-power-off = 17.7\n";
     file << "participation-cost-off = 16.6\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(areaA->hydro.loadReserveParticipations(*areaA,
-                                                                 studyPath / "myreserve.ini"),
-                          std::out_of_range,
-                          checkMessage("This entity is not participating to reserve ReserveDown"));
+    areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains("This entity is not participating to reserve ReserveDown"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_Symmetries,
@@ -1059,12 +1041,9 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_Symmetries,
     BOOST_CHECK_EQUAL(resContainer->value().reserveMaxRelease("ReserveUp"), 7.7);
     BOOST_CHECK_EQUAL(getWarnings().size(), 3);
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
-    BOOST_CHECK(
-      getWarnings().contains("A : invalid property in STS reserves implementation : max-power"));
-    BOOST_CHECK(getWarnings().contains(
-      "A : invalid property in STS reserves implementation : max-power-off"));
-    BOOST_CHECK(getWarnings().contains(
-      "A : invalid property in STS reserves implementation : participation-cost-off"));
+    BOOST_CHECK(getWarnings().contains("invalid STS reserve property max-power"));
+    BOOST_CHECK(getWarnings().contains("invalid STS reserve property max-power-off"));
+    BOOST_CHECK(getWarnings().contains("invalid STS reserve property participation-cost-off"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster_symmetry,
@@ -1079,8 +1058,8 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_cluster_symmetry,
     file.close();
 
     areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
-    BOOST_CHECK(getErrors().contains(
-      "Area A, cluster1 : trying to add symmetries to a non existing cluster or participation"));
+    BOOST_CHECK(
+      getErrors().contains("ShortTerm Storage cluster cluster1 does not exist in area A"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_no_reserves,
@@ -1095,7 +1074,7 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_no_reserves,
     file.close();
     areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(getErrors().contains(
-      "Area A, cluster1 : trying to add symmetries to a non existing cluster or participation"));
+      "Area A, cluster1 : trying to add symmetries without any reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_reserve,
@@ -1114,10 +1093,8 @@ BOOST_FIXTURE_TEST_CASE(test_STS_loadReserveParticipations_bad_reserve,
     file << "[ReserveDownTwo]\n";
     file << "cluster-name = cluster1\n";
     file.close();
-    BOOST_CHECK_EXCEPTION(
-      areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini"),
-      std::out_of_range,
-      checkMessage("This entity is not participating to reserve ReserveDown"));
+    areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
+    BOOST_CHECK(getErrors().contains("This entity is not participating to reserve ReserveDown"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_No_Cluster_Provided,
@@ -1136,7 +1113,7 @@ BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_No_Cluster_Provided,
     BOOST_CHECK(getErrors().contains(
       "A : Please provide a cluster name when declaring a capacity reservation"));
     BOOST_CHECK(
-      getErrors().contains("A : missing cluster  when loading STS reserve participations"));
+      getErrors().contains("A : missing STStorage cluster when loading STS reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_Invalid_Cluster,
@@ -1154,7 +1131,7 @@ BOOST_FIXTURE_TEST_CASE(test_sts_loadReserveParticipations_Invalid_Cluster,
     file.close();
     areaA->shortTermStorage.loadReserveParticipations(*areaA, studyPath / "myreserve.ini");
     BOOST_CHECK(
-      getErrors().contains("A : missing cluster cluster4 when loading STS reserve participations"));
+      getErrors().contains("A : missing STStorage cluster when loading STS reserve participation"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_readReserve_ok_file_missing_needs,
@@ -1352,6 +1329,50 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_ok, OneProblemWithoutReservesOneAreaWit
       4);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_readReserve_negative_parameters_values,
+                        OneProblemWithoutReservesOneAreaWithLogger)
+{
+    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
+    std::filesystem::create_directories(studyPath / "reserves" / "a");
+    std::ofstream file(studyPath / "reserves" / "a" / "reserves.ini");
+    file << "[ReserveUp]\n";
+    file << "type = up\n ";
+    file << "reference-activation-duration = -1\n ";
+    file << "energy-activation-ratio = -2\n ";
+    file << "power-activation-ratio = -3\n ";
+    file << "spillage-cost = 10\n ";
+    file << "failure-cost = 10\n ";
+    file << "\n ";
+    file << "[globalparameters]\n";
+    file << "energy-activation-ratio-up = -1\n ";
+    file << "energy-activation-ratio-down = -1\n ";
+    file << "reference-activation-duration-up = -2\n ";
+    file << "reference-activation-duration-down = -2\n ";
+    file.close();
+
+    std::ofstream fileNeedsUp(studyPath / "reserves" / "a" / "ReserveUp.txt");
+    fileNeedsUp.close();
+
+    std::ofstream fileNeedsDown(studyPath / "reserves" / "a" / "ReserveDown.txt");
+    fileNeedsDown.close();
+    accessForTests::loadReservesParameters(studyPath, *areaA);
+    BOOST_CHECK_EQUAL(getErrors().size(), 7);
+    BOOST_CHECK(
+      getErrors().contains("A : invalid maxGlobalEnergyActivationRatio down can not be negative"));
+    BOOST_CHECK(
+      getErrors().contains("A : invalid maxGlobalEnergyActivationRatio up can not be negative"));
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid referenceGlobalActivationDuration down can not be negative"));
+    BOOST_CHECK(
+      getErrors().contains("A : invalid referenceGlobalActivationDuration up can not be negative"));
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid energyActivationRatio can not be negative, for reserve ReserveUp"));
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid powerActivationRatio can not be negative, for reserve ReserveUp"));
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid referenceActivationDuration can not be negative, for reserve ReserveUp"));
+}
+
 BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_parameters_values,
                         OneProblemWithoutReservesOneAreaWithLogger)
 {
@@ -1381,22 +1402,23 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_bad_parameters_values,
     accessForTests::loadReservesParameters(studyPath, *areaA);
     BOOST_CHECK_EQUAL(getErrors().size(), 0);
     BOOST_CHECK_EQUAL(getWarnings().size(), 10);
-    BOOST_CHECK(getWarnings().contains("A: invalid type for reserve ReserveUp"));
+    BOOST_CHECK(getWarnings().contains("A : invalid type for reserve ReserveUp"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid reference activation duration for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid energy activation ratio for reserve ReserveUp"));
+      getWarnings().contains("A : invalid reference activation duration for reserve ReserveUp"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid maximum activation ratio for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid spillage cost for reserve ReserveUp"));
-    BOOST_CHECK(getWarnings().contains("A: invalid failure cost for reserve ReserveUp"));
+      getWarnings().contains("A : invalid energy activation ratio for reserve ReserveUp"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid maximum energy activation ratio for UP reserves"));
+      getWarnings().contains("A : invalid maximum activation ratio for reserve ReserveUp"));
+    BOOST_CHECK(getWarnings().contains("A : invalid spillage cost for reserve ReserveUp"));
+    BOOST_CHECK(getWarnings().contains("A : invalid failure cost for reserve ReserveUp"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid maximum energy activation ratio for DOWN reserves"));
+      getWarnings().contains("A : invalid maximum energy activation ratio for UP reserves"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid reference energy activation duration for UP reserves"));
+      getWarnings().contains("A : invalid maximum energy activation ratio for DOWN reserves"));
     BOOST_CHECK(
-      getWarnings().contains("A: invalid reference energy activation duration for DOWN reserves"));
+      getWarnings().contains("A : invalid reference energy activation duration for UP reserves"));
+    BOOST_CHECK(
+      getWarnings().contains("A : invalid reference energy activation duration for DOWN reserves"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_readReserve_duplicated, OneProblemWithoutReservesOneAreaWithLogger)
@@ -1417,158 +1439,6 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_duplicated, OneProblemWithoutReservesOn
     BOOST_CHECK_EQUAL(getErrors().size(), 1);
     BOOST_CHECK_EQUAL(getWarnings().size(), 0);
     BOOST_CHECK(getErrors().contains("A : reserve name already exists for reserve ReserveUp"));
-}
-
-BOOST_FIXTURE_TEST_CASE(test_importCapacityReservation_allGood, OneProblemWithReservesTwoAreas)
-{
-    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
-    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.has_value(), false);
-    importCapacityReservations(study->areas, *problemeHebdo);
-    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.has_value(), true);
-    int indexA = study->areas.find("a")->index;
-    int indexB = study->areas.find("b")->index;
-    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.value()[indexA].areaCapacityReservations.size(),
-                      2);
-    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.value()[indexB].areaCapacityReservations.size(),
-                      2);
-    bool containsUp = false;
-    bool containsDown = false;
-    for (auto& reserve: problemeHebdo->allReserves.value()[indexA].areaCapacityReservations)
-    {
-        if (reserve.type == Antares::Data::ReserveType::UP)
-        {
-            BOOST_CHECK_EQUAL(reserve.unsuppliedCost, 1);
-            BOOST_CHECK_EQUAL(reserve.referenceActivationDuration, 2);
-            BOOST_CHECK_EQUAL(reserve.powerActivationRatio, 3);
-            BOOST_CHECK_EQUAL(reserve.energyActivationRatio, 4);
-            containsUp = true;
-        }
-        else
-        {
-            BOOST_CHECK_EQUAL(reserve.unsuppliedCost, 5);
-            BOOST_CHECK_EQUAL(reserve.referenceActivationDuration, 6);
-            BOOST_CHECK_EQUAL(reserve.powerActivationRatio, 7);
-            BOOST_CHECK_EQUAL(reserve.energyActivationRatio, 8);
-            containsDown = true;
-        }
-    }
-    BOOST_CHECK_EQUAL(containsDown, true);
-    BOOST_CHECK_EQUAL(containsUp, true);
-    containsUp = false;
-    containsDown = false;
-
-    for (auto& reserve: problemeHebdo->allReserves.value()[indexB].areaCapacityReservations)
-    {
-        if (reserve.type == Antares::Data::ReserveType::UP)
-        {
-            BOOST_CHECK_EQUAL(reserve.unsuppliedCost, 11);
-            BOOST_CHECK_EQUAL(reserve.referenceActivationDuration, 12);
-            BOOST_CHECK_EQUAL(reserve.powerActivationRatio, 13);
-            BOOST_CHECK_EQUAL(reserve.energyActivationRatio, 14);
-            containsUp = true;
-        }
-        else
-        {
-            BOOST_CHECK_EQUAL(reserve.unsuppliedCost, 15);
-            BOOST_CHECK_EQUAL(reserve.referenceActivationDuration, 16);
-            BOOST_CHECK_EQUAL(reserve.powerActivationRatio, 17);
-            BOOST_CHECK_EQUAL(reserve.energyActivationRatio, 18);
-            containsDown = true;
-        }
-    }
-    BOOST_CHECK_EQUAL(containsDown, true);
-    BOOST_CHECK_EQUAL(containsUp, true);
-}
-
-BOOST_FIXTURE_TEST_CASE(test_importHydroReserves, OneProblemWithReservesTwoAreas)
-{
-    auto studyPath = CREATE_TMP_DIR_BASED_ON_TEST_NAME();
-
-    std::ofstream file(studyPath / "myreserveA.ini");
-    file << "[ReserveUp]\n";
-    file << "participation-cost = 1.1\n";
-    file << "max-store = 2.2\n";
-    file << "max-release = 3.3\n";
-    file << "\n";
-    file << "[ReserveDown]\n";
-    file << "participation-cost = 4.4\n";
-    file << "max-store = 5.5\n";
-    file << "max-release = 6.6\n";
-    file.close();
-    areaA->hydro.loadReserveParticipations(*areaA, studyPath / "myreserveA.ini");
-
-    std::ofstream fileB(studyPath / "myreserveB.ini");
-    fileB << "[ReserveUp]\n";
-    fileB << "participation-cost = 9.9\n";
-    fileB << "max-store = 8.8\n";
-    fileB << "max-release = 7.7\n";
-    fileB.close();
-    areaA->hydro.loadReserveParticipations(*areaB, studyPath / "myreserveB.ini");
-
-    importCapacityReservations(study->areas, *problemeHebdo);
-    importHydroReserves(study->areas, *problemeHebdo);
-    int indexA = study->areas.find("a")->index;
-    int indexB = study->areas.find("b")->index;
-    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.value()[indexA].areaCapacityReservations.size(),
-                      2);
-    BOOST_CHECK_EQUAL(problemeHebdo->allReserves.value()[indexB].areaCapacityReservations.size(),
-                      2);
-    int maxGlobalHydroParticipationIndex;
-    bool containsUp = false;
-    bool containsDown = false;
-    for (auto& reserve: problemeHebdo->allReserves.value()[indexA].areaCapacityReservations)
-    {
-        BOOST_CHECK_EQUAL(reserve.AllHydroReservesParticipation.size(), 1);
-        auto& part = reserve.AllHydroReservesParticipation[0];
-        if (reserve.type == Antares::Data::ReserveType::UP)
-        {
-            BOOST_CHECK_EQUAL(part.participationCost, 1.1);
-            BOOST_CHECK_EQUAL(part.maxStore, 2.2);
-            BOOST_CHECK_EQUAL(part.maxRelease, 3.3);
-            maxGlobalHydroParticipationIndex = std::max(maxGlobalHydroParticipationIndex,
-                                                        part.globalIndexClusterParticipation);
-            containsUp = true;
-        }
-        else
-        {
-            BOOST_CHECK_EQUAL(part.participationCost, 4.4);
-            BOOST_CHECK_EQUAL(part.maxStore, 5.5);
-            BOOST_CHECK_EQUAL(part.maxRelease, 6.6);
-            maxGlobalHydroParticipationIndex = std::max(maxGlobalHydroParticipationIndex,
-                                                        part.globalIndexClusterParticipation);
-            containsDown = true;
-        }
-    }
-    BOOST_CHECK_EQUAL(containsDown, true);
-    BOOST_CHECK_EQUAL(containsUp, true);
-    containsUp = false;
-    containsDown = false;
-    for (auto& reserve: problemeHebdo->allReserves.value()[indexB].areaCapacityReservations)
-    {
-        if (reserve.AllHydroReservesParticipation.size() == 1)
-        {
-            auto& part = reserve.AllHydroReservesParticipation[0];
-            if (reserve.type == Antares::Data::ReserveType::UP)
-            {
-                BOOST_CHECK_EQUAL(part.participationCost, 9.9);
-                BOOST_CHECK_EQUAL(part.maxStore, 8.8);
-                BOOST_CHECK_EQUAL(part.maxRelease, 7.7);
-                maxGlobalHydroParticipationIndex = std::max(maxGlobalHydroParticipationIndex,
-                                                            part.globalIndexClusterParticipation);
-                containsUp = true;
-            }
-            else if (reserve.type == Antares::Data::ReserveType::DOWN)
-            {
-                containsDown = true;
-            }
-        }
-        else
-        {
-            BOOST_CHECK_EQUAL(reserve.AllHydroReservesParticipation.size(), 0);
-        }
-    }
-    BOOST_CHECK_EQUAL(containsDown, false);
-    BOOST_CHECK_EQUAL(containsUp, true);
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version

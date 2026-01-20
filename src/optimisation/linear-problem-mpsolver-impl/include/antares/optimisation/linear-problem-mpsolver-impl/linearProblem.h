@@ -35,14 +35,6 @@ class MPObjective;
 namespace Antares::Optimisation::LinearProblemMpsolverImpl
 {
 
-class ObjectiveOffsetHandler
-{
-public:
-    virtual void setOffset(double offset) = 0;
-    virtual double getOffset() const = 0;
-    virtual ~ObjectiveOffsetHandler() = default;
-};
-
 class OrtoolsLinearProblem: public LinearProblemApi::ILinearProblem
 {
 public:
@@ -113,6 +105,14 @@ public:
 
     OrtoolsMipSolution* solve(bool verboseSolver) override;
 
+    /**
+     * Return the last solution or solve if no solution exist.
+     * @param verboseSolver
+     * @return The solution
+     */
+    OrtoolsMipSolution* solution(bool verboseSolver);
+    double objectiveValue() const override;
+
     [[nodiscard]] double infinity() const override;
     [[nodiscard]] bool isLP() const override;
 
@@ -131,8 +131,6 @@ private:
 
     std::unique_ptr<OrtoolsMipSolution> solution_;
     bool isLP_{true};
-
-    std::unique_ptr<ObjectiveOffsetHandler> offsetHandler_;
 };
 
 } // namespace Antares::Optimisation::LinearProblemMpsolverImpl

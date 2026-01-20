@@ -1,5 +1,6 @@
 /*
 ** Copyright 2007-2025 RTE
+** Copyright 2007-2025 RTE
 ** Authors: Antares_Simulator Team
 **
 ** This file is part of Antares_Simulator.
@@ -9,6 +10,7 @@
 ** the Free Software Foundation, either version 3 of the License, or
 ** (at your option) any later version.
 **
+** There are special exceptions to the terms and conditions of the
 ** There are special exceptions to the terms and conditions of the
 ** license as they are applied to this software. View the full text of
 ** the exceptions in file COPYING.txt in the directory of this software
