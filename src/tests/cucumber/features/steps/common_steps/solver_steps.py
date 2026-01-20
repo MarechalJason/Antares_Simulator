@@ -54,6 +54,15 @@ def replace_reserve_ini(context, destinationPath, originPath):
     input_handler.copy_reserve_ini_from_file(origin, destination)
 
 
+@given('the linear solver is {solver_name}')
+def set_linear_solver(context, solver_name):
+    context.config.userdata["linear-solver"] = solver_name
+
+@given('the quadratic solver is {solver_name}')
+def set_quadratic_solver(context, solver_name):
+    context.config.userdata["quadratic-solver"] = solver_name
+
+
 @when('I run antares simulator')
 def run_antares(context):
     context.named_mps_problems = False
