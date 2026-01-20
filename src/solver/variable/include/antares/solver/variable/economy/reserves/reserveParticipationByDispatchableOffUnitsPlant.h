@@ -64,10 +64,12 @@ public:
 
     void populateHourlyValues(State& state, unsigned int numSpace);
 
-    bool hasIndexMapping(const Area* area, uint /*i*/) const
+    bool hasIndexMapping(const Study& study, const Area* area) const
     {
-        return area->reserveParticipationIndexMaps
-               && !area->reserveParticipationIndexMaps.value().thermalClusters.empty();
+        return study.parameters.reservesEnabled
+               && !study.runtime.reserveParticipationIndexMaps.value()
+                     .at(area->id)
+                     .thermalClusters.empty();
     }
 
     void buildReportForIndex(SurveyResults& results,
@@ -76,7 +78,9 @@ public:
                              int precision,
                              unsigned int numSpace) const
     {
-        auto [reserveName, clusterName] = results.data.area->reserveParticipationIndexMaps.value()
+        auto [reserveName, clusterName] = results.data.study.runtime.reserveParticipationIndexMaps
+                                            .value()
+                                            .at(results.data.area->id)
                                             .thermalClusters.right.at(i);
         results.variableCaption = reserveName + "_" + clusterName + "_off";
         results.variableUnit = VCardType::Unit();
@@ -91,8 +95,7 @@ void ReserveParticipationByDispatchableOffUnitsPlant<NextT>::populateHourlyValue
   /*non const*/ State& state,
   unsigned int numSpace)
 {
-    if (state.study.parameters.reservesEnabled
-        && !state.area->reserveParticipationIndexMaps.value().thermalClusters.empty())
+    if (hasIndexMapping(state.study, state.area))
     {
         for (const auto& clusterName:
              state.reserveData.value()
@@ -103,10 +106,12 @@ void ReserveParticipationByDispatchableOffUnitsPlant<NextT>::populateHourlyValue
                  state.reserveData.value()
                    .reserveParticipationPerThermalClusterForYear[state.hourInTheYear][clusterName])
             {
-                pValuesForTheCurrentYear[numSpace][state.area->reserveParticipationIndexMaps.value()
-                                                     .thermalClusters.left.at(
-                                                       std::make_pair(reserveName, clusterName))]
-                  .hour[state.hourInTheYear]
+                pValuesForTheCurrentYear[numSpace]
+                                        [state.study.runtime.reserveParticipationIndexMaps.value()
+                                           .at(state.area->id)
+                                           .thermalClusters.left.at(
+                                             std::make_pair(reserveName, clusterName))]
+                                          .hour[state.hourInTheYear]
                   = reserveParticipation.offUnitsParticipation;
             }
         }

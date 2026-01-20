@@ -99,6 +99,11 @@ bool Economy::simulationBegin()
                                             pProblemesHebdo[numSpace],
                                             nbHoursInAWeek,
                                             numSpace);
+            if (study.parameters.reservesEnabled)
+            {
+                study.runtime.initializeReservesIndexMaps(study, pProblemesHebdo[numSpace]);
+            }
+
             auto* simulationsTables = simulationTables_.empty() ? nullptr
                                                                 : &simulationTables_[numSpace];
             weeklyOptProblems_.emplace_back(study.parameters.optOptions,

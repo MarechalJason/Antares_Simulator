@@ -14,6 +14,8 @@ Feature: reserves tests
     And the annual system cost is 6.7872e+07
 
 @fast @short
+# Les réserves sont activés, on a thermal_all_cheap (production et réserves cheap) qui participe a la réserve UP et thermal_expensive_res_part (production cheap mais réserves chères) qui produit,
+# thermal_expensive_prod (production chère mais réserves cheap) qui participe a la réserve sans produire
 # Lot 1 : Intégration de la participation du thermique allumé à des réserves à la hausse et baisse
 # Les réserves sont activés, on a thermal_all_cheap (production et réserves cheap) qui participe a la réserve UP et thermal_expensive_res_part (production cheap mais réserves chères) qui produit,
 # thermal_expensive_prod (production chère mais réserves cheap) qui participe a la réserve sans produire
@@ -31,6 +33,7 @@ Feature: reserves tests
     And the annual system cost is 7.04995e+07
 
 @fast @short
+# thermal_expensive_prod (production chère mais réserves cheap) qui ne produit rien et ne peut donc pas participer à la baisse
 # Lot 1 : Intégration de la participation du thermique allumé à des réserves à la hausse et baisse
 # Les réserves sont activés, on a thermal_all_cheap (production et réserves cheap) qui participe a la réserve DOWN, thermal_expensive_res_part (production cheap mais réserves chères) qui produit mais ne participe pas,
 # thermal_expensive_prod (production chère mais réserves cheap) qui ne produit rien et ne peut donc pas participer à la baisse
@@ -59,17 +62,17 @@ Feature: reserves tests
     And in area "AREA", during year 1, hourly production of "thermal_expensive_prod" is always equal to 0 MWh
     And in area "AREA", during year 1, hourly production of "thermal_expensive_res_part" is always equal to 100 MWh
     And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_up", reserve participation power is always equal to 20 MWh
-	And in area "AREA", during year 1, for group "GAS" and reserve "Res_up", reserve participation power is always equal to 20 MWh
+	  And in area "AREA", during year 1, for group "GAS" and reserve "Res_up", reserve participation power is always equal to 20 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_up", reserve participation power is always equal to 20 MWh
-	And in area "AREA", during year 1, for group "NUCLEAR" and reserve "Res_up", reserve participation power is always equal to 20 MWh
+	  And in area "AREA", during year 1, for group "NUCLEAR" and reserve "Res_up", reserve participation power is always equal to 20 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_up", reserve participation power is always equal to 0 MWh
-	And in area "AREA", during year 1, for group "COAL" and reserve "Res_up", reserve participation power is always equal to 0 MWh
+	  And in area "AREA", during year 1, for group "COAL" and reserve "Res_up", reserve participation power is always equal to 0 MWh
     And in area "AREA", during year 1, for cluster "thermal_all_cheap" and reserve "Res_down", reserve participation power is always equal to 20 MWh
-	And in area "AREA", during year 1, for group "GAS" and reserve "Res_down", reserve participation power is always equal to 20 MWh
+	  And in area "AREA", during year 1, for group "GAS" and reserve "Res_down", reserve participation power is always equal to 20 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_prod" and reserve "Res_down", reserve participation power is always equal to 0 MWh
-	And in area "AREA", during year 1, for group "NUCLEAR" and reserve "Res_down", reserve participation power is always equal to 0 MWh
+	  And in area "AREA", during year 1, for group "NUCLEAR" and reserve "Res_down", reserve participation power is always equal to 0 MWh
     And in area "AREA", during year 1, for cluster "thermal_expensive_res_part" and reserve "Res_down", reserve participation power is always equal to 0 MWh
-	And in area "AREA", during year 1, for group "COAL" and reserve "Res_down", reserve participation power is always equal to 0 MWh
+	  And in area "AREA", during year 1, for group "COAL" and reserve "Res_down", reserve participation power is always equal to 0 MWh
 
     And the annual system cost is 7.35269e+07
 
@@ -104,7 +107,6 @@ Feature: reserves tests
     And in area "AREA", overall cost on "1 JAN 06:00" of year 1 is of 80050 Euro 
     And in area "AREA", unsupplied energy on "2 JAN 09:00" of year 1 is of 100 MW
     And the annual system cost is 1.34484e+07
-
 
 #
 # Pour les tests du lot 3 : se référer au document "Schema_de_tests_des_réserves_3_nov_2024.pptx"
@@ -363,6 +365,7 @@ Feature: reserves tests
 	
 @fast @short
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
+# Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
   Scenario: ST_2UP_reserves_test5
     Given the solver study path is "Antares_Simulator_Tests_NR/reserves_tests/ST_2_reserves"
     When I replace the "input/reserves/area/reserves.ini" file with "../reserves_ini_files/reserves_5_double_up.ini"
@@ -425,6 +428,7 @@ Feature: reserves tests
     And in area "AREA", during year 1, for cluster "st1" and reserve "Res_2", reserve participation power is always equal to 150 MWh
 
 @fast @short
+# Lot 3 non actif
 # Lot 3 : intégration des contraintes de stock en puissance et en énergie pour les stocks CT et LT
 # Thermal cluster n'est pas diponible au départ : la batterie participe aux réserves, puis se vide pour limiter le loss of load, et se remplit quand le cluster se rallume
 # Lot 3 non actif
@@ -509,9 +513,9 @@ Scenario: ST_3UP_unavailable_reserves_test3
     Then the simulation succeeds
     And the simulation takes less than 20 seconds
     And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", total reserve participation power is 1008 MWh
-	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is 1680 MWh
+	  And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is 1680 MWh
     And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", on "1 JAN 06:00", reserve participation power is 6 MWh
-	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", on "1 JAN 06:00", reserve participation power is 10 MWh
+	  And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", on "1 JAN 06:00", reserve participation power is 10 MWh
     And the annual system cost is 2.15084e+06
 	
 @fast @short
@@ -523,7 +527,7 @@ Scenario: ST_3UP_unavailable_reserves_test3
     Then the simulation succeeds
     And the simulation takes less than 20 seconds
     And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", total reserve participation power is inferior to 1000 MWh
-	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is 1680 MWh
+	  And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is 1680 MWh
     And the annual system cost is 2.155768e+06
 
 
@@ -536,7 +540,7 @@ Scenario: ST_3UP_unavailable_reserves_test3
     Then the simulation succeeds
     And the simulation takes less than 20 seconds
     And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_1", total reserve participation power is 1008 MWh
-	And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is inferior to 1680 MWh
+	  And in area "AREA", during year 1, for cluster "Hydro" and reserve "Res_2", total reserve participation power is inferior to 1680 MWh
     And the annual system cost is 2.157607e+06
 
 @fast @short
@@ -567,8 +571,8 @@ Scenario: ST_3UP_unavailable_reserves_test3
     And in area "FRANCE", during year 1, for reserve "Res_1_up", reserve unsupplied power is always equal to 6 MWh
     And in area "FRANCE", during year 1, for reserve "Res_1_down", reserve unsupplied power is always equal to 14 MWh
     And in area "FRANCE", unsupplied energy on "2 JAN 09:00" of year 1 is of 100 MW
-	And in area "FRANCE", on "2 JAN 09:00" of year 1, storage injection for cluster "st1" is of 24 MW
-	And in area "FRANCE", on "2 JAN 09:00" of year 1, storage withdrawal for cluster "st1" is of 24 MW
+	  And in area "FRANCE", on "2 JAN 09:00" of year 1, storage injection for cluster "st1" is of 24 MW
+	  And in area "FRANCE", on "2 JAN 09:00" of year 1, storage withdrawal for cluster "st1" is of 24 MW
 
 @fast @short
 # Lot 3_1 : intégration des contraintes de symétries
@@ -584,4 +588,4 @@ Scenario: ST_3UP_unavailable_reserves_test3
     And in area "FRANCE", during year 1, for reserve "Res_1_down", reserve unsupplied power is always equal to 14 MWh
     And in area "FRANCE", unsupplied energy on "2 JAN 09:00" of year 1 is of 44 MW
     And in area "FRANCE", on "2 JAN 09:00" of year 1, hydro storage injection is of 80 MWh
-	And in area "FRANCE", on "2 JAN 09:00" of year 1, hydro storage pumping is of 24 MWh
+	  And in area "FRANCE", on "2 JAN 09:00" of year 1, hydro storage pumping is of 24 MWh

@@ -673,14 +673,16 @@ def check_res_unsp_for_specific_year_hourly(context, area, year, res, comparator
         msg += " (or null)"
     assert ok.all(), msg
 
-@then('in area "{area}", on "{date}" of year {year:d}, hydro storage {injection_or_pumping} is of {value_hydro} MWh')
-def check_hydro_values_for_specific_year_hour(context, area, year, date, injection_or_pumping, value_hydro):
-    if "injection" in injection_or_pumping:
+@then('in area "{area}", on "{date}" of year {year:d}, hydro storage {injection_or_pumping_or_level} is of {value_hydro} MWh')
+def check_hydro_values_for_specific_year_hour(context, area, year, date, injection_or_pumping_or_level, value_hydro):
+    if "injection" in injection_or_pumping_or_level:
         actual_hydro_value = context.soh.get_values_hydro_for_specific_hour_mwh(area, year, date, "H. STOR")
-    elif "pumping" in injection_or_pumping:
+    elif "pumping" in injection_or_pumping_or_level:
         actual_hydro_value = context.soh.get_values_hydro_for_specific_hour_mwh(area, year, date, "H. PUMP")
+    elif "level" in injection_or_pumping_or_level:
+        actual_hydro_value = context.soh.get_values_hydro_for_specific_hour_mwh(area, year, date, "H. LEV")
     else:
-        raise NotImplementedError(f"Unknown value for variable injection_or_pumping '{injection_or_pumping}'")
+        raise NotImplementedError(f"Unknown value for variable injection_or_pumping_or_level '{injection_or_pumping_or_level}'")
     assert_double_close(float(actual_hydro_value), float(value_hydro), 1e-6)
 
 @then('in area "{area}", on "{date}" of year {year:d}, hydro storage {injection_or_pumping_or_level} is of {value_hydro} MWh')

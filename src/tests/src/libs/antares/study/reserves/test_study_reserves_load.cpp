@@ -220,6 +220,9 @@ BOOST_AUTO_TEST_CASE(reserve_add)
     areaA->allCapacityReservations.value()
       .areaCapacityReservations.emplace("ReserveUp", tmpCapacityReservationUp);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().size(), 1);
+    BOOST_CHECK(areaA->allCapacityReservations.value().getReserveByName("ReserveUp") != nullptr);
+    BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().getReserveByName("ReserveNULL"),
+                      nullptr);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value().contains("ReserveUp"), true);
     BOOST_CHECK_EQUAL(areaA->allCapacityReservations.value()
                         .areaCapacityReservations.at("ReserveUp")
@@ -1439,6 +1442,45 @@ BOOST_FIXTURE_TEST_CASE(test_readReserve_duplicated, OneProblemWithoutReservesOn
     BOOST_CHECK_EQUAL(getErrors().size(), 1);
     BOOST_CHECK_EQUAL(getWarnings().size(), 0);
     BOOST_CHECK(getErrors().contains("A : reserve name already exists for reserve ReserveUp"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_negative_value, CaptureAntaresLogs)
+{
+    errorIfNegativeValue("string1", 2, "area", "cluster", "reserve");
+
+    BOOST_CHECK_EQUAL(getErrors().size(), 0);
+    BOOST_CHECK_EQUAL(getWarnings().size(), 0);
+
+    errorIfNegativeValue("parameter", -2, "area", "cluster", "reserve");
+
+    BOOST_CHECK_EQUAL(getErrors().size(), 1);
+    BOOST_CHECK_EQUAL(getWarnings().size(), 0);
+    BOOST_CHECK(getErrors().contains(
+      "area : invalid parameter can not be negative, for cluster cluster, for reserve reserve"));
+}
+
+BOOST_FIXTURE_TEST_CASE(test_validateCapacityReservations_noNegative,
+                        OneProblemWithReservesOneAreaWithLogger)
+{
+    accessForTests::validateCapacityReservations(*areaA);
+
+    BOOST_CHECK_EQUAL(getErrors().size(), 0);
+    BOOST_CHECK_EQUAL(getWarnings().size(), 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_validateCapacityReservations_OneNegative,
+                        OneProblemWithReservesOneAreaWithLogger)
+{
+    areaA->allCapacityReservations.value()
+      .areaCapacityReservations.at("ReserveUp")
+      .powerActivationRatio
+      = -1;
+    accessForTests::validateCapacityReservations(*areaA);
+
+    BOOST_CHECK_EQUAL(getErrors().size(), 1);
+    BOOST_CHECK_EQUAL(getWarnings().size(), 0);
+    BOOST_CHECK(getErrors().contains(
+      "A : invalid powerActivationRatio can not be negative, for reserve ReserveUp"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() // version

@@ -225,7 +225,7 @@ public:
             // Write the data for the current year
             for (uint i = 0; i < pSize; ++i)
             {
-                if (derived->hasIndexMapping(results.data.area, i))
+                if (derived->hasIndexMapping(results.data.study, results.data.area))
                 {
                     derived->buildReportForIndex(results, i, fileLevel, precision, numSpace);
                 }
