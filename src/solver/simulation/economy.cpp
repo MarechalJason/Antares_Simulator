@@ -27,6 +27,7 @@
 #include "antares/solver/optimisation/opt_fonctions.h"
 #include "antares/solver/simulation/common-eco-adq.h"
 #include "antares/solver/simulation/simulation.h"
+#include "antares/solver/simulation/solver_utils.h"
 
 using namespace Yuni;
 using Antares::Constants::nbHoursInAWeek;
@@ -135,6 +136,7 @@ bool Economy::year(Progression::Task& progression,
                    std::list<uint>& failedWeekList,
                    const HYDRO_VENTILATION_RESULTS& hydroVentilationResults,
                    OptimizationStatisticsWriter& optWriter,
+                   Benchmarking::DurationCollector& durationCollector,
                    const Antares::Data::Area::ScratchMap& scratchmap)
 {
     // No failed week at year start
@@ -210,6 +212,7 @@ bool Economy::year(Progression::Task& progression,
                 state.optimalSolutionCost2 += currentProblem.coutOptimalSolution2[opt];
             }
             optWriter.addTime(w, currentProblem.timeMeasure);
+            addTimeMeasure(durationCollector, currentProblem.timeMeasure);
         }
         catch (Data::AssertionError& ex)
         {
