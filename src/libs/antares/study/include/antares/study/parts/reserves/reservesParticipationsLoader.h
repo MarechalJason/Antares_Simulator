@@ -159,6 +159,7 @@ public:
         }
 
         container->addReserveParticipation(reserveName, rp);
+        addGroupToResIndex(area, reserveName, cluster);
     }
 
     template<class ClusterT>
