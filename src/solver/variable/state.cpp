@@ -64,6 +64,10 @@ State::State(Data::Study& s):
     thermal(s.areas),
     simplexRunNeeded(true)
 {
+    if (study.parameters.reservesEnabled)
+    {
+        reserveData.emplace();
+    }
 }
 
 void State::initFromThermalClusterIndex(const uint clusterEnabledIndex)
