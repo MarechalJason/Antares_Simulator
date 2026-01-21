@@ -1,13 +1,14 @@
 // Copyright 2007-2026, RTE (https://www.rte-france.com)
 // SPDX-License-Identifier: MPL-2.0
 
-
-#include "main.h"
-#include <wx/dnd.h>
-#include "antares/study/study.h"
-#include "../../toolbox/dispatcher/study.h"
 #include <ui/common/lock.h>
+#include <wx/dnd.h>
+
+#include "antares/study/study.h"
 #include "antares/utils/utils.h"
+
+#include "../../toolbox/dispatcher/study.h"
+#include "main.h"
 
 using namespace Yuni;
 

@@ -55,13 +55,13 @@ hide:
 
 ## Misc.
 
-| command         | usage                                                            |
-|:----------------|:-----------------------------------------------------------------|
-| --progress      | Display the progress of each task                                |
-| -p, --pid=VALUE | Specify the file where to write the process ID                   |
-| -l, --list-solvers  | Display a list of LP solvers available through OR-Tools and exit |
-| -v, --version   | Print the version of the solver and exit                         |
-| -h, --help      | Display this help and exit                                       |
+| command            | usage                                                            |
+|:-------------------|:-----------------------------------------------------------------|
+| --progress         | Display the progress of each task                                |
+| -p, --pid=VALUE    | Specify the file where to write the process ID                   |
+| -l, --list-solvers | Display a list of LP solvers available through OR-Tools and exit |
+| -v, --version      | Print the version of the solver and exit                         |
+| -h, --help         | Display this help and exit                                       |
 
 ### Deprecated options
 

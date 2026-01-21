@@ -64,12 +64,12 @@ target_include_directories(single_problem_api
 
 target_link_libraries(single_problem_api
         PRIVATE
-	fmt::fmt
+		fmt::fmt
         antares-solver-simulation
         Antares::optimization-options
 	model_antares
 	Antares::hydro
-	Antares::file-tree-study-loader
+		Antares::file-tree-study-loader
         PUBLIC
         Antares::study
         Antares::lps)
@@ -77,7 +77,7 @@ target_link_libraries(single_problem_api
 # TODO move
 add_executable(api_test main.cpp)
 target_link_libraries(api_test
-	single_problem_api)
+		single_problem_api)
 
 install(DIRECTORY include/antares
         DESTINATION "include")

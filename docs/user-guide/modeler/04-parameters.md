@@ -61,7 +61,6 @@ The modeler parameters are currently held in a **parameters.yml** file under the
 - **Default value:** `false`
 - **Usage:** whether to generate mps and _structure_ files at the end of the simulation
 
-
 ## Full example
 ~~~yaml
 solver: xpress

@@ -4,8 +4,10 @@
 #ifndef ANTARES_WINDOWS_INSPECTOR_ACCUMULATOR_HXX__
 #define ANTARES_WINDOWS_INSPECTOR_ACCUMULATOR_HXX__
 
-#include <antares/study/filter.h>
 #include <array>
+
+#include <antares/study/filter.h>
+
 #include "constants.h"
 
 namespace Antares::Window::Inspector

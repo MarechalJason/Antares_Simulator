@@ -11,6 +11,6 @@ add_boost_test(test-surveyresults
   result_writer)
 
 add_boost_test(test-residual-load
-  SRC test_residual_load.cpp
-  LIBS
-  antares-solver-variable)
+        SRC test_residual_load.cpp
+        LIBS
+        antares-solver-variable)

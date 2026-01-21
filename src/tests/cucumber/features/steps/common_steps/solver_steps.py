@@ -51,6 +51,7 @@ def change_transmission_capacities(context, link, value):
 def set_linear_solver(context, solver_name):
     context.config.userdata["linear-solver"] = solver_name
 
+
 @given('the quadratic solver is {solver_name}')
 def set_quadratic_solver(context, solver_name):
     context.config.userdata["quadratic-solver"] = solver_name

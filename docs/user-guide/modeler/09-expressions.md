@@ -220,7 +220,7 @@ models:
 
 The unary operators **floor(X)** and **ceil(X)** return, respectively, the greatest integer less
 than or equal to `X` and the smallest integer greater than or equal to `X`. When `X` is
- time-dependent (a parameter, variable, or port field with time dimension), the operators apply
+time-dependent (a parameter, variable, or port field with time dimension), the operators apply
 pointwise on the underlying time-series.
 
 In the context of a linear problem construction (any context but **extra-output**), the argument of

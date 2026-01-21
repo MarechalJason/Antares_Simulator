@@ -23,7 +23,7 @@ add_boost_test(test-hydro-common
 
 # Hydro allocation
 add_boost_test(test-hydro-allocation
-  SRC test-hydro-allocation.cpp
-  LIBS
-  Antares::study
-  test_utils_unit)
+        SRC test-hydro-allocation.cpp
+        LIBS
+        Antares::study
+        test_utils_unit)

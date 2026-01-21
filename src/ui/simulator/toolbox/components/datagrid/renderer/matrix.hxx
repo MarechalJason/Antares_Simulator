@@ -4,13 +4,15 @@
 #ifndef __ANTARES_TOOLBOX_COMPONENT_DATAGRID_RENDERER_MATRIX_HXX__
 #define __ANTARES_TOOLBOX_COMPONENT_DATAGRID_RENDERER_MATRIX_HXX__
 
-#include <yuni/core/math.h>
-#include "../../../../application/main.h"
-#include "../../../../application/wait.h"
+#include <ui/common/lock.h>
 #include <wx/statusbr.h>
+
+#include <yuni/core/math.h>
 #include <yuni/core/static/types.h>
 #include <yuni/io/file.h>
-#include <ui/common/lock.h>
+
+#include "../../../../application/main.h"
+#include "../../../../application/wait.h"
 
 namespace Antares::Component::Datagrid::Renderer
 {
