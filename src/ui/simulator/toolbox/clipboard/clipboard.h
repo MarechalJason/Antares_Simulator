@@ -1,31 +1,15 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
+
 #ifndef __ANTARES_TOOLBOX_CLIPBOARD_CLIPBOARD_H__
 #define __ANTARES_TOOLBOX_CLIPBOARD_CLIPBOARD_H__
 
-#include <antares/array/matrix.h>
 #include <memory>
 #include <vector>
-#include "../components/datagrid/gridhelper.h"
 
+#include <antares/array/matrix.h>
+
+#include "../components/datagrid/gridhelper.h"
 
 namespace Antares::Toolbox
 {
@@ -73,9 +57,12 @@ private:
         using Ptr = std::shared_ptr<Item>;
 
     public:
-        Item(const Type t, Yuni::String::Ptr d) : type(t), data(d)
+        Item(const Type t, Yuni::String::Ptr d):
+            type(t),
+            data(d)
         {
         }
+
         const Type type;
         Yuni::String::Ptr data;
     };
@@ -86,6 +73,5 @@ private:
 }; // class Clipboard
 
 } // namespace Antares::Toolbox
-
 
 #endif // __ANTARES_TOOLBOX_CLIPBOARD_CLIPBOARD_H__

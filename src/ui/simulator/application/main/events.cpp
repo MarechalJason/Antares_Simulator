@@ -1,47 +1,29 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include "main.h"
 #include "internal-data.h"
 #include "internal-ids.h"
+#include "main.h"
 
 // Map
 #include "../../toolbox/components/map/component.h"
 // Main Panel
+#include "antares/study/study.h"
+
 #include "../../toolbox/components/mainpanel.h"
 #include "../../toolbox/dispatcher/study.h"
-
 #include "../menus.h"
-#include "antares/study/study.h"
 
 // Windows
 #include <ui/common/component/spotlight/spotlight.h>
-#include "../../windows/studylogs.h"
-#include "../../windows/memorystatistics.h"
-#include "../../windows/inspector.h"
-#include "../../windows/message.h"
-#include "../../../common/lock.h"
-#include "../../windows/startupwizard.h"
-
 #include <wx/textdlg.h>
+
+#include "../../../common/lock.h"
+#include "../../windows/inspector.h"
+#include "../../windows/memorystatistics.h"
+#include "../../windows/message.h"
+#include "../../windows/startupwizard.h"
+#include "../../windows/studylogs.h"
 
 using namespace Yuni;
 

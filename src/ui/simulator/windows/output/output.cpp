@@ -1,50 +1,34 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include "antares/antares/antares.h"
 #include "output.h"
-#include <yuni/io/directory.h>
-#include "../../toolbox/components/captionpanel.h"
-#include "../../toolbox/create.h"
-#include "../../application/main.h"
-#include "../../application/menus.h"
-#include "../../toolbox/resources.h"
-#include "../../windows/inspector.h"
-#include "../../toolbox/resources.h"
-#include "../../windows/message.h"
-#include "../../windows/textinput/input.h"
-#include <ui/common/dispatcher.h>
-#include <ui/common/lock.h>
+
+#include <set>
 #include <ui/common/component/panel/group.h>
 #include <ui/common/component/spotlight.h>
-#include "window.h"
-#include "job.h"
-#include <set>
+#include <ui/common/dispatcher.h>
+#include <ui/common/lock.h>
 #include <wx/imaglist.h>
-#include "spotlight-provider.h"
-#include "mini-frame.h"
 
-#include "provider/variables.h"
-#include "provider/outputs.h"
+#include <yuni/io/directory.h>
+
+#include "antares/antares/antares.h"
+
+#include "../../application/main.h"
+#include "../../application/menus.h"
+#include "../../toolbox/components/captionpanel.h"
+#include "../../toolbox/create.h"
+#include "../../toolbox/resources.h"
+#include "../../windows/inspector.h"
+#include "../../windows/message.h"
+#include "../../windows/textinput/input.h"
+#include "job.h"
+#include "mini-frame.h"
 #include "provider/output-comparison.h"
+#include "provider/outputs.h"
+#include "provider/variables.h"
+#include "spotlight-provider.h"
+#include "window.h"
 
 using namespace Yuni;
 

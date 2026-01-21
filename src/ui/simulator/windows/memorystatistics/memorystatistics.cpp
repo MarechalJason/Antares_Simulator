@@ -1,44 +1,27 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include <yuni/yuni.h>
-#include <yuni/core/system/memory.h>
-#include <yuni/thread/thread.h>
 #include "memorystatistics.h"
 
-#include <antares/study/study.h>
-#include "../../application/study.h"
-#include "../../toolbox/create.h"
-#include "../../toolbox/resources.h"
-#include "../../toolbox/system/diskfreespace.hxx"
 #include <ui/common/component/panel.h>
-
-#include <wx/sizer.h>
 #include <wx/button.h>
+#include <wx/sizer.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/timer.h>
 #include <wx/wupdlock.h>
 
+#include <yuni/yuni.h>
 #include <yuni/core/system/cpu.h>
+#include <yuni/core/system/memory.h>
+#include <yuni/thread/thread.h>
+
+#include <antares/study/study.h>
+
+#include "../../application/study.h"
+#include "../../toolbox/create.h"
+#include "../../toolbox/resources.h"
+#include "../../toolbox/system/diskfreespace.hxx"
 
 using namespace Yuni;
 
@@ -82,12 +65,15 @@ namespace Antares::Window
 {
 namespace // anonymous
 {
-class ResourcesInfoTimer final : public wxTimer
+class ResourcesInfoTimer final: public wxTimer
 {
 public:
-    ResourcesInfoTimer(MemoryStatistics& form) : wxTimer(), pForm(form)
+    ResourcesInfoTimer(MemoryStatistics& form):
+        wxTimer(),
+        pForm(form)
     {
     }
+
     virtual ~ResourcesInfoTimer()
     {
     }
@@ -111,9 +97,9 @@ static inline uint64_t NormalizeAmountOfMemory(uint64_t v)
 
 } // anonymous namespace
 
-MemoryStatistics::MemoryStatistics(wxWindow* parent) :
- wxDialog(parent, wxID_ANY, wxT("Resources monitor"), wxDefaultPosition, wxDefaultSize),
- pDisplayLogsOnce(false)
+MemoryStatistics::MemoryStatistics(wxWindow* parent):
+    wxDialog(parent, wxID_ANY, wxT("Resources monitor"), wxDefaultPosition, wxDefaultSize),
+    pDisplayLogsOnce(false)
 {
     // Allocating internal data
     pData = new Antares::Private::Window::MemoryStatisticsData();
@@ -143,8 +129,12 @@ MemoryStatistics::MemoryStatistics(wxWindow* parent) :
 
     // Space
     {
-        auto* st = new wxStaticText(
-          this, wxID_ANY, wxT("Interface  "), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+        auto* st = new wxStaticText(this,
+                                    wxID_ANY,
+                                    wxT("Interface  "),
+                                    wxDefaultPosition,
+                                    wxDefaultSize,
+                                    wxALIGN_RIGHT);
         wxFont f = st->GetFont();
         f.SetWeight(wxFONTWEIGHT_BOLD);
         st->SetFont(f);
@@ -162,18 +152,30 @@ MemoryStatistics::MemoryStatistics(wxWindow* parent) :
                                                  wxALIGN_RIGHT);
     gridSizer->Add(stTxtDataDisplayTtl, 0, wxRIGHT | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 
-    pData->stTxtDataDisplay
-      = new wxStaticText(this, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+    pData->stTxtDataDisplay = new wxStaticText(this,
+                                               wxID_ANY,
+                                               wxT(""),
+                                               wxDefaultPosition,
+                                               wxDefaultSize,
+                                               wxALIGN_RIGHT);
     gridSizer->Add(pData->stTxtDataDisplay, 0, wxRIGHT | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 
-    pData->stTxtMemoryCache
-      = new wxStaticText(this, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+    pData->stTxtMemoryCache = new wxStaticText(this,
+                                               wxID_ANY,
+                                               wxT(""),
+                                               wxDefaultPosition,
+                                               wxDefaultSize,
+                                               wxALIGN_RIGHT);
     gridSizer->Add(pData->stTxtMemoryCache, 0, wxRIGHT | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 
     // Space
     {
-        auto* st = new wxStaticText(
-          this, wxID_ANY, wxT("System  "), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+        auto* st = new wxStaticText(this,
+                                    wxID_ANY,
+                                    wxT("System  "),
+                                    wxDefaultPosition,
+                                    wxDefaultSize,
+                                    wxALIGN_RIGHT);
         wxFont f = st->GetFont();
         f.SetWeight(wxFONTWEIGHT_BOLD);
         st->SetFont(f);
@@ -191,12 +193,20 @@ MemoryStatistics::MemoryStatistics(wxWindow* parent) :
                                            wxALIGN_RIGHT);
     gridSizer->Add(stTxtTotalTtl, 0, wxRIGHT | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 
-    pData->stTxtTotal = new wxStaticText(
-      this, wxID_ANY, wxT("   Updating..."), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+    pData->stTxtTotal = new wxStaticText(this,
+                                         wxID_ANY,
+                                         wxT("   Updating..."),
+                                         wxDefaultPosition,
+                                         wxDefaultSize,
+                                         wxALIGN_RIGHT);
     gridSizer->Add(pData->stTxtTotal, 0, wxRIGHT | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 
-    pData->stTxtDiskFree = new wxStaticText(
-      this, wxID_ANY, wxT("   Updating..."), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+    pData->stTxtDiskFree = new wxStaticText(this,
+                                            wxID_ANY,
+                                            wxT("   Updating..."),
+                                            wxDefaultPosition,
+                                            wxDefaultSize,
+                                            wxALIGN_RIGHT);
     gridSizer->Add(pData->stTxtDiskFree, 0, wxRIGHT | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 
     // Machine number of cores
@@ -205,18 +215,27 @@ MemoryStatistics::MemoryStatistics(wxWindow* parent) :
         gridSizer->AddSpacer(10);
         gridSizer->AddSpacer(10);
 
-        auto* stTxtMachineNbCoresTtl = new wxStaticText(
-          this, wxID_ANY, wxT("CPU cores :"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+        auto* stTxtMachineNbCoresTtl = new wxStaticText(this,
+                                                        wxID_ANY,
+                                                        wxT("CPU cores :"),
+                                                        wxDefaultPosition,
+                                                        wxDefaultSize,
+                                                        wxALIGN_RIGHT);
         wxFont f = stTxtMachineNbCoresTtl->GetFont();
         f.SetWeight(wxFONTWEIGHT_BOLD);
         stTxtMachineNbCoresTtl->SetFont(f);
-        gridSizer->Add(
-          stTxtMachineNbCoresTtl, 0, wxRIGHT | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+        gridSizer->Add(stTxtMachineNbCoresTtl,
+                       0,
+                       wxRIGHT | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
 
         wxString s;
         s << Yuni::System::CPU::Count();
-        wxStaticText* stTxtMachineNbCores = new wxStaticText(
-          this, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+        wxStaticText* stTxtMachineNbCores = new wxStaticText(this,
+                                                             wxID_ANY,
+                                                             wxT(""),
+                                                             wxDefaultPosition,
+                                                             wxDefaultSize,
+                                                             wxALIGN_RIGHT);
         stTxtMachineNbCores->SetLabel(s);
         gridSizer->Add(stTxtMachineNbCores, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL);
     }
@@ -236,8 +255,10 @@ MemoryStatistics::MemoryStatistics(wxWindow* parent) :
 
     // Button Close
     {
-        auto* btnClose
-          = Component::CreateButton(panel, wxT("   Close   "), this, &MemoryStatistics::onClose);
+        auto* btnClose = Component::CreateButton(panel,
+                                                 wxT("   Close   "),
+                                                 this,
+                                                 &MemoryStatistics::onClose);
         sizerBar->Add(btnClose, 0, wxFIXED_MINSIZE | wxALIGN_CENTRE_VERTICAL | wxALL, 8);
         sizerBar->Add(15, 5);
         btnClose->SetDefault();
@@ -268,7 +289,9 @@ MemoryStatistics::~MemoryStatistics()
     // we should destroy all children as soon as possible.
     auto* sizer = GetSizer();
     if (sizer)
+    {
         sizer->Clear(true);
+    }
 }
 
 void MemoryStatistics::refreshInformation()
@@ -280,7 +303,9 @@ void MemoryStatistics::refreshInformation()
     wxWindowUpdateLocker updater(this);
 
     if (pData->timer)
+    {
         pData->timer->Stop();
+    }
 
     // Memory available on the system
     {
@@ -305,9 +330,13 @@ void MemoryStatistics::refreshInformation()
 
             uint64_t diskFree = DiskFreeSpace(study->folder.string());
             if (diskFree == (uint64_t)-1)
+            {
                 s << wxT("N/A");
+            }
             else
+            {
                 s << (diskFree / (1024 * 1024)) << wxT(" Mo");
+            }
             pData->stTxtDiskFree->SetLabel(s);
         }
         else
@@ -326,7 +355,9 @@ void MemoryStatistics::refreshInformation()
 
     GetSizer()->Layout();
     if (pData->timer)
+    {
         pData->timer->Start(3000);
+    }
 }
 
 void MemoryStatistics::onClose(void*)
@@ -336,4 +367,3 @@ void MemoryStatistics::onClose(void*)
 }
 
 } // namespace Antares::Window
-

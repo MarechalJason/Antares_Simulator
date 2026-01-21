@@ -1,23 +1,5 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -32,7 +14,7 @@
 // Mock includes for testing - replace with actual includes
 #include <inmemory-modeler.h>
 
-#include "antares/expressions/visitors/TimeIndexVisitor.h"
+#include "antares/expressions/visitors/VariabilityVisitor.h"
 #include "antares/io/outputs/SimulationTableCsv.h"
 #include "antares/io/outputs/SimulationTableCsvFile.h"
 #include "antares/io/outputs/SimulationTableEntry.h"
@@ -56,7 +38,7 @@ using namespace Antares::Optimization;
 using namespace Antares::Optimisation;
 using namespace Antares::Optimisation::LinearProblemDataImpl;
 using namespace Antares::ModelerStudy::SystemModel;
-using namespace Antares::IO;
+using namespace Antares::IO::Outputs;
 using namespace Antares::Expressions;
 using namespace Antares::Expressions::Visitors;
 
@@ -77,24 +59,24 @@ BOOST_AUTO_TEST_SUITE(SupportingMethodsTests)
 
 BOOST_AUTO_TEST_CASE(TestUpdateTimeIndexIfShouldForceScenario)
 {
-    using TI = Antares::Optimisation::TimeIndex;
+    using TI = Antares::Optimisation::VariabilityType;
     // bool = false => no value should change
-    BOOST_CHECK(updateTimeIndexIfShouldForceScenario(TI::CONSTANT_IN_TIME_AND_SCENARIO, false)
+    BOOST_CHECK(updateVariabilityIfShouldForceScenario(TI::CONSTANT_IN_TIME_AND_SCENARIO, false)
                 == TI::CONSTANT_IN_TIME_AND_SCENARIO);
-    BOOST_CHECK(updateTimeIndexIfShouldForceScenario(TI::VARYING_IN_SCENARIO_ONLY, false)
+    BOOST_CHECK(updateVariabilityIfShouldForceScenario(TI::VARYING_IN_SCENARIO_ONLY, false)
                 == TI::VARYING_IN_SCENARIO_ONLY);
-    BOOST_CHECK(updateTimeIndexIfShouldForceScenario(TI::VARYING_IN_TIME_ONLY, false)
+    BOOST_CHECK(updateVariabilityIfShouldForceScenario(TI::VARYING_IN_TIME_ONLY, false)
                 == TI::VARYING_IN_TIME_ONLY);
-    BOOST_CHECK(updateTimeIndexIfShouldForceScenario(TI::VARYING_IN_TIME_AND_SCENARIO, false)
+    BOOST_CHECK(updateVariabilityIfShouldForceScenario(TI::VARYING_IN_TIME_AND_SCENARIO, false)
                 == TI::VARYING_IN_TIME_AND_SCENARIO);
     // bool = true => scenario dependency should be added
-    BOOST_CHECK(updateTimeIndexIfShouldForceScenario(TI::CONSTANT_IN_TIME_AND_SCENARIO, true)
+    BOOST_CHECK(updateVariabilityIfShouldForceScenario(TI::CONSTANT_IN_TIME_AND_SCENARIO, true)
                 == TI::VARYING_IN_SCENARIO_ONLY);
-    BOOST_CHECK(updateTimeIndexIfShouldForceScenario(TI::VARYING_IN_SCENARIO_ONLY, true)
+    BOOST_CHECK(updateVariabilityIfShouldForceScenario(TI::VARYING_IN_SCENARIO_ONLY, true)
                 == TI::VARYING_IN_SCENARIO_ONLY);
-    BOOST_CHECK(updateTimeIndexIfShouldForceScenario(TI::VARYING_IN_TIME_ONLY, true)
+    BOOST_CHECK(updateVariabilityIfShouldForceScenario(TI::VARYING_IN_TIME_ONLY, true)
                 == TI::VARYING_IN_TIME_AND_SCENARIO);
-    BOOST_CHECK(updateTimeIndexIfShouldForceScenario(TI::VARYING_IN_TIME_AND_SCENARIO, true)
+    BOOST_CHECK(updateVariabilityIfShouldForceScenario(TI::VARYING_IN_TIME_AND_SCENARIO, true)
                 == TI::VARYING_IN_TIME_AND_SCENARIO);
 }
 BOOST_AUTO_TEST_SUITE_END()
@@ -537,11 +519,10 @@ struct BasicProblemFixture: Test::Modeler::LinearProblemBuildingFixture
         for (const auto& constraint: model->Constraints())
         {
             const auto& constraintId = constraint.Id();
-            const auto cstrTimeIndex = TimeIndexVisitor(*optimEntityContainer, compo)
-                                         .dispatch(constraint.expression().RootNode());
-            optimEntityContainer->registerConstraint(compo, cstrTimeIndex);
-            if (cstrTimeIndex == TimeIndex::VARYING_IN_TIME_ONLY
-                || cstrTimeIndex == TimeIndex::VARYING_IN_TIME_AND_SCENARIO)
+            const auto constraint_variability = VariabilityVisitor(*optimEntityContainer, compo)
+                                                  .dispatch(constraint.expression().RootNode());
+            optimEntityContainer->registerConstraint(compo, constraint_variability);
+            if (isTimeDependent(constraint_variability))
             {
                 for (int t = 0; t < fillContext.getLocalNumberOfTimeSteps(); ++t)
                 {

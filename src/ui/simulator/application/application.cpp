@@ -1,49 +1,33 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include <antares/writer/writer_factory.h>
-#include <antares/benchmarking/DurationCollector.h>
+#include "application.h"
 
 #include <cassert>
-#include "study.h"
-#include "application.h"
-#include "main.h"
-#include "antares/config/config.h"
+#include <wx/app.h>
+#include <wx/config.h>
 #include <wx/font.h>
 #include <wx/image.h>
-#include <wx/app.h>
-#include "../toolbox/resources.h"
-#include <antares/logs/hostinfo.h>
+
+#include <yuni/datetime/timestamp.h>
 #include <yuni/io/file.h>
+
+#include <antares/benchmarking/DurationCollector.h>
 #include <antares/jit/jit.h>
+#include <antares/locale/locale.h>
+#include <antares/logs/hostinfo.h>
 #include <antares/logs/logs.h>
 #include <antares/memory/memory.h>
-#include <wx/config.h>
-#include "../windows/message.h"
 #include <antares/sys/appdata.h>
 #include <antares/sys/policy.h>
-#include "study.h"
-#include <yuni/datetime/timestamp.h>
+#include <antares/writer/writer_factory.h>
+#include "antares/config/config.h"
+
+#include "../toolbox/resources.h"
+#include "../windows/message.h"
 #include "log_cleaner.h"
-#include <antares/locale/locale.h>
+#include "main.h"
+#include "study.h"
 #ifndef YUNI_OS_WINDOWS
 #include <signal.h>
 #endif
@@ -77,9 +61,13 @@ static void detectStudyToLoadAtStartup()
             String t;
             IO::parent_path(t, Forms::StudyToLoadAtStartup);
             if (System::windows)
+            {
                 Forms::StudyToLoadAtStartup.clear() << t << "\\..\\..";
+            }
             else
+            {
                 Forms::StudyToLoadAtStartup.clear() << t << "/../..";
+            }
         }
     }
 
@@ -89,7 +77,9 @@ static void detectStudyToLoadAtStartup()
         IO::Normalize(Antares::Forms::StudyToLoadAtStartup, name);
 
         if (not IO::Exists(Antares::Forms::StudyToLoadAtStartup))
+        {
             Antares::Forms::StudyToLoadAtStartup.clear();
+        }
     }
 }
 
@@ -106,7 +96,9 @@ static void OpenLogFilename()
     {
         OperatingSystem::FindLocalAppData(ff);
         if (ff.empty())
+        {
             return;
+        }
         ff << SEP << "rte" << SEP << "antares" << SEP << "logs";
     }
     if (not ff.empty() and IO::Directory::Create(ff))
@@ -154,13 +146,15 @@ static void AbortProgram(int code)
         {
             Benchmarking::DurationCollector duration_collector;
             auto resultWriter = Antares::Solver::resultWriterFactory(
-                currentStudy->parameters.resultFormat,
-                currentStudy->folderOutput,
-                currentStudy->pQueueService,
-                duration_collector);
+              currentStudy->parameters.resultFormat,
+              currentStudy->folderOutput,
+              currentStudy->pQueueService,
+              duration_collector);
 
             if (!(!currentStudy))
+            {
                 currentStudy->importLogsToOutputFolder(*resultWriter);
+            }
             logs.error() << "Aborting now. See logs for more details";
         }
         // release currentStudy
@@ -223,7 +217,8 @@ static void InstallSignalHandlers()
 #endif
 }
 
-Application::Application() : wxApp()
+Application::Application():
+    wxApp()
 {
     // Dealing with the lack of memory
     std::set_new_handler(&NotEnoughMemory);
@@ -297,14 +292,18 @@ bool Application::OnInit()
             wxStringToString((wxString() << argv[(int)i]), Antares::Forms::StudyToLoadAtStartup);
             detectStudyToLoadAtStartup();
             if (not Antares::Forms::StudyToLoadAtStartup.empty())
+            {
                 break;
+            }
         }
     }
 #endif
 
     // Detecting study to load at startup (once the gui is created)
     if (not Antares::Forms::StudyToLoadAtStartup.empty())
+    {
         detectStudyToLoadAtStartup();
+    }
 
     // Image handlers
     wxInitAllImageHandlers();
@@ -329,7 +328,9 @@ bool Application::OnInit()
         long lasttime = 0;
 
         if (not config->Read(wxT("last"), &lasttime))
+        {
             lasttime = 0;
+        }
         config->Write(wxT("last"), (long)now);
         delete config;
 

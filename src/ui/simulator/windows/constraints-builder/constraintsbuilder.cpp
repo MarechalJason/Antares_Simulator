@@ -1,61 +1,44 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include "antares/antares/antares.h"
 #include "constraintsbuilder.h"
+
+#include <ui/common/component/panel.h>
+#include <wx/app.h>
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/dialog.h>
+#include <wx/dirdlg.h>
+#include <wx/frame.h>
+#include <wx/sizer.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/timer.h>
+#include <wx/valtext.h>
+
 #include <yuni/io/directory.h>
 #include <yuni/io/directory/info.h>
 
-#include <wx/sizer.h>
-#include <wx/checkbox.h>
-#include <wx/timer.h>
-#include <wx/app.h>
-#include <wx/dialog.h>
-#include <wx/frame.h>
-#include <wx/statline.h>
-#include <wx/textctrl.h>
-#include <wx/dirdlg.h>
-#include <wx/stattext.h>
-#include <wx/button.h>
-#include <wx/valtext.h>
-
+#include <antares/config/config.h>
+#include <antares/inifile/inifile.h>
+#include <antares/io/statistics.h>
+#include <antares/logs/logs.h>
+#include <antares/memory/memory.h>
+#include "antares/antares/antares.h"
 #include "antares/study/ui-runtimeinfos.h"
-#include <ui/common/component/panel.h>
-#include "../../toolbox/resources.h"
-#include "../../toolbox/create.h"
-#include "../../toolbox/components/wizardheader.h"
-#include "../../toolbox/components/datagrid/component.h"
-#include "../../toolbox/components/notebook/notebook.h"
-#include "../../toolbox/components/button.h"
+
+#include "../../application/main.h"
 #include "../../application/main/main.h"
 #include "../../application/menus.h"
 #include "../../application/study.h"
+#include "../../toolbox/components/button.h"
+#include "../../toolbox/components/datagrid/component.h"
+#include "../../toolbox/components/notebook/notebook.h"
+#include "../../toolbox/components/wizardheader.h"
+#include "../../toolbox/create.h"
+#include "../../toolbox/resources.h"
 #include "../message.h"
-#include <antares/logs/logs.h>
-#include <antares/memory/memory.h>
-#include <antares/inifile/inifile.h>
-#include "../../application/study.h"
-#include <antares/config/config.h>
-#include <antares/io/statistics.h>
-#include "../../application/main.h"
 
 using namespace Yuni;
 

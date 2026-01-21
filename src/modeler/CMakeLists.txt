@@ -1,15 +1,15 @@
 add_subdirectory(loadFiles)
+add_subdirectory(fileWriter)
 add_subdirectory(modeler)
 add_subdirectory(parameters)
+add_subdirectory(checks)
 
 OMESSAGE("  :: modeler")
 
 set(exec_name "antares-modeler")
 
 add_executable(antares-modeler
-        main.cpp
-        FileWriter.cpp
-        FileWriter.h)
+        main.cpp)
 
 set_target_properties(antares-modeler PROPERTIES OUTPUT_NAME ${exec_name})
 
@@ -18,6 +18,7 @@ target_link_libraries(antares-modeler
         Antares::modeler-optimisation-container
         Antares::modeler-lib
         Antares::modeler-simulation-table
+        Antares::write-modeler-files
         Antares::logs)
 
 import_std_libs(antares-modeler)

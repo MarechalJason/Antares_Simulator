@@ -1,38 +1,23 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include "../../application/study.h"
+#include "renewable-cluster.h"
+
+#include <wx/sizer.h>
+#include <wx/wupdlock.h>
+
+#include <antares/study/scenario-builder/updater.hxx>
+#include "antares/study/ui-runtimeinfos.h"
+
 #include "../../application/main.h"
+#include "../../application/menus.h"
+#include "../../application/study.h"
 #include "../../application/wait.h"
 #include "../../windows/inspector.h"
-#include "../resources.h"
-#include "../create.h"
-#include "../components/button.h"
 #include "../../windows/message.h"
-#include "../../application/menus.h"
-#include <antares/study/scenario-builder/updater.hxx>
-#include <wx/wupdlock.h>
-#include <wx/sizer.h>
-#include "renewable-cluster.h"
-#include "antares/study/ui-runtimeinfos.h"
+#include "../components/button.h"
+#include "../create.h"
+#include "../resources.h"
 
 using namespace Yuni;
 

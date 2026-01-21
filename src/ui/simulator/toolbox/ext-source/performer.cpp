@@ -1,43 +1,27 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include <yuni/yuni.h>
 #include "performer.h"
 
-#include "../../toolbox/resources.h"
-#include "../../toolbox/create.h"
-#include "../../application/study.h"
+#include <ui/common/lock.h>
+#include <wx/button.h>
+#include <wx/sizer.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+
+#include <yuni/yuni.h>
+
+#include "antares/study/ui-runtimeinfos.h"
+
 #include "../../application/main/main.h"
+#include "../../application/study.h"
 #include "../../toolbox/components/map/component.h"
 #include "../../toolbox/components/wizardheader.h"
+#include "../../toolbox/create.h"
+#include "../../toolbox/resources.h"
 #include "../../windows/inspector.h"
-#include <ui/common/lock.h>
-
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/button.h>
-#include <wx/statline.h>
 #include "action-panel.h"
 #include "window.h"
-#include "antares/study/ui-runtimeinfos.h"
 
 using namespace Yuni;
 

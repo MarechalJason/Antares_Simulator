@@ -1,35 +1,18 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
-
-#include <antares/study/constraint.h>
-#include "../../application/study.h"
-#include "../../application/main/main.h"
-#include "../../toolbox/components/wizardheader.h"
-#include "../../toolbox/create.h"
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #include <wx/dialog.h>
 #include <wx/sizer.h>
+#include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/window.h>
-#include <wx/stattext.h>
+
+#include <antares/study/constraint.h>
+
+#include "../../application/main/main.h"
+#include "../../application/study.h"
+#include "../../toolbox/components/wizardheader.h"
+#include "../../toolbox/create.h"
 
 using namespace Yuni;
 
@@ -37,7 +20,7 @@ namespace Antares::Window
 {
 namespace // anonymous
 {
-class ValueDialog final : public wxDialog
+class ValueDialog final: public wxDialog
 {
 public:
     //! \name Constructor & Destructor
@@ -49,10 +32,12 @@ public:
                 const wxString& out,
                 const wxString& title,
                 const wxString& caption);
+
     //! Destructor
     virtual ~ValueDialog()
     {
     }
+
     //@}
 
 public:
@@ -75,20 +60,23 @@ static wxString gPreviousValue;
 ValueDialog::ValueDialog(wxWindow* parent,
                          const wxString& out,
                          const wxString& title,
-                         const wxString& caption) :
- wxDialog(parent,
-          wxID_ANY,
-          title,
-          wxDefaultPosition,
-          wxDefaultSize,
-          wxCLOSE_BOX | wxCAPTION | wxSYSTEM_MENU | wxCLIP_CHILDREN)
+                         const wxString& caption):
+    wxDialog(parent,
+             wxID_ANY,
+             title,
+             wxDefaultPosition,
+             wxDefaultSize,
+             wxCLOSE_BOX | wxCAPTION | wxSYSTEM_MENU | wxCLIP_CHILDREN)
 {
     canceled = true;
 
     auto* sizer = new wxBoxSizer(wxVERTICAL);
 
-    sizer->Add(Toolbox::Components::WizardHeader::Create(
-                 this, title, "images/32x32/resize-matrix.png", wxEmptyString, 200),
+    sizer->Add(Toolbox::Components::WizardHeader::Create(this,
+                                                         title,
+                                                         "images/32x32/resize-matrix.png",
+                                                         wxEmptyString,
+                                                         200),
                0,
                wxALL | wxEXPAND);
 
@@ -106,9 +94,13 @@ ValueDialog::ValueDialog(wxWindow* parent,
 
         wxString s;
         if (gPreviousValue.empty() || !out.empty())
+        {
             s << out;
+        }
         else
+        {
             s << gPreviousValue;
+        }
         pTextInput = new wxTextCtrl(this, wxID_ANY, s, wxDefaultPosition, wxDefaultSize);
         pGridSizer->Add(pTextInput, 1, wxALL | wxEXPAND, 1);
     }
@@ -179,4 +171,3 @@ bool AskForInput(wxString& out, const wxString& title, const wxString& caption)
 }
 
 } // namespace Antares::Window
-

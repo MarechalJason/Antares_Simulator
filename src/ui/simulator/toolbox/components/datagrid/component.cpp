@@ -1,68 +1,47 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
+
+#include <yuni/io/file.h>
 
 #include <antares/array/matrix.h>
-#include <yuni/io/file.h>
 #ifndef YUNI_OS_WINDOWS
 #include <yuni/core/system/environment.h>
 #endif
 
-#include "component.h"
-#include "wxgrid-renderer.h"
-#include "renderer.h"
-
-#include <wx/sizer.h>
-#include <wx/dcclient.h>
-#include <wx/statline.h>
-#include <wx/choice.h>
-#include <wx/dirdlg.h>
-#include <wx/busyinfo.h>
-#include <wx/filedlg.h>
-#include <wx/busyinfo.h>
+#include <ui/common/component/panel/group.h>
+#include <ui/common/lock.h>
 #include <wx/app.h>
+#include <wx/busyinfo.h>
+#include <wx/choice.h>
+#include <wx/combobox.h>
+#include <wx/dcclient.h>
+#include <wx/dirdlg.h>
+#include <wx/filedlg.h>
 #include <wx/msgdlg.h>
-#include <wx/wupdlock.h>
+#include <wx/sizer.h>
+#include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/combobox.h>
+#include <wx/wupdlock.h>
 
-#include "gridhelper.h"
 #include "../../../application/main.h"
 #include "../../../application/menus.h"
 #include "../../../application/study.h"
 #include "../../../application/wait.h"
-#include "../../../toolbox/components/captionpanel.h"
-#include "../../../toolbox/components/button.h"
 #include "../../../toolbox/clipboard/clipboard.h"
-#include "../../../windows/calendar/calendar.h"
-#include "../../resources.h"
-#include "../../create.h"
+#include "../../../toolbox/components/button.h"
+#include "../../../toolbox/components/captionpanel.h"
 #include "../../../toolbox/validator.h"
+#include "../../../windows/calendar/calendar.h"
 #include "../../components/datagrid/filter/component.h"
+#include "../../create.h"
+#include "../../resources.h"
+#include "component.h"
 #include "dbgrid.h"
-#include <ui/common/lock.h>
-#include <ui/common/component/panel/group.h>
-
-#include "wxgrid-renderer.h"
+#include "gridhelper.h"
 #include "modifiers.hxx"
+#include "renderer.h"
+#include "wxgrid-renderer.h"
 
 using namespace Yuni;
 

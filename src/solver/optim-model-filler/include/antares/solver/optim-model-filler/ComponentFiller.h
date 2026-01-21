@@ -1,23 +1,5 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -82,29 +64,31 @@ public:
     explicit ComponentFiller(const ModelerStudy::SystemModel::Component& component,
                              OptimEntityContainer& optimEntityContainer,
                              const ScenarioGroupRepository& scenarioGroupRepository,
-                             Modeler::Config::Location targetLocation,
+                             Solver::Config::Location targetLocation,
                              BendersDecomposition* bendersDecomposition = nullptr);
 
-    void addVariables(const Optimisation::LinearProblemApi::FillContext& ctx) override;
+    void addVariables(const LinearProblemApi::FillContext& ctx) override;
 
-    void addConstraints(const Optimisation::LinearProblemApi::FillContext& ctx) override;
-    void addObjectives(const Optimisation::LinearProblemApi::FillContext& ctx) override;
+    void addConstraints(const LinearProblemApi::FillContext& ctx) override;
+    void addObjectives(const LinearProblemApi::FillContext& ctx) override;
 
 private:
-    void addStaticConstraint(const Optimisation::LinearConstraint& linear_constraint,
-                             const std::string& constraint_id);
+    void addStaticConstraint(const LinearConstraint& linear_constraint,
+                             const std::string& constraint_id) const;
 
-    void addTimeDependentConstraints(const Optimisation::LinearConstraint& linear_constraints,
+    void addTimeDependentConstraints(const LinearConstraint& linear_constraints,
                                      const std::string& constraint_id,
-                                     const Optimisation::LinearProblemApi::FillContext& ctx);
+                                     const LinearProblemApi::FillContext& ctx) const;
 
-    TimeIndex getConstraintTimeIndex(const Expressions::Nodes::Node* node,
-                                     const ModelerStudy::SystemModel::Component& component) const;
+    void addStaticObjective(const Optimization::LinearExpression& expression) const;
+
+    VariabilityType getVariability(const Nodes::Node* node,
+                                   const ModelerStudy::SystemModel::Component& component) const;
 
     const ModelerStudy::SystemModel::Component& component_;
     OptimEntityContainer& optimEntityContainer_;
     const ScenarioGroupRepository& scenarioGroupRepository_;
-    const Modeler::Config::Location targetLocation_;
+    const Solver::Config::Location targetLocation_;
     BendersDecomposition* bendersDecomposition_ = nullptr;
 
     // Filter to keep only items compatible with the target location
@@ -112,7 +96,7 @@ private:
     {
         return std::views::filter(
           [this](const auto& item)
-          { return AreLocationsCompatible(item.location(), targetLocation_); });
+          { return AreLocationsCompatibleForFillers(item.location(), targetLocation_); });
     }
 };
 } // namespace Antares::Optimisation

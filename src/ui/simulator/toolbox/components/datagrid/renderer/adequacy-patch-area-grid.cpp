@@ -1,32 +1,16 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #include "adequacy-patch-area-grid.h"
+
 #include <yuni/core/math.h>
 
 using namespace Yuni;
 
 namespace Antares::Component::Datagrid::Renderer
 {
-AdequacyPatchAreaGrid::AdequacyPatchAreaGrid() : pControl(nullptr)
+AdequacyPatchAreaGrid::AdequacyPatchAreaGrid():
+    pControl(nullptr)
 {
 }
 
@@ -35,7 +19,9 @@ AdequacyPatchAreaGrid::~AdequacyPatchAreaGrid() = default;
 bool AdequacyPatchAreaGrid::valid() const
 {
     if (!study)
+    {
         std::cout << "not valid ! \n";
+    }
     return !(!study);
 }
 
@@ -68,13 +54,19 @@ bool AdequacyPatchAreaGrid::cellValue(int, int row, const Yuni::String& value)
         bool ins = s.to<int>() == 2 || s == "inside" || s == "i";
 
         if (vir)
+        {
             study->areas.byIndex[row]->adequacyPatchMode = Data::AdequacyPatch::virtualArea;
+        }
         else if (ins)
-            study->areas.byIndex[row]->adequacyPatchMode
-              = Data::AdequacyPatch::physicalAreaInsideAdqPatch;
+        {
+            study->areas.byIndex[row]->adequacyPatchMode = Data::AdequacyPatch::
+              physicalAreaInsideAdqPatch;
+        }
         else
-            study->areas.byIndex[row]->adequacyPatchMode
-              = Data::AdequacyPatch::physicalAreaOutsideAdqPatch;
+        {
+            study->areas.byIndex[row]->adequacyPatchMode = Data::AdequacyPatch::
+              physicalAreaOutsideAdqPatch;
+        }
 
         onTriggerUpdate();
         Dispatcher::GUI::Refresh(pControl);
@@ -98,7 +90,7 @@ double AdequacyPatchAreaGrid::cellNumericValue(int, int row) const
         case Data::AdequacyPatch::physicalAreaInsideAdqPatch:
             return 2.;
         default:
-           return 0.;
+            return 0.;
         }
     }
     return 0.;
@@ -146,4 +138,4 @@ IRenderer::CellStyle AdequacyPatchAreaGrid::cellStyle(int, int row) const
     }
     return IRenderer::cellStyleConstraintNoWeight;
 }
-}
+} // namespace Antares::Component::Datagrid::Renderer

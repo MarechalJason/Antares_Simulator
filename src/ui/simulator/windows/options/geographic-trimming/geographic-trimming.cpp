@@ -1,31 +1,15 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #include "geographic-trimming.h"
+
 #include <wx/statline.h>
-#include "../../../application/study.h"
+
 #include "../../../application/main.h"
-#include "../../../toolbox/create.h"
-#include "../../../toolbox/components/wizardheader.h"
+#include "../../../application/study.h"
 #include "../../../toolbox/components/datagrid/renderer/geographic-trimming-grid.h"
+#include "../../../toolbox/components/wizardheader.h"
+#include "../../../toolbox/create.h"
 
 using namespace Yuni;
 

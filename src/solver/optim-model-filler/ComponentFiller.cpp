@@ -1,32 +1,16 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
+#include <numeric>
 #include <ranges>
 #include <stdexcept>
 #include <variant>
 
+#include <antares/exception/RuntimeError.hpp>
 #include <antares/expressions/nodes/ExpressionsNodes.h>
 #include <antares/expressions/visitors/EvalVisitor.h>
 #include <antares/solver/optim-model-filler/ComponentFiller.h>
-#include "antares/expressions/visitors/TimeIndexVisitor.h"
+#include "antares/expressions/visitors/VariabilityVisitor.h"
 
 namespace
 {
@@ -241,10 +225,10 @@ void AddVariableVisitor::operator()(const std::vector<double>& lb,
     }
 }
 
-ComponentFiller::ComponentFiller(const ModelerStudy::SystemModel::Component& component,
+ComponentFiller::ComponentFiller(const Component& component,
                                  OptimEntityContainer& optimEntityContainer,
                                  const ScenarioGroupRepository& scenarioGroupRepository,
-                                 Modeler::Config::Location targetLocation,
+                                 Solver::Config::Location targetLocation,
                                  BendersDecomposition* bendersDecomposition):
     component_(component),
     optimEntityContainer_(optimEntityContainer),
@@ -283,12 +267,12 @@ void ComponentFiller::addVariables(const LinearProblemApi::FillContext& ctx)
         return;
     }
 
-    Expressions::Visitors::EvalVisitor evaluator(optimEntityContainer_, ctx, component_);
+    Visitors::EvalVisitor evaluator(optimEntityContainer_, ctx, component_);
     auto valueOrDefault = [&evaluator](const auto& node, double defaultValue)
     {
         if (node.Empty())
         {
-            return Expressions::Visitors::EvaluationResult(defaultValue);
+            return Visitors::EvaluationResult(defaultValue);
         }
         return evaluator.dispatch(node.RootNode());
     };
@@ -321,7 +305,7 @@ void ComponentFiller::addVariables(const LinearProblemApi::FillContext& ctx)
 
         // Add common variables
         if (bendersDecomposition_
-            && variable.location() == Modeler::Config::Location::MASTER_AND_SUBPROBLEMS)
+            && variable.location() == Solver::Config::Location::MASTER_AND_SUBPROBLEMS)
         {
             bendersDecomposition_->collectConnectionVariables(variableNames.names(),
                                                               pb.variableCount());
@@ -330,7 +314,7 @@ void ComponentFiller::addVariables(const LinearProblemApi::FillContext& ctx)
 }
 
 void ComponentFiller::addStaticConstraint(const LinearConstraint& linear_constraint,
-                                          const std::string& constraint_id)
+                                          const std::string& constraint_id) const
 {
     auto* ct = optimEntityContainer_.Problem().addConstraint(linear_constraint.lb[0],
                                                              linear_constraint.ub[0],
@@ -347,7 +331,7 @@ void ComponentFiller::addStaticConstraint(const LinearConstraint& linear_constra
 
 void ComponentFiller::addTimeDependentConstraints(const LinearConstraint& linear_constraints,
                                                   const std::string& constraint_id,
-                                                  const LinearProblemApi::FillContext& ctx)
+                                                  const LinearProblemApi::FillContext& ctx) const
 {
     auto& pb = optimEntityContainer_.Problem();
     const auto dims = getDimensions(ctx);
@@ -380,12 +364,11 @@ void ComponentFiller::addConstraints(const LinearProblemApi::FillContext& ctx)
     {
         auto* root_node = constraint.expression().RootNode();
         auto linear_constraints = visitor.dispatch(root_node);
-        const auto timeIndex = getConstraintTimeIndex(root_node, component_);
+        const auto variability = getVariability(root_node, component_);
 
-        optimEntityContainer_.registerConstraint(component_, timeIndex);
+        optimEntityContainer_.registerConstraint(component_, variability);
 
-        if (timeIndex == TimeIndex::VARYING_IN_TIME_ONLY
-            || timeIndex == TimeIndex::VARYING_IN_TIME_AND_SCENARIO)
+        if (isTimeDependent(variability))
         {
             addTimeDependentConstraints(linear_constraints, constraint.Id(), ctx);
         }
@@ -396,33 +379,42 @@ void ComponentFiller::addConstraints(const LinearProblemApi::FillContext& ctx)
     }
 }
 
-void ComponentFiller::addObjectives(const LinearProblemApi::FillContext& ctx)
+void ComponentFiller::addStaticObjective(const Optimization::LinearExpression& expression) const
 {
-    auto* model = component_.getModel();
+    auto& pb = optimEntityContainer_.Problem();
     const auto& solverVariables = optimEntityContainer_.getVariables();
-    ReadLinearExpressionVisitor visitor(optimEntityContainer_, ctx, component_);
 
-    for (const auto& objective: model->Objectives() | locationFilter())
+    for (const auto& [index, value]: expression)
     {
-        const auto linearExpression = visitor.visitMergeDuplicates(
-          objective.expression().RootNode());
-
-        auto& pb = optimEntityContainer_.Problem();
-        for (const auto& expr: linearExpression)
-        {
-            for (const auto& [index, value]: expr)
-            {
-                pb.setObjectiveCoefficient(solverVariables[static_cast<std::size_t>(index)].get(),
-                                           value);
-            }
-        }
+        pb.setObjectiveCoefficient(solverVariables[index].get(), value);
     }
 }
 
-TimeIndex ComponentFiller::getConstraintTimeIndex(const Nodes::Node* node,
-                                                  const Component& component) const
+void ComponentFiller::addObjectives(const LinearProblemApi::FillContext& ctx)
 {
-    Expressions::Visitors::TimeIndexVisitor timeIndexVisitor(optimEntityContainer_, component);
-    return timeIndexVisitor.dispatch(node);
+    auto* model = component_.getModel();
+    ReadLinearExpressionVisitor visitor(optimEntityContainer_, ctx, component_);
+
+    double objectiveOffset = 0.0;
+    for (const auto& objective: model->Objectives() | locationFilter())
+    {
+        const auto root_node = objective.expression().RootNode();
+        const auto variability = getVariability(root_node, component_);
+        if (isTimeDependent(variability))
+        {
+            throw Error::RuntimeError("Time dependent objectives are not supported in Antares.");
+        }
+        const auto linearExpression = visitor.visitMergeDuplicates(root_node)[0];
+        addStaticObjective(linearExpression);
+        objectiveOffset += linearExpression.constant();
+    }
+    auto& pb = optimEntityContainer_.Problem();
+    pb.setObjectiveOffset(objectiveOffset);
+}
+
+VariabilityType ComponentFiller::getVariability(const Node* node, const Component& component) const
+{
+    Visitors::VariabilityVisitor variability_visitor(optimEntityContainer_, component);
+    return variability_visitor.dispatch(node);
 }
 } // namespace Antares::Optimisation

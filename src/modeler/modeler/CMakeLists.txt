@@ -6,7 +6,7 @@ target_sources(modeler-lib
         include/antares/solver/modeler/Modeler.h
         include/antares/solver/modeler/ILoader.h
         include/antares/solver/modeler/IWriter.h
-        include/antares/solver/modeler/data.h
+        include/antares/solver/modeler/ModelerData.h
 )
 
 target_link_libraries(modeler-lib
@@ -20,4 +20,8 @@ target_link_libraries(modeler-lib
 target_include_directories(modeler-lib
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+install(DIRECTORY include/antares
+        DESTINATION "include"
 )

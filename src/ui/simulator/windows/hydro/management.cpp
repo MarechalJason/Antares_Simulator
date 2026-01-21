@@ -1,50 +1,38 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #include "management.h"
+
 #include <wx/defs.h>
 #include <wx/statline.h>
 
+#include "../../application/menus.h"
 #include "../../toolbox/components/datagrid/renderer/area/hydroprepro.h"
 #include "../../toolbox/components/datagrid/renderer/area/inflowpattern.h"
-#include "../../toolbox/validator.h"
 #include "../../toolbox/create.h"
-#include "../../application/menus.h"
+#include "../../toolbox/validator.h"
 
 using namespace Yuni;
 
 namespace Antares::Window::Hydro
 {
-Management::Management(wxWindow* parent, Toolbox::InputSelector::Area* notifier) :
- wxScrolledWindow(parent), pInputAreaSelector(notifier)
+Management::Management(wxWindow* parent, Toolbox::InputSelector::Area* notifier):
+    wxScrolledWindow(parent),
+    pInputAreaSelector(notifier)
 {
     OnStudyClosed.connect(this, &Management::onStudyClosed);
     if (notifier)
+    {
         notifier->onAreaChanged.connect(this, &Management::onAreaChanged);
+    }
 }
 
 void Management::createComponents()
 {
     if (pComponentsAreReady)
+    {
         return;
+    }
     pComponentsAreReady = true;
 
     {
@@ -110,6 +98,7 @@ void Management::createComponents()
         {
             verticalSpace = 10
         };
+
         pGrid->AddSpacer(verticalSpace);
         pGrid->AddSpacer(verticalSpace);
         pGrid->AddSpacer(verticalSpace);
@@ -161,6 +150,7 @@ void Management::createComponents()
         {
             verticalSpace = 10
         };
+
         pGrid->AddSpacer(verticalSpace);
         pGrid->AddSpacer(verticalSpace);
         pGrid->AddSpacer(verticalSpace);
@@ -188,8 +178,9 @@ void Management::createComponents()
 
     // Initialize reservoir level date
     {
-        pGrid->Add(
-          Component::CreateLabel(pSupport, wxT("Initialize reservoir level on ")), 0, right);
+        pGrid->Add(Component::CreateLabel(pSupport, wxT("Initialize reservoir level on ")),
+                   0,
+                   right);
         auto* button = new Component::Button(pSupport, Antares::Date::MonthToString(0, 0));
         button->menu(true);
         button->onPopupMenu(this, &Management::onToggleInitializeReservoirLevelDate);
@@ -218,6 +209,7 @@ void Management::createComponents()
         {
             verticalSpace = 10
         };
+
         pGrid->AddSpacer(verticalSpace);
         pGrid->AddSpacer(verticalSpace);
         pGrid->AddSpacer(verticalSpace);
@@ -277,6 +269,7 @@ void Management::createComponents()
         {
             verticalSpace = 10
         };
+
         pGrid->AddSpacer(verticalSpace);
         pGrid->AddSpacer(verticalSpace);
         pGrid->AddSpacer(verticalSpace);
@@ -342,12 +335,12 @@ void Management::createComponents()
                                    nullptr,
                                    this);
 
-    pIntermonthlyBreakdown->Connect(
-      pIntermonthlyBreakdown->GetId(),
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(Management::onIntermonthlyBreakdownChanged),
-      nullptr,
-      this);
+    pIntermonthlyBreakdown->Connect(pIntermonthlyBreakdown->GetId(),
+                                    wxEVT_COMMAND_TEXT_UPDATED,
+                                    wxCommandEventHandler(
+                                      Management::onIntermonthlyBreakdownChanged),
+                                    nullptr,
+                                    this);
 
     pReservoirCapacity->Connect(pReservoirCapacity->GetId(),
                                 wxEVT_COMMAND_TEXT_UPDATED,
@@ -387,9 +380,13 @@ void Management::onAreaChanged(Data::Area* area)
     {
         // create components on-demand
         if (!pComponentsAreReady)
+        {
             createComponents();
+        }
         else
+        {
             GetSizer()->Show(pSupport, true);
+        }
 
         pIntermonthlyBreakdown->ChangeValue(wxString() << area->hydro.intermonthlyBreakdown);
         pInterdailyBreakdown->ChangeValue(wxString() << area->hydro.interDailyBreakdown);
@@ -587,7 +584,9 @@ void Management::onIntermonthlyBreakdownChanged(wxCommandEvent& evt)
     if (pArea)
     {
         if (evt.GetString().empty())
+        {
             return;
+        }
         double d;
         evt.GetString().ToDouble(&d);
         if (not Math::Equals(d, pArea->hydro.intermonthlyBreakdown))
@@ -608,7 +607,9 @@ void Management::onInterdailyBreakdownChanged(wxCommandEvent& evt)
     if (pArea)
     {
         if (evt.GetString().empty())
+        {
             return;
+        }
         double d;
         evt.GetString().ToDouble(&d);
         if (not Math::Equals(d, pArea->hydro.interDailyBreakdown))
@@ -624,7 +625,9 @@ void Management::onIntradailyModulationChanged(wxCommandEvent& evt)
     if (pArea)
     {
         if (evt.GetString().empty())
+        {
             return;
+        }
         double d;
         evt.GetString().ToDouble(&d);
         if (not Math::Equals(d, pArea->hydro.intraDailyModulation))
@@ -646,11 +649,15 @@ void Management::onReservoirCapacityChanged(wxCommandEvent& evt)
     if (pArea)
     {
         if (evt.GetString().empty())
+        {
             return;
+        }
         double d;
         evt.GetString().ToDouble(&d);
         if (d < 1e-6)
+        {
             d = 0;
+        }
         if (not Math::Equals(d, pArea->hydro.reservoirCapacity))
         {
             pArea->hydro.reservoirCapacity = d;
@@ -664,7 +671,9 @@ void Management::onLeewayLowBoundChanged(wxCommandEvent& evt)
     if (pArea)
     {
         if (evt.GetString().empty())
+        {
             return;
+        }
         double d;
         evt.GetString().ToDouble(&d);
         if (not Math::Equals(d, pArea->hydro.leewayLowerBound))
@@ -695,7 +704,9 @@ void Management::onLeewayUpperBoundChanged(wxCommandEvent& evt)
     if (pArea)
     {
         if (evt.GetString().empty())
+        {
             return;
+        }
         double d;
         evt.GetString().ToDouble(&d);
         if (not Math::Equals(d, pArea->hydro.leewayUpperBound))
@@ -726,7 +737,9 @@ void Management::onPumpingEfficiencyChanged(wxCommandEvent& evt)
     if (pArea)
     {
         if (evt.GetString().empty())
+        {
             return;
+        }
         double d;
         evt.GetString().ToDouble(&d);
 
@@ -748,7 +761,9 @@ void Management::onStudyClosed()
     pArea = nullptr;
 
     if (GetSizer())
+    {
         GetSizer()->Show(pSupport, false);
+    }
 }
 
 void Management::onToggleReservoirManagement(Component::Button&, wxMenu& menu, void*)
@@ -774,8 +789,11 @@ void Management::onToggleReservoirManagement(Component::Button&, wxMenu& menu, v
                  wxCommandEventHandler(Management::onEnableReserveManagement),
                  nullptr,
                  this);
-    it = Menu::CreateItem(
-      &menu, wxID_ANY, wxT("No"), "images/16x16/light_orange.png", wxEmptyString);
+    it = Menu::CreateItem(&menu,
+                          wxID_ANY,
+                          wxT("No"),
+                          "images/16x16/light_orange.png",
+                          wxEmptyString);
     menu.Connect(it->GetId(),
                  wxEVT_COMMAND_MENU_SELECTED,
                  wxCommandEventHandler(Management::onDisableReserveManagement),
@@ -806,8 +824,11 @@ void Management::onToggleFollowLoad(Component::Button&, wxMenu& menu, void*)
                  wxCommandEventHandler(Management::onFollowingLoadModulations),
                  nullptr,
                  this);
-    it = Menu::CreateItem(
-      &menu, wxID_ANY, wxT("No"), "images/16x16/light_orange.png", wxEmptyString);
+    it = Menu::CreateItem(&menu,
+                          wxID_ANY,
+                          wxT("No"),
+                          "images/16x16/light_orange.png",
+                          wxEmptyString);
     menu.Connect(it->GetId(),
                  wxEVT_COMMAND_MENU_SELECTED,
                  wxCommandEventHandler(Management::onUnfollowingLoadModulations),
@@ -828,8 +849,11 @@ void Management::onToggleUseWaterValue(Component::Button&, wxMenu& menu, void*)
     }
     wxMenuItem* it;
 
-    it = Menu::CreateItem(
-      &menu, wxID_ANY, wxT("Use water value"), "images/16x16/light_green.png", wxEmptyString);
+    it = Menu::CreateItem(&menu,
+                          wxID_ANY,
+                          wxT("Use water value"),
+                          "images/16x16/light_green.png",
+                          wxEmptyString);
     menu.Connect(it->GetId(),
                  wxEVT_COMMAND_MENU_SELECTED,
                  wxCommandEventHandler(Management::onEnableUseWaterValue),
@@ -837,8 +861,11 @@ void Management::onToggleUseWaterValue(Component::Button&, wxMenu& menu, void*)
                  this);
     if (pArea->hydro.useHeuristicTarget)
     {
-        it = Menu::CreateItem(
-          &menu, wxID_ANY, wxT("No"), "images/16x16/light_orange.png", wxEmptyString);
+        it = Menu::CreateItem(&menu,
+                              wxID_ANY,
+                              wxT("No"),
+                              "images/16x16/light_orange.png",
+                              wxEmptyString);
         menu.Connect(it->GetId(),
                      wxEVT_COMMAND_MENU_SELECTED,
                      wxCommandEventHandler(Management::onDisableUseWaterValue),
@@ -870,8 +897,11 @@ void Management::onToggleHardBoundsOnRuleCurves(Component::Button&, wxMenu& menu
                  wxCommandEventHandler(Management::onEnableHardBoundsOnRuleCurves),
                  nullptr,
                  this);
-    it = Menu::CreateItem(
-      &menu, wxID_ANY, wxT("No"), "images/16x16/light_orange.png", wxEmptyString);
+    it = Menu::CreateItem(&menu,
+                          wxID_ANY,
+                          wxT("No"),
+                          "images/16x16/light_orange.png",
+                          wxEmptyString);
     menu.Connect(it->GetId(),
                  wxEVT_COMMAND_MENU_SELECTED,
                  wxCommandEventHandler(Management::onDisableHardBoundsOnRuleCurves),
@@ -892,8 +922,11 @@ void Management::onToggleUseHeuristicTarget(Component::Button&, wxMenu& menu, vo
     }
     wxMenuItem* it;
 
-    it = Menu::CreateItem(
-      &menu, wxID_ANY, wxT("Use heuristic target"), "images/16x16/light_green.png", wxEmptyString);
+    it = Menu::CreateItem(&menu,
+                          wxID_ANY,
+                          wxT("Use heuristic target"),
+                          "images/16x16/light_green.png",
+                          wxEmptyString);
     menu.Connect(it->GetId(),
                  wxEVT_COMMAND_MENU_SELECTED,
                  wxCommandEventHandler(Management::onEnableUseHeuristicTarget),
@@ -902,8 +935,11 @@ void Management::onToggleUseHeuristicTarget(Component::Button&, wxMenu& menu, vo
 
     if (pArea->hydro.useWaterValue)
     {
-        it = Menu::CreateItem(
-          &menu, wxID_ANY, wxT("No"), "images/16x16/light_orange.png", wxEmptyString);
+        it = Menu::CreateItem(&menu,
+                              wxID_ANY,
+                              wxT("No"),
+                              "images/16x16/light_orange.png",
+                              wxEmptyString);
         menu.Connect(it->GetId(),
                      wxEVT_COMMAND_MENU_SELECTED,
                      wxCommandEventHandler(Management::onDisableUseHeuristicTarget),
@@ -925,15 +961,21 @@ void Management::onToggleUseLeeway(Component::Button&, wxMenu& menu, void*)
     }
     wxMenuItem* it;
 
-    it = Menu::CreateItem(
-      &menu, wxID_ANY, wxT("Use Leeway"), "images/16x16/light_green.png", wxEmptyString);
+    it = Menu::CreateItem(&menu,
+                          wxID_ANY,
+                          wxT("Use Leeway"),
+                          "images/16x16/light_green.png",
+                          wxEmptyString);
     menu.Connect(it->GetId(),
                  wxEVT_COMMAND_MENU_SELECTED,
                  wxCommandEventHandler(Management::onEnableUseLeeway),
                  nullptr,
                  this);
-    it = Menu::CreateItem(
-      &menu, wxID_ANY, wxT("No"), "images/16x16/light_orange.png", wxEmptyString);
+    it = Menu::CreateItem(&menu,
+                          wxID_ANY,
+                          wxT("No"),
+                          "images/16x16/light_orange.png",
+                          wxEmptyString);
     menu.Connect(it->GetId(),
                  wxEVT_COMMAND_MENU_SELECTED,
                  wxCommandEventHandler(Management::onDisableUseLeeway),
@@ -988,8 +1030,11 @@ void Management::onTogglePowerToLevel(Component::Button&, wxMenu& menu, void*)
                  wxCommandEventHandler(Management::onEnablePowerToLevel),
                  nullptr,
                  this);
-    it = Menu::CreateItem(
-      &menu, wxID_ANY, wxT("No"), "images/16x16/light_orange.png", wxEmptyString);
+    it = Menu::CreateItem(&menu,
+                          wxID_ANY,
+                          wxT("No"),
+                          "images/16x16/light_orange.png",
+                          wxEmptyString);
     menu.Connect(it->GetId(),
                  wxEVT_COMMAND_MENU_SELECTED,
                  wxCommandEventHandler(Management::onDisablePowerToLevel),
@@ -1148,5 +1193,3 @@ void Management::onChangingInitializeReservoirLevelDate(wxCommandEvent& evt)
 }
 
 } // namespace Antares::Window::Hydro
-
-

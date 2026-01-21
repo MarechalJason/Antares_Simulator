@@ -1,21 +1,6 @@
-#  Copyright 2007-2025, RTE (https://www.rte-france.com)
-#  See AUTHORS.txt
-#  SPDX-License-Identifier: MPL-2.0
-#  This file is part of Antares-Simulator,
-#  Adequacy and Performance assessment for interconnected energy networks.
-#
-#  Antares_Simulator is free software: you can redistribute it and/or modify
-#  it under the terms of the Mozilla Public Licence 2.0 as published by
-#  the Mozilla Foundation, either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  Antares_Simulator is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#  Mozilla Public Licence 2.0 for more details.
-#
-#  You should have received a copy of the Mozilla Public Licence 2.0
-#  along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
+# Copyright 2007-2026, RTE (https://www.rte-france.com)
+# SPDX-License-Identifier: MPL-2.0
+
 import math
 # Test steps definitions specific to antares-modeler
 
@@ -112,7 +97,8 @@ def run_modeler(context):
     else:
         context.output_path = os.path.join(context.study_path,
                                            "output")  # TODO : fixme parse_output_folder_from_logs(out)
-        context.moh = modeler_output_handler(parse_simulation_table_from_logs(context.logs_out), parse_output_folder_from_logs(context.logs_out))
+        context.moh = modeler_output_handler(parse_simulation_table_from_logs(context.logs_out),
+                                             parse_output_folder_from_logs(context.logs_out))
 
     context.return_code = process.returncode
 
@@ -160,12 +146,13 @@ def check_variables(context, model):
 
 @then(u'the master problem contains the following variables')
 def check_master_variables(context):
-    assert(context.moh.problems != None and context.moh.problems.master != None)
+    assert (context.moh.problems != None and context.moh.problems.master != None)
     check_variables(context, context.moh.problems.master)
+
 
 @then(u'the subproblem contains the following variables')
 def check_subproblem_variables(context):
-    assert(context.moh.problems != None and context.moh.problems.subproblem != None)
+    assert (context.moh.problems != None and context.moh.problems.subproblem != None)
     model = context.moh.problems.subproblem
     check_variables(context, context.moh.problems.subproblem)
 
@@ -187,6 +174,7 @@ def parse_structure(content):
         })
     return entries
 
+
 @then(u'the structure file contains the following entries')
 def check_structure(context):
     structure = context.moh.problems.structure
@@ -205,4 +193,4 @@ def check_structure(context):
     extra = actual_set - expected_set
 
     assert not missing, f"Missing entries: {missing}"
-    assert not extra,   f"Unexpected entries: {extra}"
+    assert not extra, f"Unexpected entries: {extra}"

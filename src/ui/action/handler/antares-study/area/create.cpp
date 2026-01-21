@@ -1,52 +1,39 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
+
+#include "../thermal-cluster/create.h"
 
 #include <action/handler/antares-study/area/create.h>
+
 #include <antares/utils/utils.h>
-#include "nodal-optimization.h"
-#include "reserves.h"
+
+#include "../thermal-cluster/common.h"
+#include "../thermal-cluster/root-node.h"
+#include "allocation-hydro.h"
+#include "color.h"
+#include "correlation.h"
+#include "filtering.h"
 #include "misc-gen.h"
+#include "nodal-optimization.h"
+#include "position.h"
+#include "reserves.h"
 #include "timeseries.h"
 #include "ts-generator.h"
-#include "position.h"
-#include "color.h"
 #include "ts-node.h"
-#include "correlation.h"
-#include "allocation-hydro.h"
-#include "filtering.h"
-#include "../thermal-cluster/create.h"
-#include "../thermal-cluster/root-node.h"
-#include "../thermal-cluster/common.h"
 
 using namespace Yuni;
 
 namespace Antares::Action::AntaresStudy::Area
 {
-Create::Create(const AnyString& areaname) : pOriginalAreaName(areaname)
+Create::Create(const AnyString& areaname):
+    pOriginalAreaName(areaname)
 {
     pInfos.behavior = bhOverwrite;
 }
 
-Create::Create(const AnyString& areaname, const AnyString& targetname) :
- pOriginalAreaName(areaname), pTargetAreaName(targetname)
+Create::Create(const AnyString& areaname, const AnyString& targetname):
+    pOriginalAreaName(areaname),
+    pTargetAreaName(targetname)
 {
     pInfos.behavior = bhOverwrite;
 }
@@ -58,7 +45,9 @@ Create::~Create()
 void Create::prepareSkipWL(Context& ctx)
 {
     if (pTargetAreaName.empty())
+    {
         pTargetAreaName = pOriginalAreaName;
+    }
 
     Data::AreaName originalID;
     TransformNameIntoID(pOriginalAreaName, originalID);
@@ -230,12 +219,16 @@ void Create::createActionsForAStandardAreaCopy(Context& ctx, bool copyPosition)
     // Position
     auto* p = new Position(pOriginalAreaName);
     if (!copyPosition)
+    {
         p->behavior(bhSkip);
+    }
     *this += p;
     // Color
     auto* c = new Color(pOriginalAreaName);
     if (copyPosition)
+    {
         c->behavior(bhOverwrite);
+    }
 
     *this += c;
 
@@ -287,8 +280,10 @@ void Create::createActionsForAStandardAreaCopy(Context& ctx, bool copyPosition)
         auto* root = new RootNodePlant(pOriginalAreaName);
 
         // browsing each thermal cluster
-        for (auto c : area->thermal.list.all())
+        for (auto c: area->thermal.list.all())
+        {
             *root += StandardActionsToCopyThermalCluster(pOriginalAreaName, c->name());
+        }
 
         *this += root;
     }
@@ -309,6 +304,3 @@ IAction* Create::StandardActionsToCopyThermalCluster(const Data::AreaName& area,
 }
 
 } // namespace Antares::Action::AntaresStudy::Area
-
-
-

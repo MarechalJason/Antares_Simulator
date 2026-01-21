@@ -1,23 +1,5 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -31,6 +13,7 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace Antares::ModelerStudy::SystemModel;
+using namespace Antares::Optimisation;
 
 struct ComponentBuilderCreationFixture
 {
@@ -57,7 +40,7 @@ BOOST_FIXTURE_TEST_SUITE(_Component_, ComponentBuilderCreationFixture)
 std::pair<std::string, ParameterTypeAndValue> build_context_parameter_with(
   const std::string& id,
   const std::string& value,
-  const ParameterType& type = ParameterType::CONSTANT)
+  const VariabilityType& type = VariabilityType::CONSTANT_IN_TIME_AND_SCENARIO)
 {
     return {id, {.id = id, .type = type, .value = value}};
 }
@@ -203,7 +186,7 @@ BOOST_AUTO_TEST_CASE(fail_on_missing_wrong_param)
     BOOST_CHECK_EXCEPTION(component_builder.build(),
                           std::invalid_argument,
                           checkMessage(
-                            "The component \"component\" has no value for parameter 'param1'"));
+                            "The component 'component' has no value for parameter 'param1'"));
 }
 
 BOOST_AUTO_TEST_CASE(fail_on_too_many_params1)
@@ -232,6 +215,58 @@ BOOST_AUTO_TEST_CASE(fail_on_too_many_params2)
                           std::invalid_argument,
                           checkMessage(
                             "The component \"component\" has 1 parameter(s), but its model has 0"));
+}
+
+BOOST_AUTO_TEST_CASE(param_variability_scenario_mismatch)
+{
+    Model model = createModelWithParameters();
+    auto component = component_builder.withId("component")
+                       .withModel(&model)
+                       .withParameterValues(
+                         {build_context_parameter_with("param1",
+                                                       "3",
+                                                       VariabilityType::VARYING_IN_SCENARIO_ONLY),
+                          build_context_parameter_with("param2", "3")})
+                       .withScenarioGroupId("scenario_group");
+    BOOST_CHECK_EXCEPTION(component_builder.build(),
+                          std::invalid_argument,
+                          checkMessage("Model 'model': Component 'component': Parameter 'param1': "
+                                       "Scenario dependance mismatch between model and system"));
+}
+
+BOOST_AUTO_TEST_CASE(param_variability_time_mismatch)
+{
+    Model model = createModelWithParameters();
+    auto component = component_builder.withId("component")
+                       .withModel(&model)
+                       .withParameterValues(
+                         {build_context_parameter_with("param1", "3"),
+                          build_context_parameter_with("param2",
+                                                       "3",
+                                                       VariabilityType::VARYING_IN_TIME_ONLY)})
+                       .withScenarioGroupId("scenario_group");
+    BOOST_CHECK_EXCEPTION(component_builder.build(),
+                          std::invalid_argument,
+                          checkMessage("Model 'model': Component 'component': Parameter 'param2': "
+                                       "Time dependance mismatch between model and system"));
+}
+
+BOOST_AUTO_TEST_CASE(param_variability_time_and_scenario_mismatch)
+{
+    Model model = createModelWithParameters();
+    auto component = component_builder.withId("component")
+                       .withModel(&model)
+                       .withParameterValues({build_context_parameter_with(
+                                               "param1",
+                                               "3",
+                                               VariabilityType::VARYING_IN_TIME_AND_SCENARIO),
+                                             build_context_parameter_with("param2", "3")})
+                       .withScenarioGroupId("scenario_group");
+    BOOST_CHECK_EXCEPTION(component_builder.build(),
+                          std::invalid_argument,
+                          checkMessage(
+                            "Model 'model': Component 'component': Parameter 'param1': "
+                            "Time and Scenario dependance mismatch between model and system"));
 }
 
 BOOST_AUTO_TEST_CASE(fail_when_connecting_area_to_unexisting_port)

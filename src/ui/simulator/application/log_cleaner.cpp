@@ -1,29 +1,13 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #include "log_cleaner.h"
-#include "antares/antares/constants.h"
-#include <yuni/io/directory/info.h>
+
 #include <yuni/datetime/timestamp.h>
+#include <yuni/io/directory/info.h>
 #include <yuni/io/file.h>
+
+#include "antares/antares/constants.h"
 
 using namespace Yuni;
 
@@ -34,7 +18,9 @@ static inline bool IsLeapYear(uint year)
     if (0 == year % 4)
     {
         if (0 == year % 100)
+        {
             return (0 == (year % 400));
+        }
         return true;
     }
     return false;
@@ -53,12 +39,16 @@ static bool SuitableForDeletion(const AnyString& name, DateTime::Timestamp now)
             if (afterTime < name.size())
             {
                 if (afterTime <= afterDate or afterDate <= offset)
+                {
                     return false;
+                }
 
                 AnyString date(name.c_str() + offset, afterDate - offset);
                 AnyString time(name.c_str() + afterDate + 1, afterTime - afterDate - 1);
                 if (date.size() != 8 or time.size() != 6)
+                {
                     return false;
+                }
 
                 AnyString year(date, 0, 4);
                 AnyString month(date, 4, 2);
@@ -84,15 +74,21 @@ static bool SuitableForDeletion(const AnyString& name, DateTime::Timestamp now)
                 else
                 {
                     if (y < 1970)
+                    {
                         y = 1970;
+                    }
                 }
 
                 for (uint i = 1970; i < y; ++i)
                 {
                     if (not IsLeapYear(i))
+                    {
                         timestamp += 365 * 24 * 3600;
+                    }
                     else
+                    {
                         timestamp += 366 * 24 * 3600;
+                    }
                 }
 
                 uint m = month.to<uint>();
@@ -101,14 +97,20 @@ static bool SuitableForDeletion(const AnyString& name, DateTime::Timestamp now)
                     for (uint i = 0; i != m - 1; ++i)
                     {
                         if (i == 1 and IsLeapYear(y))
+                        {
                             timestamp += 24 * 3600 * (Constants::daysPerMonth[i] + 1);
+                        }
                         else
+                        {
                             timestamp += 24 * 3600 * Constants::daysPerMonth[i];
+                        }
                     }
                 }
 
                 if (timestamp < now)
+                {
                     return true;
+                }
             }
         }
     }
@@ -118,7 +120,9 @@ static bool SuitableForDeletion(const AnyString& name, DateTime::Timestamp now)
 void PurgeLogFiles(const AnyString& path, uint retention)
 {
     if (path.empty())
+    {
         return;
+    }
 
     auto now = DateTime::Now();
     now -= retention;
@@ -130,10 +134,14 @@ void PurgeLogFiles(const AnyString& path, uint retention)
     {
         auto& name = *i;
         if (not name.startsWith("uisimulator-") or not name.endsWith(".log"))
+        {
             continue;
+        }
 
         if (SuitableForDeletion(name, now))
+        {
             IO::File::Delete(i.filename());
+        }
     }
 }
 

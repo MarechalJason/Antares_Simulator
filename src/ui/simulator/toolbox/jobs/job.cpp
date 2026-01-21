@@ -1,53 +1,36 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
-
-#include <mutex>
-#include <yuni/yuni.h>
-#include <yuni/thread/thread.h>
-#include <yuni/core/math.h>
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #include "job.h"
+
+#include <mutex>
+
+#include <yuni/yuni.h>
+#include <yuni/core/math.h>
+#include <yuni/thread/thread.h>
 #ifndef YUNI_OS_WINDOWS
 #include <unistd.h>
 #endif
 #include <iostream>
+#include <wx/button.h>
+#include <wx/font.h>
+#include <wx/frame.h>
+#include <wx/generic/dirctrlg.h>
+#include <wx/msgdlg.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
-#include <wx/generic/dirctrlg.h>
-#include <wx/font.h>
-#include <wx/stdpaths.h>
-#include <wx/font.h>
-#include <wx/msgdlg.h>
-#include <wx/utils.h>
-#include <wx/frame.h>
 #include <wx/statline.h>
+#include <wx/stdpaths.h>
+#include <wx/utils.h>
 
-#include "../components/wizardheader.h"
-#include "../resources.h"
+#include <antares/io/statistics.h>
+#include <antares/study/progression/progression.h>
+
 #include "../../application/main.h"
 #include "../../windows/message.h"
 #include "../components/refresh.h"
-#include <antares/study/progression/progression.h>
-#include <antares/io/statistics.h>
+#include "../components/wizardheader.h"
+#include "../resources.h"
 
 #define PROGRESSBAR_MAX_RANGE 1000000
 #define PROGRESSBAR_MAX_RANGE_F 1000000.0

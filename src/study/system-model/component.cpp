@@ -1,25 +1,7 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include <ranges>
+#include <fmt/format.h>
 
 #include <antares/study/system-model/component.h>
 
@@ -43,15 +25,50 @@ static void checkComponentDataValidity(const ComponentData& data)
     if (data.model->Parameters().size() != data.parameter_values.size())
     {
         throw std::invalid_argument(
-          "The component \"" + data.id + "\" has " + std::to_string(data.parameter_values.size())
-          + " parameter(s), but its model has " + std::to_string(data.model->Parameters().size()));
+          fmt::format("The component \"{}\" has {} parameter(s), but its model has {}",
+                      data.id,
+                      data.parameter_values.size(),
+                      data.model->Parameters().size()));
     }
-    for (const auto& param: data.model->Parameters() | std::views::keys)
+
+    auto dependanceMismatchThrow =
+      [&data](const std::string& parameterId, const std::string& dependanceType)
     {
-        if (!data.parameter_values.contains(param))
+        throw std::invalid_argument(
+          fmt::format("Model '{}': Component '{}': Parameter '{}': {} dependance mismatch "
+                      "between model and system",
+                      data.model->Id(),
+                      data.id,
+                      parameterId,
+                      dependanceType));
+    };
+
+    for (const auto& [paramName, param]: data.model->Parameters())
+    {
+        try
         {
-            throw std::invalid_argument("The component \"" + data.id
-                                        + "\" has no value for parameter '" + param + "'");
+            auto value = data.parameter_values.at(paramName);
+            bool timeMismatch = !param.isTimeDependent() && isTimeDependent(value.type);
+            bool scenarioMismatch = !param.isScenarioDependent() && isScenarioDependent(value.type);
+            if (timeMismatch && scenarioMismatch)
+            {
+                dependanceMismatchThrow(paramName, "Time and Scenario");
+            }
+            if (timeMismatch)
+            {
+                dependanceMismatchThrow(paramName, "Time");
+            }
+            if (scenarioMismatch)
+            {
+                dependanceMismatchThrow(paramName, "Scenario");
+            }
+        }
+        catch (const std::out_of_range&)
+        {
+            throw std::invalid_argument(
+              fmt::format("The component '{}' has no value for parameter '{}'",
+                          data.id,
+                          paramName));
         }
     }
 }
@@ -76,12 +93,27 @@ std::vector<ConnectionEnd> Component::componentConnectionsViaPort(const std::str
     return {};
 }
 
-const Node* Component::nodeAtPortField(const std::string& portId, const std::string& fieldId) const
+Node* Component::nodeAtPortField(const std::string& portId, const std::string& fieldId) const
 {
     try
     {
         PortFieldKey key(portId, fieldId);
         return getModel()->PortFieldDefinitions().at(key).Definition().RootNode();
+    }
+    catch (const std::out_of_range&)
+    {
+        throw std::invalid_argument("Port field '" + portId + "." + fieldId
+                                    + "' not found in component '" + data_.id + "'");
+    }
+}
+
+const Expression& Component::expressionAtPortField(const std::string& portId,
+                                                   const std::string& fieldId) const
+{
+    try
+    {
+        PortFieldKey key(portId, fieldId);
+        return getModel()->PortFieldDefinitions().at(key).Definition();
     }
     catch (const std::out_of_range&)
     {
@@ -151,7 +183,7 @@ ComponentBuilder& ComponentBuilder::withId(const std::string_view id)
  * \param model The model to set.
  * \return Reference to the ComponentBuilder object.
  */
-ComponentBuilder& ComponentBuilder::withModel(Model* model)
+ComponentBuilder& ComponentBuilder::withModel(const Model* model)
 {
     data_.model = model;
     return *this;

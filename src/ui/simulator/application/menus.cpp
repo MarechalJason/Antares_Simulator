@@ -1,32 +1,18 @@
-/*
-** Copyright 2007-2025, RTE (https://www.rte-france.com)
-** See AUTHORS.txt
-** SPDX-License-Identifier: MPL-2.0
-** This file is part of Antares-Simulator,
-** Adequacy and Performance assessment for interconnected energy networks.
-**
-** Antares_Simulator is free software: you can redistribute it and/or modify
-** it under the terms of the Mozilla Public Licence 2.0 as published by
-** the Mozilla Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** Antares_Simulator is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-** Mozilla Public Licence 2.0 for more details.
-**
-** You should have received a copy of the Mozilla Public Licence 2.0
-** along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
-*/
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
+
+#include "menus.h"
+
+#include <wx/image.h>
 
 #include <yuni/yuni.h>
+
 #include <antares/logs/logs.h>
-#include "menus.h"
-#include <wx/image.h>
+
 #include "../toolbox/resources.h"
-#include "recentfiles.h"
 #include "main.h"
 #include "main/internal-ids.h"
+#include "recentfiles.h"
 
 using namespace Yuni;
 
@@ -40,7 +26,9 @@ static void InternalRebuildRecentFiles(wxMenu* it,
                                        bool addOpenMenu = true)
 {
     if (!it)
+    {
         return;
+    }
 
     // Keeping a reference on the submenu
     wxMenu* subMenu = it;
@@ -74,9 +62,13 @@ static void InternalRebuildRecentFiles(wxMenu* it,
         {
             mnCaption.clear();
             if (!i->second.IsEmpty())
+            {
                 mnCaption << i->second;
+            }
             if (showPaths)
+            {
                 mnCaption << wxT("  -  ") << i->first;
+            }
 
             // Adding the item in the menu
             Menu::CreateItem(subMenu,
@@ -91,7 +83,9 @@ static void InternalRebuildRecentFiles(wxMenu* it,
                              wxString() << wxT("Open the recent study `") << i->second << wxT("`"));
 
             if (++indx > 9)
+            {
                 indx = 0;
+            }
         }
 
         // Settings
@@ -113,8 +107,11 @@ static void InternalRebuildRecentFiles(wxMenu* it,
     }
     else
     {
-        auto* menuitem = Menu::CreateItem(
-          subMenu, wxID_ANY, wxT("(No recent files available)"), nullptr, wxEmptyString);
+        auto* menuitem = Menu::CreateItem(subMenu,
+                                          wxID_ANY,
+                                          wxT("(No recent files available)"),
+                                          nullptr,
+                                          wxEmptyString);
         menuitem->Enable(false);
     }
     it->UpdateUI();
@@ -208,8 +205,11 @@ wxMenuItem* Menu::CreateItemWithSubMenu(wxMenu* parent,
 #endif
 
     auto* m = (help.empty()) ? new wxMenuItem(parent, id, newcaption, wxEmptyString, wxITEM_NORMAL)
-                             : new wxMenuItem(
-                               parent, id, newcaption, wxString(wxT("  ")) << help, wxITEM_NORMAL);
+                             : new wxMenuItem(parent,
+                                              id,
+                                              newcaption,
+                                              wxString(wxT("  ")) << help,
+                                              wxITEM_NORMAL);
 
 #ifdef YUNI_OS_WINDOWS
     if (bold)
@@ -288,7 +288,9 @@ void Menu::Clear(wxMenu& menu)
         wxMenuItemList list = menu.GetMenuItems();
         auto end = list.end();
         for (auto i = list.begin(); i != end; ++i)
+        {
             menu.Destroy(*i);
+        }
     }
 }
 

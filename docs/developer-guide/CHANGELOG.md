@@ -4,7 +4,72 @@ toc_depth: 2
 
 # Antares Changelog
 
-## Branch 9.3.x
+### 9.3.5
+#### Improvements
+* New option Adequacy patch debug files [ANT-4034] (#3297)
+* Add time infos to API [ANT-4261] (#3315)
+* Add more details for steps durations [ANT-4263] (#3319)
+* APIv2 - Fix initial hydro levels (#3326)
+#### CI
+
+* Bump actions/cache from 4 to 5 (#3293)
+* Bump actions/upload-artifact from 5 to 6 (#3294)
+
+### 9.3.4
+#### Improvements
+* Various fixes for the "single problem API" (#3313, #3311, #3312, #3309)
+* Bump SonarSource/sonarqube-scan-action from 6.0.0 to 7.0.0 (#3295)
+
+### 9.3.3
+
+#### New features
+* Add support for Gurobi-specific solver parameters (#3264)
+
+#### Improvements
+* Add error handling to antlr parsing [ANT-4032] (#3254)
+* Small improvements for slack analysis (#3255)
+* setObjectiveOffset API [ANT-4168] (#3251)
+
+#### Bugfixes
+* Additional constraints : bad unexpected input management [ANT-4297]
+* Add week number to additional constraint name (#3300)
+
+#### Modeler
+* Modeler 6.5: valid location [ANT-4045] (#3258)
+* Consistency in Node Composition for Modeler (#3242)
+* Modeler scenarized constant parameter [ANT-3800] (#3275)
+* Time dependent objective is not supported (#3257)
+
+#### CI
+* Fix: sonar hit ccache properly (#3196)
+
+#### Build
+* Add a few missing install directives (#3266)
+
+#### Doc
+* Fix on readthedoc rendering (#3245)
+* FunctionNode doc (#3270)
+
+#### Code quality
+* refactor: TimeIndex -> TimeScenarioVariability (#3261)
+* Expose studyPath instead of study (#3267)
+* Add SingleProblemGetter::getProblemIds() for problem IDs (#3268)
+* Single problem getter - Truncate variable & constraint vectors if needed (#3272)
+* fix: build std::type\_index is not constexpr (#3277)
+* Single problem getter - Week indexing starts at 1 (#3271)
+* Single problem API (#3280) (#3279) (#3286)
+* Fix Mdeb's trailing zeroes [ANT-2334] (#3303)
+
+#### Technical cleaning
+Modeler : restore models as const [ANT-4051] (#3273)
+Remove useless if/else for links loop-flow (#3262)
+Remove unused LpsFromAntares data members (#3289)
+
+#### Tests
+Storage remix tests : trial for improvement [ANT-4022] (#3244)
+Expressions : tests sum operator (#3260)
+collectRemixDebugInfo (#3278)
+
 
 ### 9.3.2
 
@@ -16,72 +81,95 @@ toc_depth: 2
     - Some of those warnings are kept as warning and now non-blocking. Mainly those related deprecated options or values
 
 #### New features
-
-* Modeler 6.2: Investment optimisation (#3185, #3159, #3092)
-* Modeler 6.1: Several objectives (#3090)
-* Modeler 5.5: Add dual and reduced_cost operators (#3177)
-* Add ExportBehavior for structure files (#3210)
-* Add thread number in logs (#3138)
+* Modeler 5.5: Add dual and reduced\_cost operators [ANT-3621] (#3177)
+* Modeler 5.6, 5.7: max, min and pow operators [ANT-3642] (#3212)
+* Modeler 6.2: Variables in investment problems [ANT-3885] [ANT-3913] (#3166)
+* Modeler 6.3: Constraints in investment problems [ANT-3892] (#3220)
+* Add debug files to hydro remix [ANT-4028] (#3206)
 
 #### Improvements
-
-* Use boost::iostreams::mapped_file_source to improve CSV loading performance (#3089)
-* Remove most ORTOOLS_* functions, use `std::unique_ptr` to handle `MPSolver` instance (#3155)
-* If delete cache fail continue (#3219)
-* Remove unused `OptimComponent::index` (#3218)
-* Wrap getDisplayName and getIcon inside BUILD_UI (#3216)
-* Clean stuff in and around optimEntityContainer (#3209)
-* Move `regenerateTimeSeries` to separate header/source (#3182)
-* On Windows : avoiding a compilation collision between antlr4 and Yuni (#3178)
-* [Sorties] Deduplicate code in lold vcards (#3143)
-* Remove #ifdef __cplusplus, __CPLUSPLUS, unused #define (#3171)
-* Simplify condition in FinalLevelValidator::skippingFinalLevelUse (#3170)
-* Remove std::enable_shared_from_this from ThermalCluster (#3167)
-* Remove study dependency in exception (#3164)
-* Move yearRandomNumbers to random.h/random.cpp (#3162)
-* Extract random number handling from templated class ISimulation (#3156)
-* Simplify Adequacy list chained template (#3131)
-* Simplify link chain template (#3142)
-* Simplify template chain economy sorties (area variables) (#3129)
-* Simplify SpatialAggregateAll chain template (#3127)
-* Remove unused "Hashable" class (#3115)
+* Ascending compatibility [ANT-3989](#3161)
+* Add a deprecated message to the GUI [ANT-4042] (#3238)(#3240)
+* Fix: Reduce log spam and improve information (#3232)
+* Interprétation des valeurs d'usage [ANT-3894] (#3132)
+* Add thread number in logs [ANT-2174] (#3138)
 
 #### Bugfixes
+* Infaisabilité avec l'hydro avec min gen et sans reservoir management [ANT-3748] (#3181)
+* Fix segfault caused by expression[t] [ANT-4049] (#3201)
+* Fix LolpCsr floor, LoldCsr spatial aggregate value (#3169)(#3168)(#3151)
 
-* Fix inconsistent LOLD for districts (#3117)
-* [ANT-4049] Fix segfault caused by expression[t] (#3201)
-* [ANT-3989] Ascending compatibility (#3161)
-* Interprétation des valeurs d'usage [ANT-3894] (#3132)
-* Fix LolpCsr floor (#3168)
-* Fix LoldCsr spatial aggregate value (#3169)
-* [ANT-3883] No simulation table when no-output is given (#3137)
-* Fix memory leak in class SpatialAggregate (#3139)
-* Fix lolpCsr spatial aggregate (#3151)
+#### Modeler
+* Add ExportBehavior for structure files (#3210)
+* 6.1: Several objectives [ANT-3887] (#3090)
+* 6.2 Load E2E [ANT-3885] (#3185)
+* 6.2a parse optim config (#3159)
+* 6.2a : Data structures for optimization configuration [ANT-3885] (#3092)
+* No simulation table when no-output is given [ANT-3883] (#3137)
+* Improve study model (#3093)
 
-#### CI/CD
+#### CI
+* Cache improvements (#3128)(#3154)(#3179)(#3219)(#3140)
+* Fix continuous delivery title (#3183)
+* Use boolean type instead of string type for "Run all tests" (#3175)
+* Update CD title and tag (#3163)
 
-* Bump actions/upload-artifact from 4 to 5 (#3189)
-* Update ccache properly (#3179)
-* Action to delete cache after merge (#3128)
-* Use branch name for cache key (#3140)
-
-#### Tests
-
-* [ANT-3760] NPCAP test cucumber (#3133)
-* [ANT-3989] Publish log-capture util to test_utils_unit (#3173)
-* [ANT-3989] Make parameters test in-memory using loadFromINI (#3172)
-* Restore "linear expression" tests (#3149)
-* Restore "testScenarioGroupRepo" test (#3147)
-* Fix test_readLinearExpressionVisitor unit test, fix missing DivisionNode, refactor fixture (#3120)
-* Add modeler test 10_4 for comparison operator (#3126)
-* Use simtest 9.3.1 (#3130)
-* Update simtest (#3184, #3180)
+#### Build
 * testing cmake unity build (#3191)
+* On Windows : avoiding a compilation collision between antlr4 and Yuni (#3178)
+* Remove compile option unsuported on Clang (#3068)
+* Remove study dependency in exception (#3164)
 
-#### Documentation
-
+#### Doc
+* Doc on expressions : move and complete expressions [ANT-4117] (#3217)
 * Update doc for objective contributions (#3158)
 * Update XPRESS doc regarding MILP problems (#3160)
+
+#### Code quality
+* Factorize lolp and lold traits (#3145)
+* Deduplicate code in lolp vcards (#3144)(#3143)
+* Simplify chained templates for variables (#3142)(#3131)(#3129)(#3127)
+* Getter for single problem [ANT-2334] (#3165)
+* Move regenerateTimeSeries to separate header/source (#3182)
+* Refactor enums project utilitaries (#3186)
+* Simplify condition in FinalLevelValidator::skippingFinalLevelUse (#3170)
+* Extract random number handling from templated class ISimulation (technical preriquisite) [ANT-2334] (#3156)
+* Move yearRandomNumbers to random.h/random.cpp (#3162)
+* Fix memory leak in class SpatialAggregate (#3139)
+* Fixes after review for #3093 (#3124)
+* Fix a few code smells following #3093 (#3123)
+
+#### Technical cleaning
+* Remove unused dummy\_data (#3221)
+* Remove unused OptimComponent::index (#3218)
+* Wrap getDisplayName and getIcon inside BUILD\_UI (#3216)
+* Clean stuff in and around optimEntityContainer (#3209)
+* Remove #ifdef \_\_cplusplus, \_\_CPLUSPLUS, unused #define (#3171)
+* Remove std::enable\_shared\_from\_this from ThermalCluster (#3167)
+* Remove most ORTOOLS_* functions, use std::unique\_ptr to handle MPSolver instance (#3155)
+* Remove unused local variable (#3141)
+* Remove unused "Hashable" class (#3115)
+
+#### Tests
+* Add 2 hydro remix tests [ANT-4022] (#3213)
+* handle invalid-studies (#3250)
+* update expectations 015 Hydro power (#3249)
+* Add behave tests for 6.2 [ANT-3885] (#3237)
+* Ignore basis\_status in simulation table comparison (#3233)(#3236)
+* Fix values for NPCAP after switching to HIGHS (#3234)
+* Add information when simulation time exceed expectations (#3228)
+* Improve log when simulation tables don't match (#3230)
+* Add unit testing on benders decomposition (structure.txt) (#3231)
+* Tests for modeler 5.5 (#3198)
+* NPCAP test cucumber [ANT-3760] (#3133)
+* Input data for modeler test with investment (#3113)
+* Publish log-capture util to test\_utils\_unit [ANT-3989] (#3173)
+* Make parameters test in-memory using loadFromINI [ANT-3989] (#3172)
+* Fix studiesToBenchmark.json (#3153)
+* Restore "linear expression" tests (#3149)
+* Restore "testScenarioGroupRepo" test (#3147)
+* Fix test\_readLinearExpressionVisitor unit test, fix missing DivisionNode, refactor fixture (#3120)
+* Add modeler test 10_4 for comparison operator (#3126)
 
 ### 9.3.1
 

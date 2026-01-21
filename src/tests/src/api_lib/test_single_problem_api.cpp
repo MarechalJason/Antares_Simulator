@@ -1,36 +1,19 @@
-/*
- * Copyright 2007-2025, RTE (https://www.rte-france.com)
- * See AUTHORS.txt
- * SPDX-License-Identifier: MPL-2.0
- * This file is part of Antares-Simulator,
- * Adequacy and Performance assessment for interconnected energy networks.
- *
- * Antares_Simulator is free software: you can redistribute it and/or modify
- * it under the terms of the Mozilla Public Licence 2.0 as published by
- * the Mozilla Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * Antares_Simulator is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public Licence 2.0 for more details.
- *
- * You should have received a copy of the Mozilla Public Licence 2.0
- * along with Antares_Simulator. If not, see <https://opensource.org/license/mpl-2-0/>.
- */
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
 #define BOOST_TEST_MODULE test_api
 #define WIN32_LEAN_AND_MEAN
 
+#include <fstream>
 #include <memory>
 
 #include <boost/test/unit_test.hpp>
 
 #include "antares/antares/constants.h"
-#include "antares/api/singleProblemGetter.h"
 #include "antares/study/study.h"
 
 #include "in-memory-study.h"
+#include "singleProblemGetterImpl.h"
 
 constexpr double EPSILON = 1.e-6;
 
@@ -93,11 +76,12 @@ std::unique_ptr<Antares::Data::Study> buildStudy(bool thermal, bool hydro)
     area->hydro.deltaBetweenFinalAndInitialLevels.resize(builder.study->parameters.nbYears);
     return std::move(builder.study);
 }
+BOOST_AUTO_TEST_SUITE(in_memory_check_problem_contents)
 
 BOOST_AUTO_TEST_CASE(single_problem_thermal_first_week_nominal_case)
 {
     auto study = buildStudy(true, false);
-    Antares::Solver::SingleProblemGetter getter(std::move(study));
+    Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
     const Antares::Solver::ConstantDataFromAntares constantData = getter.getConstantData();
     // 504 = 3*168, 3 sets of variables
     // unsupplied energy
@@ -127,7 +111,9 @@ BOOST_AUTO_TEST_CASE(single_problem_thermal_first_week_nominal_case)
     BOOST_CHECK_EQUAL(constantData.ConstraintsMatrixCoeff[0], -1);
     BOOST_CHECK_EQUAL(constantData.ConstraintsMatrixCoeff[1], -1);
 
-    const Antares::Solver::WeeklyDataFromAntares firstWeekData = getter.getWeeklyData({0, 0});
+    const Antares::Solver::WeeklyDataFromAntares firstWeekData = getter.getWeeklyData({0, 1});
+    BOOST_CHECK_EQUAL(firstWeekData.name, "problem-1-1--optim-nb-1");
+
     // COST
     BOOST_CHECK_CLOSE(firstWeekData.LinearCost[dispatchableVariable],
                       19.999456400134147,
@@ -152,7 +138,7 @@ BOOST_AUTO_TEST_CASE(single_problem_thermal_first_week_nominal_case)
 BOOST_AUTO_TEST_CASE(single_problem_hydro_two_weeks_nominal_case)
 {
     auto study = buildStudy(false, true);
-    Antares::Solver::SingleProblemGetter getter(std::move(study));
+    Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
     const Antares::Solver::ConstantDataFromAntares constantData = getter.getConstantData();
     // Total 1008
     // 168 unsupplied energy
@@ -182,7 +168,7 @@ BOOST_AUTO_TEST_CASE(single_problem_hydro_two_weeks_nominal_case)
     const auto areaHydroLevel = findIndex(constantData.ConstraintsMeaning,
                                           "AreaHydroLevel::area<area>::hour<0>");
 
-    const Antares::Solver::WeeklyDataFromAntares firstWeekData = getter.getWeeklyData({0, 0});
+    const Antares::Solver::WeeklyDataFromAntares firstWeekData = getter.getWeeklyData({0, 1});
     // COST
     BOOST_CHECK_CLOSE(firstWeekData.LinearCost[hydroLevelVariable],
                       -1.e-6,
@@ -201,9 +187,284 @@ BOOST_AUTO_TEST_CASE(single_problem_hydro_two_weeks_nominal_case)
                       3048.5130614352684,
                       EPSILON); // random initial level
 
-    const Antares::Solver::WeeklyDataFromAntares secondWeekData = getter.getWeeklyData({0, 1});
+    const Antares::Solver::WeeklyDataFromAntares secondWeekData = getter.getWeeklyData({0, 2});
     // RHS
-    BOOST_CHECK_CLOSE(firstWeekData.RHS[areaHydroLevel],
+    BOOST_CHECK_CLOSE(secondWeekData.RHS[areaHydroLevel],
                       3048.5130614352684,
                       EPSILON); // random initial level
+
+    BOOST_CHECK_EQUAL(secondWeekData.name, "problem-1-2--optim-nb-1");
 }
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(in_memory_check_get_problem_ids)
+
+BOOST_AUTO_TEST_CASE(three_years_two_weeks)
+{
+    StudyBuilder builder;
+    builder.simulationBetweenDays(0, 14);
+
+    builder.setNumberMCyears(3);
+
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+
+    const Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+    auto problem_ids = getter.getProblemIds();
+    BOOST_REQUIRE_EQUAL(problem_ids.size(), 3 * 2); // (3 years) x (2 weeks)
+
+    // First problem is (year, week) = (0, 0)
+    BOOST_CHECK_EQUAL(problem_ids[0].year, 0);
+    BOOST_CHECK_EQUAL(problem_ids[0].week, 1);
+
+    // Last problem is (year, week) = (2, 1)
+    BOOST_CHECK_EQUAL(problem_ids[5].year, 2);
+    BOOST_CHECK_EQUAL(problem_ids[5].week, 2);
+}
+
+BOOST_AUTO_TEST_CASE(three_years_two_weeks_one_disabled_year)
+{
+    StudyBuilder builder;
+    builder.simulationBetweenDays(0, 14);
+
+    builder.setNumberMCyears(3);
+
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+    // Disable year 1 in the playlist
+    study->parameters.yearsFilter[1] = false;
+
+    const Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+    auto problem_ids = getter.getProblemIds();
+    BOOST_REQUIRE_EQUAL(problem_ids.size(), 2 * 2); // (2 years) x (2 weeks), one year is disabled
+
+    // First problem is (year, week) = (0, 0)
+    BOOST_CHECK_EQUAL(problem_ids[0].year, 0);
+    BOOST_CHECK_EQUAL(problem_ids[0].week, 1);
+
+    // Last problem is (year, week) = (2, 1)
+    BOOST_CHECK_EQUAL(problem_ids[3].year, 2);
+    BOOST_CHECK_EQUAL(problem_ids[3].week, 2);
+}
+
+BOOST_AUTO_TEST_CASE(three_years_two_weeks_one_disabled_year_partial_year)
+{
+    StudyBuilder builder;
+    builder.simulationBetweenDays(7, 14);
+
+    builder.setNumberMCyears(3);
+
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+    // Disable year 1 in the playlist
+    study->parameters.yearsFilter[1] = false;
+
+    const Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+    auto problem_ids = getter.getProblemIds();
+    BOOST_REQUIRE_EQUAL(problem_ids.size(), 2 * 1); // (2 years) x (1 week), one year is disabled
+
+    // First problem is (year, week) = (0, 0)
+    BOOST_CHECK_EQUAL(problem_ids[0].year, 0);
+    BOOST_CHECK_EQUAL(problem_ids[0].week, 1);
+
+    // Last problem is (year, week) = (2, 1)
+    BOOST_CHECK_EQUAL(problem_ids[1].year, 2);
+    BOOST_CHECK_EQUAL(problem_ids[1].week, 1);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(file_export)
+
+BOOST_AUTO_TEST_CASE(single_link_ntc_ts_numbers)
+{
+    StudyBuilder builder;
+    builder.setNumberMCyears(5);
+
+    auto* a1 = builder.addAreaToStudy("AREA");
+    auto* a2 = builder.addAreaToStudy("ZREA");
+    auto link = AreaAddLinkBetweenAreas(a1, a2);
+
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+    Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+
+    // Erase TS numbers for repeatability (no randomness)
+    link->timeseriesNumbers.reset(5);
+    for (int ii = 0; ii < 5; ii++)
+    {
+        link->timeseriesNumbers[ii] = ii % 3;
+    }
+
+    auto output_dir = std::filesystem::temp_directory_path() / "study" / "output";
+    getter.writeNTCTimeSeries(output_dir);
+    std::ifstream read(output_dir / "ts-numbers" / "ntc" / "area" / "zrea.txt");
+    BOOST_REQUIRE(read);
+    std::string content((std::istreambuf_iterator<char>(read)), std::istreambuf_iterator<char>());
+    const std::string expected = R"(size:1x5
+1
+2
+3
+1
+2
+)";
+
+    BOOST_CHECK_EQUAL(content, expected);
+}
+
+BOOST_AUTO_TEST_CASE(single_link_structure_files)
+{
+    StudyBuilder builder;
+
+    auto* a1 = builder.addAreaToStudy("AREA");
+    auto* a2 = builder.addAreaToStudy("ZREA");
+    auto link = AreaAddLinkBetweenAreas(a1, a2);
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+    Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+
+    auto output_dir = std::filesystem::temp_directory_path() / "study" / "output";
+    getter.writeStudyDescriptionFiles(output_dir);
+
+    // interco-1-1.txt
+    {
+        std::ifstream interco(output_dir / "interco-1-1.txt");
+        BOOST_REQUIRE(interco);
+        std::string content((std::istreambuf_iterator<char>(interco)),
+                            std::istreambuf_iterator<char>());
+        const std::string expected = "0 0 1\n";
+        BOOST_CHECK_EQUAL(content, expected);
+    }
+
+    // area-1-1.txt
+    {
+        std::ifstream areas(output_dir / "area-1-1.txt");
+        BOOST_REQUIRE(areas);
+        std::string content((std::istreambuf_iterator<char>(areas)),
+                            std::istreambuf_iterator<char>());
+        const std::string expected = "area\nzrea\n";
+        BOOST_CHECK_EQUAL(content, expected);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(about_the_study_directory_structure)
+{
+    StudyBuilder builder;
+
+    auto* a1 = builder.addAreaToStudy("AREA1");
+    auto* a2 = builder.addAreaToStudy("AREA2");
+    auto link = AreaAddLinkBetweenAreas(a1, a2);
+
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+
+    // Create the folderSettings directory structure with generaldata.ini
+    auto folderSettings = std::filesystem::temp_directory_path() / "study" / "settings";
+
+    // In-memory studies normally have no input files
+    study->folderSettings = folderSettings;
+
+    std::filesystem::create_directories(folderSettings);
+    std::ofstream settingsFile(folderSettings / "generaldata.ini");
+    settingsFile << "; Test settings file\n";
+    settingsFile << "general.mode = 0\n";
+    settingsFile.close();
+
+    Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+
+    auto output_dir = std::filesystem::temp_directory_path() / "study" / "output";
+    getter.writeStudyDescriptionFiles(output_dir);
+
+    // Verify about-the-study directory exists
+    BOOST_CHECK(std::filesystem::exists(output_dir / "about-the-study"));
+    BOOST_CHECK(std::filesystem::is_directory(output_dir / "about-the-study"));
+
+    // Verify key files exist
+    BOOST_CHECK(std::filesystem::exists(output_dir / "about-the-study" / "study.ini"));
+    BOOST_CHECK(std::filesystem::exists(output_dir / "about-the-study" / "parameters.ini"));
+    BOOST_CHECK(std::filesystem::exists(output_dir / "info.antares-output"));
+}
+
+BOOST_AUTO_TEST_CASE(about_the_study_area_names)
+{
+    StudyBuilder builder;
+
+    auto* a1 = builder.addAreaToStudy("POWER_PLANT_A");
+    auto* a2 = builder.addAreaToStudy("GRID_B");
+    auto* a3 = builder.addAreaToStudy("INDUSTRIAL_ZONE_C");
+
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+    Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+
+    auto output_dir = std::filesystem::temp_directory_path() / "study" / "output";
+    getter.writeStudyDescriptionFiles(output_dir);
+
+    // Check areas.txt contains all area names
+    std::ifstream areas(output_dir / "about-the-study" / "areas.txt");
+    BOOST_REQUIRE(areas);
+    std::string content((std::istreambuf_iterator<char>(areas)), std::istreambuf_iterator<char>());
+
+    BOOST_CHECK(content.find("POWER_PLANT_A") != std::string::npos);
+    BOOST_CHECK(content.find("GRID_B") != std::string::npos);
+    BOOST_CHECK(content.find("INDUSTRIAL_ZONE_C") != std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(about_the_study_links_content)
+{
+    StudyBuilder builder;
+
+    auto* a1 = builder.addAreaToStudy("AREA_A");
+    auto* a2 = builder.addAreaToStudy("AREA_B");
+    auto link = AreaAddLinkBetweenAreas(a1, a2);
+
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+    Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+
+    auto output_dir = std::filesystem::temp_directory_path() / "study" / "output";
+    getter.writeStudyDescriptionFiles(output_dir);
+
+    // Check links.txt contains link information
+    std::ifstream links(output_dir / "about-the-study" / "links.txt");
+    BOOST_REQUIRE(links);
+    std::string content((std::istreambuf_iterator<char>(links)), std::istreambuf_iterator<char>());
+
+    BOOST_CHECK(content.find("area_a") != std::string::npos);
+    BOOST_CHECK(content.find("area_b") != std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(about_the_study_parameters_file)
+{
+    StudyBuilder builder;
+    builder.simulationBetweenDays(0, 7);
+    builder.setNumberMCyears(1);
+
+    auto* area = builder.addAreaToStudy("TEST_AREA");
+    area->hydro.reservoirManagement = false;
+
+    auto study = std::move(builder.study);
+    study->initializeRuntimeInfos();
+
+    // Create the folderSettings directory structure with generaldata.ini
+    auto folderSettings = std::filesystem::temp_directory_path() / "study" / "settings";
+    std::filesystem::create_directories(folderSettings);
+    std::ofstream settingsFile(folderSettings / "generaldata.ini");
+    settingsFile << "; Test settings file\n";
+    settingsFile << "general.mode = 0\n";
+    settingsFile.close();
+
+    Antares::Solver::Implementation::SingleProblemGetter getter(std::move(study));
+
+    auto output_dir = std::filesystem::temp_directory_path() / "study" / "output";
+    getter.writeStudyDescriptionFiles(output_dir);
+
+    // Check parameters.ini file exists and is readable
+    std::ifstream params(output_dir / "about-the-study" / "parameters.ini");
+    BOOST_REQUIRE(params);
+    std::string content((std::istreambuf_iterator<char>(params)), std::istreambuf_iterator<char>());
+
+    // Parameters file should not be empty
+    BOOST_CHECK(!content.empty());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
