@@ -24,34 +24,12 @@
 namespace Antares::Solver::Variable
 {
 
-inline void State::initReserveVectors()
-{
-    reserveParticipationCostForYear.emplace();
-    reserveParticipationCostForYear.value().resize(HOURS_PER_YEAR, 0);
-    thermalClusterReserveParticipationCostForYear.emplace();
-    thermalClusterReserveParticipationCostForYear.value().resize(HOURS_PER_YEAR, 0);
-    STStorageClusterReserveParticipationCostForYear.emplace();
-    STStorageClusterReserveParticipationCostForYear.value().resize(HOURS_PER_YEAR, 0);
-    HydroReserveParticipationCostForYear.emplace();
-    HydroReserveParticipationCostForYear.value().resize(HOURS_PER_YEAR, 0);
-    reserveParticipationPerSTStorageClusterForYear.clear();
-    reserveParticipationPerSTStorageClusterForYear.resize(HOURS_PER_YEAR);
-    reserveParticipationPerHydroForYear.clear();
-    reserveParticipationPerHydroForYear.resize(HOURS_PER_YEAR);
-    reserveParticipationPerThermalClusterForYear.clear();
-    reserveParticipationPerThermalClusterForYear.resize(HOURS_PER_YEAR);
-}
-
 inline void State::startANewYear()
 {
     hourInTheSimulation = 0u;
 
     memset(thermalClusterProductionForYear, 0, sizeof(thermalClusterProductionForYear));
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
-    if (study.parameters.reservesEnabled)
-    {
-        initReserveVectors();
-    }
     memset(thermalClusterPMinOfTheClusterForYear, 0, sizeof(thermalClusterPMinOfTheClusterForYear));
     memset(thermalClusterDispatchedUnitsCountForYear,
            0,
@@ -72,7 +50,7 @@ inline void State::yearEndResetThermal()
     memset(thermalClusterOperatingCostForYear, 0, sizeof(thermalClusterOperatingCostForYear));
     if (study.parameters.reservesEnabled)
     {
-        initReserveVectors();
+        reserveData.emplace();
     }
     memset(thermalClusterNonProportionalCostForYear,
            0,
@@ -89,11 +67,6 @@ inline void State::initFromAreaIndex(const unsigned int areaIndex, uint numSpace
     scratchpad = &area->scratchpad[numSpace];
     thermalCluster = nullptr;
 
-    if (unitCommitmentMode != Data::UnitCommitmentMode::ucHeuristicFast
-        && study.parameters.reservesEnabled)
-    {
-        initReserveVectors();
-    }
     switch (simulationMode)
     {
     case Data::SimulationMode::Adequacy:

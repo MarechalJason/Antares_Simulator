@@ -218,7 +218,8 @@ public:
                          area->allCapacityReservations->reserveGroupPartThermal.at(reserveName))
                     {
                         pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                          += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                          += state.reserveData.value()
+                               .reserveParticipationPerGroupForYear[state.hourInTheYear]
                                .thermalGroupsReserveParticipation[group][reserveName];
                         column++;
                     }

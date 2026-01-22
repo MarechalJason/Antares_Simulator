@@ -215,7 +215,8 @@ public:
                          area->allCapacityReservations->reserveGroupPartSTS.at(reserveName))
                     {
                         pValuesForTheCurrentYear[numSpace][column].hour[state.hourInTheYear]
-                          += state.reserveParticipationPerGroupForYear[state.hourInTheYear]
+                          += state.reserveData.value()
+                               .reserveParticipationPerGroupForYear[state.hourInTheYear]
                                .shortTermStorageGroupsReserveParticipation[group][reserveName];
                         column++;
                     }

@@ -106,7 +106,7 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationG
 }
 
 template<class ClusterT>
-std::pair<Data::ThermalCluster::UnsuppliedSpilled, ReserveName>
+std::pair<ThermalCluster::UnsuppliedSpilled, ReserveName>
 ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area,
                                                                unsigned int index) const
 {
@@ -115,13 +115,12 @@ ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area,
          area->allCapacityReservations.value().areaCapacityReservations | std::views::keys)
     {
         for (int indexUnsuppliedSpilled = 0;
-             indexUnsuppliedSpilled < Data::ThermalCluster::UnsuppliedSpilledMax;
+             indexUnsuppliedSpilled < ThermalCluster::UnsuppliedSpilled::Count;
              indexUnsuppliedSpilled++)
         {
             if (column == index)
             {
-                return {static_cast<Data::ThermalCluster::UnsuppliedSpilled>(
-                          indexUnsuppliedSpilled),
+                return {static_cast<ThermalCluster::UnsuppliedSpilled>(indexUnsuppliedSpilled),
                         reserveName};
             }
             column++;

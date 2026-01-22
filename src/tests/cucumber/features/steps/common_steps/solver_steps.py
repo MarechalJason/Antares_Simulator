@@ -616,6 +616,30 @@ def check_res_participation_for_specific_year_and_cluster_hourly(context, area, 
         msg += " (or null)"
     assert ok.all(), msg
     
+@then('in area "{area}", during year {year:d}, for group "{group}" and reserve "{res}", reserve participation power is always {comparator_and_res_part} MWh')
+def check_res_participation_for_specific_year_and_group_hourly(context, area, year, res, group, comparator_and_res_part):
+    expected_res_part = float(comparator_and_res_part.split(" ")[-1])
+    actual_hourly_prod = context.soh.get_hourly_reserve_group_energy(area, year, res, group)
+    msg = "At least one value in reserve participation power to group " + group
+    if "greater than" in comparator_and_res_part:
+        ok = actual_hourly_prod >= expected_res_part
+        if not ok.all():
+            msg += f'is not superior to {expected_res_part} MWh'
+    elif "smaller than" in comparator_and_res_part:
+        ok = actual_hourly_prod <= expected_res_part
+        if not ok.all():
+            msg += f'is not inferior to {expected_res_part} MWh'
+    elif "equal to" in comparator_and_res_part:
+        ok = (actual_hourly_prod - expected_res_part).abs() <= 1e-6
+        if not ok.all():
+            msg += f'is not close to {expected_res_part} MWh'
+    else:
+        raise NotImplementedError(f"Unknown comparator '{comparator_and_res_part}'")
+    if "zero or" in comparator_and_res_part:
+        ok = ok | (actual_hourly_prod == 0)
+        msg += " (or null)"
+    assert ok.all(), msg
+    
 @then('in area "{area}", during year {year:d}, for cluster "{cluster}" and reserve "{res}", participation of off units to the reserve is always {comparator_and_res_part} MWh')
 def check_off_res_participation_for_specific_year_and_cluster_hourly(context, area, year, res, cluster, comparator_and_res_part):
     cluster_off = cluster + "_off"
@@ -669,7 +693,7 @@ def check_hydro_values_for_specific_year_hour(context, area, year, date, injecti
     else:
         raise NotImplementedError(f"Unknown value for variable injection_or_pumping_or_level '{injection_or_pumping_or_level}'")
     assert_double_close(float(actual_hydro_value), float(value_hydro), 1e-6)
-    
+
 @then('in area "{area}", on "{date}" of year {year:d}, storage {injection_or_withdrawal} for cluster "{cluster}" is of {value_storage} MW')
 def check_storages_values_for_specific_year_hour_and_cluster(context, area, year, date, injection_or_withdrawal, cluster, value_storage):
     if "injection" in injection_or_withdrawal:
@@ -678,4 +702,4 @@ def check_storages_values_for_specific_year_hour_and_cluster(context, area, year
         actual_storage_value = context.soh.get_values_for_st_storage_cluster_for_specific_hour_mw(area, year, date, cluster, "P-withdrawal - MW")
     else:
         raise NotImplementedError(f"Unknown value for variable injection_or_withdrawal '{injection_or_withdrawal}'")
-    assert_double_close(float(actual_storage_value), float(value_storage), 1e-6)
+    assert_double_close(float(actual_storage_value.item()), float(value_storage), 1e-6)

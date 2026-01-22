@@ -159,6 +159,22 @@ public:
         }
 
         container->addReserveParticipation(reserveName, rp);
+        addGroupToResIndex(area, reserveName, cluster);
+    }
+
+    template<class ClusterT>
+    void addGroupToResIndex(Area& area, const std::string& reserveName, ClusterT* cluster)
+    {
+        if constexpr (std::is_same_v<ClusterT, ShortTermStorage::STStorageCluster>)
+        {
+            area.allCapacityReservations.value().reserveGroupPartSTS[reserveName].insert(
+              cluster->getGroup());
+        }
+        else if constexpr (std::is_same_v<ClusterT, ThermalCluster>)
+        {
+            area.allCapacityReservations.value().reserveGroupPartThermal[reserveName].insert(
+              cluster->getGroup());
+        }
     }
 
     void readSymmetrySection(Area& area, const IniFile::Section& section)
