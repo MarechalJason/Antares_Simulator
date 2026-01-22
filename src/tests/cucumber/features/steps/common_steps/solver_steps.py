@@ -702,4 +702,4 @@ def check_storages_values_for_specific_year_hour_and_cluster(context, area, year
         actual_storage_value = context.soh.get_values_for_st_storage_cluster_for_specific_hour_mw(area, year, date, cluster, "P-withdrawal - MW")
     else:
         raise NotImplementedError(f"Unknown value for variable injection_or_withdrawal '{injection_or_withdrawal}'")
-    assert_double_close(float(actual_storage_value), float(value_storage), 1e-6)
+    assert_double_close(float(actual_storage_value.item()), float(value_storage), 1e-6)
