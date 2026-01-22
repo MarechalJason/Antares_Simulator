@@ -170,7 +170,7 @@ public:
             area.allCapacityReservations.value().reserveGroupPartSTS[reserveName].insert(
               cluster->getGroup());
         }
-        else if constexpr (std::is_same_v<ClusterT, Cluster>)
+        else if constexpr (std::is_same_v<ClusterT, ThermalCluster>)
         {
             area.allCapacityReservations.value().reserveGroupPartThermal[reserveName].insert(
               cluster->getGroup());
