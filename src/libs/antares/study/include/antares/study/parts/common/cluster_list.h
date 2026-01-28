@@ -127,16 +127,6 @@ public:
                                                                     unsigned int index) const;
 
     /*!
-     ** @brief Get the reserve and spilled/unsupplied status and names for a given index of
-     *reserveParticipation
-     ** @param area The area where to look for the reserveParticipation
-     ** @param index Global index of the reserveParicipation
-     ** @return the status and reserve names
-     */
-    std::pair<Data::ThermalCluster::UnsuppliedSpilled, ReserveName>
-    reserveParticipationUnsuppliedSpilledAt(const Area* area, unsigned int index) const;
-
-    /*!
     ** \brief Resize all matrices dedicated to the sampled timeseries numbers
     **
     ** \param n A number of years

@@ -131,14 +131,11 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationUnsuppli
 {
     static bool apply(SurveyResults& results, uint i)
     {
-        const auto& thermal = results.data.area->thermal;
-        auto [unsuppliedOrSpilled, reserveName] = thermal.list
-                                                    .reserveParticipationUnsuppliedSpilledAt(
-                                                      results.data.area,
-                                                      i);
+        auto [unsuppliedOrSpilled, reserveName] = results.data.area->allCapacityReservations.value()
+                                                    .reserveParticipationUnsuppliedSpilledAt(i);
         results.variableCaption = reserveName + "_"
-                                  + Economy::Reserves::unsuppliedSpilledToString(
-                                    unsuppliedOrSpilled);
+                                  + std::string(Economy::Reserves::unsuppliedSpilledToString(
+                                    unsuppliedOrSpilled));
         return true;
     }
 };
@@ -148,15 +145,9 @@ struct vcard_caption_traits<Economy::Reserves::VCardReserveParticipationMarginal
 {
     static bool apply(SurveyResults& results, uint i)
     {
-        const auto& thermal = results.data.area->thermal;
-        (void)i; // i used only to mirror other signatures
-        // Keep same source for reserve name to be consistent with previous code
-        auto [unsuppliedOrSpilled, reserveName] = thermal.list
-                                                    .reserveParticipationUnsuppliedSpilledAt(
-                                                      results.data.area,
-                                                      i);
-        (void)unsuppliedOrSpilled;
-        results.variableCaption = reserveName + "_" + Economy::Reserves::marginalCostToString();
+        const auto& reserveName = results.data.area->allCapacityReservations.value()
+                                    .getReserveAtIndex(i);
+        results.variableCaption = reserveName + "_MRG.COST";
         return true;
     }
 };

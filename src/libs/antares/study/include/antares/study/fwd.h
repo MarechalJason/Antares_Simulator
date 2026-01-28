@@ -518,6 +518,17 @@ enum class ReserveType
     UP = 1
 };
 
+enum class UnsuppliedSpilled
+{
+    //! Spilled
+    Spilled = 0,
+    //! Unsupplied
+    Unsupplied,
+
+    //! The highest value
+    Count
+};
+
 template<typename T>
 struct ReserveTypeData
 {

@@ -106,32 +106,6 @@ std::pair<std::string, ReserveName> ClusterList<ClusterT>::reserveParticipationG
 }
 
 template<class ClusterT>
-std::pair<ThermalCluster::UnsuppliedSpilled, ReserveName>
-ClusterList<ClusterT>::reserveParticipationUnsuppliedSpilledAt(const Area* area,
-                                                               unsigned int index) const
-{
-    int column = 0;
-    for (const auto& reserveName:
-         area->allCapacityReservations.value().areaCapacityReservations | std::views::keys)
-    {
-        for (int indexUnsuppliedSpilled = 0;
-             indexUnsuppliedSpilled < ThermalCluster::UnsuppliedSpilled::Count;
-             indexUnsuppliedSpilled++)
-        {
-            if (column == index)
-            {
-                return {static_cast<ThermalCluster::UnsuppliedSpilled>(indexUnsuppliedSpilled),
-                        reserveName};
-            }
-            column++;
-        }
-    }
-
-    throw std::out_of_range("This reserve status index has not been found in all the "
-                            "reserve participations");
-}
-
-template<class ClusterT>
 ClusterT* ClusterList<ClusterT>::findInAll(std::string_view id) const
 {
     for (auto& cluster: all())

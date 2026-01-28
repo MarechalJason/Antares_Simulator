@@ -38,89 +38,114 @@ namespace Antares::Solver::Variable::Economy::Reserves
 // Traits classes for Reserve Participation VCard variants
 // ============================================================================
 
+// Common result type definitions
+namespace ResultTypes
+{
+using Standard = Results<R::AllYears::Average<        // The average values throughout all years
+                           R::AllYears::StdDeviation< // The standard deviation values throughout
+                                                      // all years
+                             R::AllYears::Min<        // The minimum values throughout all years
+                               R::AllYears::Max<      // The maximum values throughout all years
+                                 >>>>,
+                         R::AllYears::Average>;
+
+using AverageOnly = Results<R::AllYears::Average<>>;
+} // namespace ResultTypes
+
+// Category level definitions
+namespace CategoryLevels
+{
+constexpr int Standard = Category::FileLevel::de;
+constexpr int GroupLevel = Category::FileLevel::id | Category::FileLevel::va;
+} // namespace CategoryLevels
+
 /**
- * @brief Base traits for reserve participation VCard
+ * @brief Base traits for reserve participation using CRTP pattern
  *
- * Each reserve participation type should define a traits class that specifies
- * Caption, Unit, Description, categoryFileLevel, and decimal precision.
+ * Provides common defaults (kDecimal, kCategoryFileLevel, ResultsType)
+ * while allowing derived classes to customize only what they need.
+ *
+ * @tparam Derived The derived trait class (CRTP pattern)
  */
-struct DispatchableOffTraits
+template<typename Derived>
+struct ReserveParticipationTraits
 {
-    static constexpr std::string_view kCaption = "OFF UNITS CLUSTER PARTICIPATION TO RESERVE";
-    static constexpr std::string_view kUnit = "Reserve Participation Power - MWh";
-    static constexpr std::string_view kDescription = "Reserve Participation from off units in "
-                                                     "cluster to a reserve";
-    static constexpr int kCategoryFileLevel = Category::FileLevel::de;
+    // Defaults (most common values)
+    static constexpr int kCategoryFileLevel = CategoryLevels::Standard;
     static constexpr int kDecimal = 2;
+    using ResultsType = ResultTypes::Standard;
+
+    static constexpr std::string_view kCaption = Derived::caption;
+    static constexpr std::string_view kUnit = Derived::unit;
+    static constexpr std::string_view kDescription = Derived::description;
 };
 
-struct DispatchableOnTraits
+// Individual trait implementations - only specify what's unique
+struct DispatchableOffTraits: ReserveParticipationTraits<DispatchableOffTraits>
 {
-    static constexpr std::string_view kCaption = "RUNNING UNITS CLUSTER PARTICIPATION TO RESERVE";
-    static constexpr std::string_view kUnit = "Reserve Participation Power - MWh";
-    static constexpr std::string_view kDescription = "Reserve Participation from running units in "
-                                                     "cluster to a reserve";
-    static constexpr int kCategoryFileLevel = Category::FileLevel::de;
-    static constexpr int kDecimal = 2;
+    static constexpr std::string_view caption = "OFF UNITS CLUSTER PARTICIPATION TO RESERVE";
+    static constexpr std::string_view unit = "Reserve Participation Power - MWh";
+    static constexpr std::string_view description = "Reserve Participation from off units in "
+                                                    "cluster to a reserve";
 };
 
-struct HydroTraits
+struct DispatchableOnTraits: ReserveParticipationTraits<DispatchableOnTraits>
 {
-    static constexpr std::string_view kCaption = "HYDRO RESERVE PARTICIPATION";
-    static constexpr std::string_view kUnit = "Reserve Participation Power - MWh";
-    static constexpr std::string_view kDescription = "Reserve Participation from hydro to a "
-                                                     "reserve";
-    static constexpr int kCategoryFileLevel = Category::FileLevel::de;
-    static constexpr int kDecimal = 2;
+    static constexpr std::string_view caption = "RUNNING UNITS CLUSTER PARTICIPATION TO RESERVE";
+    static constexpr std::string_view unit = "Reserve Participation Power - MWh";
+    static constexpr std::string_view description = "Reserve Participation from running units in "
+                                                    "cluster to a reserve";
 };
 
-struct STStorageTraits
+struct HydroTraits: ReserveParticipationTraits<HydroTraits>
 {
-    static constexpr std::string_view kCaption = "CLUSTER PARTICIPATION TO RESERVE";
-    static constexpr std::string_view kUnit = "Reserve Participation Power - MWh";
-    static constexpr std::string_view kDescription = "Reserve Participation from a cluster to a "
-                                                     "reserve";
-    static constexpr int kCategoryFileLevel = Category::FileLevel::de;
-    static constexpr int kDecimal = 2;
+    static constexpr std::string_view caption = "HYDRO RESERVE PARTICIPATION";
+    static constexpr std::string_view unit = "Reserve Participation Power - MWh";
+    static constexpr std::string_view description = "Reserve Participation from hydro to a reserve";
 };
 
-struct STStorageGroupTraits
+struct STStorageTraits: ReserveParticipationTraits<STStorageTraits>
 {
-    static constexpr std::string_view kCaption = "SHORT TERM STORAGE GROUP PARTICIPATION TO "
-                                                 "RESERVE";
-    static constexpr std::string_view kUnit = "MWh";
-    static constexpr std::string_view kDescription = "Reserve Participation from a group to a "
-                                                     "reserve";
-    static constexpr int kCategoryFileLevel = Category::FileLevel::id | Category::FileLevel::va;
-    static constexpr int kDecimal = 2;
+    static constexpr std::string_view caption = "CLUSTER PARTICIPATION TO RESERVE";
+    static constexpr std::string_view unit = "Reserve Participation Power - MWh";
+    static constexpr std::string_view description = "Reserve Participation from a cluster to a "
+                                                    "reserve";
 };
 
-struct ThermalGroupTraits
+struct STStorageGroupTraits: ReserveParticipationTraits<STStorageGroupTraits>
 {
-    static constexpr std::string_view kCaption = "THERMAL GROUP PARTICIPATION TO RESERVE";
-    static constexpr std::string_view kUnit = "MWh";
-    static constexpr std::string_view kDescription = "Reserve Participation from a group to a "
-                                                     "reserve";
-    static constexpr int kCategoryFileLevel = Category::FileLevel::id | Category::FileLevel::va;
-    static constexpr int kDecimal = 2;
+    static constexpr std::string_view caption = "SHORT TERM STORAGE GROUP PARTICIPATION TO RESERVE";
+    static constexpr std::string_view unit = "MWh";
+    static constexpr std::string_view description = "Reserve Participation from a group to a "
+                                                    "reserve";
+    static constexpr int kCategoryFileLevel = CategoryLevels::GroupLevel;
 };
 
-struct MarginalCostTraits
+struct ThermalGroupTraits: ReserveParticipationTraits<ThermalGroupTraits>
 {
-    static constexpr std::string_view kCaption = "RESERVE PARTICIPATION MARGINAL COST";
-    static constexpr std::string_view kUnit = "Euro";
-    static constexpr std::string_view kDescription = "Reserve participation marginal cost";
-    static constexpr int kCategoryFileLevel = Category::FileLevel::id | Category::FileLevel::va;
-    static constexpr int kDecimal = 2;
+    static constexpr std::string_view caption = "THERMAL GROUP PARTICIPATION TO RESERVE";
+    static constexpr std::string_view unit = "MWh";
+    static constexpr std::string_view description = "Reserve Participation from a group to a "
+                                                    "reserve";
+    static constexpr int kCategoryFileLevel = CategoryLevels::GroupLevel;
 };
 
-struct UnsuppliedSpilledTraits
+struct MarginalCostTraits: ReserveParticipationTraits<MarginalCostTraits>
 {
-    static constexpr std::string_view kCaption = "RESERVE UNSUPPLIED OR SPILLED ENERGY";
-    static constexpr std::string_view kUnit = "MWh";
-    static constexpr std::string_view kDescription = "Reserve unsupplied or spilled Power";
-    static constexpr int kCategoryFileLevel = Category::FileLevel::id | Category::FileLevel::va;
+    static constexpr std::string_view caption = "RESERVE PARTICIPATION MARGINAL COST";
+    static constexpr std::string_view unit = "Euro";
+    static constexpr std::string_view description = "Reserve participation marginal cost";
+    static constexpr int kCategoryFileLevel = CategoryLevels::GroupLevel;
+};
+
+struct UnsuppliedSpilledTraits: ReserveParticipationTraits<UnsuppliedSpilledTraits>
+{
+    static constexpr std::string_view caption = "RESERVE UNSUPPLIED OR SPILLED ENERGY";
+    static constexpr std::string_view unit = "MWh";
+    static constexpr std::string_view description = "Reserve unsupplied or spilled Power";
+    static constexpr int kCategoryFileLevel = CategoryLevels::GroupLevel;
     static constexpr int kDecimal = 0;
+    using ResultsType = ResultTypes::AverageOnly;
 };
 
 // ============================================================================
@@ -154,11 +179,11 @@ struct VCardReserveParticipationBase
         return std::string(TraitsType::kDescription);
     }
 
-    //! The expected results
-    typedef Results<R::AllYears::Average<>> ResultsType;
-
     //! The VCard to look for for calculating spatial aggregates
     typedef VCardReserveParticipationBase VCardForSpatialAggregate;
+
+    //! The expected results type from traits
+    using ResultsType = typename TraitsType::ResultsType;
 
     enum
     {

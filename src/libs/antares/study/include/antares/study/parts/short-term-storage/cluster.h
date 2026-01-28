@@ -38,9 +38,6 @@ namespace Antares::Data::ShortTermStorage
 {
 class STStorageCluster final
 {
-private:
-    std::string group_ = "OTHER";
-
 public:
     //! \brief Get the group name string
     std::string getGroup();

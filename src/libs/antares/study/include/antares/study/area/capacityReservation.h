@@ -127,5 +127,39 @@ struct AllCapacityReservations
     {
         return areaCapacityReservations.size();
     }
+
+    /// @brief Return the name of the reserve at index i
+    /// @param index the index of the reserve spilled/unsupplied variable
+    /// @return the capacity reservation name and type if the reserve was found throw otherwise
+    std::pair<UnsuppliedSpilled, ReserveName> reserveParticipationUnsuppliedSpilledAt(
+      unsigned int index) const
+    {
+        int column = 0;
+        for (const auto& reserveName: areaCapacityReservations | std::views::keys)
+        {
+            for (int indexUnsuppliedSpilled = 0;
+                 indexUnsuppliedSpilled < static_cast<int>(UnsuppliedSpilled::Count);
+                 indexUnsuppliedSpilled++)
+            {
+                if (column == index)
+                {
+                    return {static_cast<UnsuppliedSpilled>(indexUnsuppliedSpilled), reserveName};
+                }
+                column++;
+            }
+        }
+
+        throw std::out_of_range("This reserve status index has not been found in all the "
+                                "reserve participations");
+    }
+
+    /// @brief Gets the reserve name at the specified index in the map.
+    /// @param index The zero-based position of the reserve in the map
+    /// @return Reference to the reserve name at the specified index
+    const ReserveName& getReserveAtIndex(size_t index) const
+    {
+        auto it = std::next(areaCapacityReservations.begin(), index);
+        return it->first;
+    }
 };
 } // namespace Antares::Data

@@ -234,7 +234,6 @@ public:
         if (AncestorType::isPrinted[0] && results.data.area->allCapacityReservations)
         {
             assert(NULL != results.data.area);
-            const auto& thermal = results.data.area->thermal;
             results.variableUnit = VCardType::Unit();
             // Write the data for the current year
             int column = 0;
@@ -246,8 +245,9 @@ public:
                 Yuni::String caption = reserveName;
                 caption << "_MRG.COST";
                 results.variableCaption = caption; // VCardType::Caption();
-                pValuesForTheCurrentYear[numSpace][column++]
+                pValuesForTheCurrentYear[numSpace][column]
                   .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
+                column++;
             }
         }
     }

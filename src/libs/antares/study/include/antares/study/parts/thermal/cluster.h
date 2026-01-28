@@ -75,17 +75,6 @@ double computeMarketBidCost(double fuelCost,
 class ThermalCluster final: public Cluster
 {
 public:
-    enum UnsuppliedSpilled
-    {
-        //! Spilled
-        Spilled = 0,
-        //! Unsupplied
-        Unsupplied,
-
-        //! The highest value
-        Count
-    };
-
     Pollutant emissions;
 
     //! Set of thermal clusters

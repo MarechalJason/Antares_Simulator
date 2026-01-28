@@ -45,12 +45,11 @@ struct VCardReserveParticipationCost
     //! The short description of the variable
     static std::string Description()
     {
-        return "Reserve Participation Cost throughout all MC years, of all the thermal "
-               "dispatchable "
-               "clusters";
+        return "Reserve Participation Cost throughout all MC years of all clusters : Thermal, "
+               "hydro and short term";
     }
 
-    //! The expecte results
+    //! The expected results
     typedef Results<R::AllYears::Average<        // The average values throughout all years
                       R::AllYears::StdDeviation< // The standard deviation values throughout all
                                                  // years

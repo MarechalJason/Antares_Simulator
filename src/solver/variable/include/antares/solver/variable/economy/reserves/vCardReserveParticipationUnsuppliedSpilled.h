@@ -36,18 +36,21 @@ namespace Antares::Solver::Variable::Economy::Reserves
 using VCardReserveParticipationUnsuppliedSpilled = VCardReserveParticipationBase<
   UnsuppliedSpilledTraits>;
 
-inline std::string unsuppliedSpilledToString(Data::ThermalCluster::UnsuppliedSpilled idx)
+constexpr std::string_view unsuppliedSpilledToString(Data::UnsuppliedSpilled type)
 {
-    switch (idx)
+    using enum Data::UnsuppliedSpilled;
+
+    switch (type)
     {
-    case 0:
+    case Unsupplied:
         return "UNSP.";
-    case 1:
+    case Spilled:
         return "SPIL.";
-    default:
-        throw std::invalid_argument("idx " + std::to_string(idx)
-                                    + " should be 0 (UNSP.) or 1 (SPIL.)");
     }
+
+    throw std::invalid_argument("Invalid UnsuppliedSpilled value: "
+                                + std::to_string(static_cast<int>(type))
+                                + " should be 0 (UNSP.) or 1 (SPIL.)");
 }
 
 } // namespace Antares::Solver::Variable::Economy::Reserves
