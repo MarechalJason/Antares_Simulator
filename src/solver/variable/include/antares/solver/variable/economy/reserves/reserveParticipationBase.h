@@ -59,29 +59,10 @@ constexpr int Standard = Category::FileLevel::de;
 constexpr int GroupLevel = Category::FileLevel::id | Category::FileLevel::va;
 } // namespace CategoryLevels
 
-/**
- * @brief Base traits for reserve participation using CRTP pattern
- *
- * Provides common defaults (kDecimal, kCategoryFileLevel, ResultsType)
- * while allowing derived classes to customize only what they need.
- *
- * @tparam Derived The derived trait class (CRTP pattern)
- */
-template<typename Derived>
-struct ReserveParticipationTraits
+// Separate detail structs
+namespace Detail
 {
-    // Defaults (most common values)
-    static constexpr int kCategoryFileLevel = CategoryLevels::Standard;
-    static constexpr int kDecimal = 2;
-    using ResultsType = ResultTypes::Standard;
-
-    static constexpr std::string_view kCaption = Derived::caption;
-    static constexpr std::string_view kUnit = Derived::unit;
-    static constexpr std::string_view kDescription = Derived::description;
-};
-
-// Individual trait implementations - only specify what's unique
-struct DispatchableOffTraits: ReserveParticipationTraits<DispatchableOffTraits>
+struct DispatchableOff
 {
     static constexpr std::string_view caption = "OFF UNITS CLUSTER PARTICIPATION TO RESERVE";
     static constexpr std::string_view unit = "Reserve Participation Power - MWh";
@@ -89,7 +70,7 @@ struct DispatchableOffTraits: ReserveParticipationTraits<DispatchableOffTraits>
                                                     "cluster to a reserve";
 };
 
-struct DispatchableOnTraits: ReserveParticipationTraits<DispatchableOnTraits>
+struct DispatchableOn
 {
     static constexpr std::string_view caption = "RUNNING UNITS CLUSTER PARTICIPATION TO RESERVE";
     static constexpr std::string_view unit = "Reserve Participation Power - MWh";
@@ -97,14 +78,14 @@ struct DispatchableOnTraits: ReserveParticipationTraits<DispatchableOnTraits>
                                                     "cluster to a reserve";
 };
 
-struct HydroTraits: ReserveParticipationTraits<HydroTraits>
+struct Hydro
 {
     static constexpr std::string_view caption = "HYDRO RESERVE PARTICIPATION";
     static constexpr std::string_view unit = "Reserve Participation Power - MWh";
     static constexpr std::string_view description = "Reserve Participation from hydro to a reserve";
 };
 
-struct STStorageTraits: ReserveParticipationTraits<STStorageTraits>
+struct STStorage
 {
     static constexpr std::string_view caption = "CLUSTER PARTICIPATION TO RESERVE";
     static constexpr std::string_view unit = "Reserve Participation Power - MWh";
@@ -112,41 +93,68 @@ struct STStorageTraits: ReserveParticipationTraits<STStorageTraits>
                                                     "reserve";
 };
 
-struct STStorageGroupTraits: ReserveParticipationTraits<STStorageGroupTraits>
+struct STStorageGroup
 {
     static constexpr std::string_view caption = "SHORT TERM STORAGE GROUP PARTICIPATION TO RESERVE";
     static constexpr std::string_view unit = "MWh";
     static constexpr std::string_view description = "Reserve Participation from a group to a "
                                                     "reserve";
-    static constexpr int kCategoryFileLevel = CategoryLevels::GroupLevel;
 };
 
-struct ThermalGroupTraits: ReserveParticipationTraits<ThermalGroupTraits>
+struct ThermalGroup
 {
     static constexpr std::string_view caption = "THERMAL GROUP PARTICIPATION TO RESERVE";
     static constexpr std::string_view unit = "MWh";
     static constexpr std::string_view description = "Reserve Participation from a group to a "
                                                     "reserve";
-    static constexpr int kCategoryFileLevel = CategoryLevels::GroupLevel;
 };
 
-struct MarginalCostTraits: ReserveParticipationTraits<MarginalCostTraits>
+struct MarginalCost
 {
     static constexpr std::string_view caption = "RESERVE PARTICIPATION MARGINAL COST";
     static constexpr std::string_view unit = "Euro";
     static constexpr std::string_view description = "Reserve participation marginal cost";
-    static constexpr int kCategoryFileLevel = CategoryLevels::GroupLevel;
 };
 
-struct UnsuppliedSpilledTraits: ReserveParticipationTraits<UnsuppliedSpilledTraits>
+struct UnsuppliedSpilled
 {
     static constexpr std::string_view caption = "RESERVE UNSUPPLIED OR SPILLED ENERGY";
     static constexpr std::string_view unit = "MWh";
     static constexpr std::string_view description = "Reserve unsupplied or spilled Power";
-    static constexpr int kCategoryFileLevel = CategoryLevels::GroupLevel;
-    static constexpr int kDecimal = 0;
-    using ResultsType = ResultTypes::AverageOnly;
 };
+} // namespace Detail
+
+// Traits template - now Details is complete when accessed
+template<typename Details,
+         int CategoryFileLevel = CategoryLevels::Standard,
+         int Decimal = 2,
+         typename Results = ResultTypes::Standard>
+struct ReserveParticipationTraits
+{
+    static constexpr std::string_view kCaption = Details::caption;
+    static constexpr std::string_view kUnit = Details::unit;
+    static constexpr std::string_view kDescription = Details::description;
+    static constexpr int kCategoryFileLevel = CategoryFileLevel;
+    static constexpr int kDecimal = Decimal;
+    using ResultsType = Results;
+};
+
+// Final trait types - clean and explicit
+using DispatchableOffTraits = ReserveParticipationTraits<Detail::DispatchableOff>;
+using DispatchableOnTraits = ReserveParticipationTraits<Detail::DispatchableOn>;
+using HydroTraits = ReserveParticipationTraits<Detail::Hydro>;
+using STStorageTraits = ReserveParticipationTraits<Detail::STStorage>;
+
+using STStorageGroupTraits = ReserveParticipationTraits<Detail::STStorageGroup,
+                                                        CategoryLevels::GroupLevel>;
+using ThermalGroupTraits = ReserveParticipationTraits<Detail::ThermalGroup,
+                                                      CategoryLevels::GroupLevel>;
+using MarginalCostTraits = ReserveParticipationTraits<Detail::MarginalCost,
+                                                      CategoryLevels::GroupLevel>;
+using UnsuppliedSpilledTraits = ReserveParticipationTraits<Detail::UnsuppliedSpilled,
+                                                           CategoryLevels::GroupLevel,
+                                                           0,
+                                                           ResultTypes::AverageOnly>;
 
 // ============================================================================
 // Generic VCard template for Reserve Participation
