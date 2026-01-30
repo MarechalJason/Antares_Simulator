@@ -4,7 +4,7 @@
 #ifndef __ANTARES_WINDOWS_INSPECTOR_EDITOR_STUDY_CALENDAR_H__
 #define __ANTARES_WINDOWS_INSPECTOR_EDITOR_STUDY_CALENDAR_H__
 
-#include "../../../common/wx-wrapper.h"
+#include <ui/common/component/panel.h>
 
 #include <wx/menu.h>
 #include <wx/propgrid/propgrid.h>

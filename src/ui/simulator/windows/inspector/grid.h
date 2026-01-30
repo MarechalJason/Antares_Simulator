@@ -4,7 +4,7 @@
 #ifndef __ANTARES_WINDOWS_INSPECTOR_GRID_H__
 #define __ANTARES_WINDOWS_INSPECTOR_GRID_H__
 
-#include "../../../common/wx-wrapper.h"
+#include <ui/common/component/panel.h>
 
 #include <wx/propgrid/propgrid.h>
 #include <wx/propgrid/advprops.h>
@@ -14,6 +14,7 @@
 #include <antares/study/study.h>
 
 #include "frame.h"
+
 
 namespace Antares::Window::Inspector
 {
