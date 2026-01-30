@@ -4,7 +4,6 @@
 #ifndef __ANTARES_TOOLBOX_ACTION_GUI_H__
 #define __ANTARES_TOOLBOX_ACTION_GUI_H__
 
-#include "../wx-wrapper.h"
 #include "action.h"
 
 // forward declarations

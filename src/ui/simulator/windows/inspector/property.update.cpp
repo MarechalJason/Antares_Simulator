@@ -1,6 +1,9 @@
 // Copyright 2007-2026, RTE (https://www.rte-france.com)
 // SPDX-License-Identifier: MPL-2.0
 
+#include "grid.h"
+#include "property.cluster.update.h"
+
 #include <ui/common/lock.h>
 #include <wx/menu.h>
 #include <wx/sizer.h>
@@ -18,8 +21,6 @@
 #include "../../toolbox/components/mainpanel.h"
 #include "../../toolbox/components/map/component.h"
 #include "../message.h"
-#include "grid.h"
-#include "property.cluster.update.h"
 
 using namespace Yuni;
 
