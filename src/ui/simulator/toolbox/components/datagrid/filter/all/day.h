@@ -6,6 +6,7 @@
 
 #include <antares/date/date.h>
 
+#include "application/study.h"
 #include "../filter.h"
 
 namespace Antares::Toolbox::Filter

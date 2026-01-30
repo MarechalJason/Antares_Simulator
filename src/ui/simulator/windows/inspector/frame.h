@@ -4,6 +4,8 @@
 #ifndef __ANTARES_WINDOWS_INSPECTOR_FRAME_H__
 #define __ANTARES_WINDOWS_INSPECTOR_FRAME_H__
 
+#include "../../../common/wx-wrapper.h"
+
 #include <ui/common/component/panel.h>
 #include <wx/propgrid/propgrid.h>
 

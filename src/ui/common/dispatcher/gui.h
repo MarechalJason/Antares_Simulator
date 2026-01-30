@@ -7,8 +7,9 @@
 #include "../wx-wrapper.h"
 #include "action.h"
 
-// forward declaration
+// forward declarations
 class wxDialog;
+class wxTimer;
 
 namespace Antares
 {

@@ -137,8 +137,7 @@ void printProblems(const ApiOptions& options)
         for (int week = firstWeek; week < lastWeek; ++week)
         {
             logs.info() << " week: " << week << '\n';
-            const WeeklyProblemId id = {static_cast<unsigned int>(year),
-                                        static_cast<unsigned int>(week)};
+            const WeeklyProblemId id = {static_cast<unsigned int>(year), static_cast<unsigned int>(week)};
             auto weekly = getter.getWeeklyProblem(id);
             // printWeekLPData(constant, weekly);
             if (options.writeMps)

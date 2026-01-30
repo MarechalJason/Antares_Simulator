@@ -4,11 +4,13 @@
 #ifndef __ANTARES_WINDOWS_INSPECTOR_EDITOR_STUDY_CALENDAR_H__
 #define __ANTARES_WINDOWS_INSPECTOR_EDITOR_STUDY_CALENDAR_H__
 
+#include "../../../common/wx-wrapper.h"
+
 #include <wx/menu.h>
+#include <wx/propgrid/propgrid.h>
 #include <wx/propgrid/advprops.h>
 #include <wx/propgrid/editors.h>
 #include <wx/propgrid/manager.h>
-#include <wx/propgrid/propgrid.h>
 
 namespace Antares::Window::Inspector
 {
