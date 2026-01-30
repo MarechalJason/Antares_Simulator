@@ -9,6 +9,8 @@
 // forward declarations
 class wxDialog;
 class wxTimer;
+class wxSizer;
+class wxWindow;
 
 namespace Antares
 {
