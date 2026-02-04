@@ -23,7 +23,6 @@
 
 #include "fmt/format.h"
 using namespace Optimisation::LinearProblemApi;
-using namespace operations_research;
 
 namespace
 {
@@ -379,8 +378,7 @@ void SingleProblemGetter::fillProblem(ILinearProblem& problem) const
                                                             modelerDataSeries,
                                                             modelerScenarioGroupRepository);
 
-    fillLinearProblem(fillCtx, &pb_, optimEntityContainer,
-                      true); // TODO
+    fillLinearProblem(fillCtx, &pb_, optimEntityContainer, true, bendersDecomposition_);
 }
 
 const YearlyData& SingleProblemGetter::getYearlyData(unsigned year)
@@ -490,6 +488,16 @@ int SingleProblemGetter::nbYears() const
 std::set<int> SingleProblemGetter::playedYears() const
 {
     return playedYears_;
+}
+
+void SingleProblemGetter::setBendersDecomposition(Optimisation::BendersDecomposition* bd)
+{
+    bendersDecomposition_ = bd;
+}
+
+ModelerData* SingleProblemGetter::modelerData()
+{
+    return pb_.modelerData;
 }
 
 int SingleProblemGetter::nbWeeks() const
