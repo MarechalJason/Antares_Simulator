@@ -43,3 +43,4 @@ ctest -R "OptimizationOptionsTests" --output-on-failure -V
 - Git workflow: docs/agents/git-workflow.md
 - Key directories: docs/agents/key-directories.md
 - Pull request guidelines: docs/agents/pull-requests.md
+- Access control (do not read `src/ui`): docs/agents/access-control.md
