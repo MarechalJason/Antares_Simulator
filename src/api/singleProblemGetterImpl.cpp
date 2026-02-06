@@ -354,12 +354,12 @@ std::unique_ptr<ILinearProblem> SingleProblemGetter::getWeeklyProblem(WeeklyProb
     std::unique_ptr<ILinearProblem> linearProblem = std::make_unique<
       Antares::Optimization::LegacyOrtoolsLinearProblem>(pb_.ProblemeAResoudre->isMIP(),
                                                          options.solverName);
-    fillProblem(*linearProblem);
+    fillProblem(*linearProblem, id);
 
     return linearProblem;
 }
 
-void SingleProblemGetter::fillProblem(ILinearProblem& problem) const
+void SingleProblemGetter::fillProblem(ILinearProblem& problem, const WeeklyProblemId& id)
 {
     const int opt = optimizationNumber - 1;
     assert(opt >= 0 && opt < 2);
@@ -377,8 +377,16 @@ void SingleProblemGetter::fillProblem(ILinearProblem& problem) const
     Optimisation::OptimEntityContainer optimEntityContainer(problem,
                                                             modelerDataSeries,
                                                             modelerScenarioGroupRepository);
+    if (hasModelerData)
+    {
+        modelerData->bendersDecomposition.setCurrentProblemId(problemName({id.year, id.week + 1}));
+    }
 
-    fillLinearProblem(fillCtx, &pb_, optimEntityContainer, true, bendersDecomposition_);
+    fillLinearProblem(fillCtx,
+                      &pb_,
+                      optimEntityContainer,
+                      true,
+                      &modelerData->bendersDecomposition);
 }
 
 const YearlyData& SingleProblemGetter::getYearlyData(unsigned year)
@@ -488,11 +496,6 @@ int SingleProblemGetter::nbYears() const
 std::set<int> SingleProblemGetter::playedYears() const
 {
     return playedYears_;
-}
-
-void SingleProblemGetter::setBendersDecomposition(Optimisation::BendersDecomposition* bd)
-{
-    bendersDecomposition_ = bd;
 }
 
 ModelerData* SingleProblemGetter::modelerData()

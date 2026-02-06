@@ -54,7 +54,8 @@ private:
     const YearlyData& getYearlyData(unsigned year);
     YearlyData computeHydroLevels(unsigned year, const std::vector<double>& initialLevel);
     void initializeRandomNumbers();
-    void fillProblem(Optimisation::LinearProblemApi::ILinearProblem& problem) const;
+    void fillProblem(Optimisation::LinearProblemApi::ILinearProblem& problem,
+                     const WeeklyProblemId& id);
     void setWeeklyData(WeeklyProblemId& id);
     Antares::Data::Area::ScratchMap scratchmap_;
     HebdoProblemToLpsTranslator translator_;
@@ -66,7 +67,6 @@ private:
                                // building
     std::set<int> playedYears_;
     int nbWeeks_;
-    Optimisation::BendersDecomposition* bendersDecomposition_ = nullptr;
 
     std::vector<std::string> variablesName_;
     std::vector<std::string> constraintsName_;
