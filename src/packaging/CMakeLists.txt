@@ -11,8 +11,8 @@ set(TARGET_LIBS #No alias
         # it is available for everything
 
         solver_api # What we want to export
-        single_problem_api
-
+		single_problem_api
+		antares-problem-generator
         study
         scenario-builder-utils
         study-loader
@@ -96,7 +96,7 @@ set(TARGET_LIBS #No alias
         antlr-interface
         antares-study-system-model
         load-modeler-files
-        write-modeler-files
+		write-modeler-files
         modeler-optimisation-container
         expressions
         optim-model-filler
