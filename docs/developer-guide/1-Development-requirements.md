@@ -2,7 +2,7 @@
 
 ## C++
 --------------------
-The compilation of *Antares Simulator* requires C++17 support.
+The compilation of *Antares Simulator* requires C++23 support.
 
 === "Windows"
 
@@ -54,17 +54,20 @@ CMake 3.x must be used.
 === "Windows"
 
     You can download latest Windows version directly from [CMake website](https://cmake.org/download/).
+
 === "Centos"
 
     ```
     sudo yum install epel-release
     sudo yum install cmake3
     ```
+
 === "Ubuntu/Debian"
 
     ```
     sudo apt install cmake
     ```
+
 ## Python version
 --------------------
 Python 3.x is used for end-to-end test.
@@ -86,13 +89,16 @@ Python 3.x is used for end-to-end test.
     ```
 
 Required python modules can be installed with:
+
 ```
 pip install -r src/tests/examples/requirements.txt 
 ```
 
 ## Git version
 --------------------
-Git version must be above 2.15 for external dependencies build because `--ignore-whitespace` is not used by default and we have an issue with OR-Tools compilation of ZLib and application of patch on Windows (see https://github.com/google/or-tools/issues/1193).
+Git version must be above 2.15 for external dependencies build because `--ignore-whitespace` is not used by default and
+we have an issue with OR-Tools compilation of ZLib and application of patch on Windows (
+see https://github.com/google/or-tools/issues/1193).
 
 === "Windows"
 
@@ -109,7 +115,7 @@ Git version must be above 2.15 for external dependencies build because `--ignore
     ```
     source /opt/rh/rh-git227/enable
     ```
-    
+
 === "Ubuntu/Debian"
 
     ```

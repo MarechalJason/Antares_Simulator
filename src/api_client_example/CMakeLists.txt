@@ -9,7 +9,7 @@ include(CheckCXXCompilerFlag)
 include(CMakeDependentOption)
 include(FetchContent)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 find_package(antlr4-runtime REQUIRED)
 find_package(yaml-cpp REQUIRED)
