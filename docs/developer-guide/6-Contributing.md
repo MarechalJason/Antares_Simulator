@@ -297,6 +297,33 @@ v = w * (x + z);
 - Release builds contain debugging information (for profiling), production builds do not
 - If you don't have enough time to make it right, leave a `// TODO(DeveloperName): need to fix it` comment
 
+## C++23 Features and Testing
+
+Antares Simulator now uses C++23 standard. We have dedicated tests to ensure compiler compatibility:
+
+### Running C++23 compatibility tests
+
+```bash
+cd src/build
+ctest -R cpp23-features -V
+```
+
+### Key C++23 features available
+
+- **std::expected**: Modern error handling without exceptions
+- **ranges::to**: Convert ranges to containers
+- **views::zip**: Combine multiple ranges
+- **string::contains()**: Simplified substring checking
+- **optional monadic operations**: and_then(), transform(), or_else()
+
+For more details, see `src/tests/src/libs/antares/cpp23/README.md`.
+
+When using C++23 features in production code:
+
+- Ensure they're tested in the C++23 compatibility test suite
+- Document their usage for other developers
+- Verify compatibility across all supported compilers (GCC 12+, Clang 15+, MSVC 2022+)
+
 ## Logging functions:
 
 - Use `Antares::logs.[level]() << message` for logging, below is more detailed description for level:
