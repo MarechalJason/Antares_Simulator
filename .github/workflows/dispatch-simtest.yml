@@ -59,7 +59,7 @@ jobs:
 
       - name: Notify SimTest via repository_dispatch
         env:
-          SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT }}
+          SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
         run: |
           SIMTEST_REPO="${{ steps.vars.outputs.simtest_repo }}"
           TAG="${{ steps.vars.outputs.tag }}"
@@ -95,4 +95,5 @@ jobs:
               fi
             fi
           done
+
 
