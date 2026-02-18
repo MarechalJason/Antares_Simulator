@@ -1,0 +1,98 @@
+name: Create RC and notify SimTest
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for RC (ex: v9.3.6-rc1)'
+        required: true
+      release_name:
+        description: 'Release title'
+        required: false
+        default: 'RC'
+      simtest_repo:
+        description: 'Owner/Repo for SimTest (ex: AntaresSimulatorTeam/SimTest)'
+        required: false
+        default: 'AntaresSimulatorTeam/SimTest'
+  push:
+    tags:
+      - '*-rc*'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  create-release-and-dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine tag and release name
+        id: vars
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            echo "tag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
+            echo "name=${{ github.event.inputs.release_name }}" >> $GITHUB_OUTPUT
+            echo "simtest_repo=${{ github.event.inputs.simtest_repo }}" >> $GITHUB_OUTPUT
+          else
+            TAG=${GITHUB_REF#refs/tags/}
+            echo "tag=${TAG}" >> $GITHUB_OUTPUT
+            echo "name=${TAG}" >> $GITHUB_OUTPUT
+            echo "simtest_repo=${{ github.event.inputs.simtest_repo }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create RC release (Antares repo)
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.vars.outputs.tag }}"
+          NAME="${{ steps.vars.outputs.name }}"
+          BODY="Automated RC created by workflow $GITHUB_WORKFLOW (ref $GITHUB_REF)"
+          JSON=$(jq -n --arg tag "$TAG" --arg name "$NAME" --arg body "$BODY" '{ tag_name: $tag, name: $name, body: $body, prerelease: true }')
+          RESP=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/releases -d "$JSON" ) || true
+          echo "$RESP" | jq -r '.html_url' > release_url.txt || true
+          echo "release_url=$(cat release_url.txt)" >> $GITHUB_OUTPUT || true
+
+      - name: Notify SimTest via repository_dispatch
+        env:
+          SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT }}
+        run: |
+          SIMTEST_REPO="${{ steps.vars.outputs.simtest_repo }}"
+          TAG="${{ steps.vars.outputs.tag }}"
+          RELEASE_URL="${{ steps.create_release.outputs.release_url }}"
+
+          # Build client_payload; add more fields if needed
+          CLIENT_PAYLOAD=$(jq -n --arg tag "$TAG" --arg release_url "$RELEASE_URL" '{ tag_name:$tag, release_url:$release_url }')
+
+          # Try up to 3 times on transient errors
+          set -euo pipefail
+          ATTEMPT=0
+          MAX=3
+          while [ $ATTEMPT -lt $MAX ]; do
+            ATTEMPT=$((ATTEMPT+1))
+            echo "Dispatch attempt $ATTEMPT to $SIMTEST_REPO"
+            HTTP=$(curl -s -o /tmp/dispatch_resp -w "%{http_code}" -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: token $SIMTEST_PAT" \
+              https://api.github.com/repos/${SIMTEST_REPO}/dispatches \
+              -d "$(jq -n --arg etype "antares-rc-published" --argjson payload "$CLIENT_PAYLOAD" '{event_type: $etype, client_payload: $payload}'))" || true
+            cat /tmp/dispatch_resp || true
+            if [ "$HTTP" = "204" ] || [ "$HTTP" = "200" ]; then
+              echo "Dispatch succeeded"
+              exit 0
+            else
+              echo "Dispatch returned HTTP $HTTP"
+              if [ $ATTEMPT -lt $MAX ]; then
+                echo "Retrying in 5s..."
+                sleep 5
+              else
+                echo "All attempts failed"
+                exit 2
+              fi
+            fi
+          done
+

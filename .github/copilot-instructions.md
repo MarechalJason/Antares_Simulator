@@ -1,1 +1,0 @@
-read the instructions from file 6-Contributing.md

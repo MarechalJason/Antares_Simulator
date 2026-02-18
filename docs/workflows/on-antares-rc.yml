@@ -1,0 +1,75 @@
+name: On Antares RC published
+
+# This workflow should be copied into the SimTest repository at:
+# .github/workflows/on-antares-rc.yml
+
+on:
+  repository_dispatch:
+    types: [ antares-rc-published ]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  regenerate-results:
+    runs-on: ubuntu-latest
+    env:
+      ANTARES_RC_TAG: ${{ github.event.client_payload.tag_name }}
+      ANTARES_RELEASE_URL: ${{ github.event.client_payload.release_url }}
+    steps:
+      - name: Checkout SimTest
+        uses: actions/checkout@v4
+
+      - name: Show payload
+        run: |
+          echo "Received repository_dispatch from: ${{ github.actor }}"
+          echo "Payload tag    : $ANTARES_RC_TAG"
+          echo "Payload release: $ANTARES_RELEASE_URL"
+
+      - name: Prepare environment
+        run: |
+          echo "Preparing environment"
+          # Example: install dependencies
+          # sudo apt-get update && sudo apt-get install -y ...
+
+      - name: Download Antares RC artifact (optional)
+        if: env.ANTARES_RELEASE_URL != ''
+        run: |
+          echo "Antares release URL: $ANTARES_RELEASE_URL"
+          # Example: curl -L -o antares_rc.tar.gz "$ANTARES_RELEASE_URL"
+
+      - name: Run regeneration script
+        id: regen
+        run: |
+          set -euo pipefail
+          echo "Starting regeneration for $ANTARES_RC_TAG"
+          # Replace with real script / command
+          if [ -x ./scripts/regenerate_all_results.sh ]; then
+            ./scripts/regenerate_all_results.sh --antares-tag "$ANTARES_RC_TAG"
+          else
+            echo "Warning: regeneration script not found; exiting with failure"
+            exit 2
+          fi
+
+      - name: Upload results artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simtest-results-${{ env.ANTARES_RC_TAG }}
+          path: results/output/
+
+      - name: On failure create issue (optional)
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Regeneration failed for $ANTARES_RC_TAG" > body.txt
+          echo "CI logs: $GITHUB_RUN_URL" >> body.txt
+          # Use gh CLI or API to create an issue; gh CLI requires setup
+          if command -v gh >/dev/null 2>&1; then
+            gh issue create --title "Regeneration failed: $ANTARES_RC_TAG" --body "$(cat body.txt)" || true
+          else
+            echo "gh CLI not available; failing job will be visible in Actions UI"
+          fi
+
