@@ -57,6 +57,37 @@ jobs:
           echo "$RESP" | jq -r '.html_url' > release_url.txt || true
           echo "release_url=$(cat release_url.txt)" >> $GITHUB_OUTPUT || true
 
+      - name: Verify SIMTEST PAT and access
+        env:
+          SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
+        run: |
+          set -euo pipefail
+          SIMTEST_REPO="${{ steps.vars.outputs.simtest_repo }}"
+          echo "Vérification du token et de l'accès au dépôt: $SIMTEST_REPO"
+
+          # Vérifier le propriétaire du token et les scopes via /user (headers contiennent X-OAuth-Scopes)
+          echo "Checking token owner and scopes..."
+          curl -s -D /tmp/token_headers -o /tmp/token_body -H "Authorization: token $SIMTEST_PAT" https://api.github.com/user || true
+          echo "Token owner response (body head):"
+          head -c 400 /tmp/token_body || true
+          echo
+          echo "Token scopes (X-OAuth-Scopes):"
+          grep -i '^x-oauth-scopes:' /tmp/token_headers || true
+          echo
+
+          # Vérifier l'accès au dépôt cible
+          echo "Checking repository access..."
+          HTTP_REPO=$(curl -s -o /tmp/repo_body -w "%{http_code}" -H "Authorization: token $SIMTEST_PAT" "https://api.github.com/repos/${SIMTEST_REPO}") || true
+          echo "Repo HTTP code: $HTTP_REPO"
+          echo "Repo response (first 800 chars):"
+          head -c 800 /tmp/repo_body || true
+          if [ "$HTTP_REPO" != "200" ]; then
+            echo "Impossible d'accéder au dépôt avec ce token (code $HTTP_REPO). Vérifiez le scope du PAT, l'accès du compte au dépôt ou l'autorisation SSO."
+            exit 2
+          else
+            echo "Accès au dépôt OK."
+          fi
+
       - name: Notify SimTest via repository_dispatch
         env:
           SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
@@ -101,5 +132,4 @@ jobs:
               fi
             fi
           done
-
 
