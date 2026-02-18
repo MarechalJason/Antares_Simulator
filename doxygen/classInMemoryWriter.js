@@ -1,7 +1,7 @@
 var classInMemoryWriter =
 [
-    [ "init", "classInMemoryWriter.html#a8dd2cd7488613e0f2706d9d275eada54", null ],
-    [ "writeProblem", "classInMemoryWriter.html#a3827b8baeedeb7096f05220c9cb3456c", null ],
-    [ "writeSimulationTable", "classInMemoryWriter.html#aee472ba4c61172a2085c274bfcf1f7c9", null ],
+    [ "init", "classInMemoryWriter.html#a9d9f52782e4a331df4d8300bedff4523", null ],
+    [ "outputPath", "classInMemoryWriter.html#a70db877abb001a3e937cfc848d14a8f9", null ],
+    [ "writeSimulationTable", "classInMemoryWriter.html#a9d2d813b3f1ba47f377555dc85ff1667", null ],
     [ "solution_", "classInMemoryWriter.html#a190c342790cdd247ea5c6016e020c51e", null ]
 ];

@@ -127,7 +127,7 @@ $(document).ready(function(){initNavTree('classAntares_1_1IO_1_1Inputs_1_1ModelC
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classAntares_1_1IO_1_1Inputs_1_1ModelConverter_1_1ConvertorVisitor-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Antares::IO::Inputs::ModelConverter::ConvertorVisitor Class Reference</div>  </div>
+<div class="title">Antares::IO::Inputs::ModelConverter::ConvertorVisitor Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -193,6 +193,9 @@ std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitTimeShift</b
 <tr class="memitem:a9e72ccb531bbbcf432799e3b7fc3211e"><td class="memItemLeft" align="right" valign="top"><a id="a9e72ccb531bbbcf432799e3b7fc3211e"></a>
 std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFunction</b> (<a class="el" href="classExprParser_1_1FunctionContext.html">ExprParser::FunctionContext</a> *context) override</td></tr>
 <tr class="separator:a9e72ccb531bbbcf432799e3b7fc3211e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a046faa58188ed61977d3e406a21851eb"><td class="memItemLeft" align="right" valign="top"><a id="a046faa58188ed61977d3e406a21851eb"></a>
+std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitArgList</b> (<a class="el" href="classExprParser_1_1ArgListContext.html">ExprParser::ArgListContext</a> *context) override</td></tr>
+<tr class="separator:a046faa58188ed61977d3e406a21851eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a218ea0ef20749f3409e26632d9c1087a"><td class="memItemLeft" align="right" valign="top"><a id="a218ea0ef20749f3409e26632d9c1087a"></a>
 std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitTimeSum</b> (<a class="el" href="classExprParser_1_1TimeSumContext.html">ExprParser::TimeSumContext</a> *context) override</td></tr>
 <tr class="separator:a218ea0ef20749f3409e26632d9c1087a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -234,6 +237,15 @@ std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitTimeIndexExp
 <tr class="memitem:a13b18827819b57a7a6d5c83cf0c495b5"><td class="memItemLeft" align="right" valign="top"><a id="a13b18827819b57a7a6d5c83cf0c495b5"></a>
 std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitPortFieldSum</b> (<a class="el" href="classExprParser_1_1PortFieldSumContext.html">ExprParser::PortFieldSumContext</a> *context) override</td></tr>
 <tr class="separator:a13b18827819b57a7a6d5c83cf0c495b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8daa5cfd9c6cc40c63bc018db44d747"><td class="memItemLeft" align="right" valign="top"><a id="ab8daa5cfd9c6cc40c63bc018db44d747"></a>
+std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitPower</b> (<a class="el" href="classExprParser_1_1PowerContext.html">ExprParser::PowerContext</a> *context) override</td></tr>
+<tr class="separator:ab8daa5cfd9c6cc40c63bc018db44d747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbd4a689073ac1668d04a68438365594"><td class="memItemLeft" align="right" valign="top"><a id="afbd4a689073ac1668d04a68438365594"></a>
+std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitRightPower</b> (<a class="el" href="classExprParser_1_1RightPowerContext.html">ExprParser::RightPowerContext</a> *context) override</td></tr>
+<tr class="separator:afbd4a689073ac1668d04a68438365594"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa953aedc6cd5a93d79e58a837a780953"><td class="memItemLeft" align="right" valign="top"><a id="aa953aedc6cd5a93d79e58a837a780953"></a>
+std::any&#160;</td><td class="memItemRight" valign="bottom"><b>visitShiftPower</b> (<a class="el" href="classExprParser_1_1ShiftPowerContext.html">ExprParser::ShiftPowerContext</a> *context) override</td></tr>
+<tr class="separator:aa953aedc6cd5a93d79e58a837a780953"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Visitor to convert ANTLR expressions to Antares::Expressions::Nodes. </p>

@@ -127,7 +127,7 @@ $(document).ready(function(){initNavTree('classAntares_1_1ModelerStudy_1_1System
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classAntares_1_1ModelerStudy_1_1SystemModel_1_1Variable-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Antares::ModelerStudy::SystemModel::Variable Class Reference</div>  </div>
+<div class="title">Antares::ModelerStudy::SystemModel::Variable Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -138,9 +138,9 @@ $(document).ready(function(){initNavTree('classAntares_1_1ModelerStudy_1_1System
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac5dede1197a86442d4532074893557a3"><td class="memItemLeft" align="right" valign="top"><a id="ac5dede1197a86442d4532074893557a3"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Variable</b> (std::string id, <a class="el" href="classAntares_1_1ModelerStudy_1_1SystemModel_1_1Expression.html">Expression</a> lower_bound, <a class="el" href="classAntares_1_1ModelerStudy_1_1SystemModel_1_1Expression.html">Expression</a> upper_bound, ValueType type, TimeDependent timeDependent, ScenarioDependent scenarioDependent)</td></tr>
-<tr class="separator:ac5dede1197a86442d4532074893557a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc1cbd449c8b7e8baee1fb7aca1a8a90"><td class="memItemLeft" align="right" valign="top"><a id="adc1cbd449c8b7e8baee1fb7aca1a8a90"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Variable</b> (std::string id, <a class="el" href="classAntares_1_1ModelerStudy_1_1SystemModel_1_1Expression.html">Expression</a> lower_bound, <a class="el" href="classAntares_1_1ModelerStudy_1_1SystemModel_1_1Expression.html">Expression</a> upper_bound, ValueType type, TimeDependent timeDependent, ScenarioDependent scenarioDependent, Solver::Config::Location location=Solver::Config::Location::SUBPROBLEMS)</td></tr>
+<tr class="separator:adc1cbd449c8b7e8baee1fb7aca1a8a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2b4946fc425f5f9c458a03138cb263e"><td class="memItemLeft" align="right" valign="top"><a id="ab2b4946fc425f5f9c458a03138cb263e"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Id</b> () const</td></tr>
 <tr class="separator:ab2b4946fc425f5f9c458a03138cb263e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -159,6 +159,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isTimeDependent</b> (
 <tr class="memitem:a7845e09d99ae51ebe62b71bfbe9cde88"><td class="memItemLeft" align="right" valign="top"><a id="a7845e09d99ae51ebe62b71bfbe9cde88"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsScenarioDependent</b> () const</td></tr>
 <tr class="separator:a7845e09d99ae51ebe62b71bfbe9cde88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abee167f8a6a0a73f461ca7f4ec22a13b"><td class="memItemLeft" align="right" valign="top"><a id="abee167f8a6a0a73f461ca7f4ec22a13b"></a>
+Solver::Config::Location&#160;</td><td class="memItemRight" valign="bottom"><b>location</b> () const</td></tr>
+<tr class="separator:abee167f8a6a0a73f461ca7f4ec22a13b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A decision variable of the model. </p>

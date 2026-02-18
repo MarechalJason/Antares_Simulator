@@ -127,21 +127,18 @@ $(document).ready(function(){initNavTree('classAntares_1_1Solver_1_1SystemLinear
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classAntares_1_1Solver_1_1SystemLinearProblemBuilder-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Antares::Solver::SystemLinearProblemBuilder Class Reference</div>  </div>
+<div class="title">Antares::Solver::SystemLinearProblemBuilder Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0be740b7838a46c5bf408b5893e9f49d"><td class="memItemLeft" align="right" valign="top"><a id="a0be740b7838a46c5bf408b5893e9f49d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SystemLinearProblemBuilder</b> (const <a class="el" href="classAntares_1_1ModelerStudy_1_1SystemModel_1_1System.html">ModelerStudy::SystemModel::System</a> *system)</td></tr>
-<tr class="separator:a0be740b7838a46c5bf408b5893e9f49d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae27dda3932c76cd8d6ec9653547dad0c"><td class="memItemLeft" align="right" valign="top"><a id="ae27dda3932c76cd8d6ec9653547dad0c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Provide</b> (<a class="el" href="classAntares_1_1Optimisation_1_1LinearProblemApi_1_1ILinearProblem.html">ILinearProblem</a> &amp;pb, <a class="el" href="classAntares_1_1Optimisation_1_1LinearProblemApi_1_1ILinearProblemData.html">ILinearProblemData</a> *dataSeries, const <a class="el" href="classAntares_1_1Optimisation_1_1ScenarioGroupRepository.html">Optimisation::ScenarioGroupRepository</a> &amp;scenario_group_repository, const <a class="el" href="classAntares_1_1Optimisation_1_1LinearProblemApi_1_1FillContext.html">FillContext</a> &amp;timeScenarioCtx)</td></tr>
-<tr class="separator:ae27dda3932c76cd8d6ec9653547dad0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39567e1ae4946dfe2324ecc584e8838d"><td class="memItemLeft" align="right" valign="top"><a id="a39567e1ae4946dfe2324ecc584e8838d"></a>
-const <a class="el" href="classAntares_1_1Optimization_1_1VariableDictionary.html">VariableDictionary</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getVariableDictionary</b> () const</td></tr>
-<tr class="separator:a39567e1ae4946dfe2324ecc584e8838d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a584f8864684ba398e263b1885c2b69a3"><td class="memItemLeft" align="right" valign="top"><a id="a584f8864684ba398e263b1885c2b69a3"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SystemLinearProblemBuilder</b> (const <a class="el" href="classAntares_1_1ModelerStudy_1_1SystemModel_1_1System.html">ModelerStudy::SystemModel::System</a> *system, const <a class="el" href="classAntares_1_1Optimisation_1_1ScenarioGroupRepository.html">ScenarioGroupRepository</a> &amp;scenarioGroupRepository, <a class="el" href="classAntares_1_1Optimisation_1_1BendersDecomposition.html">BendersDecomposition</a> *bendersDecomposition, <a class="el" href="classAntares_1_1Optimisation_1_1OptimEntityContainer.html">OptimEntityContainer</a> &amp;optimEntityContainer)</td></tr>
+<tr class="separator:a584f8864684ba398e263b1885c2b69a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c5a4bfbb5cdcd96a20a990c49369292"><td class="memItemLeft" align="right" valign="top"><a id="a2c5a4bfbb5cdcd96a20a990c49369292"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>build</b> (const <a class="el" href="classAntares_1_1Optimisation_1_1LinearProblemApi_1_1FillContext.html">FillContext</a> &amp;timeScenarioCtx, Config::Location location)</td></tr>
+<tr class="separator:a2c5a4bfbb5cdcd96a20a990c49369292"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/modeler/modeler/Modeler.cpp</li>

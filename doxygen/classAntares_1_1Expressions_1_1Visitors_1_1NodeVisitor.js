@@ -5,6 +5,7 @@ var classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor =
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#a3c4528d09a326d087d92d2a426230098", null ],
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#a1b4c25d573e55d03569367785143455b", null ],
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#aef73b6640146920ab592a44cadbcb786", null ],
+    [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#ac97a9df276eba8163525d33d0a84bdf0", null ],
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#a93fe810ca4c0e8bfd6bb00dffd1a4067", null ],
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#adaedb1dd4a675b1dd1ad87b34cff535f", null ],
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#a6c7846523d75aa86183fa04b51907a19", null ],
@@ -18,5 +19,6 @@ var classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor =
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#a33defe84c0399ed9013b6fa98ab40c96", null ],
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#ae0f17823739acf708aea11200be86cb6", null ],
     [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#a3237fadcf4b22cab415a7ddf40e00edc", null ],
-    [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#abaceaeff0ea77ce13efe0a091833efb4", null ]
+    [ "visit", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#abaceaeff0ea77ce13efe0a091833efb4", null ],
+    [ "visitChildrenNodes", "classAntares_1_1Expressions_1_1Visitors_1_1NodeVisitor.html#aea09e2d220b25a522141a0d230f8ddc0", null ]
 ];
