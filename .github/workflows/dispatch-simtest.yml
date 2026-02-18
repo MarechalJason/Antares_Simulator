@@ -19,8 +19,6 @@ on:
     secrets:
       SIMTEST_PAT:
         required: true
-      CALLER_GITHUB_TOKEN:
-        required: true
 
 permissions:
   contents: read
@@ -62,52 +60,6 @@ jobs:
             exit 2
           else
             echo "Accès au dépôt OK."
-          fi
-
-      - name: Wait for release assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.CALLER_GITHUB_TOKEN }}
-          TAG: ${{ inputs.tag_name }}
-          OWNER_REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          TAG="${TAG}"
-          OWNER_REPO="${OWNER_REPO}"
-          echo "Waiting for assets on release ${OWNER_REPO} tag ${TAG}..."
-
-          MAX_WAIT=900        # secondes totales max (ajuster si besoin)
-          INTERVAL=10         # intervalle initial en secondes
-          ELAPSED=0
-
-          # attendre que la release existe et ait des assets
-          while [ $ELAPSED -lt $MAX_WAIT ]; do
-            echo "Checking release (elapsed ${ELAPSED}s)..."
-
-            # obtenir la release par tag
-            REL_RESP=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${OWNER_REPO}/releases/tags/${TAG}") || true
-            REL_ID=$(echo "$REL_RESP" | jq -r '.id // empty')
-
-            if [ -z "$REL_ID" ]; then
-              echo "Release not found yet."
-            else
-              ASSETS_COUNT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${OWNER_REPO}/releases/${REL_ID}/assets" | jq 'length')
-              echo "Assets count: ${ASSETS_COUNT:-0}"
-              if [ "${ASSETS_COUNT:-0}" -gt 0 ]; then
-                echo "Assets ready (count=${ASSETS_COUNT}). Continuing to dispatch."
-                break
-              fi
-            fi
-
-            echo "No assets yet. Sleeping ${INTERVAL}s..."
-            sleep $INTERVAL
-            ELAPSED=$((ELAPSED + INTERVAL))
-            INTERVAL=$((INTERVAL * 2))
-            if [ $INTERVAL -gt 60 ]; then INTERVAL=60; fi
-          done
-
-          if [ $ELAPSED -ge $MAX_WAIT ]; then
-            echo "Timeout waiting for release assets after ${MAX_WAIT}s."
-            exit 2
           fi
 
       - name: Dispatch to SimTest

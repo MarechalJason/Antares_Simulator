@@ -97,6 +97,10 @@ jobs:
     name: Notify SimTest
     needs:
       - ubuntu
+      - windows
+      - centos7
+      - oracle8
+      - user_guide
     # Appel du workflow réutilisable au niveau du job
     uses: ./.github/workflows/dispatch-simtest.yml
     with:
@@ -105,4 +109,3 @@ jobs:
       simtest_repo: MarechalJason/SimTest
     secrets:
       SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
-      CALLER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
