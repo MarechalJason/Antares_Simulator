@@ -1,17 +1,17 @@
-# AGENTS.md - Guidelines for Coding Agents
+# AGENTS.md
 
 Antares Simulator is an open-source power system simulator.
 
 ## Essentials
 
 Package manager: vcpkg (C++ dependencies).
+Antares Simulator: open-source power system planning tool for long-term adequacy and operational studies.
 
+## Build & Test
+
+**Configure and build** (from `src/` directory):
 ```bash
-# Configure build (from src/ directory)
 cmake -B ../build-debug -DCMAKE_BUILD_TYPE=Debug
-cmake -B ../build-release -DCMAKE_BUILD_TYPE=Release
-
-# Build the project
 cmake --build ../build-debug -j$(nproc)
 cmake --build ../build-release -j$(nproc)
 
@@ -19,19 +19,16 @@ cmake --build ../build-release -j$(nproc)
 cmake --build ../build-debug --target antares-solver
 
 # Run all tests using ctest
+cmake --build ../build-debug --target antares-solver  # Specific target
+```
+
+**Run tests:**
+```bash
 cd build-debug && ctest --output-on-failure
-cd build-debug && ctest -R "test_name" --output-on-failure
+ctest -R "test_name" --output-on-failure              # Specific test
 
-# Run specific Boost.Test binary (from build-debug directory)
-./tests/unit_tests_antares/optimization_options_test
-
-# Run Python pytest tests
-cd src/tests/run-study-tests
+# Python pytest (from src/tests/run-study-tests)
 python -m pytest -m json --antares-simu-path=<path_to_solver>
-python -m pytest test_file.py::test_function_name
-
-# Run single test via ctest with regex
-ctest -R "OptimizationOptionsTests" --output-on-failure -V
 ```
 
 ## More guidance
@@ -44,3 +41,17 @@ ctest -R "OptimizationOptionsTests" --output-on-failure -V
 - Key directories: docs/agents/key-directories.md
 - Pull request guidelines: docs/agents/pull-requests.md
 - Access control (do not read `src/ui`): docs/agents/access-control.md
+**Format code:**
+```bash
+cd src && ./format-code.sh
+```
+
+## Detailed Guidelines
+
+- **[Code Style & Formatting](.github/agents/code-style.md)** - Naming conventions, indentation, includes
+- **[C++ Guidelines](.github/agents/cpp-guidelines.md)** - Language standards, types, best practices
+- **[Error Handling & Logging](.github/agents/error-handling.md)** - Exception handling, log levels
+- **[Git Workflow](.github/agents/git-workflow.md)** - Branch naming, PR requirements
+- **[Project Structure](.github/agents/project-structure.md)** - Key directories
+
+See also: [Contributing Guide](docs/developer-guide/6-Contributing.md)
