@@ -97,10 +97,6 @@ jobs:
     name: Notify SimTest
     needs:
       - ubuntu
-      - windows
-      - centos7
-      - oracle8
-      - user_guide
     # Appel du workflow réutilisable au niveau du job
     uses: ./.github/workflows/dispatch-simtest.yml
     with:
