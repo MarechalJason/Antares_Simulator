@@ -79,7 +79,7 @@ jobs:
             ATTEMPT=$((ATTEMPT+1))
             echo "Dispatch attempt $ATTEMPT to $SIMTEST_REPO"
 
-            DISPATCH_JSON=$(jq -n --arg etype "antares-rc-published" --argjson payload "$CLIENT_PAYLOAD" '{event_type: $etype, client_payload: $payload}')
+            DISPATCH_JSON=$(jq -n --arg etype "generate-reference" --argjson payload "$CLIENT_PAYLOAD" '{event_type: $etype, client_payload: $payload}')
 
             HTTP=$(curl -s -o /tmp/dispatch_resp -w "%{http_code}" -X POST \
               -H "Accept: application/vnd.github+json" \
