@@ -97,11 +97,17 @@ jobs:
     name: Notify SimTest
     needs:
       - ubuntu
+      - windows
+      - centos7
+      - oracle8
+      - user_guide
     # Appel du workflow réutilisable au niveau du job
     uses: ./.github/workflows/dispatch-simtest.yml
     with:
-      tag_name: ${{ needs.release.outputs.tag }}
+      tag_name: ${{ needs.release.outputs.tag != '' && needs.release.outputs.tag || github.event.inputs.release_tag }}
+      release_tag: ${{ github.event.inputs.release_tag }}
       release_url: ${{ needs.release.outputs.release_url }}
+      release_name: ${{ github.event.inputs.release_name }}
       simtest_repo: MarechalJason/SimTest
     secrets:
       SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}

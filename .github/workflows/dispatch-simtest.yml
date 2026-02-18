@@ -5,11 +5,19 @@ on:
     inputs:
       tag_name:
         description: 'Tag name for RC (ex: v9.3.6-rc1)'
-        required: true
+        required: false
+        type: string
+      release_tag:
+        description: 'Alternate tag name (fallback)'
+        required: false
         type: string
       release_url:
         description: 'URL of the created release'
-        required: true
+        required: false
+        type: string
+      release_name:
+        description: 'Release title (optional)'
+        required: false
         type: string
       simtest_repo:
         description: 'Owner/Repo for SimTest (ex: AntaresSimulatorTeam/SimTest)'
@@ -66,12 +74,40 @@ jobs:
         env:
           SIMTEST_PAT: ${{ secrets.SIMTEST_PAT }}
           SIMTEST_REPO: ${{ inputs.simtest_repo }}
-          TAG: ${{ inputs.tag_name }}
-          RELEASE_URL: ${{ inputs.release_url }}
+          INPUT_TAG: ${{ inputs.tag_name }}
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+          INPUT_RELEASE_URL: ${{ inputs.release_url }}
+          INPUT_RELEASE_NAME: ${{ inputs.release_name }}
         run: |
           set -euo pipefail
 
-          CLIENT_PAYLOAD=$(jq -n --arg tag "$TAG" --arg release_url "$RELEASE_URL" '{ tag_name:$tag, release_url:$release_url }')
+          # Determine tag and release_url with fallbacks
+          TAG="${INPUT_TAG:-}"
+          if [ -z "${TAG}" ]; then
+            TAG="${INPUT_RELEASE_TAG:-}"
+            if [ -n "${TAG}" ]; then
+              echo "Derived TAG from release_tag input: ${TAG}"
+            fi
+          else
+            echo "Using TAG from tag_name input: ${TAG}"
+          fi
+
+          RELEASE_URL="${INPUT_RELEASE_URL:-}"
+          if [ -z "${RELEASE_URL}" ] && [ -n "${INPUT_RELEASE_NAME:-}" ]; then
+            echo "No release_url provided; release_name was provided: ${INPUT_RELEASE_NAME}."
+          fi
+
+          if [ -z "${TAG}" ] && [ -z "${RELEASE_URL}" ]; then
+            echo "Warning: No tag or release_url provided via inputs. Continuing but client_payload will have empty fields." >&2
+          fi
+
+          # Include release_name in payload as fallback/metadata
+          RELEASE_NAME="${INPUT_RELEASE_NAME:-}"
+          if [ -n "${RELEASE_NAME}" ]; then
+            echo "Release name provided: ${RELEASE_NAME}"
+          fi
+
+          CLIENT_PAYLOAD=$(jq -n --arg tag "$TAG" --arg release_url "$RELEASE_URL" --arg release_name "$RELEASE_NAME" '{ tag_name:$tag, release_url:$release_url, release_name:$release_name }')
 
           ATTEMPT=0
           MAX=3
