@@ -1,68 +1,44 @@
-name: Create RC and notify SimTest
+name: Dispatch SimTest (reusable)
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       tag_name:
         description: 'Tag name for RC (ex: v9.3.6-rc1)'
         required: true
-      release_name:
-        description: 'Release title'
-        required: false
-        default: 'RC'
+        type: string
+      release_url:
+        description: 'URL of the created release'
+        required: true
+        type: string
       simtest_repo:
         description: 'Owner/Repo for SimTest (ex: AntaresSimulatorTeam/SimTest)'
         required: false
+        type: string
         default: 'AntaresSimulatorTeam/SimTest'
-  push:
-    tags:
-      - '*-rc*'
+    secrets:
+      SIMTEST_PAT:
+        required: true
+      GITHUB_TOKEN:
+        required: true
 
 permissions:
   contents: write
   id-token: write
 
 jobs:
-  create-release-and-dispatch:
+  wait-and-dispatch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Determine tag and release name
-        id: vars
-        run: |
-          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
-            echo "tag=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
-            echo "name=${{ github.event.inputs.release_name }}" >> $GITHUB_OUTPUT
-            echo "simtest_repo=${{ github.event.inputs.simtest_repo }}" >> $GITHUB_OUTPUT
-          else
-            TAG=${GITHUB_REF#refs/tags/}
-            echo "tag=${TAG}" >> $GITHUB_OUTPUT
-            echo "name=${TAG}" >> $GITHUB_OUTPUT
-            echo "simtest_repo=${{ github.event.inputs.simtest_repo }}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create RC release (Antares repo)
-        id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG="${{ steps.vars.outputs.tag }}"
-          NAME="${{ steps.vars.outputs.name }}"
-          BODY="Automated RC created by workflow $GITHUB_WORKFLOW (ref $GITHUB_REF)"
-          JSON=$(jq -n --arg tag "$TAG" --arg name "$NAME" --arg body "$BODY" '{ tag_name: $tag, name: $name, body: $body, prerelease: true }')
-          RESP=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/releases -d "$JSON" ) || true
-          echo "$RESP" | jq -r '.html_url' > release_url.txt || true
-          echo "release_url=$(cat release_url.txt)" >> $GITHUB_OUTPUT || true
-
       - name: Verify SIMTEST PAT and access
         env:
-          SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
+          SIMTEST_PAT: ${{ secrets.SIMTEST_PAT }}
+          SIMTEST_REPO: ${{ inputs.simtest_repo }}
         run: |
           set -euo pipefail
-          SIMTEST_REPO="${{ steps.vars.outputs.simtest_repo }}"
           echo "Vérification du token et de l'accès au dépôt: $SIMTEST_REPO"
 
           # Vérifier le propriétaire du token et les scopes via /user (headers contiennent X-OAuth-Scopes)
@@ -75,7 +51,7 @@ jobs:
           grep -i '^x-oauth-scopes:' /tmp/token_headers || true
           echo
 
-          # Vérifier l'accès au dépôt cible
+          # Vérifier l'accès au dépôt cible (utile pour diagnostiquer 403)
           echo "Checking repository access..."
           HTTP_REPO=$(curl -s -o /tmp/repo_body -w "%{http_code}" -H "Authorization: token $SIMTEST_PAT" "https://api.github.com/repos/${SIMTEST_REPO}") || true
           echo "Repo HTTP code: $HTTP_REPO"
@@ -88,33 +64,75 @@ jobs:
             echo "Accès au dépôt OK."
           fi
 
-      - name: Notify SimTest via repository_dispatch
+      - name: Wait for release assets
         env:
-          SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag_name }}
+          OWNER_REPO: ${{ github.repository }}
         run: |
-          SIMTEST_REPO="${{ steps.vars.outputs.simtest_repo }}"
-          TAG="${{ steps.vars.outputs.tag }}"
-          RELEASE_URL="${{ steps.create_release.outputs.release_url }}"
+          set -euo pipefail
+          TAG="${TAG}"
+          OWNER_REPO="${OWNER_REPO}"
+          echo "Waiting for assets on release ${OWNER_REPO} tag ${TAG}..."
 
-          # Build client_payload; add more fields if needed
+          MAX_WAIT=900        # secondes totales max (ajuster si besoin)
+          INTERVAL=10         # intervalle initial en secondes
+          ELAPSED=0
+
+          # attendre que la release existe et ait des assets
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            echo "Checking release (elapsed ${ELAPSED}s)..."
+
+            # obtenir la release par tag
+            REL_RESP=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${OWNER_REPO}/releases/tags/${TAG}") || true
+            REL_ID=$(echo "$REL_RESP" | jq -r '.id // empty')
+
+            if [ -z "$REL_ID" ]; then
+              echo "Release not found yet."
+            else
+              ASSETS_COUNT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${OWNER_REPO}/releases/${REL_ID}/assets" | jq 'length')
+              echo "Assets count: ${ASSETS_COUNT:-0}"
+              if [ "${ASSETS_COUNT:-0}" -gt 0 ]; then
+                echo "Assets ready (count=${ASSETS_COUNT}). Continuing to dispatch."
+                break
+              fi
+            fi
+
+            echo "No assets yet. Sleeping ${INTERVAL}s..."
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+            INTERVAL=$((INTERVAL * 2))
+            if [ $INTERVAL -gt 60 ]; then INTERVAL=60; fi
+          done
+
+          if [ $ELAPSED -ge $MAX_WAIT ]; then
+            echo "Timeout waiting for release assets after ${MAX_WAIT}s."
+            exit 2
+          fi
+
+      - name: Dispatch to SimTest
+        env:
+          SIMTEST_PAT: ${{ secrets.SIMTEST_PAT }}
+          SIMTEST_REPO: ${{ inputs.simtest_repo }}
+          TAG: ${{ inputs.tag_name }}
+          RELEASE_URL: ${{ inputs.release_url }}
+        run: |
+          set -euo pipefail
+
           CLIENT_PAYLOAD=$(jq -n --arg tag "$TAG" --arg release_url "$RELEASE_URL" '{ tag_name:$tag, release_url:$release_url }')
 
-          # Try up to 3 times on transient errors
-          set -euo pipefail
           ATTEMPT=0
           MAX=3
           while [ $ATTEMPT -lt $MAX ]; do
             ATTEMPT=$((ATTEMPT+1))
             echo "Dispatch attempt $ATTEMPT to $SIMTEST_REPO"
 
-            # Build the full dispatch JSON separately to avoid nested command substitution issues
             DISPATCH_JSON=$(jq -n --arg etype "antares-rc-published" --argjson payload "$CLIENT_PAYLOAD" '{event_type: $etype, client_payload: $payload}')
 
-            # Perform the POST; capture HTTP code and response body
             HTTP=$(curl -s -o /tmp/dispatch_resp -w "%{http_code}" -X POST \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: token $SIMTEST_PAT" \
-              https://api.github.com/repos/${SIMTEST_REPO}/dispatches \
+              "https://api.github.com/repos/${SIMTEST_REPO}/dispatches" \
               -d "$DISPATCH_JSON" ) || true
 
             cat /tmp/dispatch_resp || true

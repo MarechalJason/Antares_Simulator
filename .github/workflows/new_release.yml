@@ -24,8 +24,12 @@ jobs:
   release:
     name: Release pushed tag
     runs-on: ubuntu-22.04
+    outputs:
+      release_url: ${{ steps.create_release.outputs.release_url }}
+      tag: ${{ steps.create_release.outputs.tag }}
     steps:
     - name: Create release
+      id: create_release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.inputs.release_tag }}
@@ -40,7 +44,10 @@ jobs:
             --notes="Run tests: $tests"\
             --target="$target_branch" \
             --latest=$latest
-  
+        # Get release URL from gh CLI
+        REL=$(gh release view "$tag" --repo="$GITHUB_REPOSITORY" --json url --jq '.url') || true
+        echo "release_url=${REL}" >> $GITHUB_OUTPUT
+        echo "tag=${tag}" >> $GITHUB_OUTPUT
 
   ubuntu:
     name: Release - Ubuntu
@@ -81,3 +88,23 @@ jobs:
     with:
       run-tests: ${{ inputs.run-tests }}
       target_branch: ${{ inputs.target_branch }}
+
+  notify_simtest:
+    name: Notify SimTest
+    needs:
+      - ubuntu
+      - windows
+      - centos7
+      - oracle8
+      - user_guide
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Dispatch SimTest reusable workflow
+        uses: ./.github/workflows/dispatch-simtest.yml
+        with:
+          tag_name: ${{ needs.release.outputs.tag }}
+          release_url: ${{ needs.release.outputs.release_url }}
+          simtest_repo: MarechalJason/SimTest
+        secrets:
+          SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
