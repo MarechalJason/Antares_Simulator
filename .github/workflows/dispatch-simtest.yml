@@ -81,19 +81,27 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Initialize inputs into shell variables early to avoid using unset vars
+          INPUT_TAG="${INPUT_TAG:-}"
+          # Use the workflow input directly (exposed by GitHub expressions) and keep local shell vars
+          WORKFLOW_RELEASE_TAG="${INPUT_RELEASE_TAG}"
+          INPUT_RELEASE_URL="${INPUT_RELEASE_URL:-}"
+          INPUT_RELEASE_NAME="${INPUT_RELEASE_NAME:-}"
+
           # Determine tag and release_url with fallbacks
-          TAG="${INPUT_TAG:-}"
-          if [ -z "${TAG}" ]; then
-            TAG="${INPUT_RELEASE_TAG:-}"
-            if [ -n "${TAG}" ]; then
-              echo "Derived TAG from release_tag input: ${TAG}"
-            fi
-          else
+          # Prefer explicit tag_name input, then release_tag input (from workflow input)
+          if [ -n "${INPUT_TAG}" ]; then
+            TAG="${INPUT_TAG}"
             echo "Using TAG from tag_name input: ${TAG}"
+          elif [ -n "${WORKFLOW_RELEASE_TAG}" ]; then
+            TAG="${WORKFLOW_RELEASE_TAG}"
+            echo "Derived TAG from release_tag input: ${TAG}"
+          else
+            TAG=""
           fi
 
-          RELEASE_URL="${INPUT_RELEASE_URL:-}"
-          if [ -z "${RELEASE_URL}" ] && [ -n "${INPUT_RELEASE_NAME:-}" ]; then
+          RELEASE_URL="${INPUT_RELEASE_URL}"
+          if [ -z "${RELEASE_URL}" ] && [ -n "${INPUT_RELEASE_NAME}" ]; then
             echo "No release_url provided; release_name was provided: ${INPUT_RELEASE_NAME}."
           fi
 
@@ -102,12 +110,19 @@ jobs:
           fi
 
           # Include release_name in payload as fallback/metadata
-          RELEASE_NAME="${INPUT_RELEASE_NAME:-}"
+          RELEASE_NAME="${INPUT_RELEASE_NAME}"
           if [ -n "${RELEASE_NAME}" ]; then
             echo "Release name provided: ${RELEASE_NAME}"
           fi
 
-          CLIENT_PAYLOAD=$(jq -n --arg tag "$TAG" --arg release_url "$RELEASE_URL" --arg release_name "$RELEASE_NAME" '{ tag_name:$tag, release_url:$release_url, release_name:$release_name }')
+          # Map release_tag: prefer the workflow input release_tag
+          RELEASE_TAG="${WORKFLOW_RELEASE_TAG:-}"
+          if [ -n "${RELEASE_TAG}" ]; then
+            echo "Using RELEASE_TAG from release_tag input: ${RELEASE_TAG}"
+          fi
+
+          # Build payload: tag_name and release_tag carry the needed values
+          CLIENT_PAYLOAD=$(jq -n --arg tag "$TAG" --arg release_tag "$RELEASE_TAG" --arg release_url "$RELEASE_URL" --arg release_name "$RELEASE_NAME" '{ tag_name:$tag, release_tag:$release_tag, release_url:$release_url, release_name:$release_name }')
 
           ATTEMPT=0
           MAX=3
