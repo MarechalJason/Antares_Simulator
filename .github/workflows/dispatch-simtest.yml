@@ -121,8 +121,12 @@ jobs:
             echo "Using RELEASE_TAG from release_tag input: ${RELEASE_TAG}"
           fi
 
-          # Build payload: tag_name and release_tag carry the needed values
-          CLIENT_PAYLOAD=$(jq -n --arg tag "$TAG" --arg antares_tag "$RELEASE_TAG" --arg release_url "$RELEASE_URL" --arg release_name "$RELEASE_NAME" '{ tag_name:$tag, release_tag:$release_tag, release_url:$release_url, release_name:$release_name }')
+          # Set antares_tag from the computed TAG (solver tag) and build payload
+          ANTARES_TAG="${TAG}"
+          echo "Setting ANTARES_TAG=${ANTARES_TAG} (derived from TAG=${TAG})"
+
+          # Build payload: tag_name and antares_tag carry the needed values
+          CLIENT_PAYLOAD=$(jq -n --arg tag "$TAG" --arg antares_tag "$ANTARES_TAG" --arg release_url "$RELEASE_URL" --arg release_name "$RELEASE_NAME" '{ tag_name:$tag, antares_tag:$antares_tag, release_url:$release_url, release_name:$release_name }')
 
           ATTEMPT=0
           MAX=3
