@@ -79,15 +79,30 @@ jobs:
             ATTEMPT=$((ATTEMPT+1))
             echo "Dispatch attempt $ATTEMPT to $SIMTEST_REPO"
 
+            # Build dispatch JSON and log request body (safe to log)
             DISPATCH_JSON=$(jq -n --arg etype "generate-reference" --argjson payload "$CLIENT_PAYLOAD" '{event_type: $etype, client_payload: $payload}')
+            echo "$DISPATCH_JSON" > /tmp/dispatch_request.json
 
-            HTTP=$(curl -s -o /tmp/dispatch_resp -w "%{http_code}" -X POST \
+            # Perform the POST; capture response headers, body, http code and timing
+            HTTP_AND_TIME=$(curl -s -D /tmp/dispatch_headers -o /tmp/dispatch_resp -w "%{http_code} %{time_total}" -X POST \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: token $SIMTEST_PAT" \
               "https://api.github.com/repos/${SIMTEST_REPO}/dispatches" \
               -d "$DISPATCH_JSON" ) || true
 
-            cat /tmp/dispatch_resp || true
+            # Parse HTTP code and timing
+            HTTP=$(echo "$HTTP_AND_TIME" | awk '{print $1}') || HTTP=""
+            TIME=$(echo "$HTTP_AND_TIME" | awk '{print $2}') || TIME=""
+
+            # Emit logs (do not print the token). These are safe: request body, response headers/body, code, timing
+            echo "--- Dispatch request body (/tmp/dispatch_request.json) ---"
+            cat /tmp/dispatch_request.json || true
+            echo "--- Response headers (/tmp/dispatch_headers) ---"
+            sed -n '1,200p' /tmp/dispatch_headers || true
+            echo "--- Response body (/tmp/dispatch_resp) ---"
+            head -c 10000 /tmp/dispatch_resp || true
+            echo "--- HTTP code: ${HTTP}, time: ${TIME}s ---"
+
             if [ "$HTTP" = "204" ] || [ "$HTTP" = "200" ]; then
               echo "Dispatch succeeded"
               exit 0
