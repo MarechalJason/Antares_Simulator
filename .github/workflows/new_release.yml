@@ -93,14 +93,16 @@ jobs:
     name: Notify SimTest
     needs:
       - ubuntu
-    runs-on: ubuntu-latest
-    steps:
-      - name: Call Dispatch SimTest reusable workflow
-        uses: ./.github/workflows/dispatch-simtest.yml
-        with:
-          tag_name: ${{ needs.release.outputs.tag }}
-          release_url: ${{ needs.release.outputs.release_url }}
-          simtest_repo: MarechalJason/SimTest
-        secrets:
-          SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - windows
+      - centos7
+      - oracle8
+      - user_guide
+    # Appel du workflow réutilisable au niveau du job
+    uses: ./.github/workflows/dispatch-simtest.yml
+    with:
+      tag_name: ${{ needs.release.outputs.tag }}
+      release_url: ${{ needs.release.outputs.release_url }}
+      simtest_repo: MarechalJason/SimTest
+    secrets:
+      SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
