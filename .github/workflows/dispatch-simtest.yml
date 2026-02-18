@@ -75,11 +75,17 @@ jobs:
           while [ $ATTEMPT -lt $MAX ]; do
             ATTEMPT=$((ATTEMPT+1))
             echo "Dispatch attempt $ATTEMPT to $SIMTEST_REPO"
+
+            # Build the full dispatch JSON separately to avoid nested command substitution issues
+            DISPATCH_JSON=$(jq -n --arg etype "antares-rc-published" --argjson payload "$CLIENT_PAYLOAD" '{event_type: $etype, client_payload: $payload}')
+
+            # Perform the POST; capture HTTP code and response body
             HTTP=$(curl -s -o /tmp/dispatch_resp -w "%{http_code}" -X POST \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: token $SIMTEST_PAT" \
               https://api.github.com/repos/${SIMTEST_REPO}/dispatches \
-              -d "$(jq -n --arg etype "antares-rc-published" --argjson payload "$CLIENT_PAYLOAD" '{event_type: $etype, client_payload: $payload}'))" || true
+              -d "$DISPATCH_JSON" ) || true
+
             cat /tmp/dispatch_resp || true
             if [ "$HTTP" = "204" ] || [ "$HTTP" = "200" ]; then
               echo "Dispatch succeeded"
