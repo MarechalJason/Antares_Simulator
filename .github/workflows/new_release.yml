@@ -101,6 +101,7 @@ jobs:
   notify_simtest:
     name: Notify SimTest
     needs:
+      - release
       - ubuntu
       - windows
       - centos7
