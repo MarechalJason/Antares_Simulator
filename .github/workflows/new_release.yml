@@ -106,9 +106,11 @@ jobs:
       - centos7
       - oracle8
       - user_guide
-    # N'exécute ce job que si l'input `generate_results` est true
-    if: ${{ github.event.inputs.generate_results == 'true' }}
-    # Appel du workflow réutilisable au niveau du job
+    # Only run this job if the `generate_results` input is true AND all the required build jobs succeeded.
+    # If you'd like to generate results even when some builds fail, replace this condition with a less strict one
+    # (for example, exclude some jobs) or add a new input like `allow_partial_results` to control that behavior.
+    if: ${{ github.event.inputs.generate_results == 'true' && needs.ubuntu.result == 'success' && needs.windows.result == 'success' && needs.centos7.result == 'success' && needs.oracle8.result == 'success' && needs.user_guide.result == 'success' }}
+    # Call the reusable workflow at the job level
     uses: ./.github/workflows/dispatch-simtest.yml
     with:
       tag_name: ${{ needs.release.outputs.tag != '' && needs.release.outputs.tag || github.event.inputs.release_tag }}
