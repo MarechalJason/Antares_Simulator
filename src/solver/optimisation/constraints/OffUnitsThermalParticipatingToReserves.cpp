@@ -5,10 +5,11 @@ void OffUnitsThermalParticipatingToReserves::add(int pays, int reserve, int clus
     if (!data.Simulation)
     {
         // 16 ter
-        // The max power of off units participating to Reserves is bounded by the number of units
-        // and max power of each unit : P^off +(Pmax^off . M)  <= (Pmax^off . M^on) with P^off:
-        // total participation of turned off units to res Pmax^off : max participation for each off
-        // unit M : Number of units in the cluster M^on : Number of running units in the cluster
+        // The max power of off units participating to Reserves is bounded by the number of off
+        // units and max power of each unit : P^off + (Pmax^off . M^on) <= (Pmax^off . Mmax) with
+        // P^off: total participation of turned off units to res Pmax^off : max participation for
+        // each off unit M^on : Number of running units in the cluster Mmax : Max number of units
+        // in the cluster
         //
 
         CAPACITY_RESERVATION& capacityReservation = data.areaReserves[pays]
