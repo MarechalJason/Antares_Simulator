@@ -24,6 +24,11 @@ on:
         description: "Set the release as latest"
         required: true
         type: boolean
+      generate_results:
+        description: "Generate results?"
+        required: true
+        type: boolean
+        default: false
 jobs:
   release:
     name: Release pushed tag
@@ -97,6 +102,12 @@ jobs:
     name: Notify SimTest
     needs:
       - ubuntu
+      - windows
+      - centos7
+      - oracle8
+      - user_guide
+    # N'exécute ce job que si l'input `generate_results` est true
+    if: ${{ github.event.inputs.generate_results == 'true' }}
     # Appel du workflow réutilisable au niveau du job
     uses: ./.github/workflows/dispatch-simtest.yml
     with:
