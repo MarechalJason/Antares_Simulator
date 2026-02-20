@@ -355,7 +355,7 @@ public:
                 .lastTimeStep = timeSteps_ - 1};
     }
 
-    std::optional<ModelerData> loadAll() override
+    ModelerData loadAll() override
     {
         auto var_node = fixture.variable("x", 0);
 
@@ -367,7 +367,7 @@ public:
 
         auto zero = fixture.literal(0);
         auto ct_node = fixture.nodeRegistry.template create<Nodes::GreaterThanOrEqualNode>(lhs,
-                                                                                           zero);
+                                                                                            zero);
         fixture.createModelWithOneFloatVar("some_model",
                                            parameterIds,
                                            "x",
