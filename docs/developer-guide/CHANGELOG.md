@@ -16,6 +16,7 @@ toc_depth: 2
 
 #### Bugfixes
 
+* Improve performance for sum operations in expressions
 * Fix: remove unnecessary global time step adjustment to avoid wrong time labels (#3377)
 
 ### 9.3.6
