@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <fmt/format.h>
 #include <optional>
 
 #include "antares/io/inputs/yml-model/Library.h"
@@ -28,6 +29,26 @@ template<typename T>
 inline T as_fallback_default(const Node& n)
 {
     return n.as<T>(T());
+}
+
+struct MandatoryFieldNotFound: std::invalid_argument
+{
+    using std::invalid_argument::invalid_argument;
+};
+
+void throwIfMandatoryIsMissing(const Antares::IO::Inputs::YmlModel::Model& model,
+                               const std::string& sectionId,
+                               const Node& node,
+                               const std::string& mandatoryField)
+{
+    if (mandatoryField.empty() || !node[mandatoryField].IsDefined())
+    {
+        throw MandatoryFieldNotFound(
+          fmt::format("mandatory field '{}' is not found in section '{}' of the model '{}'",
+                      mandatoryField,
+                      sectionId,
+                      model.id));
+    }
 }
 
 template<>
@@ -85,6 +106,7 @@ struct convert<Antares::IO::Inputs::YmlModel::Variable>
         {
             return false;
         }
+        throwIfMandatoryIsMissing({}, "variables", node, "id");
         rhs.id = node["id"].as<std::string>();
         rhs.lower_bound = node["lower-bound"].as<std::string>("");
         rhs.upper_bound = node["upper-bound"].as<std::string>("");
