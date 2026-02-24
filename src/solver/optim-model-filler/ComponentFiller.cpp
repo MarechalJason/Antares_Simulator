@@ -114,9 +114,9 @@ AddVariableVisitor::AddVariableVisitor(const Variable& variable,
 void AddVariableVisitor::operator()(double lb, double ub) const
 {
     unsigned index = 0;
-    for (const auto& s: dims_.getScenarioIndices())
+    for (std::size_t i = 0; i < dims_.getScenarioIndices().size(); ++i)
     {
-        for (const auto t: dims_.getTimesteps())
+        for (std::size_t j = 0; j < dims_.getTimesteps().size(); ++j)
         {
             linear_problem_.addVariable(lb, ub, isInteger_, variableNames_.name(index));
             index++;
@@ -136,7 +136,7 @@ void AddVariableVisitor::operator()(const std::vector<double>& lb, double ub) co
     }
 
     unsigned index = 0;
-    for (const auto& s: dims_.getScenarioIndices())
+    for (std::size_t i = 0; i < dims_.getScenarioIndices().size(); ++i)
     {
         for (const auto t: dims_.getTimesteps())
         {
@@ -157,7 +157,7 @@ void AddVariableVisitor::operator()(double lb, const std::vector<double>& ub) co
     }
 
     unsigned index = 0;
-    for (const auto& s: dims_.getScenarioIndices())
+    for (std::size_t i = 0; i < dims_.getScenarioIndices().size(); ++i)
     {
         for (const auto t: dims_.getTimesteps())
         {
@@ -180,7 +180,7 @@ void AddVariableVisitor::operator()(const std::vector<double>& lb,
     }
 
     unsigned index = 0;
-    for (const auto& s: dims_.getScenarioIndices())
+    for (std::size_t i = 0; i < dims_.getScenarioIndices().size(); ++i)
     {
         for (const auto t: dims_.getTimesteps())
         {
@@ -304,14 +304,17 @@ void ComponentFiller::addTimeDependentConstraints(const LinearConstraint& linear
     const auto dims = getDimensions(ctx);
 
     const auto& solverVariables = optimEntityContainer_.getVariables();
-    for (const auto s: dims.getScenarioIndices()) // TODO
+    const bool isScenarioDependent = dims.getScenarioIndices().size() > 1;
+    for (const auto s: dims.getScenarioIndices())
     {
         for (const auto t: dims.getTimesteps())
         {
-            auto* ct = pb.addConstraint(linear_constraints.lb[t],
-                                        linear_constraints.ub[t],
-                                        component_.Id() + "." + constraint_id + '_'
-                                          + std::to_string(t));
+            auto name = component_.Id() + "." + constraint_id + '_' + std::to_string(t);
+            if (isScenarioDependent)
+            {
+                name += "_" + std::to_string(s);
+            }
+            auto* ct = pb.addConstraint(linear_constraints.lb[t], linear_constraints.ub[t], name);
 
             const auto& coefsPerVar = linear_constraints.coef_per_var[t];
             for (const auto& [index, value]: coefsPerVar)
