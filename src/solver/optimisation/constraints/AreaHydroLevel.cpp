@@ -3,33 +3,33 @@
 
 #include "antares/solver/optimisation/constraints/AreaHydroLevel.h"
 
-void AreaHydroLevel::add(int pays, int pdt)
+void AreaHydroLevel::add(int area, int timeStep)
 {
-    data.CorrespondanceCntNativesCntOptim[pdt].NumeroDeContrainteDesNiveauxPays[pays]
+    data.CorrespondanceCntNativesCntOptim[timeStep].NumeroDeContrainteDesNiveauxPays[area]
       = builder.data.nombreDeContraintes;
-    if (data.CaracteristiquesHydrauliques[pays].SuiviNiveauHoraire)
+    if (data.CaracteristiquesHydrauliques[area].SuiviNiveauHoraire)
     {
-        builder.updateHourWithinWeek(pdt).HydroLevel(pays, 1.0);
-        if (pdt > 0)
+        builder.updateHourWithinWeek(timeStep).hydroLevel(area, 1.0);
+        if (timeStep > 0)
         {
-            builder.updateHourWithinWeek(pdt - 1).HydroLevel(pays, -1.0);
+            builder.updateHourWithinWeek(timeStep - 1).hydroLevel(area, -1.0);
         }
         ConstraintNamer namer(builder.data.NomDesContraintes);
 
-        namer.UpdateArea(builder.data.NomsDesPays[pays]);
-        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
+        namer.UpdateArea(builder.data.NomsDesPays[area]);
+        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
         namer.AreaHydroLevel(builder.data.nombreDeContraintes);
-        data.CorrespondanceCntNativesCntOptim[pdt].NumeroDeContrainteDesNiveauxPays[pays]
+        data.CorrespondanceCntNativesCntOptim[timeStep].NumeroDeContrainteDesNiveauxPays[area]
           = builder.data.nombreDeContraintes;
-        builder.updateHourWithinWeek(pdt)
-          .HydProd(pays, 1.0)
-          .Pumping(pays, -data.CaracteristiquesHydrauliques[pays].PumpingRatio)
-          .Overflow(pays, 1.)
+        builder.updateHourWithinWeek(timeStep)
+          .hydroPower(area, 1.0)
+          .pumping(area, -data.CaracteristiquesHydrauliques[area].PumpingRatio)
+          .overflow(area, 1.)
           .equalTo()
           .build();
     }
     else
     {
-        data.CorrespondanceCntNativesCntOptim[pdt].NumeroDeContrainteDesNiveauxPays[pays] = -1;
+        data.CorrespondanceCntNativesCntOptim[timeStep].NumeroDeContrainteDesNiveauxPays[area] = -1;
     }
 }

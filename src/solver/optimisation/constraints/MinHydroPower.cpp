@@ -3,30 +3,30 @@
 
 #include "antares/solver/optimisation/constraints/MinHydroPower.h"
 
-void MinHydroPower::add(int pays)
+void MinHydroPower::add(int area)
 {
-    if (data.CaracteristiquesHydrauliques[pays].PresenceDHydrauliqueModulable
-        && (data.CaracteristiquesHydrauliques[pays].TurbinageEntreBornes
-            || data.CaracteristiquesHydrauliques[pays].PresenceDePompageModulable))
+    if (data.CaracteristiquesHydrauliques[area].PresenceDHydrauliqueModulable
+        && (data.CaracteristiquesHydrauliques[area].TurbinageEntreBornes
+            || data.CaracteristiquesHydrauliques[area].PresenceDePompageModulable))
     {
-        data.NumeroDeContrainteMinEnergieHydraulique[pays] = builder.data.nombreDeContraintes;
+        data.NumeroDeContrainteMinEnergieHydraulique[area] = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateArea(builder.data.NomsDesPays[pays]);
+        namer.UpdateArea(builder.data.NomsDesPays[area]);
         namer.UpdateTimeStep(builder.data.weekInTheYear);
         namer.MinHydroPower(builder.data.nombreDeContraintes);
 
-        for (int pdt = 0; pdt < data.NombreDePasDeTempsPourUneOptimisation; pdt++)
+        for (int timeStep = 0; timeStep < data.NombreDePasDeTempsPourUneOptimisation; timeStep++)
         {
-            builder.updateHourWithinWeek(pdt);
-            builder.HydProd(pays, 1.0);
+            builder.updateHourWithinWeek(timeStep);
+            builder.hydroPower(area, 1.0);
         }
 
-        data.NumeroDeContrainteMinEnergieHydraulique[pays] = builder.data.nombreDeContraintes;
+        data.NumeroDeContrainteMinEnergieHydraulique[area] = builder.data.nombreDeContraintes;
         builder.greaterThan().build();
     }
     else
     {
-        data.NumeroDeContrainteMinEnergieHydraulique[pays] = -1;
+        data.NumeroDeContrainteMinEnergieHydraulique[area] = -1;
     }
 }

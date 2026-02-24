@@ -3,45 +3,45 @@
 
 #include "antares/solver/optimisation/constraints/HydroPower.h"
 
-void HydroPower::add(int pays)
+void HydroPower::add(int area)
 {
     const int NombreDePasDeTempsPourUneOptimisation = builder.data
                                                         .NombreDePasDeTempsPourUneOptimisation;
-    const auto& caracteristiquesHydrauliques = data.CaracteristiquesHydrauliques[pays];
+    const auto& caracteristiquesHydrauliques = data.CaracteristiquesHydrauliques[area];
     if (caracteristiquesHydrauliques.PresenceDHydrauliqueModulable
         && !caracteristiquesHydrauliques.TurbinageEntreBornes)
     {
         if (caracteristiquesHydrauliques.PresenceDePompageModulable)
         {
-            data.NumeroDeContrainteEnergieHydraulique[pays] = builder.data.nombreDeContraintes;
+            data.NumeroDeContrainteEnergieHydraulique[area] = builder.data.nombreDeContraintes;
 
             const double pumpingRatio = caracteristiquesHydrauliques.PumpingRatio;
-            for (int pdt = 0; pdt < NombreDePasDeTempsPourUneOptimisation; pdt++)
+            for (int timeStep = 0; timeStep < NombreDePasDeTempsPourUneOptimisation; timeStep++)
             {
-                builder.updateHourWithinWeek(pdt)
-                  .HydProd(pays, 1.0)
-                  .Pumping(pays, -pumpingRatio)
-                  .Overflow(pays, 1.0);
+                builder.updateHourWithinWeek(timeStep)
+                  .hydroPower(area, 1.0)
+                  .pumping(area, -pumpingRatio)
+                  .overflow(area, 1.0);
             }
         }
         else
         {
-            for (int pdt = 0; pdt < NombreDePasDeTempsPourUneOptimisation; pdt++)
+            for (int timeStep = 0; timeStep < NombreDePasDeTempsPourUneOptimisation; timeStep++)
             {
-                builder.updateHourWithinWeek(pdt).HydProd(pays, 1.0).Overflow(pays, 1.0);
+                builder.updateHourWithinWeek(timeStep).hydroPower(area, 1.0).overflow(area, 1.0);
             }
         }
-        data.NumeroDeContrainteEnergieHydraulique[pays] = builder.data.nombreDeContraintes;
+        data.NumeroDeContrainteEnergieHydraulique[area] = builder.data.nombreDeContraintes;
 
         builder.equalTo();
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateArea(builder.data.NomsDesPays[pays]);
+        namer.UpdateArea(builder.data.NomsDesPays[area]);
         namer.UpdateTimeStep(builder.data.weekInTheYear);
         namer.HydroPower(builder.data.nombreDeContraintes);
         builder.build();
     }
     else
     {
-        data.NumeroDeContrainteEnergieHydraulique[pays] = -1;
+        data.NumeroDeContrainteEnergieHydraulique[area] = -1;
     }
 }

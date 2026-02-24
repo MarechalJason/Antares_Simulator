@@ -123,45 +123,45 @@ void Namer::SetThermalClusterElementName(unsigned varIndex,
     names_[varIndex] = name;
 }
 
-void VariableNamer::DispatchableProduction(unsigned varIndex, const std::string& clusterName)
+void VariableNamer::dispatchableProduction(unsigned varIndex, const std::string& clusterName)
 {
     SetThermalClusterElementName(varIndex, "DispatchableProduction", clusterName);
 }
 
-void VariableNamer::NODU(unsigned varIndex, const std::string& clusterName)
+void VariableNamer::nodu(unsigned varIndex, const std::string& clusterName)
 {
     SetThermalClusterElementName(varIndex, "NODU", clusterName);
 }
 
-void VariableNamer::NumberStoppingDispatchableUnits(unsigned varIndex,
+void VariableNamer::numberStoppingDispatchableUnits(unsigned varIndex,
                                                     const std::string& clusterName)
 {
     SetThermalClusterElementName(varIndex, "NumberStoppingDispatchableUnits", clusterName);
 }
 
-void VariableNamer::NumberStartingDispatchableUnits(unsigned varIndex,
+void VariableNamer::numberStartingDispatchableUnits(unsigned varIndex,
                                                     const std::string& clusterName)
 {
     SetThermalClusterElementName(varIndex, "NumberStartingDispatchableUnits", clusterName);
 }
 
-void VariableNamer::NumberBreakingDownDispatchableUnits(unsigned varIndex,
+void VariableNamer::numberBreakingDownDispatchableUnits(unsigned varIndex,
                                                         const std::string& clusterName)
 {
     SetThermalClusterElementName(varIndex, "NumberBreakingDownDispatchableUnits", clusterName);
 }
 
-void VariableNamer::NTCDirect(unsigned varIndex)
+void VariableNamer::ntcDirect(unsigned varIndex)
 {
     SetLinkElementName(varIndex, "NTCDirect");
 }
 
-void VariableNamer::IntercoDirectCost(unsigned varIndex)
+void VariableNamer::interconnectionDirectCost(unsigned varIndex)
 {
     SetLinkElementName(varIndex, "IntercoDirectCost");
 }
 
-void VariableNamer::IntercoIndirectCost(unsigned varIndex)
+void VariableNamer::interconnectionIndirectCost(unsigned varIndex)
 {
     SetLinkElementName(varIndex, "IntercoIndirectCost");
 }
@@ -176,93 +176,93 @@ void VariableNamer::SetShortTermStorageVariableName(unsigned varIndex,
     names()[varIndex] = name;
 }
 
-void VariableNamer::ShortTermStorageInjection(unsigned varIndex, const std::string& sts_name)
+void VariableNamer::shortTermStorageInjection(unsigned varIndex, const std::string& sts_name)
 {
     SetShortTermStorageVariableName(varIndex, "Injection", sts_name);
 }
 
-void VariableNamer::ShortTermStorageWithdrawal(unsigned varIndex, const std::string& sts_name)
+void VariableNamer::shortTermStorageWithdrawal(unsigned varIndex, const std::string& sts_name)
 {
     SetShortTermStorageVariableName(varIndex, "Withdrawal", sts_name);
 }
 
-void VariableNamer::ShortTermStorageLevel(unsigned varIndex, const std::string& sts_name)
+void VariableNamer::shortTermStorageLevel(unsigned varIndex, const std::string& sts_name)
 {
     SetShortTermStorageVariableName(varIndex, "Level", sts_name);
 }
 
-void VariableNamer::ShortTermStorageOverflow(unsigned varIndex, const std::string& sts_name)
+void VariableNamer::shortTermStorageOverflow(unsigned varIndex, const std::string& sts_name)
 {
     SetShortTermStorageVariableName(varIndex, "Overflow", sts_name);
 }
 
-void VariableNamer::ShortTermStorageCostVariationInjection(unsigned varIndex,
+void VariableNamer::shortTermStorageCostVariationInjection(unsigned varIndex,
                                                            const std::string& sts_name)
 {
     SetShortTermStorageVariableName(varIndex, "CostVariationInjection", sts_name);
 }
 
-void VariableNamer::ShortTermStorageCostVariationWithdrawal(unsigned varIndex,
+void VariableNamer::shortTermStorageCostVariationWithdrawal(unsigned varIndex,
                                                             const std::string& sts_name)
 {
     SetShortTermStorageVariableName(varIndex, "CostVariationWithdrawal", sts_name);
 }
 
-void VariableNamer::HydProd(unsigned varIndex)
+void VariableNamer::hydroPower(unsigned varIndex)
 {
     SetAreaElementNameHour(varIndex, "HydProd");
 }
 
-void VariableNamer::HydProdDown(unsigned varIndex)
+void VariableNamer::hydroPowerDown(unsigned varIndex)
 {
     SetAreaElementNameHour(varIndex, "HydProdDown");
 }
 
-void VariableNamer::HydProdUp(unsigned varIndex)
+void VariableNamer::hydroPowerUp(unsigned varIndex)
 {
     SetAreaElementNameHour(varIndex, "HydProdUp");
 }
 
-void VariableNamer::Pumping(unsigned varIndex)
+void VariableNamer::pumping(unsigned varIndex)
 {
     SetAreaElementNameHour(varIndex, "Pumping");
 }
 
-void VariableNamer::HydroLevel(unsigned varIndex)
+void VariableNamer::hydroLevel(unsigned varIndex)
 {
     SetAreaElementNameHour(varIndex, "HydroLevel");
 }
 
-void VariableNamer::Overflow(unsigned varIndex)
+void VariableNamer::overflow(unsigned varIndex)
 {
     SetAreaElementNameHour(varIndex, "Overflow");
 }
 
-void VariableNamer::LayerStorage(unsigned varIndex, int layerIndex)
+void VariableNamer::layerStorage(unsigned varIndex, int layerIndex)
 {
     SetAreaVariableName(varIndex, "LayerStorage", layerIndex);
 }
 
-void VariableNamer::FinalStorage(unsigned varIndex)
+void VariableNamer::finalStorage(unsigned varIndex)
 {
     SetAreaElementNameHour(varIndex, "FinalStorage");
 }
 
-void VariableNamer::UnsuppliedEnergy(unsigned varIndex)
+void VariableNamer::unsuppliedEnergy(unsigned varIndex)
 {
     // TODO : what is "PositiveUnsuppliedEnergy" ?
     // We mean "UnsuppliedEnergy". To be replaced.
     SetAreaElementNameHour(varIndex, "PositiveUnsuppliedEnergy");
 }
 
-void VariableNamer::Spillage(unsigned varIndex)
+void VariableNamer::spillage(unsigned varIndex)
 {
     // TODO : what is "NegativeUnsuppliedEnergy" ?
     // Should be replaced with "Spillage".
     SetAreaElementNameHour(varIndex, "NegativeUnsuppliedEnergy");
 }
 
-void VariableNamer::AreaBalance(unsigned varIndex)
+void VariableNamer::areaBalance(unsigned varIndex)
 {
     SetAreaElementNameHour(varIndex, "AreaBalance");
 }
@@ -282,7 +282,7 @@ void ConstraintNamer::CsrAreaBalance(unsigned constrIndex)
     SetAreaElementNameHour(constrIndex, "CsrAreaBalance");
 }
 
-void ConstraintNamer::AreaBalance(unsigned constrIndex)
+void ConstraintNamer::areaBalance(unsigned constrIndex)
 {
     SetAreaElementNameHour(constrIndex, "AreaBalance");
 }
@@ -405,7 +405,7 @@ void ConstraintNamer::ConsistenceNODU(unsigned constrIndex, const std::string& c
     SetThermalClusterElementName(constrIndex, "ConsistenceNODU", clusterName);
 }
 
-void ConstraintNamer::ShortTermStorageLevel(unsigned constrIndex, const std::string& sts_name)
+void ConstraintNamer::shortTermStorageLevel(unsigned constrIndex, const std::string& sts_name)
 {
     std::string location = areaLocation() + SEP + "ShortTermStorage" + "<" + sts_name + ">";
     std::string time = TimeIdentifier(HOUR);

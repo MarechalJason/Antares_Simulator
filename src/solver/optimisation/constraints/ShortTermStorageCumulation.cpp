@@ -20,20 +20,20 @@ CumulationConstraint makeCumulationConstraint(const std::string& variable,
     if (variable == "withdrawal")
     {
         return {"WithdrawalSum",
-                [&builder](unsigned int idx) { builder.ShortTermStorageWithdrawal(idx, 1.0); }};
+                [&builder](unsigned int idx) { builder.shortTermStorageWithdrawal(idx, 1.0); }};
     }
     else if (variable == "injection")
     {
         return {"InjectionSum",
-                [&builder](unsigned int idx) { builder.ShortTermStorageInjection(idx, 1.0); }};
+                [&builder](unsigned int idx) { builder.shortTermStorageInjection(idx, 1.0); }};
     }
     else if (variable == "netting")
     {
         return {"NettingSum",
                 [&builder, &props](unsigned int idx)
                 {
-                    builder.ShortTermStorageInjection(idx, props.injectionEfficiency)
-                      .ShortTermStorageWithdrawal(idx, -props.withdrawalEfficiency);
+                    builder.shortTermStorageInjection(idx, props.injectionEfficiency)
+                      .shortTermStorageWithdrawal(idx, -props.withdrawalEfficiency);
                 }};
     }
 
@@ -53,13 +53,13 @@ char ConvertSense(const std::string& sense)
     return '=';
 }
 
-void ShortTermStorageCumulation::add(int pays)
+void ShortTermStorageCumulation::add(int area)
 {
     ConstraintNamer namer(builder.data.NomDesContraintes);
     namer.UpdateTimeStep(builder.data.weekInTheYear);
-    namer.UpdateArea(builder.data.NomsDesPays[pays]);
+    namer.UpdateArea(builder.data.NomsDesPays[area]);
 
-    for (const auto& storage: data.ShortTermStorage[pays])
+    for (const auto& storage: data.ShortTermStorage[area])
     {
         for (const auto& additionalConstraints: storage.additionalConstraints)
         {
@@ -86,7 +86,7 @@ void ShortTermStorageCumulation::add(int pays)
                     builder.updateHourWithinWeek(hour - 1);
                     cumulationConstraint.build(index);
                 }
-                builder.SetOperator(ConvertSense(additionalConstraints->operatorType)).build();
+                builder.setOperator(ConvertSense(additionalConstraints->operatorType)).build();
             }
         }
     }

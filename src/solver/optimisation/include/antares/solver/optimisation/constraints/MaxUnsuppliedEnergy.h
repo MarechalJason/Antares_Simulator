@@ -25,10 +25,10 @@ public:
 
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
-     * @param pdt : timestep
-     * @param pays : area
+     * @param timeStep : timestep
+     * @param area : area
      */
-    void add(unsigned pdt, int pays);
+    void add(unsigned timeStep, int area);
 
 private:
     MaxUnsupEnergyData& data;

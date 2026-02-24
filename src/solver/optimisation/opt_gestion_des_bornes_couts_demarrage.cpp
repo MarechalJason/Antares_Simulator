@@ -40,7 +40,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(
                 const std::vector<int>& NombreMinDeGroupesEnMarcheDuPalierThermique
                   = PuissanceDisponibleEtCout.NombreMinDeGroupesEnMarcheDuPalierThermique;
 
-                int var = variableManager.NumberOfDispatchableUnits(palier, pdtJour);
+                int var = variableManager.numberOfDispatchableUnits(palier, pdtJour);
 
                 Xmax[var] = NombreMaxDeGroupesEnMarcheDuPalierThermique[pdtHebdo];
                 Xmin[var] = NombreMinDeGroupesEnMarcheDuPalierThermique[pdtHebdo];
@@ -50,7 +50,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(
                                                 .NombreDeGroupesEnMarcheDuPalier[index]);
                 AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
 
-                var = variableManager.NumberStartingDispatchableUnits(palier, pdtJour);
+                var = variableManager.numberStartingDispatchableUnits(palier, pdtJour);
                 Xmax[var] = LINFINI_ANTARES;
                 Xmin[var] = 0;
                 adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
@@ -58,7 +58,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(
                                         .NombreDeGroupesQuiDemarrentDuPalier[index]);
                 AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
 
-                var = variableManager.NumberStoppingDispatchableUnits(palier, pdtJour);
+                var = variableManager.numberStoppingDispatchableUnits(palier, pdtJour);
                 Xmax[var] = LINFINI_ANTARES;
                 Xmin[var] = 0;
                 adresseDuResultat = &(problemeHebdo->ResultatsHoraires[pays]
@@ -67,7 +67,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(
                 AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = adresseDuResultat;
 
                 // var
-                var = variableManager.NumberBreakingDownDispatchableUnits(palier, pdtJour);
+                var = variableManager.numberBreakingDownDispatchableUnits(palier, pdtJour);
                 Xmin[var] = 0;
                 int t1 = pdtHebdo;
                 int t1moins1 = t1 - 1;

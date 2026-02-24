@@ -14,7 +14,7 @@ public:
     {
     }
 
-    void add(int pays);
+    void add(int area);
 
 private:
     ShortTermStorageCumulativeConstraintData& data;

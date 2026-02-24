@@ -18,7 +18,7 @@ void OPT_InitialiserLesCoutsQuadratiques(PROBLEME_HEBDO* problemeHebdo, int PdtH
 
     for (uint32_t interco = 0; interco < problemeHebdo->NombreDInterconnexions; interco++)
     {
-        int var = variableManager.NTCDirect(interco, 0);
+        int var = variableManager.ntcDirect(interco, 0);
         if (var >= 0 && var < ProblemeAResoudre->NombreDeVariables)
         {
             ProblemeAResoudre->CoutQuadratique[var] = ValeursDeResistances

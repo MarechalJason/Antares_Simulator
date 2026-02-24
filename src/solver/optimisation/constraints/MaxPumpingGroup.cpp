@@ -14,8 +14,8 @@ void MaxPumpingGroup::BuildConstraints()
     auto maxPumpingData = GetMaxPumpingData();
     MaxPumping maxPumping(builder_, maxPumpingData);
 
-    for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; pays++)
+    for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {
-        maxPumping.add(pays);
+        maxPumping.add(area);
     }
 }

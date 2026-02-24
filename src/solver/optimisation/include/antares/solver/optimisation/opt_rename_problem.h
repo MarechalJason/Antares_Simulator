@@ -41,31 +41,31 @@ class VariableNamer: public Namer
 {
 public:
     using Namer::Namer;
-    void DispatchableProduction(unsigned varIndex, const std::string& clusterName);
-    void NODU(unsigned varIndex, const std::string& clusterName);
-    void NumberStoppingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
-    void NumberStartingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
-    void NumberBreakingDownDispatchableUnits(unsigned varIndex, const std::string& clusterName);
-    void NTCDirect(unsigned varIndex);
-    void IntercoDirectCost(unsigned varIndex);
-    void IntercoIndirectCost(unsigned varIndex);
-    void ShortTermStorageInjection(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageWithdrawal(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageLevel(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageOverflow(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageCostVariationInjection(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageCostVariationWithdrawal(unsigned varIndex, const std::string& sts_name);
-    void HydProd(unsigned varIndex);
-    void HydProdDown(unsigned varIndex);
-    void HydProdUp(unsigned varIndex);
-    void Pumping(unsigned varIndex);
-    void HydroLevel(unsigned varIndex);
-    void Overflow(unsigned varIndex);
-    void FinalStorage(unsigned varIndex);
-    void LayerStorage(unsigned varIndex, int layerIndex);
-    void UnsuppliedEnergy(unsigned varIndex);
-    void Spillage(unsigned varIndex);
-    void AreaBalance(unsigned varIndex);
+    void dispatchableProduction(unsigned varIndex, const std::string& clusterName);
+    void nodu(unsigned varIndex, const std::string& clusterName);
+    void numberStoppingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
+    void numberStartingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
+    void numberBreakingDownDispatchableUnits(unsigned varIndex, const std::string& clusterName);
+    void ntcDirect(unsigned varIndex);
+    void interconnectionDirectCost(unsigned varIndex);
+    void interconnectionIndirectCost(unsigned varIndex);
+    void shortTermStorageInjection(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageWithdrawal(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageLevel(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageOverflow(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageCostVariationInjection(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageCostVariationWithdrawal(unsigned varIndex, const std::string& sts_name);
+    void hydroPower(unsigned varIndex);
+    void hydroPowerDown(unsigned varIndex);
+    void hydroPowerUp(unsigned varIndex);
+    void pumping(unsigned varIndex);
+    void hydroLevel(unsigned varIndex);
+    void overflow(unsigned varIndex);
+    void finalStorage(unsigned varIndex);
+    void layerStorage(unsigned varIndex, int layerIndex);
+    void unsuppliedEnergy(unsigned varIndex);
+    void spillage(unsigned varIndex);
+    void areaBalance(unsigned varIndex);
 
 private:
     void SetAreaVariableName(unsigned varIndex, const std::string& variableType, int layerIndex);
@@ -80,7 +80,7 @@ public:
     using Namer::Namer;
 
     void FlowDissociation(unsigned constrIndex);
-    void AreaBalance(unsigned constrIndex);
+    void areaBalance(unsigned constrIndex);
     void FictiveLoads(unsigned constrIndex);
     void MaxUnsuppliedEnergy(unsigned constrIndex);
     void HydroPower(unsigned constrIndex);
@@ -99,7 +99,7 @@ public:
     void PMaxDispatchableGeneration(unsigned constrIndex, const std::string& clusterName);
     void PMinDispatchableGeneration(unsigned constrIndex, const std::string& clusterName);
     void ConsistenceNODU(unsigned constrIndex, const std::string& clusterName);
-    void ShortTermStorageLevel(unsigned constrIndex, const std::string& name);
+    void shortTermStorageLevel(unsigned constrIndex, const std::string& name);
     void BindingConstraintHour(unsigned constrIndex, const std::string& name);
     void BindingConstraintDay(unsigned constrIndex, const std::string& name);
     void BindingConstraintWeek(unsigned constrIndex, const std::string& name);

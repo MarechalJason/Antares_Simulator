@@ -17,9 +17,9 @@ void CsrFlowDissociation::add()
             && data.extremityAreaMode[interco]
                  == Antares::Data::AdequacyPatch::physicalAreaInsideAdqPatch)
         {
-            builder.NTCDirect(interco, 1.0)
-              .IntercoDirectCost(interco, -1.0)
-              .IntercoIndirectCost(interco, 1.0);
+            builder.ntcDirect(interco, 1.0)
+              .interconnectionDirectCost(interco, -1.0)
+              .interconnectionIndirectCost(interco, 1.0);
 
             data.numberOfConstraintCsrFlowDissociation[interco] = builder.data.nombreDeContraintes;
 

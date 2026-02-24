@@ -3,26 +3,26 @@
 
 #include "antares/solver/optimisation/constraints/MaxPumping.h"
 
-void MaxPumping::add(int pays)
+void MaxPumping::add(int area)
 {
-    if (data.CaracteristiquesHydrauliques[pays].PresenceDePompageModulable)
+    if (data.CaracteristiquesHydrauliques[area].PresenceDePompageModulable)
     {
-        data.NumeroDeContrainteMaxPompage[pays] = builder.data.nombreDeContraintes;
+        data.NumeroDeContrainteMaxPompage[area] = builder.data.nombreDeContraintes;
 
-        for (int pdt = 0; pdt < builder.data.NombreDePasDeTempsPourUneOptimisation; pdt++)
+        for (int timeStep = 0; timeStep < builder.data.NombreDePasDeTempsPourUneOptimisation; timeStep++)
         {
-            builder.updateHourWithinWeek(pdt);
-            builder.Pumping(pays, 1.0);
+            builder.updateHourWithinWeek(timeStep);
+            builder.pumping(area, 1.0);
         }
-        data.NumeroDeContrainteMaxPompage[pays] = builder.data.nombreDeContraintes;
+        data.NumeroDeContrainteMaxPompage[area] = builder.data.nombreDeContraintes;
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateArea(builder.data.NomsDesPays[pays]);
+        namer.UpdateArea(builder.data.NomsDesPays[area]);
         namer.UpdateTimeStep(builder.data.weekInTheYear);
         namer.MaxPumping(builder.data.nombreDeContraintes);
         builder.lessThan().build();
     }
     else
     {
-        data.NumeroDeContrainteMaxPompage[pays] = -1;
+        data.NumeroDeContrainteMaxPompage[area] = -1;
     }
 }

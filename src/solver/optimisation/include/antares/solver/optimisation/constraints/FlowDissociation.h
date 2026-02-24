@@ -27,10 +27,10 @@ public:
 
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
-     * @param pdt : timestep
-     * @param interco : interconnection number
+     * @param timeStep : timestep
+     * @param interconnection : interconnection number
      */
-    void add(int pdt, int interco);
+    void add(int timeStep, int interconnection);
 
 private:
     FlowDissociationData& data;

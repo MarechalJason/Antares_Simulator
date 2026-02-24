@@ -17,8 +17,8 @@ void HydroPowerGroup::BuildConstraints()
     auto hydroPowerData = GetHydroPowerDataFromProblemHebdo();
     HydroPower hydroPower(builder_, hydroPowerData);
 
-    for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; pays++)
+    for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {
-        hydroPower.add(pays);
+        hydroPower.add(area);
     }
 }

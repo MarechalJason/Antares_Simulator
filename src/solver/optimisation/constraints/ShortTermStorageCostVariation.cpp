@@ -4,16 +4,16 @@
 #include "antares/solver/optimisation/constraints/ShortTermStorageCostVariation.h"
 
 void ShortTermStorageCostVariation::addStorageConstraint(const std::string& constraintName,
-                                                         int pdt,
-                                                         int pays)
+                                                         int timeStep,
+                                                         int area)
 {
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
+    const int hourInTheYear = builder.data.weekInTheYear * 168 + timeStep;
     namer.UpdateTimeStep(hourInTheYear);
-    namer.UpdateArea(builder.data.NomsDesPays[pays]);
+    namer.UpdateArea(builder.data.NomsDesPays[area]);
 
-    builder.updateHourWithinWeek(pdt);
-    for (const auto& storage: data.ShortTermStorage[pays])
+    builder.updateHourWithinWeek(timeStep);
+    for (const auto& storage: data.ShortTermStorage[area])
     {
         if (IsConstraintEnabled(storage))
         {
@@ -22,7 +22,7 @@ void ShortTermStorageCostVariation::addStorageConstraint(const std::string& cons
                                                 storage.name);
             const auto index = storage.clusterGlobalIndex;
 
-            TargetConstraintIndex(pdt, index) = builder.data.nombreDeContraintes;
+            TargetConstraintIndex(timeStep, index) = builder.data.nombreDeContraintes;
 
             buildConstraint(index);
         }

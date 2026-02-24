@@ -15,7 +15,7 @@ public:
     using ConstraintFactory::ConstraintFactory;
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
-     * @param pays : area
+     * @param area : area
      */
-    void add(int pays, const int nombreDePasDeTempsPourUneOptimisation);
+    void add(int area, const int nombreDePasDeTempsPourUneOptimisation);
 };

@@ -16,8 +16,8 @@ void ExchangeBalanceGroup::BuildConstraints()
 {
     auto data = GetExchangeBalanceDataFromProblemHebdo();
     ExchangeBalance exchangeBalance(builder_, data);
-    for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays - 1; pays++)
+    for (uint32_t area = 0; area < problemeHebdo_->NombreDePays - 1; area++)
     {
-        exchangeBalance.add(pays);
+        exchangeBalance.add(area);
     }
 }

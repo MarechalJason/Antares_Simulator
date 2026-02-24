@@ -3,14 +3,14 @@
 
 #include "antares/solver/optimisation/constraints/MinDownTime.h"
 
-void MinDownTime::add(int pays, int index, int pdt)
+void MinDownTime::add(int area, int index, int timeStep)
 {
     const int DureeMinimaleDArretDUnGroupeDuPalierThermique
-      = data.PaliersThermiquesDuPays[pays].DureeMinimaleDArretDUnGroupeDuPalierThermique[index];
-    auto cluster = data.PaliersThermiquesDuPays[pays]
+      = data.PaliersThermiquesDuPays[area].DureeMinimaleDArretDUnGroupeDuPalierThermique[index];
+    auto cluster = data.PaliersThermiquesDuPays[area]
                      .NumeroDuPalierDansLEnsembleDesPaliersThermiques[index];
 
-    data.CorrespondanceCntNativesCntOptim[pdt]
+    data.CorrespondanceCntNativesCntOptim[timeStep]
       .NumeroDeContrainteDesContraintesDeDureeMinDArret[cluster]
       = -1;
     if (!data.Simulation)
@@ -18,9 +18,9 @@ void MinDownTime::add(int pays, int index, int pdt)
         int NombreDePasDeTempsPourUneOptimisation = builder.data
                                                       .NombreDePasDeTempsPourUneOptimisation;
 
-        builder.updateHourWithinWeek(pdt).NumberOfDispatchableUnits(cluster, 1.0);
+        builder.updateHourWithinWeek(timeStep).numberOfDispatchableUnits(cluster, 1.0);
 
-        for (int k = pdt - DureeMinimaleDArretDUnGroupeDuPalierThermique + 1; k <= pdt; k++)
+        for (int k = timeStep - DureeMinimaleDArretDUnGroupeDuPalierThermique + 1; k <= timeStep; k++)
         {
             int t1 = k;
             if (t1 < 0)
@@ -28,20 +28,20 @@ void MinDownTime::add(int pays, int index, int pdt)
                 t1 = NombreDePasDeTempsPourUneOptimisation + t1;
             }
 
-            builder.updateHourWithinWeek(t1).NumberStoppingDispatchableUnits(cluster, 1.0);
+            builder.updateHourWithinWeek(t1).numberStoppingDispatchableUnits(cluster, 1.0);
         }
         builder.lessThan();
-        if (builder.NumberOfVariables() > 1)
+        if (builder.numberOfVariables() > 1)
         {
-            data.CorrespondanceCntNativesCntOptim[pdt]
+            data.CorrespondanceCntNativesCntOptim[timeStep]
               .NumeroDeContrainteDesContraintesDeDureeMinDArret[cluster]
               = builder.data.nombreDeContraintes;
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateArea(builder.data.NomsDesPays[pays]);
+            namer.UpdateArea(builder.data.NomsDesPays[area]);
 
-            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
+            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
             namer.MinDownTime(builder.data.nombreDeContraintes,
-                              data.PaliersThermiquesDuPays[pays].NomsDesPaliersThermiques[index]);
+                              data.PaliersThermiquesDuPays[area].NomsDesPaliersThermiques[index]);
 
             builder.build();
         }

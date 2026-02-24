@@ -15,31 +15,31 @@ void HydraulicSmoothingGroup::BuildConstraints()
 
     if (problemeHebdo_->TypeDeLissageHydraulique == LISSAGE_HYDRAULIQUE_SUR_SOMME_DES_VARIATIONS)
     {
-        for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; pays++)
+        for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
         {
-            if (!problemeHebdo_->CaracteristiquesHydrauliques[pays].PresenceDHydrauliqueModulable)
+            if (!problemeHebdo_->CaracteristiquesHydrauliques[area].PresenceDHydrauliqueModulable)
             {
                 continue;
             }
 
             hydroPowerSmoothingUsingVariationSum
-              .add(pays, problemeHebdo_->NombreDePasDeTempsPourUneOptimisation);
+              .add(area, problemeHebdo_->NombreDePasDeTempsPourUneOptimisation);
         }
     }
 
     else if (problemeHebdo_->TypeDeLissageHydraulique == LISSAGE_HYDRAULIQUE_SUR_VARIATION_MAX)
     {
-        for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; pays++)
+        for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
         {
-            if (!problemeHebdo_->CaracteristiquesHydrauliques[pays].PresenceDHydrauliqueModulable)
+            if (!problemeHebdo_->CaracteristiquesHydrauliques[area].PresenceDHydrauliqueModulable)
             {
                 continue;
             }
 
-            for (int pdt = 0; pdt < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; pdt++)
+            for (int timeStep = 0; timeStep < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; timeStep++)
             {
-                hydroPowerSmoothingUsingVariationMaxDown.add(pays, pdt);
-                hydroPowerSmoothingUsingVariationMaxUp.add(pays, pdt);
+                hydroPowerSmoothingUsingVariationMaxDown.add(area, timeStep);
+                hydroPowerSmoothingUsingVariationMaxUp.add(area, timeStep);
             }
         }
     }

@@ -3,17 +3,17 @@
 
 #include "antares/solver/optimisation/constraints/HydroPowerSmoothingUsingVariationMaxDown.h"
 
-void HydroPowerSmoothingUsingVariationMaxDown::add(int pays, int pdt)
+void HydroPowerSmoothingUsingVariationMaxDown::add(int area, int timeStep)
 {
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    namer.UpdateArea(builder.data.NomsDesPays[pays]);
-    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
+    namer.UpdateArea(builder.data.NomsDesPays[area]);
+    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
     namer.HydroPowerSmoothingUsingVariationMaxDown(builder.data.nombreDeContraintes);
 
-    builder.updateHourWithinWeek(pdt)
-      .HydProd(pays, 1.0)
+    builder.updateHourWithinWeek(timeStep)
+      .hydroPower(area, 1.0)
       .updateHourWithinWeek(0)
-      .HydProdDown(pays, -1.0)
+      .hydroPowerDown(area, -1.0)
       .lessThan()
       .build();
 }

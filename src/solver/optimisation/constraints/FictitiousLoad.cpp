@@ -3,21 +3,21 @@
 
 #include "antares/solver/optimisation/constraints/FictitiousLoad.h"
 
-void FictitiousLoad::add(int pdt, int pays)
+void FictitiousLoad::add(int timeStep, int area)
 {
-    data.CorrespondanceCntNativesCntOptim[pdt].NumeroDeContraintePourEviterLesChargesFictives[pays]
+    data.CorrespondanceCntNativesCntOptim[timeStep].NumeroDeContraintePourEviterLesChargesFictives[area]
       = builder.data.nombreDeContraintes;
 
     ConstraintNamer namer(builder.data.NomDesContraintes);
 
-    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
-    namer.UpdateArea(builder.data.NomsDesPays[pays]);
+    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+    namer.UpdateArea(builder.data.NomsDesPays[area]);
     namer.FictiveLoads(builder.data.nombreDeContraintes);
 
-    builder.updateHourWithinWeek(pdt);
-    ExportPaliers(data.PaliersThermiquesDuPays[pays], builder);
-    auto coeff = data.DefaillanceNegativeUtiliserHydro[pays] ? -1 : 0;
-    builder.HydProd(pays, coeff).Spillage(pays, 1.0);
+    builder.updateHourWithinWeek(timeStep);
+    ExportPaliers(data.PaliersThermiquesDuPays[area], builder);
+    auto coeff = data.DefaillanceNegativeUtiliserHydro[area] ? -1 : 0;
+    builder.hydroPower(area, coeff).spillage(area, 1.0);
 
     builder.lessThan();
     builder.build();

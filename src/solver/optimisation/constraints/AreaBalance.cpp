@@ -9,41 +9,41 @@ static void shortTermStorageBalance(const ::AREA_INPUT& shortTermStorageInput,
     for (const auto& storage: shortTermStorageInput)
     {
         unsigned index = storage.clusterGlobalIndex;
-        constraintBuilder.ShortTermStorageInjection(index, 1.0)
-          .ShortTermStorageWithdrawal(index, -1.0);
+        constraintBuilder.shortTermStorageInjection(index, 1.0)
+          .shortTermStorageWithdrawal(index, -1.0);
     }
 }
 
-void AreaBalance::add(int pdt, int pays)
+void AreaBalance::add(int timeStep, int area)
 {
-    data.CorrespondanceCntNativesCntOptim[pdt].NumeroDeContrainteDesBilansPays[pays]
+    data.CorrespondanceCntNativesCntOptim[timeStep].NumeroDeContrainteDesBilansPays[area]
       = builder.data.nombreDeContraintes;
 
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
-    namer.UpdateArea(builder.data.NomsDesPays[pays]);
-    namer.AreaBalance(builder.data.nombreDeContraintes);
+    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+    namer.UpdateArea(builder.data.NomsDesPays[area]);
+    namer.areaBalance(builder.data.nombreDeContraintes);
 
-    builder.updateHourWithinWeek(pdt);
+    builder.updateHourWithinWeek(timeStep);
 
-    int interco = data.IndexDebutIntercoOrigine[pays];
-    while (interco >= 0)
+    int interconnection = data.IndexDebutIntercoOrigine[area];
+    while (interconnection >= 0)
     {
-        builder.NTCDirect(interco, 1.0);
-        interco = data.IndexSuivantIntercoOrigine[interco];
+        builder.ntcDirect(interconnection, 1.0);
+        interconnection = data.IndexSuivantIntercoOrigine[interconnection];
     }
 
-    interco = data.IndexDebutIntercoExtremite[pays];
-    while (interco >= 0)
+    interconnection = data.IndexDebutIntercoExtremite[area];
+    while (interconnection >= 0)
     {
-        builder.NTCDirect(interco, -1.0);
-        interco = data.IndexSuivantIntercoExtremite[interco];
+        builder.ntcDirect(interconnection, -1.0);
+        interconnection = data.IndexSuivantIntercoExtremite[interconnection];
     }
 
-    ExportPaliers(data.PaliersThermiquesDuPays[pays], builder);
-    builder.HydProd(pays, -1.0).Pumping(pays, 1.0).UnsuppliedEnergy(pays, -1.0).Spillage(pays, 1.0);
+    ExportPaliers(data.PaliersThermiquesDuPays[area], builder);
+    builder.hydroPower(area, -1.0).pumping(area, 1.0).unsuppliedEnergy(area, -1.0).spillage(area, 1.0);
 
-    shortTermStorageBalance(data.ShortTermStorage[pays], builder);
+    shortTermStorageBalance(data.ShortTermStorage[area], builder);
 
     builder.equalTo();
     builder.build();

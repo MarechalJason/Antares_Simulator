@@ -3,32 +3,32 @@
 
 #include "antares/solver/optimisation/constraints/ShortTermStorageLevel.h"
 
-void ShortTermStorageLevel::add(int pdt, int pays)
+void ShortTermStorageLevel::add(int timeStep, int area)
 {
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    const int hourInTheYear = builder.data.weekInTheYear * 168 + pdt;
+    const int hourInTheYear = builder.data.weekInTheYear * 168 + timeStep;
     namer.UpdateTimeStep(hourInTheYear);
-    namer.UpdateArea(builder.data.NomsDesPays[pays]);
+    namer.UpdateArea(builder.data.NomsDesPays[area]);
 
-    builder.updateHourWithinWeek(pdt);
-    for (const auto& storage: data.ShortTermStorage[pays])
+    builder.updateHourWithinWeek(timeStep);
+    for (const auto& storage: data.ShortTermStorage[area])
     {
         // L[h] - L[h-1] - efficiency * injection[h] + withdrawal[h] = inflows[h]
-        namer.ShortTermStorageLevel(builder.data.nombreDeContraintes, storage.name);
+        namer.shortTermStorageLevel(builder.data.nombreDeContraintes, storage.name);
         const auto index = storage.clusterGlobalIndex;
-        data.CorrespondanceCntNativesCntOptim[pdt].ShortTermStorageLevelConstraint[index]
+        data.CorrespondanceCntNativesCntOptim[timeStep].ShortTermStorageLevelConstraint[index]
           = builder.data.nombreDeContraintes;
 
-        builder.ShortTermStorageLevel(index, 1.0)
-          .ShortTermStorageLevel(index,
+        builder.shortTermStorageLevel(index, 1.0)
+          .shortTermStorageLevel(index,
                                  -1.0,
                                  -1,
                                  builder.data.NombreDePasDeTempsPourUneOptimisation)
-          .ShortTermStorageInjection(index, -storage.injectionEfficiency)
-          .ShortTermStorageWithdrawal(index, storage.withdrawalEfficiency);
+          .shortTermStorageInjection(index, -storage.injectionEfficiency)
+          .shortTermStorageWithdrawal(index, storage.withdrawalEfficiency);
         if (storage.allowOverflow)
         {
-            builder.ShortTermStorageOverflow(index, 1.0);
+            builder.shortTermStorageOverflow(index, 1.0);
         }
         builder.equalTo().build();
     }

@@ -24,7 +24,7 @@ public:
     }
 
     // TODO transform data to ref
-    void add(uint32_t pays);
+    void add(uint32_t area);
 
 private:
     ExchangeBalanceData& data;

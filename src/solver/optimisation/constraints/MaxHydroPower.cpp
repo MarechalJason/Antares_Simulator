@@ -3,23 +3,23 @@
 
 #include "antares/solver/optimisation/constraints/MaxHydroPower.h"
 
-void MaxHydroPower::add(int pays)
+void MaxHydroPower::add(int area)
 {
-    if (data.CaracteristiquesHydrauliques[pays].PresenceDHydrauliqueModulable
-        && (data.CaracteristiquesHydrauliques[pays].TurbinageEntreBornes
-            || data.CaracteristiquesHydrauliques[pays].PresenceDePompageModulable))
+    if (data.CaracteristiquesHydrauliques[area].PresenceDHydrauliqueModulable
+        && (data.CaracteristiquesHydrauliques[area].TurbinageEntreBornes
+            || data.CaracteristiquesHydrauliques[area].PresenceDePompageModulable))
     {
-        data.NumeroDeContrainteMaxEnergieHydraulique[pays] = builder.data.nombreDeContraintes;
+        data.NumeroDeContrainteMaxEnergieHydraulique[area] = builder.data.nombreDeContraintes;
 
-        for (int pdt = 0; pdt < builder.data.NombreDePasDeTempsPourUneOptimisation; pdt++)
+        for (int timeStep = 0; timeStep < builder.data.NombreDePasDeTempsPourUneOptimisation; timeStep++)
         {
-            builder.updateHourWithinWeek(pdt);
-            builder.HydProd(pays, 1.0);
+            builder.updateHourWithinWeek(timeStep);
+            builder.hydroPower(area, 1.0);
         }
-        data.NumeroDeContrainteMaxEnergieHydraulique[pays] = builder.data.nombreDeContraintes;
+        data.NumeroDeContrainteMaxEnergieHydraulique[area] = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateArea(builder.data.NomsDesPays[pays]);
+        namer.UpdateArea(builder.data.NomsDesPays[area]);
         namer.UpdateTimeStep(builder.data.weekInTheYear);
         namer.MaxHydroPower(builder.data.nombreDeContraintes);
 
@@ -27,6 +27,6 @@ void MaxHydroPower::add(int pays)
     }
     else
     {
-        data.NumeroDeContrainteMaxEnergieHydraulique[pays] = -1;
+        data.NumeroDeContrainteMaxEnergieHydraulique[area] = -1;
     }
 }

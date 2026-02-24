@@ -26,9 +26,9 @@ public:
 
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
-     * @param cntCouplante : the binding constraint number
+     * @param bindingConstraintIndex : the binding constraint number
      */
-    void add(int cntCouplante);
+    void add(int bindingConstraintIndex);
 
 private:
     BindingConstraintWeekData& data;

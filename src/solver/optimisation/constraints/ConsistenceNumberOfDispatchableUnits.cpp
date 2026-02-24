@@ -3,39 +3,39 @@
 
 #include "antares/solver/optimisation/constraints/ConsistenceNumberOfDispatchableUnits.h"
 
-void ConsistenceNumberOfDispatchableUnits::add(int pays, int index, int pdt)
+void ConsistenceNumberOfDispatchableUnits::add(int area, int index, int timeStep)
 {
     if (!data.Simulation)
     {
         int NombreDePasDeTempsPourUneOptimisation = builder.data
                                                       .NombreDePasDeTempsPourUneOptimisation;
 
-        auto cluster = data.PaliersThermiquesDuPays[pays]
+        auto cluster = data.PaliersThermiquesDuPays[area]
                          .NumeroDuPalierDansLEnsembleDesPaliersThermiques[index];
-        int Pdtmoins1 = pdt - 1;
+        int Pdtmoins1 = timeStep - 1;
         if (Pdtmoins1 < 0)
         {
             Pdtmoins1 = NombreDePasDeTempsPourUneOptimisation + Pdtmoins1;
         }
 
-        builder.updateHourWithinWeek(pdt)
-          .NumberOfDispatchableUnits(cluster, 1.0)
+        builder.updateHourWithinWeek(timeStep)
+          .numberOfDispatchableUnits(cluster, 1.0)
           .updateHourWithinWeek(Pdtmoins1)
-          .NumberOfDispatchableUnits(cluster, -1)
-          .updateHourWithinWeek(pdt)
-          .NumberStartingDispatchableUnits(cluster, -1)
-          .NumberStoppingDispatchableUnits(cluster, 1)
+          .numberOfDispatchableUnits(cluster, -1)
+          .updateHourWithinWeek(timeStep)
+          .numberStartingDispatchableUnits(cluster, -1)
+          .numberStoppingDispatchableUnits(cluster, 1)
           .equalTo();
 
-        if (builder.NumberOfVariables() > 0)
+        if (builder.numberOfVariables() > 0)
         {
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateArea(builder.data.NomsDesPays[pays]);
+            namer.UpdateArea(builder.data.NomsDesPays[area]);
 
-            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
+            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
             namer.ConsistenceNODU(
               builder.data.nombreDeContraintes,
-              data.PaliersThermiquesDuPays[pays].NomsDesPaliersThermiques[index]);
+              data.PaliersThermiquesDuPays[area].NomsDesPaliersThermiques[index]);
 
             builder.build();
         }

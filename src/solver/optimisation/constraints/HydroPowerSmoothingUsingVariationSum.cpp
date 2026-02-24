@@ -3,28 +3,28 @@
 
 #include "antares/solver/optimisation/constraints/HydroPowerSmoothingUsingVariationSum.h"
 
-void HydroPowerSmoothingUsingVariationSum::add(int pays,
+void HydroPowerSmoothingUsingVariationSum::add(int area,
                                                const int nombreDePasDeTempsPourUneOptimisation)
 {
-    for (int pdt = 0; pdt < nombreDePasDeTempsPourUneOptimisation; pdt++)
+    for (int timeStep = 0; timeStep < nombreDePasDeTempsPourUneOptimisation; timeStep++)
     {
-        int pdt1 = pdt + 1;
-        if (pdt1 >= nombreDePasDeTempsPourUneOptimisation)
+        int nextTimeStep = timeStep + 1;
+        if (nextTimeStep >= nombreDePasDeTempsPourUneOptimisation)
         {
-            pdt1 = 0;
+            nextTimeStep = 0;
         }
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateArea(builder.data.NomsDesPays[pays]);
-        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
+        namer.UpdateArea(builder.data.NomsDesPays[area]);
+        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
         namer.HydroPowerSmoothingUsingVariationSum(builder.data.nombreDeContraintes);
 
-        builder.updateHourWithinWeek(pdt)
-          .HydProd(pays, 1.0)
-          .updateHourWithinWeek(pdt1)
-          .HydProd(pays, -1.0)
-          .updateHourWithinWeek(pdt)
-          .HydProdDown(pays, -1.0)
-          .HydProdUp(pays, 1.0)
+        builder.updateHourWithinWeek(timeStep)
+          .hydroPower(area, 1.0)
+          .updateHourWithinWeek(nextTimeStep)
+          .hydroPower(area, -1.0)
+          .updateHourWithinWeek(timeStep)
+          .hydroPowerDown(area, -1.0)
+          .hydroPowerUp(area, 1.0)
           .equalTo()
           .build();
     }

@@ -3,12 +3,12 @@
 
 #include "antares/solver/optimisation/constraints/BindingConstraintWeek.h"
 
-void BindingConstraintWeek::add(int cntCouplante)
+void BindingConstraintWeek::add(int bindingConstraintIndex)
 {
     int semaine = builder.data.weekInTheYear;
 
     const CONTRAINTES_COUPLANTES& MatriceDesContraintesCouplantes
-      = data.MatriceDesContraintesCouplantes[cntCouplante];
+      = data.MatriceDesContraintesCouplantes[bindingConstraintIndex];
     if (MatriceDesContraintesCouplantes.TypeDeContrainteCouplante != CONTRAINTE_HEBDOMADAIRE)
     {
         return;
@@ -21,12 +21,12 @@ void BindingConstraintWeek::add(int cntCouplante)
 
     for (int index = 0; index < nbInterco; index++)
     {
-        int interco = MatriceDesContraintesCouplantes.NumeroDeLInterconnexion[index];
+        int interconnection = MatriceDesContraintesCouplantes.NumeroDeLInterconnexion[index];
         double poids = MatriceDesContraintesCouplantes.PoidsDeLInterconnexion[index];
         int offset = MatriceDesContraintesCouplantes.OffsetTemporelSurLInterco[index];
-        for (int pdt = 0; pdt < builder.data.NombreDePasDeTempsPourUneOptimisation; pdt++)
+        for (int timeStep = 0; timeStep < builder.data.NombreDePasDeTempsPourUneOptimisation; timeStep++)
         {
-            builder.updateHourWithinWeek(pdt).NTCDirect(interco,
+            builder.updateHourWithinWeek(timeStep).ntcDirect(interconnection,
                                                         poids,
                                                         offset,
                                                         builder.data.NombreDePasDeTemps);
@@ -35,22 +35,22 @@ void BindingConstraintWeek::add(int cntCouplante)
 
     for (int index = 0; index < nbClusters; index++)
     {
-        int pays = MatriceDesContraintesCouplantes.PaysDuPalierDispatch[index];
-        const PALIERS_THERMIQUES& PaliersThermiquesDuPays = data.PaliersThermiquesDuPays[pays];
+        int area = MatriceDesContraintesCouplantes.PaysDuPalierDispatch[index];
+        const PALIERS_THERMIQUES& PaliersThermiquesDuPays = data.PaliersThermiquesDuPays[area];
         const int palier = PaliersThermiquesDuPays.NumeroDuPalierDansLEnsembleDesPaliersThermiques
                              [MatriceDesContraintesCouplantes.NumeroDuPalierDispatch[index]];
         double poids = MatriceDesContraintesCouplantes.PoidsDuPalierDispatch[index];
         int offset = MatriceDesContraintesCouplantes.OffsetTemporelSurLePalierDispatch[index];
-        for (int pdt = 0; pdt < builder.data.NombreDePasDeTempsPourUneOptimisation; pdt++)
+        for (int timeStep = 0; timeStep < builder.data.NombreDePasDeTempsPourUneOptimisation; timeStep++)
         {
-            builder.updateHourWithinWeek(pdt)
-              .DispatchableProduction(palier, poids, offset, builder.data.NombreDePasDeTemps);
+            builder.updateHourWithinWeek(timeStep)
+              .dispatchableProduction(palier, poids, offset, builder.data.NombreDePasDeTemps);
         }
     }
 
-    builder.SetOperator(MatriceDesContraintesCouplantes.SensDeLaContrainteCouplante);
+    builder.setOperator(MatriceDesContraintesCouplantes.SensDeLaContrainteCouplante);
 
-    data.NumeroDeContrainteDesContraintesCouplantes[cntCouplante] = builder.data
+    data.NumeroDeContrainteDesContraintesCouplantes[bindingConstraintIndex] = builder.data
                                                                       .nombreDeContraintes;
 
     ConstraintNamer namer(builder.data.NomDesContraintes);
