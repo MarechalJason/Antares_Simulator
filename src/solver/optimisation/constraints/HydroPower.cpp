@@ -35,9 +35,9 @@ void HydroPower::add(int area)
 
         builder.equalTo();
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateArea(builder.data.NomsDesPays[area]);
-        namer.UpdateTimeStep(builder.data.weekInTheYear);
-        namer.HydroPower(builder.data.nombreDeContraintes);
+        namer.updateArea(builder.data.NomsDesPays[area]);
+        namer.updateTimeStep(builder.data.weekInTheYear);
+        namer.hydroPower(builder.data.nombreDeContraintes);
         builder.build();
     }
     else

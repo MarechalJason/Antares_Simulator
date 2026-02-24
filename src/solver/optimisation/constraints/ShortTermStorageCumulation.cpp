@@ -56,8 +56,8 @@ char ConvertSense(const std::string& sense)
 void ShortTermStorageCumulation::add(int area)
 {
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    namer.UpdateTimeStep(builder.data.weekInTheYear);
-    namer.UpdateArea(builder.data.NomsDesPays[area]);
+    namer.updateTimeStep(builder.data.weekInTheYear);
+    namer.updateArea(builder.data.NomsDesPays[area]);
 
     for (const auto& storage: data.ShortTermStorage[area])
     {
@@ -70,7 +70,7 @@ void ShortTermStorageCumulation::add(int area)
 
             for (const auto& [hours, globalIndex, localIndex]: additionalConstraints->constraints)
             {
-                namer.ShortTermStorageCumulation(cumulationConstraint.name,
+                namer.shortTermStorageCumulation(cumulationConstraint.name,
                                                  builder.data.nombreDeContraintes,
                                                  storage.name,
                                                  additionalConstraints->id + "_"
@@ -78,7 +78,7 @@ void ShortTermStorageCumulation::add(int area)
 
                 const auto index = storage.clusterGlobalIndex;
                 data.CorrespondanceCntNativesCntOptimHebdomadaires
-                  .ShortTermStorageCumulation[globalIndex]
+                  .shortTermStorageCumulation[globalIndex]
                   = builder.data.nombreDeContraintes;
 
                 for (const auto& hour: hours)

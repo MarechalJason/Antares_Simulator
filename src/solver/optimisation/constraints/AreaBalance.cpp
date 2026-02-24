@@ -20,8 +20,8 @@ void AreaBalance::add(int timeStep, int area)
       = builder.data.nombreDeContraintes;
 
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-    namer.UpdateArea(builder.data.NomsDesPays[area]);
+    namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+    namer.updateArea(builder.data.NomsDesPays[area]);
     namer.areaBalance(builder.data.nombreDeContraintes);
 
     builder.updateHourWithinWeek(timeStep);

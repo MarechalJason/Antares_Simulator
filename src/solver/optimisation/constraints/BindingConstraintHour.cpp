@@ -53,8 +53,8 @@ void BindingConstraintHour::add(int timeStep, int bindingConstraintIndex)
     builder.setOperator(MatriceDesContraintesCouplantes.SensDeLaContrainteCouplante);
     {
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-        namer.BindingConstraintHour(builder.data.nombreDeContraintes,
+        namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+        namer.bindingConstraintHour(builder.data.nombreDeContraintes,
                                     MatriceDesContraintesCouplantes.NomDeLaContrainteCouplante);
     }
     builder.build();

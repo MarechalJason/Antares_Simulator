@@ -12,9 +12,9 @@ void MinHydroPower::add(int area)
         data.NumeroDeContrainteMinEnergieHydraulique[area] = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateArea(builder.data.NomsDesPays[area]);
-        namer.UpdateTimeStep(builder.data.weekInTheYear);
-        namer.MinHydroPower(builder.data.nombreDeContraintes);
+        namer.updateArea(builder.data.NomsDesPays[area]);
+        namer.updateTimeStep(builder.data.weekInTheYear);
+        namer.minHydroPower(builder.data.nombreDeContraintes);
 
         for (int timeStep = 0; timeStep < data.NombreDePasDeTempsPourUneOptimisation; timeStep++)
         {

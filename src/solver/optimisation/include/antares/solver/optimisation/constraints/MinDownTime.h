@@ -12,7 +12,7 @@ struct MinDownTimeData
 };
 
 /*!
- * represent 'MinDownTime' Constraint type
+ * represent 'minDownTime' Constraint type
  */
 class MinDownTime final: private ConstraintFactory
 {

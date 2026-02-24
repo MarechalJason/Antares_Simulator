@@ -65,8 +65,8 @@ void BindingConstraintDay::add(int bindingConstraintIndex)
         {
             const auto dayInTheYear = builder.data.weekInTheYear * 7 + jour;
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateTimeStep(dayInTheYear);
-            namer.BindingConstraintDay(builder.data.nombreDeContraintes,
+            namer.updateTimeStep(dayInTheYear);
+            namer.bindingConstraintDay(builder.data.nombreDeContraintes,
                                        MatriceDesContraintesCouplantes.NomDeLaContrainteCouplante);
         }
         builder.build();

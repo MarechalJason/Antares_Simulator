@@ -39,12 +39,12 @@ Namer::Namer(std::vector<std::string>& target_names):
 {
 }
 
-void Namer::UpdateTimeStep(unsigned timeStep)
+void Namer::updateTimeStep(unsigned timeStep)
 {
     timeStep_ = timeStep;
 }
 
-void Namer::UpdateArea(const std::string& area)
+void Namer::updateArea(const std::string& area)
 {
     area_ = area;
 }
@@ -55,7 +55,7 @@ void Namer::updateExtremities(const std::string& origin, const std::string& dest
     destination_ = destination;
 }
 
-std::string Namer::TimeIdentifier(const std::string& timeGranularity)
+std::string Namer::timeIdentifier(const std::string& timeGranularity)
 {
     return timeGranularity + "<" + std::to_string(timeStep_) + ">";
 }
@@ -75,362 +75,362 @@ std::vector<std::string>& Namer::names()
     return names_;
 }
 
-void Namer::SetLinkElementName(unsigned elementIndex, const std::string& elementType)
+void Namer::setLinkElementName(unsigned elementIndex, const std::string& elementType)
 {
     std::string location = linkLocation();
-    std::string time = TimeIdentifier(HOUR);
+    std::string time = timeIdentifier(HOUR);
     std::string name = BuildName(elementType, location, time);
     names_[elementIndex] = name;
 }
 
-void Namer::SetAreaElementNameHour(unsigned elementIndex, const std::string& elementType)
+void Namer::setAreaElementNameHour(unsigned elementIndex, const std::string& elementType)
 {
-    SetAreaElementName(elementIndex, elementType, HOUR);
+    setAreaElementName(elementIndex, elementType, HOUR);
 }
 
-void Namer::SetAreaElementNameWeek(unsigned elementIndex, const std::string& elementType)
+void Namer::setAreaElementNameWeek(unsigned elementIndex, const std::string& elementType)
 {
-    SetAreaElementName(elementIndex, elementType, WEEK);
+    setAreaElementName(elementIndex, elementType, WEEK);
 }
 
-void Namer::SetAreaElementName(unsigned elementIndex,
+void Namer::setAreaElementName(unsigned elementIndex,
                                const std::string& elementType,
                                const std::string& timeGranularity)
 {
     std::string location = LocationIdentifier(area_, AREA);
-    std::string time = TimeIdentifier(timeGranularity);
+    std::string time = timeIdentifier(timeGranularity);
     std::string name = BuildName(elementType, location, time);
     names_[elementIndex] = name;
 }
 
-void VariableNamer::SetAreaVariableName(unsigned varIndex,
+void VariableNamer::setAreaVariableName(unsigned varIndex,
                                         const std::string& variableType,
                                         int layerIndex)
 {
     std::string location = areaLocation() + SEP + "Layer<" + std::to_string(layerIndex) + ">";
-    std::string time = TimeIdentifier(HOUR);
+    std::string time = timeIdentifier(HOUR);
     std::string name = BuildName(variableType, location, time);
     names()[varIndex] = name;
 }
 
-void Namer::SetThermalClusterElementName(unsigned varIndex,
+void Namer::setThermalClusterElementName(unsigned varIndex,
                                          const std::string& elementType,
                                          const std::string& clusterName)
 {
     std::string location = areaLocation() + SEP + "ThermalCluster" + "<" + clusterName + ">";
-    std::string time = TimeIdentifier(HOUR);
+    std::string time = timeIdentifier(HOUR);
     std::string name = BuildName(elementType, location, time);
     names_[varIndex] = name;
 }
 
 void VariableNamer::dispatchableProduction(unsigned varIndex, const std::string& clusterName)
 {
-    SetThermalClusterElementName(varIndex, "DispatchableProduction", clusterName);
+    setThermalClusterElementName(varIndex, "DispatchableProduction", clusterName);
 }
 
 void VariableNamer::nodu(unsigned varIndex, const std::string& clusterName)
 {
-    SetThermalClusterElementName(varIndex, "NODU", clusterName);
+    setThermalClusterElementName(varIndex, "NODU", clusterName);
 }
 
 void VariableNamer::numberStoppingDispatchableUnits(unsigned varIndex,
                                                     const std::string& clusterName)
 {
-    SetThermalClusterElementName(varIndex, "NumberStoppingDispatchableUnits", clusterName);
+    setThermalClusterElementName(varIndex, "NumberStoppingDispatchableUnits", clusterName);
 }
 
 void VariableNamer::numberStartingDispatchableUnits(unsigned varIndex,
                                                     const std::string& clusterName)
 {
-    SetThermalClusterElementName(varIndex, "NumberStartingDispatchableUnits", clusterName);
+    setThermalClusterElementName(varIndex, "NumberStartingDispatchableUnits", clusterName);
 }
 
 void VariableNamer::numberBreakingDownDispatchableUnits(unsigned varIndex,
                                                         const std::string& clusterName)
 {
-    SetThermalClusterElementName(varIndex, "NumberBreakingDownDispatchableUnits", clusterName);
+    setThermalClusterElementName(varIndex, "NumberBreakingDownDispatchableUnits", clusterName);
 }
 
 void VariableNamer::ntcDirect(unsigned varIndex)
 {
-    SetLinkElementName(varIndex, "NTCDirect");
+    setLinkElementName(varIndex, "NTCDirect");
 }
 
 void VariableNamer::interconnectionDirectCost(unsigned varIndex)
 {
-    SetLinkElementName(varIndex, "IntercoDirectCost");
+    setLinkElementName(varIndex, "IntercoDirectCost");
 }
 
 void VariableNamer::interconnectionIndirectCost(unsigned varIndex)
 {
-    SetLinkElementName(varIndex, "IntercoIndirectCost");
+    setLinkElementName(varIndex, "IntercoIndirectCost");
 }
 
-void VariableNamer::SetShortTermStorageVariableName(unsigned varIndex,
+void VariableNamer::setShortTermStorageVariableName(unsigned varIndex,
                                                     const std::string& variableType,
                                                     const std::string& sts_name)
 {
     std::string location = areaLocation() + SEP + "ShortTermStorage" + "<" + sts_name + ">";
-    std::string time = TimeIdentifier(HOUR);
+    std::string time = timeIdentifier(HOUR);
     std::string name = BuildName(variableType, location, time);
     names()[varIndex] = name;
 }
 
 void VariableNamer::shortTermStorageInjection(unsigned varIndex, const std::string& sts_name)
 {
-    SetShortTermStorageVariableName(varIndex, "Injection", sts_name);
+    setShortTermStorageVariableName(varIndex, "Injection", sts_name);
 }
 
 void VariableNamer::shortTermStorageWithdrawal(unsigned varIndex, const std::string& sts_name)
 {
-    SetShortTermStorageVariableName(varIndex, "Withdrawal", sts_name);
+    setShortTermStorageVariableName(varIndex, "Withdrawal", sts_name);
 }
 
 void VariableNamer::shortTermStorageLevel(unsigned varIndex, const std::string& sts_name)
 {
-    SetShortTermStorageVariableName(varIndex, "Level", sts_name);
+    setShortTermStorageVariableName(varIndex, "Level", sts_name);
 }
 
 void VariableNamer::shortTermStorageOverflow(unsigned varIndex, const std::string& sts_name)
 {
-    SetShortTermStorageVariableName(varIndex, "Overflow", sts_name);
+    setShortTermStorageVariableName(varIndex, "Overflow", sts_name);
 }
 
 void VariableNamer::shortTermStorageCostVariationInjection(unsigned varIndex,
                                                            const std::string& sts_name)
 {
-    SetShortTermStorageVariableName(varIndex, "CostVariationInjection", sts_name);
+    setShortTermStorageVariableName(varIndex, "CostVariationInjection", sts_name);
 }
 
 void VariableNamer::shortTermStorageCostVariationWithdrawal(unsigned varIndex,
                                                             const std::string& sts_name)
 {
-    SetShortTermStorageVariableName(varIndex, "CostVariationWithdrawal", sts_name);
+    setShortTermStorageVariableName(varIndex, "CostVariationWithdrawal", sts_name);
 }
 
 void VariableNamer::hydroPower(unsigned varIndex)
 {
-    SetAreaElementNameHour(varIndex, "HydProd");
+    setAreaElementNameHour(varIndex, "HydProd");
 }
 
 void VariableNamer::hydroPowerDown(unsigned varIndex)
 {
-    SetAreaElementNameHour(varIndex, "HydProdDown");
+    setAreaElementNameHour(varIndex, "HydProdDown");
 }
 
 void VariableNamer::hydroPowerUp(unsigned varIndex)
 {
-    SetAreaElementNameHour(varIndex, "HydProdUp");
+    setAreaElementNameHour(varIndex, "HydProdUp");
 }
 
 void VariableNamer::pumping(unsigned varIndex)
 {
-    SetAreaElementNameHour(varIndex, "Pumping");
+    setAreaElementNameHour(varIndex, "Pumping");
 }
 
 void VariableNamer::hydroLevel(unsigned varIndex)
 {
-    SetAreaElementNameHour(varIndex, "HydroLevel");
+    setAreaElementNameHour(varIndex, "HydroLevel");
 }
 
 void VariableNamer::overflow(unsigned varIndex)
 {
-    SetAreaElementNameHour(varIndex, "Overflow");
+    setAreaElementNameHour(varIndex, "Overflow");
 }
 
 void VariableNamer::layerStorage(unsigned varIndex, int layerIndex)
 {
-    SetAreaVariableName(varIndex, "LayerStorage", layerIndex);
+    setAreaVariableName(varIndex, "LayerStorage", layerIndex);
 }
 
 void VariableNamer::finalStorage(unsigned varIndex)
 {
-    SetAreaElementNameHour(varIndex, "FinalStorage");
+    setAreaElementNameHour(varIndex, "FinalStorage");
 }
 
 void VariableNamer::unsuppliedEnergy(unsigned varIndex)
 {
     // TODO : what is "PositiveUnsuppliedEnergy" ?
     // We mean "UnsuppliedEnergy". To be replaced.
-    SetAreaElementNameHour(varIndex, "PositiveUnsuppliedEnergy");
+    setAreaElementNameHour(varIndex, "PositiveUnsuppliedEnergy");
 }
 
 void VariableNamer::spillage(unsigned varIndex)
 {
     // TODO : what is "NegativeUnsuppliedEnergy" ?
     // Should be replaced with "Spillage".
-    SetAreaElementNameHour(varIndex, "NegativeUnsuppliedEnergy");
+    setAreaElementNameHour(varIndex, "NegativeUnsuppliedEnergy");
 }
 
 void VariableNamer::areaBalance(unsigned varIndex)
 {
-    SetAreaElementNameHour(varIndex, "AreaBalance");
+    setAreaElementNameHour(varIndex, "AreaBalance");
 }
 
-void ConstraintNamer::FlowDissociation(unsigned constrIndex)
+void ConstraintNamer:: FlowDissociation(unsigned constrIndex)
 {
-    SetLinkElementName(constrIndex, "FlowDissociation");
+    setLinkElementName(constrIndex, "flowDissociation");
 }
 
-void ConstraintNamer::CsrFlowDissociation(unsigned constrIndex)
+void ConstraintNamer::csrFlowDissociation(unsigned constrIndex)
 {
-    SetLinkElementName(constrIndex, "CsrFlowDissociation");
+    setLinkElementName(constrIndex, "csrFlowDissociation");
 }
 
-void ConstraintNamer::CsrAreaBalance(unsigned constrIndex)
+void ConstraintNamer::csrAreaBalance(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "CsrAreaBalance");
+    setAreaElementNameHour(constrIndex, "csrAreaBalance");
 }
 
 void ConstraintNamer::areaBalance(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "AreaBalance");
+    setAreaElementNameHour(constrIndex, "AreaBalance");
 }
 
-void ConstraintNamer::FictiveLoads(unsigned constrIndex)
+void ConstraintNamer:: FictiveLoads(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "FictiveLoads");
+    setAreaElementNameHour(constrIndex, "fictiveLoads");
 }
 
-void ConstraintNamer::MaxUnsuppliedEnergy(unsigned constrIndex)
+void ConstraintNamer:: MaxUnsuppliedEnergy(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "MaxUnsupEnergy");
+    setAreaElementNameHour(constrIndex, "MaxUnsupEnergy");
 }
 
-void ConstraintNamer::HydroPower(unsigned constrIndex)
+void ConstraintNamer::hydroPower(unsigned constrIndex)
 {
-    SetAreaElementNameWeek(constrIndex, "HydroPower");
+    setAreaElementNameWeek(constrIndex, "HydroPower");
 }
 
-void ConstraintNamer::HydroPowerSmoothingUsingVariationSum(unsigned constrIndex)
+void ConstraintNamer:: HydroPowerSmoothingUsingVariationSum(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "HydroPowerSmoothingUsingVariationSum");
+    setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationSum");
 }
 
-void ConstraintNamer::HydroPowerSmoothingUsingVariationMaxDown(unsigned constrIndex)
+void ConstraintNamer:: HydroPowerSmoothingUsingVariationMaxDown(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "HydroPowerSmoothingUsingVariationMaxDown");
+    setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationMaxDown");
 }
 
-void ConstraintNamer::HydroPowerSmoothingUsingVariationMaxUp(unsigned constrIndex)
+void ConstraintNamer:: HydroPowerSmoothingUsingVariationMaxUp(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "HydroPowerSmoothingUsingVariationMaxUp");
+    setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationMaxUp");
 }
 
-void ConstraintNamer::MinHydroPower(unsigned constrIndex)
+void ConstraintNamer:: MinHydroPower(unsigned constrIndex)
 {
-    SetAreaElementNameWeek(constrIndex, "MinHydroPower");
+    setAreaElementNameWeek(constrIndex, "minHydroPower");
 }
 
-void ConstraintNamer::MaxHydroPower(unsigned constrIndex)
+void ConstraintNamer:: MaxHydroPower(unsigned constrIndex)
 {
-    SetAreaElementNameWeek(constrIndex, "MaxHydroPower");
+    setAreaElementNameWeek(constrIndex, "maxHydroPower");
 }
 
-void ConstraintNamer::MaxPumping(unsigned constrIndex)
+void ConstraintNamer:: MaxPumping(unsigned constrIndex)
 {
-    SetAreaElementNameWeek(constrIndex, "MaxPumping");
+    setAreaElementNameWeek(constrIndex, "maxPumping");
 }
 
-void ConstraintNamer::AreaHydroLevel(unsigned constrIndex)
+void ConstraintNamer:: AreaHydroLevel(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "AreaHydroLevel");
+    setAreaElementNameHour(constrIndex, "areaHydroLevel");
 }
 
-void ConstraintNamer::FinalStockEquivalent(unsigned constrIndex)
+void ConstraintNamer:: FinalStockEquivalent(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "FinalStockEquivalent");
+    setAreaElementNameHour(constrIndex, "finalStockEquivalent");
 }
 
-void ConstraintNamer::FinalStockExpression(unsigned constrIndex)
+void ConstraintNamer:: FinalStockExpression(unsigned constrIndex)
 {
-    SetAreaElementNameHour(constrIndex, "FinalStockExpression");
+    setAreaElementNameHour(constrIndex, "finalStockExpression");
 }
 
-void ConstraintNamer::BindingConstraint(unsigned constrIndex,
+void ConstraintNamer::bindingConstraint(unsigned constrIndex,
                                         const std::string& name,
                                         const std::pair<std::string, std::string>& timeGranularity)
 {
-    std::string time = TimeIdentifier(timeGranularity.first);
+    std::string time = timeIdentifier(timeGranularity.first);
     std::string new_name = BuildName(name, timeGranularity.second, time);
     names()[constrIndex] = new_name;
 }
 
-void ConstraintNamer::BindingConstraintHour(unsigned constrIndex, const std::string& name)
+void ConstraintNamer:: BindingConstraintHour(unsigned constrIndex, const std::string& name)
 {
     BindingConstraint(constrIndex, name, {HOUR, "hourly"});
 }
 
-void ConstraintNamer::BindingConstraintDay(unsigned constrIndex, const std::string& name)
+void ConstraintNamer:: BindingConstraintDay(unsigned constrIndex, const std::string& name)
 {
     BindingConstraint(constrIndex, name, {DAY, "daily"});
 }
 
-void ConstraintNamer::BindingConstraintWeek(unsigned constrIndex, const std::string& name)
+void ConstraintNamer:: BindingConstraintWeek(unsigned constrIndex, const std::string& name)
 {
     BindingConstraint(constrIndex, name, {WEEK, "weekly"});
 }
 
-void ConstraintNamer::NbUnitsOutageLessThanNbUnitsStop(unsigned constrIndex,
+void ConstraintNamer:: NbUnitsOutageLessThanNbUnitsStop(unsigned constrIndex,
                                                        const std::string& clusterName)
 {
-    SetThermalClusterElementName(constrIndex, "NbUnitsOutageLessThanNbUnitsStop", clusterName);
+    setThermalClusterElementName(constrIndex, "nbUnitsOutageLessThanNbUnitsStop", clusterName);
 }
 
-void ConstraintNamer::NbDispUnitsMinBoundSinceMinUpTime(unsigned constrIndex,
+void ConstraintNamer:: NbDispUnitsMinBoundSinceMinUpTime(unsigned constrIndex,
                                                         const std::string& clusterName)
 {
-    SetThermalClusterElementName(constrIndex, "NbDispUnitsMinBoundSinceMinUpTime", clusterName);
+    setThermalClusterElementName(constrIndex, "nbDispUnitsMinBoundSinceMinUpTime", clusterName);
 }
 
-void ConstraintNamer::MinDownTime(unsigned constrIndex, const std::string& clusterName)
+void ConstraintNamer:: MinDownTime(unsigned constrIndex, const std::string& clusterName)
 {
-    SetThermalClusterElementName(constrIndex, "MinDownTime", clusterName);
+    setThermalClusterElementName(constrIndex, "minDownTime", clusterName);
 }
 
-void ConstraintNamer::PMaxDispatchableGeneration(unsigned constrIndex,
+void ConstraintNamer:: PMaxDispatchableGeneration(unsigned constrIndex,
                                                  const std::string& clusterName)
 {
-    SetThermalClusterElementName(constrIndex, "PMaxDispatchableGeneration", clusterName);
+    setThermalClusterElementName(constrIndex, "pMaxDispatchableGeneration", clusterName);
 }
 
-void ConstraintNamer::PMinDispatchableGeneration(unsigned constrIndex,
+void ConstraintNamer:: PMinDispatchableGeneration(unsigned constrIndex,
                                                  const std::string& clusterName)
 {
-    SetThermalClusterElementName(constrIndex, "PMinDispatchableGeneration", clusterName);
+    setThermalClusterElementName(constrIndex, "pMinDispatchableGeneration", clusterName);
 }
 
-void ConstraintNamer::ConsistenceNODU(unsigned constrIndex, const std::string& clusterName)
+void ConstraintNamer:: ConsistenceNODU(unsigned constrIndex, const std::string& clusterName)
 {
-    SetThermalClusterElementName(constrIndex, "ConsistenceNODU", clusterName);
+    setThermalClusterElementName(constrIndex, "consistenceNODU", clusterName);
 }
 
 void ConstraintNamer::shortTermStorageLevel(unsigned constrIndex, const std::string& sts_name)
 {
     std::string location = areaLocation() + SEP + "ShortTermStorage" + "<" + sts_name + ">";
-    std::string time = TimeIdentifier(HOUR);
+    std::string time = timeIdentifier(HOUR);
     std::string name = BuildName("Level", location, time);
     names()[constrIndex] = name;
 }
 
-void ConstraintNamer::ShortTermStorageCostVariation(const std::string& constraint_name,
+void ConstraintNamer:: ShortTermStorageCostVariation(const std::string& constraint_name,
                                                     unsigned constrIndex,
                                                     const std::string& sts_name)
 {
     std::string location = areaLocation() + SEP + "ShortTermStorage" + "<" + sts_name + ">";
-    std::string time = TimeIdentifier(HOUR);
+    std::string time = timeIdentifier(HOUR);
     std::string name = BuildName(constraint_name, location, time);
     names()[constrIndex] = name;
 }
 
-void ConstraintNamer::ShortTermStorageCumulation(const std::string& constraint_type,
+void ConstraintNamer:: ShortTermStorageCumulation(const std::string& constraint_type,
                                                  unsigned constrIndex,
                                                  const std::string& sts_name,
                                                  const std::string& constraint_name)
 {
     std::string location = areaLocation() + SEP + "ShortTermStorage" + "<" + sts_name + ">" + SEP
                            + "Constraint" + "<" + constraint_name + ">";
-    std::string time = TimeIdentifier(WEEK);
+    std::string time = timeIdentifier(WEEK);
     std::string name = BuildName(constraint_type, location, time);
     names()[constrIndex] = name;
 }

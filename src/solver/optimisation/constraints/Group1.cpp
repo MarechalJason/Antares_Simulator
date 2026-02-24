@@ -70,7 +70,7 @@ void Group1::BuildConstraints()
     FictitiousLoad fictitiousLoad(builder_, fictitiousLoadData);
 
     auto maxUnsupEnergyData = GetMaxUnsupEnergyData();
-    MaxUnsuppliedEnergy maxUnsuppliedEnergy(builder_, maxUnsupEnergyData);
+    maxUnsuppliedEnergy MaxUnsuppliedEnergy(builder_, maxUnsupEnergyData);
 
     auto shortTermStorageData = GetShortTermStorageData();
     ShortTermStorageLevel shortTermStorageLevel(builder_, shortTermStorageData);
@@ -89,14 +89,14 @@ void Group1::BuildConstraints()
       shortTermStorageData);
 
     auto shortTermStorageCumulativeConstraintData = GetShortTermStorageCumulativeConstraintData();
-    ShortTermStorageCumulation shortTermStorageCumulation(builder_,
+    shortTermStorageCumulation ShortTermStorageCumulation(builder_,
                                                           shortTermStorageCumulativeConstraintData);
 
     auto flowDissociationData = GetFlowDissociationData();
-    FlowDissociation flowDissociation(builder_, flowDissociationData);
+    flowDissociation FlowDissociation(builder_, flowDissociationData);
 
     auto bindingConstraintHourData = GetBindingConstraintHourData();
-    BindingConstraintHour bindingConstraintHour(builder_, bindingConstraintHourData);
+    bindingConstraintHour BindingConstraintHour(builder_, bindingConstraintHourData);
 
     int nombreDePasDeTempsPourUneOptimisation = problemeHebdo_
                                                   ->NombreDePasDeTempsPourUneOptimisation;

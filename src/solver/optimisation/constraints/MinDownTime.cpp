@@ -37,10 +37,10 @@ void MinDownTime::add(int area, int index, int timeStep)
               .NumeroDeContrainteDesContraintesDeDureeMinDArret[cluster]
               = builder.data.nombreDeContraintes;
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateArea(builder.data.NomsDesPays[area]);
+            namer.updateArea(builder.data.NomsDesPays[area]);
 
-            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-            namer.MinDownTime(builder.data.nombreDeContraintes,
+            namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+            namer.minDownTime(builder.data.nombreDeContraintes,
                               data.PaliersThermiquesDuPays[area].NomsDesPaliersThermiques[index]);
 
             builder.build();

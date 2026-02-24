@@ -24,9 +24,9 @@ MaxHydroPowerData MinMaxHydroPowerGroup::GetMaxHydroPowerData()
 void MinMaxHydroPowerGroup::BuildConstraints()
 {
     auto minHydroPowerData = GetMinHydroPowerData();
-    MinHydroPower minHydroPower(builder_, minHydroPowerData);
+    minHydroPower MinHydroPower(builder_, minHydroPowerData);
     auto maxHydroPowerData = GetMaxHydroPowerData();
-    MaxHydroPower maxHydroPower(builder_, maxHydroPowerData);
+    maxHydroPower MaxHydroPower(builder_, maxHydroPowerData);
 
     for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {

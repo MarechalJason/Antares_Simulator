@@ -30,10 +30,10 @@ void ConsistenceNumberOfDispatchableUnits::add(int area, int index, int timeStep
         if (builder.numberOfVariables() > 0)
         {
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateArea(builder.data.NomsDesPays[area]);
+            namer.updateArea(builder.data.NomsDesPays[area]);
 
-            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-            namer.ConsistenceNODU(
+            namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+            namer.consistenceNODU(
               builder.data.nombreDeContraintes,
               data.PaliersThermiquesDuPays[area].NomsDesPaliersThermiques[index]);
 

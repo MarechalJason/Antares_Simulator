@@ -21,7 +21,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireCoutsDeDemarra
     const bool intVariables = problemeHebdo->OptimisationAvecVariablesEntieres;
     for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
     {
-        variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
+        variableNamer.updateArea(problemeHebdo->NomsDesPays[pays]);
         const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo
                                                               ->PaliersThermiquesDuPays[pays];
 
@@ -34,7 +34,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireCoutsDeDemarra
 
             for (int pdt = 0; pdt < nombreDePasDeTempsPourUneOptimisation; pdt++)
             {
-                variableNamer.UpdateTimeStep(problemeHebdo->weekInTheYear * 168 + pdt);
+                variableNamer.updateTimeStep(problemeHebdo->weekInTheYear * 168 + pdt);
                 if (Simulation)
                 {
                     nombreDeVariables += 4;

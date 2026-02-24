@@ -12,7 +12,7 @@ MaxPumpingData MaxPumpingGroup::GetMaxPumpingData()
 void MaxPumpingGroup::BuildConstraints()
 {
     auto maxPumpingData = GetMaxPumpingData();
-    MaxPumping maxPumping(builder_, maxPumpingData);
+    maxPumping MaxPumping(builder_, maxPumpingData);
 
     for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {

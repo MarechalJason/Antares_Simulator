@@ -12,7 +12,7 @@ AreaHydroLevelData AreaHydroLevelGroup::GetAreaHydroLevelData()
 void AreaHydroLevelGroup::BuildConstraints()
 {
     auto areaHydroLevelData = GetAreaHydroLevelData();
-    AreaHydroLevel areaHydroLevel(builder_, areaHydroLevelData);
+    areaHydroLevel AreaHydroLevel(builder_, areaHydroLevelData);
 
     for (int timeStep = 0; timeStep < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; timeStep++)
     {

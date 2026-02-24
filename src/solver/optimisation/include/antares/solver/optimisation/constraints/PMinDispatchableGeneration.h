@@ -5,7 +5,7 @@
 #include "ConstraintBuilder.h"
 
 /*!
- * represent 'PMinDispatchableGeneration' Constraint type
+ * represent 'pMinDispatchableGeneration' Constraint type
  */
 class PMinDispatchableGeneration final: private ConstraintFactory
 {

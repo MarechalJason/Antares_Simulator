@@ -21,9 +21,9 @@ void NbUnitsOutageLessThanNbUnitsStop::add(int area, int index, int timeStep)
         if (builder.numberOfVariables() > 0)
         {
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateArea(builder.data.NomsDesPays[area]);
-            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-            namer.NbUnitsOutageLessThanNbUnitsStop(
+            namer.updateArea(builder.data.NomsDesPays[area]);
+            namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+            namer.nbUnitsOutageLessThanNbUnitsStop(
               builder.data.nombreDeContraintes,
               data.PaliersThermiquesDuPays[area].NomsDesPaliersThermiques[index]);
 

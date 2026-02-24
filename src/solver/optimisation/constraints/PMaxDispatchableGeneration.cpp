@@ -19,10 +19,10 @@ void PMaxDispatchableGeneration::add(int area, int index, int timeStep)
         {
             ConstraintNamer namer(builder.data.NomDesContraintes);
 
-            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-            namer.UpdateArea(builder.data.NomsDesPays[area]);
+            namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+            namer.updateArea(builder.data.NomsDesPays[area]);
 
-            namer.PMaxDispatchableGeneration(
+            namer.pMaxDispatchableGeneration(
               builder.data.nombreDeContraintes,
               data.PaliersThermiquesDuPays[area].NomsDesPaliersThermiques[index]);
         }

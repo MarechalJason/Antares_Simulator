@@ -41,10 +41,10 @@ void NbDispUnitsMinBoundSinceMinUpTime::add(int area, int index, int timeStep)
               = builder.data.nombreDeContraintes;
 
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateArea(builder.data.NomsDesPays[area]);
+            namer.updateArea(builder.data.NomsDesPays[area]);
 
-            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-            namer.NbDispUnitsMinBoundSinceMinUpTime(
+            namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+            namer.nbDispUnitsMinBoundSinceMinUpTime(
               builder.data.nombreDeContraintes,
               data.PaliersThermiquesDuPays[area].NomsDesPaliersThermiques[index]);
             builder.build();

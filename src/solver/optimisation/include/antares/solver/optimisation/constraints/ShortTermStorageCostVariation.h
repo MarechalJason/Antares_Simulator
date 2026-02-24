@@ -30,7 +30,7 @@ protected:
 class ShortTermStorageCostVariationInjectionBackward final: ShortTermStorageCostVariation
 {
 public:
-    using ShortTermStorageCostVariation::ShortTermStorageCostVariation;
+    using ShortTermStorageCostVariation:: ShortTermStorageCostVariation;
 
     void add(unsigned int timeStep, unsigned int area) override;
 
@@ -44,7 +44,7 @@ public:
 class ShortTermStorageCostVariationInjectionForward final: ShortTermStorageCostVariation
 {
 public:
-    using ShortTermStorageCostVariation::ShortTermStorageCostVariation;
+    using ShortTermStorageCostVariation:: ShortTermStorageCostVariation;
 
     void add(unsigned int timeStep, unsigned int area) override;
 
@@ -58,7 +58,7 @@ public:
 class ShortTermStorageCostVariationWithdrawalBackward final: ShortTermStorageCostVariation
 {
 public:
-    using ShortTermStorageCostVariation::ShortTermStorageCostVariation;
+    using ShortTermStorageCostVariation:: ShortTermStorageCostVariation;
 
     void add(unsigned int timeStep, unsigned int area) override;
 
@@ -72,7 +72,7 @@ public:
 class ShortTermStorageCostVariationWithdrawalForward final: ShortTermStorageCostVariation
 {
 public:
-    using ShortTermStorageCostVariation::ShortTermStorageCostVariation;
+    using ShortTermStorageCostVariation:: ShortTermStorageCostVariation;
 
     void add(unsigned int timeStep, unsigned int area) override;
 

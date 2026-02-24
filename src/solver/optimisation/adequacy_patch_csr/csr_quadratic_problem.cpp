@@ -33,7 +33,7 @@ void CsrQuadraticProblem::setConstraintsOnFlows(ConstraintBuilder& builder)
       .PaysOrigineDeLInterconnexion = problemeHebdo_->PaysOrigineDeLInterconnexion,
       .PaysExtremiteDeLInterconnexion = problemeHebdo_->PaysExtremiteDeLInterconnexion,
       .hour = hour};
-    CsrFlowDissociation csrFlowDissociation(builder, csrFlowDissociationData);
+    csrFlowDissociation csrFlowDissociation(builder, csrFlowDissociationData);
     csrFlowDissociation.add();
 }
 
@@ -62,7 +62,7 @@ void CsrQuadraticProblem::setNodeBalanceConstraints(ConstraintBuilder& builder)
       .numberOfConstraintCsrAreaBalance = hourlyCsrProblem_.numberOfConstraintCsrAreaBalance,
       .NombreDePays = problemeHebdo_->NombreDePays};
 
-    CsrAreaBalance csrAreaBalance(builder, csrAreaBalanceData);
+    csrAreaBalance csrAreaBalance(builder, csrAreaBalanceData);
     csrAreaBalance.add();
 }
 

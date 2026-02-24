@@ -35,8 +35,8 @@ void CsrBindingConstraintHour::add(int CntCouplante)
         data.numberOfConstraintCsrHourlyBinding[CntCouplante] = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateTimeStep(data.hour);
-        namer.BindingConstraintHour(
+        namer.updateTimeStep(data.hour);
+        namer.bindingConstraintHour(
           builder.data.nombreDeContraintes,
           data.MatriceDesContraintesCouplantes[CntCouplante].NomDeLaContrainteCouplante);
         builder.setOperator(

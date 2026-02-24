@@ -3,12 +3,12 @@
 
 #include "antares/solver/optimisation/adequacy_patch_csr/constraints/CsrFlowDissociation.h"
 
-void CsrFlowDissociation::add()
+void csrFlowDissociation::add()
 {
     builder.updateHourWithinWeek(data.hour);
 
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    namer.UpdateTimeStep(data.hour);
+    namer.updateTimeStep(data.hour);
     // constraint: Flow = Flow_direct - Flow_indirect (+ loop flow) for links between nodes
     // of type 2.
     for (uint32_t interco = 0; interco < data.NombreDInterconnexions; interco++)
@@ -28,7 +28,7 @@ void CsrFlowDissociation::add()
             const auto& destination = builder.data
                                         .NomsDesPays[data.PaysExtremiteDeLInterconnexion[interco]];
             namer.updateExtremities(origin, destination);
-            namer.CsrFlowDissociation(builder.data.nombreDeContraintes);
+            namer.csrFlowDissociation(builder.data.nombreDeContraintes);
             builder.equalTo();
             builder.build();
         }

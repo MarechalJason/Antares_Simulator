@@ -54,8 +54,8 @@ void BindingConstraintWeek::add(int bindingConstraintIndex)
                                                                       .nombreDeContraintes;
 
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    namer.UpdateTimeStep(semaine);
-    namer.BindingConstraintWeek(builder.data.nombreDeContraintes,
+    namer.updateTimeStep(semaine);
+    namer.bindingConstraintWeek(builder.data.nombreDeContraintes,
                                 MatriceDesContraintesCouplantes.NomDeLaContrainteCouplante);
     builder.build();
 }

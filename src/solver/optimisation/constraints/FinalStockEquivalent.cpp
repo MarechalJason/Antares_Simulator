@@ -13,9 +13,9 @@ void FinalStockEquivalent::add(int area)
         data.NumeroDeContrainteEquivalenceStockFinal[area] = builder.data.nombreDeContraintes;
         ConstraintNamer namer(builder.data.NomDesContraintes);
 
-        namer.UpdateArea(builder.data.NomsDesPays[area]);
-        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-        namer.FinalStockEquivalent(builder.data.nombreDeContraintes);
+        namer.updateArea(builder.data.NomsDesPays[area]);
+        namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+        namer.finalStockEquivalent(builder.data.nombreDeContraintes);
 
         builder.updateHourWithinWeek(timeStep)
           .finalStorage(area, 1.0)

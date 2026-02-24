@@ -16,9 +16,9 @@ void AreaHydroLevel::add(int area, int timeStep)
         }
         ConstraintNamer namer(builder.data.NomDesContraintes);
 
-        namer.UpdateArea(builder.data.NomsDesPays[area]);
-        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-        namer.AreaHydroLevel(builder.data.nombreDeContraintes);
+        namer.updateArea(builder.data.NomsDesPays[area]);
+        namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+        namer.areaHydroLevel(builder.data.nombreDeContraintes);
         data.CorrespondanceCntNativesCntOptim[timeStep].NumeroDeContrainteDesNiveauxPays[area]
           = builder.data.nombreDeContraintes;
         builder.updateHourWithinWeek(timeStep)

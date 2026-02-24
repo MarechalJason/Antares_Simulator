@@ -16,9 +16,9 @@ void MaxPumping::add(int area)
         }
         data.NumeroDeContrainteMaxPompage[area] = builder.data.nombreDeContraintes;
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateArea(builder.data.NomsDesPays[area]);
-        namer.UpdateTimeStep(builder.data.weekInTheYear);
-        namer.MaxPumping(builder.data.nombreDeContraintes);
+        namer.updateArea(builder.data.NomsDesPays[area]);
+        namer.updateTimeStep(builder.data.weekInTheYear);
+        namer.maxPumping(builder.data.nombreDeContraintes);
         builder.lessThan().build();
     }
     else

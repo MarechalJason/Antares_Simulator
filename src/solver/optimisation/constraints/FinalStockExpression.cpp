@@ -19,9 +19,9 @@ void FinalStockExpression::add(int area)
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
 
-        namer.UpdateArea(builder.data.NomsDesPays[area]);
-        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-        namer.FinalStockExpression(builder.data.nombreDeContraintes);
+        namer.updateArea(builder.data.NomsDesPays[area]);
+        namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+        namer.finalStockExpression(builder.data.nombreDeContraintes);
         builder.equalTo().build();
     }
 }

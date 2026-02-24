@@ -18,7 +18,7 @@ NbUnitsOutageLessThanNbUnitsStopGroup::GetNbUnitsOutageLessThanNbUnitsStopDataFr
 void NbUnitsOutageLessThanNbUnitsStopGroup::BuildConstraints()
 {
     auto data = GetNbUnitsOutageLessThanNbUnitsStopDataFromProblemHebdo();
-    NbUnitsOutageLessThanNbUnitsStop nbUnitsOutageLessThanNbUnitsStop(builder_, data);
+    nbUnitsOutageLessThanNbUnitsStop NbUnitsOutageLessThanNbUnitsStop(builder_, data);
     for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {
         const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo_

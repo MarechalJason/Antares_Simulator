@@ -6,9 +6,9 @@
 void HydroPowerSmoothingUsingVariationMaxUp::add(int area, int timeStep)
 {
     ConstraintNamer namer(builder.data.NomDesContraintes);
-    namer.UpdateArea(builder.data.NomsDesPays[area]);
-    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-    namer.HydroPowerSmoothingUsingVariationMaxUp(builder.data.nombreDeContraintes);
+    namer.updateArea(builder.data.NomsDesPays[area]);
+    namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+    namer.hydroPowerSmoothingUsingVariationMaxUp(builder.data.nombreDeContraintes);
 
     builder.updateHourWithinWeek(timeStep)
       .hydroPower(area, 1.0)

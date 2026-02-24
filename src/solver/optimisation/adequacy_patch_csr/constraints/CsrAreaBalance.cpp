@@ -3,7 +3,7 @@
 
 #include "antares/solver/optimisation/adequacy_patch_csr/constraints/CsrAreaBalance.h"
 
-void CsrAreaBalance::add()
+void csrAreaBalance::add()
 {
     for (uint32_t Area = 0; Area < data.NombreDePays; ++Area)
     {
@@ -62,9 +62,9 @@ void CsrAreaBalance::add()
         data.numberOfConstraintCsrAreaBalance[Area] = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateTimeStep(data.hour);
-        namer.UpdateArea(builder.data.NomsDesPays[Area]);
-        namer.CsrAreaBalance(builder.data.nombreDeContraintes);
+        namer.updateTimeStep(data.hour);
+        namer.updateArea(builder.data.NomsDesPays[Area]);
+        namer.csrAreaBalance(builder.data.nombreDeContraintes);
         builder.equalTo();
         builder.build();
     }

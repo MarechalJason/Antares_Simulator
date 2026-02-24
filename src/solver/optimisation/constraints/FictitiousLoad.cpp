@@ -10,9 +10,9 @@ void FictitiousLoad::add(int timeStep, int area)
 
     ConstraintNamer namer(builder.data.NomDesContraintes);
 
-    namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-    namer.UpdateArea(builder.data.NomsDesPays[area]);
-    namer.FictiveLoads(builder.data.nombreDeContraintes);
+    namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+    namer.updateArea(builder.data.NomsDesPays[area]);
+    namer.fictiveLoads(builder.data.nombreDeContraintes);
 
     builder.updateHourWithinWeek(timeStep);
     ExportPaliers(data.PaliersThermiquesDuPays[area], builder);

@@ -46,7 +46,7 @@ static void shortTermStorageCumulationRHS(
                 for (const auto& constraint: additionalConstraints->constraints)
                 {
                     const int cnt = CorrespondancesDesContraintesHebdomadaires
-                                      .ShortTermStorageCumulation[constraint.globalIndex];
+                                      .shortTermStorageCumulation[constraint.globalIndex];
 
                     SecondMembre[cnt] = std::accumulate(
                       constraint.hours.begin(),

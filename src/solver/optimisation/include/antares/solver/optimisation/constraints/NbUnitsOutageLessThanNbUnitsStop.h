@@ -12,7 +12,7 @@ struct NbUnitsOutageLessThanNbUnitsStopData
 };
 
 /*!
- * represent 'NbUnitsOutageLessThanNbUnitsStop' type
+ * represent 'nbUnitsOutageLessThanNbUnitsStop' type
  */
 class NbUnitsOutageLessThanNbUnitsStop final: private ConstraintFactory
 {

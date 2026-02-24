@@ -5,7 +5,7 @@
 #include "ConstraintBuilder.h"
 
 /*!
- * represent 'PMaxDispatchableGeneration' Constraint type
+ * represent 'pMaxDispatchableGeneration' Constraint type
  */
 class PMaxDispatchableGeneration final: private ConstraintFactory
 {

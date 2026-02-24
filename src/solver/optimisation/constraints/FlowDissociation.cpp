@@ -15,8 +15,8 @@ void FlowDissociation::add(int timeStep, int interconnection)
                                    .NomsDesPays[data.PaysExtremiteDeLInterconnexion[interconnection]];
         ConstraintNamer namer(builder.data.NomDesContraintes);
         namer.updateExtremities(origin, destination);
-        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
-        namer.FlowDissociation(builder.data.nombreDeContraintes);
+        namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+        namer.flowDissociation(builder.data.nombreDeContraintes);
 
         builder.updateHourWithinWeek(timeStep);
         builder.ntcDirect(interconnection, 1.0)

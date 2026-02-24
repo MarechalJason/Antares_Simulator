@@ -7,8 +7,8 @@ void ShortTermStorageLevel::add(int timeStep, int area)
 {
     ConstraintNamer namer(builder.data.NomDesContraintes);
     const int hourInTheYear = builder.data.weekInTheYear * 168 + timeStep;
-    namer.UpdateTimeStep(hourInTheYear);
-    namer.UpdateArea(builder.data.NomsDesPays[area]);
+    namer.updateTimeStep(hourInTheYear);
+    namer.updateArea(builder.data.NomsDesPays[area]);
 
     builder.updateHourWithinWeek(timeStep);
     for (const auto& storage: data.ShortTermStorage[area])

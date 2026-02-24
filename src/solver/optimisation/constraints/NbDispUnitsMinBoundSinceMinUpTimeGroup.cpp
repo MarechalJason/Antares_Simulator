@@ -18,7 +18,7 @@ NbDispUnitsMinBoundSinceMinUpTimeGroup::GetNbDispUnitsMinBoundSinceMinUpTimeData
 void NbDispUnitsMinBoundSinceMinUpTimeGroup::BuildConstraints()
 {
     auto data = GetNbDispUnitsMinBoundSinceMinUpTimeDataFromProblemHebdo();
-    NbDispUnitsMinBoundSinceMinUpTime nbDispUnitsMinBoundSinceMinUpTime(builder_, data);
+    nbDispUnitsMinBoundSinceMinUpTime NbDispUnitsMinBoundSinceMinUpTime(builder_, data);
     for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {
         const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo_

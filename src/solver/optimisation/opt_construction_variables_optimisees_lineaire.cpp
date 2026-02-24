@@ -23,7 +23,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
 
     for (int pdt = 0; pdt < NombreDePasDeTempsPourUneOptimisation; pdt++)
     {
-        variableNamer.UpdateTimeStep(problemeHebdo->weekInTheYear * 168 + pdt);
+        variableNamer.updateTimeStep(problemeHebdo->weekInTheYear * 168 + pdt);
 
         for (uint32_t interco = 0; interco < problemeHebdo->NombreDInterconnexions; interco++)
         {
@@ -57,7 +57,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
         {
             const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo
                                                                   ->PaliersThermiquesDuPays[pays];
-            variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
+            variableNamer.updateArea(problemeHebdo->NomsDesPays[pays]);
             for (int index = 0; index < PaliersThermiquesDuPays.NombreDePaliersThermiques; index++)
             {
                 const int palier = PaliersThermiquesDuPays
@@ -143,7 +143,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
 
         for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
         {
-            variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
+            variableNamer.updateArea(problemeHebdo->NomsDesPays[pays]);
             if (problemeHebdo->CaracteristiquesHydrauliques[pays].PresenceDHydrauliqueModulable)
             {
                 variableManager.hydroPower(pays, pdt) = NombreDeVariables;
@@ -231,9 +231,9 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
 
     for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
     {
-        variableNamer.UpdateTimeStep(problemeHebdo->weekInTheYear * 168
+        variableNamer.updateTimeStep(problemeHebdo->weekInTheYear * 168
                                      + NombreDePasDeTempsPourUneOptimisation - 1);
-        variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
+        variableNamer.updateArea(problemeHebdo->NomsDesPays[pays]);
         if (problemeHebdo->CaracteristiquesHydrauliques[pays].AccurateWaterValue)
         {
             variableManager.finalStorage(pays) = NombreDeVariables;
