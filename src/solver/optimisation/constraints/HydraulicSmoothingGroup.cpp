@@ -9,9 +9,9 @@
 
 void HydraulicSmoothingGroup::BuildConstraints()
 {
-    hydroPowerSmoothingUsingVariationSum HydroPowerSmoothingUsingVariationSum(builder_);
-    hydroPowerSmoothingUsingVariationMaxDown HydroPowerSmoothingUsingVariationMaxDown(builder_);
-    hydroPowerSmoothingUsingVariationMaxUp HydroPowerSmoothingUsingVariationMaxUp(builder_);
+    HydroPowerSmoothingUsingVariationSum hydroPowerSmoothingUsingVariationSum(builder_);
+    HydroPowerSmoothingUsingVariationMaxDown hydroPowerSmoothingUsingVariationMaxDown(builder_);
+    HydroPowerSmoothingUsingVariationMaxUp hydroPowerSmoothingUsingVariationMaxUp(builder_);
 
     if (problemeHebdo_->TypeDeLissageHydraulique == LISSAGE_HYDRAULIQUE_SUR_SOMME_DES_VARIATIONS)
     {

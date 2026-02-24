@@ -7,7 +7,7 @@
 #include "ConstraintGroup.h"
 #include "FictitiousLoad.h"
 #include "FlowDissociation.h"
-#include "maxUnsuppliedEnergy.h"
+#include "MaxUnsuppliedEnergy.h"
 #include "ShortTermStorageLevel.h"
 
 class Group1 final: public ConstraintGroup

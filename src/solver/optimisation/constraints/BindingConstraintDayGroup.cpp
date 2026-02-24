@@ -18,7 +18,7 @@ BindingConstraintDayData BindingConstraintDayGroup::GetBindingConstraintDayDataF
 void BindingConstraintDayGroup::BuildConstraints()
 {
     auto bindingConstraintDayData = GetBindingConstraintDayDataFromProblemHebdo();
-    bindingConstraintDay BindingConstraintDay(builder_, bindingConstraintDayData);
+    BindingConstraintDay bindingConstraintDay(builder_, bindingConstraintDayData);
     for (uint32_t bindingConstraintIndex = 0; bindingConstraintIndex < problemeHebdo_->NombreDeContraintesCouplantes;
          bindingConstraintIndex++)
     {

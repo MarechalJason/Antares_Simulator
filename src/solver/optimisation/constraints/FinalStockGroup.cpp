@@ -20,9 +20,9 @@ FinalStockExpressionData FinalStockGroup::GetFinalStockExpressionData()
 void FinalStockGroup::BuildConstraints()
 {
     auto finalStockEquivalentData = GetFinalStockEquivalentData();
-    finalStockEquivalent FinalStockEquivalent(builder_, finalStockEquivalentData);
+    FinalStockEquivalent finalStockEquivalent(builder_, finalStockEquivalentData);
     auto finalStockExpressionData = GetFinalStockExpressionData();
-    finalStockExpression FinalStockExpression(builder_, finalStockExpressionData);
+    FinalStockExpression finalStockExpression(builder_, finalStockExpressionData);
 
     /* For each area with ad hoc properties, two possible sets of two additional constraints */
     for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)

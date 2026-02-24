@@ -10,8 +10,8 @@
 void PMinMaxDispatchableGenerationGroup::BuildConstraints()
 {
     auto data = GetStartUpCostsDataFromProblemHebdo();
-    pMaxDispatchableGeneration PMaxDispatchableGeneration(builder_, data);
-    pMinDispatchableGeneration PMinDispatchableGeneration(builder_, data);
+    PMaxDispatchableGeneration pMaxDispatchableGeneration(builder_, data);
+    PMinDispatchableGeneration pMinDispatchableGeneration(builder_, data);
     for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {
         const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo_

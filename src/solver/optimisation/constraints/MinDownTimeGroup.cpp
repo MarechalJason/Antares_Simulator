@@ -17,7 +17,7 @@ MinDownTimeData MinDownTimeGroup::GetMinDownTimeDataFromProblemHebdo()
 void MinDownTimeGroup::BuildConstraints()
 {
     auto data = GetMinDownTimeDataFromProblemHebdo();
-    minDownTime MinDownTime(builder_, data);
+    MinDownTime minDownTime(builder_, data);
     for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {
         const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo_

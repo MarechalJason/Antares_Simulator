@@ -3,7 +3,7 @@
 
 #include "antares/solver/optimisation/adequacy_patch_csr/constraints/CsrAreaBalance.h"
 
-void csrAreaBalance::add()
+void CsrAreaBalance::add()
 {
     for (uint32_t Area = 0; Area < data.NombreDePays; ++Area)
     {

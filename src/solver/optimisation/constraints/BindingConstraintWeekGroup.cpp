@@ -17,7 +17,7 @@ BindingConstraintWeekData BindingConstraintWeekGroup::GetBindingConstraintWeekDa
 void BindingConstraintWeekGroup::BuildConstraints()
 {
     auto bindingConstraintWeekData = GetBindingConstraintWeekDataFromProblemHebdo();
-    bindingConstraintWeek BindingConstraintWeek(builder_, bindingConstraintWeekData);
+    BindingConstraintWeek bindingConstraintWeek(builder_, bindingConstraintWeekData);
 
     if (problemeHebdo_->NombreDePasDeTempsPourUneOptimisation
         > problemeHebdo_->NombreDePasDeTempsDUneJournee)

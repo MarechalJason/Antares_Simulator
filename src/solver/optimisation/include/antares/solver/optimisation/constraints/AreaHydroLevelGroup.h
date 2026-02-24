@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
-#include "areaHydroLevel.h"
+#include "AreaHydroLevel.h"
 #include "ConstraintGroup.h"
 
 class AreaHydroLevelGroup final: public ConstraintGroup

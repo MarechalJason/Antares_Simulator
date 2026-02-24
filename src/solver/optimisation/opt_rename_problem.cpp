@@ -267,7 +267,7 @@ void VariableNamer::areaBalance(unsigned varIndex)
     setAreaElementNameHour(varIndex, "AreaBalance");
 }
 
-void ConstraintNamer:: FlowDissociation(unsigned constrIndex)
+void ConstraintNamer::flowDissociation(unsigned constrIndex)
 {
     setLinkElementName(constrIndex, "flowDissociation");
 }
@@ -287,12 +287,12 @@ void ConstraintNamer::areaBalance(unsigned constrIndex)
     setAreaElementNameHour(constrIndex, "AreaBalance");
 }
 
-void ConstraintNamer:: FictiveLoads(unsigned constrIndex)
+void ConstraintNamer::fictiveLoads(unsigned constrIndex)
 {
     setAreaElementNameHour(constrIndex, "fictiveLoads");
 }
 
-void ConstraintNamer:: MaxUnsuppliedEnergy(unsigned constrIndex)
+void ConstraintNamer::maxUnsuppliedEnergy(unsigned constrIndex)
 {
     setAreaElementNameHour(constrIndex, "MaxUnsupEnergy");
 }
@@ -302,47 +302,47 @@ void ConstraintNamer::hydroPower(unsigned constrIndex)
     setAreaElementNameWeek(constrIndex, "HydroPower");
 }
 
-void ConstraintNamer:: HydroPowerSmoothingUsingVariationSum(unsigned constrIndex)
+void ConstraintNamer::hydroPowerSmoothingUsingVariationSum(unsigned constrIndex)
 {
     setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationSum");
 }
 
-void ConstraintNamer:: HydroPowerSmoothingUsingVariationMaxDown(unsigned constrIndex)
+void ConstraintNamer::hydroPowerSmoothingUsingVariationMaxDown(unsigned constrIndex)
 {
     setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationMaxDown");
 }
 
-void ConstraintNamer:: HydroPowerSmoothingUsingVariationMaxUp(unsigned constrIndex)
+void ConstraintNamer::hydroPowerSmoothingUsingVariationMaxUp(unsigned constrIndex)
 {
     setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationMaxUp");
 }
 
-void ConstraintNamer:: MinHydroPower(unsigned constrIndex)
+void ConstraintNamer::minHydroPower(unsigned constrIndex)
 {
     setAreaElementNameWeek(constrIndex, "minHydroPower");
 }
 
-void ConstraintNamer:: MaxHydroPower(unsigned constrIndex)
+void ConstraintNamer::maxHydroPower(unsigned constrIndex)
 {
     setAreaElementNameWeek(constrIndex, "maxHydroPower");
 }
 
-void ConstraintNamer:: MaxPumping(unsigned constrIndex)
+void ConstraintNamer::maxPumping(unsigned constrIndex)
 {
     setAreaElementNameWeek(constrIndex, "maxPumping");
 }
 
-void ConstraintNamer:: AreaHydroLevel(unsigned constrIndex)
+void ConstraintNamer::areaHydroLevel(unsigned constrIndex)
 {
     setAreaElementNameHour(constrIndex, "areaHydroLevel");
 }
 
-void ConstraintNamer:: FinalStockEquivalent(unsigned constrIndex)
+void ConstraintNamer::finalStockEquivalent(unsigned constrIndex)
 {
     setAreaElementNameHour(constrIndex, "finalStockEquivalent");
 }
 
-void ConstraintNamer:: FinalStockExpression(unsigned constrIndex)
+void ConstraintNamer::finalStockExpression(unsigned constrIndex)
 {
     setAreaElementNameHour(constrIndex, "finalStockExpression");
 }
@@ -356,51 +356,51 @@ void ConstraintNamer::bindingConstraint(unsigned constrIndex,
     names()[constrIndex] = new_name;
 }
 
-void ConstraintNamer:: BindingConstraintHour(unsigned constrIndex, const std::string& name)
+void ConstraintNamer::bindingConstraintHour(unsigned constrIndex, const std::string& name)
 {
-    BindingConstraint(constrIndex, name, {HOUR, "hourly"});
+    bindingConstraint(constrIndex, name, {HOUR, "hourly"});
 }
 
-void ConstraintNamer:: BindingConstraintDay(unsigned constrIndex, const std::string& name)
+void ConstraintNamer::bindingConstraintDay(unsigned constrIndex, const std::string& name)
 {
-    BindingConstraint(constrIndex, name, {DAY, "daily"});
+    bindingConstraint(constrIndex, name, {DAY, "daily"});
 }
 
-void ConstraintNamer:: BindingConstraintWeek(unsigned constrIndex, const std::string& name)
+void ConstraintNamer::bindingConstraintWeek(unsigned constrIndex, const std::string& name)
 {
-    BindingConstraint(constrIndex, name, {WEEK, "weekly"});
+    bindingConstraint(constrIndex, name, {WEEK, "weekly"});
 }
 
-void ConstraintNamer:: NbUnitsOutageLessThanNbUnitsStop(unsigned constrIndex,
+void ConstraintNamer::nbUnitsOutageLessThanNbUnitsStop(unsigned constrIndex,
                                                        const std::string& clusterName)
 {
     setThermalClusterElementName(constrIndex, "nbUnitsOutageLessThanNbUnitsStop", clusterName);
 }
 
-void ConstraintNamer:: NbDispUnitsMinBoundSinceMinUpTime(unsigned constrIndex,
+void ConstraintNamer::nbDispUnitsMinBoundSinceMinUpTime(unsigned constrIndex,
                                                         const std::string& clusterName)
 {
     setThermalClusterElementName(constrIndex, "nbDispUnitsMinBoundSinceMinUpTime", clusterName);
 }
 
-void ConstraintNamer:: MinDownTime(unsigned constrIndex, const std::string& clusterName)
+void ConstraintNamer::minDownTime(unsigned constrIndex, const std::string& clusterName)
 {
     setThermalClusterElementName(constrIndex, "minDownTime", clusterName);
 }
 
-void ConstraintNamer:: PMaxDispatchableGeneration(unsigned constrIndex,
+void ConstraintNamer::pMaxDispatchableGeneration(unsigned constrIndex,
                                                  const std::string& clusterName)
 {
     setThermalClusterElementName(constrIndex, "pMaxDispatchableGeneration", clusterName);
 }
 
-void ConstraintNamer:: PMinDispatchableGeneration(unsigned constrIndex,
+void ConstraintNamer::pMinDispatchableGeneration(unsigned constrIndex,
                                                  const std::string& clusterName)
 {
     setThermalClusterElementName(constrIndex, "pMinDispatchableGeneration", clusterName);
 }
 
-void ConstraintNamer:: ConsistenceNODU(unsigned constrIndex, const std::string& clusterName)
+void ConstraintNamer::consistenceNODU(unsigned constrIndex, const std::string& clusterName)
 {
     setThermalClusterElementName(constrIndex, "consistenceNODU", clusterName);
 }
@@ -413,7 +413,7 @@ void ConstraintNamer::shortTermStorageLevel(unsigned constrIndex, const std::str
     names()[constrIndex] = name;
 }
 
-void ConstraintNamer:: ShortTermStorageCostVariation(const std::string& constraint_name,
+void ConstraintNamer::shortTermStorageCostVariation(const std::string& constraint_name,
                                                     unsigned constrIndex,
                                                     const std::string& sts_name)
 {
@@ -423,7 +423,7 @@ void ConstraintNamer:: ShortTermStorageCostVariation(const std::string& constrai
     names()[constrIndex] = name;
 }
 
-void ConstraintNamer:: ShortTermStorageCumulation(const std::string& constraint_type,
+void ConstraintNamer::shortTermStorageCumulation(const std::string& constraint_type,
                                                  unsigned constrIndex,
                                                  const std::string& sts_name,
                                                  const std::string& constraint_name)

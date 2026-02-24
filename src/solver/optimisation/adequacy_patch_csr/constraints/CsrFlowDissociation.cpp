@@ -3,7 +3,7 @@
 
 #include "antares/solver/optimisation/adequacy_patch_csr/constraints/CsrFlowDissociation.h"
 
-void csrFlowDissociation::add()
+void CsrFlowDissociation::add()
 {
     builder.updateHourWithinWeek(data.hour);
 
