@@ -36,7 +36,7 @@ struct MandatoryFieldNotFound: std::invalid_argument
     using std::invalid_argument::invalid_argument;
 };
 
-void throwIfMandatoryIsMissing(const Antares::IO::Inputs::YmlModel::Model& model,
+void throwIfMandatoryIsMissing(const std::string& modelId,
                                const std::string& sectionId,
                                const Node& node,
                                const std::string& mandatoryField)
@@ -47,7 +47,7 @@ void throwIfMandatoryIsMissing(const Antares::IO::Inputs::YmlModel::Model& model
           fmt::format("mandatory field '{}' is not found in section '{}' of the model '{}'",
                       mandatoryField,
                       sectionId,
-                      model.id));
+                      modelId));
     }
 }
 
