@@ -25,9 +25,9 @@ public:
 
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
-     * @param pays : area
+     * @param area : area
      */
-    void add(int pays);
+    void add(int area);
 
 private:
     MaxPumpingData& data;

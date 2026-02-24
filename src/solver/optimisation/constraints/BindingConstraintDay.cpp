@@ -3,10 +3,10 @@
 
 #include "antares/solver/optimisation/constraints/BindingConstraintDay.h"
 
-void BindingConstraintDay::add(int cntCouplante)
+void BindingConstraintDay::add(int bindingConstraintIndex)
 {
     const CONTRAINTES_COUPLANTES& MatriceDesContraintesCouplantes
-      = data.MatriceDesContraintesCouplantes[cntCouplante];
+      = data.MatriceDesContraintesCouplantes[bindingConstraintIndex];
     if (MatriceDesContraintesCouplantes.TypeDeContrainteCouplante != CONTRAINTE_JOURNALIERE)
     {
         return;
@@ -20,20 +20,20 @@ void BindingConstraintDay::add(int cntCouplante)
     const int NombreDePasDeTempsPourUneOptimisation = builder.data
                                                         .NombreDePasDeTempsPourUneOptimisation;
     const int NombreDePasDeTempsDUneJournee = data.NombreDePasDeTempsDUneJournee;
-    int pdtDebut = 0;
-    while (pdtDebut < NombreDePasDeTempsPourUneOptimisation)
+    int startTimeStep = 0;
+    while (startTimeStep < NombreDePasDeTempsPourUneOptimisation)
     {
-        int jour = data.NumeroDeJourDuPasDeTemps[pdtDebut];
+        int jour = data.NumeroDeJourDuPasDeTemps[startTimeStep];
 
         for (int index = 0; index < nbInterco; index++)
         {
-            int interco = MatriceDesContraintesCouplantes.NumeroDeLInterconnexion[index];
+            int interconnection = MatriceDesContraintesCouplantes.NumeroDeLInterconnexion[index];
             double poids = MatriceDesContraintesCouplantes.PoidsDeLInterconnexion[index];
             int offset = MatriceDesContraintesCouplantes.OffsetTemporelSurLInterco[index];
 
-            for (int pdt = pdtDebut; pdt < pdtDebut + NombreDePasDeTempsDUneJournee; pdt++)
+            for (int timeStep = startTimeStep; timeStep < startTimeStep + NombreDePasDeTempsDUneJournee; timeStep++)
             {
-                builder.updateHourWithinWeek(pdt).NTCDirect(interco,
+                builder.updateHourWithinWeek(timeStep).ntcDirect(interconnection,
                                                             poids,
                                                             offset,
                                                             builder.data.NombreDePasDeTemps);
@@ -42,34 +42,34 @@ void BindingConstraintDay::add(int cntCouplante)
 
         for (int index = 0; index < nbClusters; index++)
         {
-            int pays = MatriceDesContraintesCouplantes.PaysDuPalierDispatch[index];
-            const PALIERS_THERMIQUES& PaliersThermiquesDuPays = data.PaliersThermiquesDuPays[pays];
+            int area = MatriceDesContraintesCouplantes.PaysDuPalierDispatch[index];
+            const PALIERS_THERMIQUES& PaliersThermiquesDuPays = data.PaliersThermiquesDuPays[area];
             const int palier = PaliersThermiquesDuPays
                                  .NumeroDuPalierDansLEnsembleDesPaliersThermiques
                                    [MatriceDesContraintesCouplantes.NumeroDuPalierDispatch[index]];
             double poids = MatriceDesContraintesCouplantes.PoidsDuPalierDispatch[index];
             int offset = MatriceDesContraintesCouplantes.OffsetTemporelSurLePalierDispatch[index];
 
-            for (int pdt = pdtDebut; pdt < pdtDebut + NombreDePasDeTempsDUneJournee; pdt++)
+            for (int timeStep = startTimeStep; timeStep < startTimeStep + NombreDePasDeTempsDUneJournee; timeStep++)
             {
-                builder.updateHourWithinWeek(pdt)
-                  .DispatchableProduction(palier, poids, offset, builder.data.NombreDePasDeTemps);
+                builder.updateHourWithinWeek(timeStep)
+                  .dispatchableProduction(palier, poids, offset, builder.data.NombreDePasDeTemps);
             }
         }
 
         data.CorrespondanceCntNativesCntOptimJournalieres[jour]
-          .NumeroDeContrainteDesContraintesCouplantes[cntCouplante]
+          .NumeroDeContrainteDesContraintesCouplantes[bindingConstraintIndex]
           = builder.data.nombreDeContraintes;
 
-        builder.SetOperator(MatriceDesContraintesCouplantes.SensDeLaContrainteCouplante);
+        builder.setOperator(MatriceDesContraintesCouplantes.SensDeLaContrainteCouplante);
         {
             const auto dayInTheYear = builder.data.weekInTheYear * 7 + jour;
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateTimeStep(dayInTheYear);
-            namer.BindingConstraintDay(builder.data.nombreDeContraintes,
+            namer.updateTimeStep(dayInTheYear);
+            namer.bindingConstraintDay(builder.data.nombreDeContraintes,
                                        MatriceDesContraintesCouplantes.NomDeLaContrainteCouplante);
         }
         builder.build();
-        pdtDebut += data.NombreDePasDeTempsDUneJournee;
+        startTimeStep += data.NombreDePasDeTempsDUneJournee;
     }
 }

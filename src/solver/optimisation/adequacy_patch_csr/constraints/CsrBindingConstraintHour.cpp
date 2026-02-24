@@ -25,21 +25,21 @@ void CsrBindingConstraintHour::add(int CntCouplante)
         if (data.originAreaMode[Interco] == Data::AdequacyPatch::physicalAreaInsideAdqPatch
             && data.extremityAreaMode[Interco] == Data::AdequacyPatch::physicalAreaInsideAdqPatch)
         {
-            builder.NTCDirect(Interco, Poids);
+            builder.ntcDirect(Interco, Poids);
         }
     }
 
-    if (builder.NumberOfVariables()
+    if (builder.numberOfVariables()
         > 0) // current binding constraint contains an interco type 2<->2
     {
         data.numberOfConstraintCsrHourlyBinding[CntCouplante] = builder.data.nombreDeContraintes;
 
         ConstraintNamer namer(builder.data.NomDesContraintes);
-        namer.UpdateTimeStep(data.hour);
-        namer.BindingConstraintHour(
+        namer.updateTimeStep(data.hour);
+        namer.bindingConstraintHour(
           builder.data.nombreDeContraintes,
           data.MatriceDesContraintesCouplantes[CntCouplante].NomDeLaContrainteCouplante);
-        builder.SetOperator(
+        builder.setOperator(
           data.MatriceDesContraintesCouplantes[CntCouplante].SensDeLaContrainteCouplante);
         builder.build();
     }

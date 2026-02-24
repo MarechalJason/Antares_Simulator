@@ -10,21 +10,21 @@ class Namer
 {
 public:
     explicit Namer(std::vector<std::string>& target_names);
-    void UpdateTimeStep(unsigned timeStep);
-    void UpdateArea(const std::string& area);
+    void updateTimeStep(unsigned timeStep);
+    void updateArea(const std::string& area);
     void updateExtremities(const std::string& origin, const std::string& destination);
 
 protected:
-    void SetLinkElementName(unsigned varIndex, const std::string& variableType);
-    void SetAreaElementNameHour(unsigned varIndex, const std::string& variableType);
-    void SetAreaElementNameWeek(unsigned varIndex, const std::string& variableType);
-    void SetAreaElementName(unsigned varIndex,
+    void setLinkElementName(unsigned varIndex, const std::string& variableType);
+    void setAreaElementNameHour(unsigned varIndex, const std::string& variableType);
+    void setAreaElementNameWeek(unsigned varIndex, const std::string& variableType);
+    void setAreaElementName(unsigned varIndex,
                             const std::string& variableType,
                             const std::string& timeGranularity);
-    void SetThermalClusterElementName(unsigned varIndex,
+    void setThermalClusterElementName(unsigned varIndex,
                                       const std::string& variableType,
                                       const std::string& clusterName);
-    std::string TimeIdentifier(const std::string& timeGranularity);
+    std::string timeIdentifier(const std::string& timeGranularity);
     std::string linkLocation();
     std::string areaLocation();
     std::vector<std::string>& names();
@@ -41,35 +41,35 @@ class VariableNamer: public Namer
 {
 public:
     using Namer::Namer;
-    void DispatchableProduction(unsigned varIndex, const std::string& clusterName);
-    void NODU(unsigned varIndex, const std::string& clusterName);
-    void NumberStoppingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
-    void NumberStartingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
-    void NumberBreakingDownDispatchableUnits(unsigned varIndex, const std::string& clusterName);
-    void NTCDirect(unsigned varIndex);
-    void IntercoDirectCost(unsigned varIndex);
-    void IntercoIndirectCost(unsigned varIndex);
-    void ShortTermStorageInjection(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageWithdrawal(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageLevel(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageOverflow(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageCostVariationInjection(unsigned varIndex, const std::string& sts_name);
-    void ShortTermStorageCostVariationWithdrawal(unsigned varIndex, const std::string& sts_name);
-    void HydProd(unsigned varIndex);
-    void HydProdDown(unsigned varIndex);
-    void HydProdUp(unsigned varIndex);
-    void Pumping(unsigned varIndex);
-    void HydroLevel(unsigned varIndex);
-    void Overflow(unsigned varIndex);
-    void FinalStorage(unsigned varIndex);
-    void LayerStorage(unsigned varIndex, int layerIndex);
-    void UnsuppliedEnergy(unsigned varIndex);
-    void Spillage(unsigned varIndex);
-    void AreaBalance(unsigned varIndex);
+    void dispatchableProduction(unsigned varIndex, const std::string& clusterName);
+    void nodu(unsigned varIndex, const std::string& clusterName);
+    void numberStoppingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
+    void numberStartingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
+    void numberBreakingDownDispatchableUnits(unsigned varIndex, const std::string& clusterName);
+    void ntcDirect(unsigned varIndex);
+    void interconnectionDirectCost(unsigned varIndex);
+    void interconnectionIndirectCost(unsigned varIndex);
+    void shortTermStorageInjection(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageWithdrawal(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageLevel(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageOverflow(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageCostVariationInjection(unsigned varIndex, const std::string& sts_name);
+    void shortTermStorageCostVariationWithdrawal(unsigned varIndex, const std::string& sts_name);
+    void hydroPower(unsigned varIndex);
+    void hydroPowerDown(unsigned varIndex);
+    void hydroPowerUp(unsigned varIndex);
+    void pumping(unsigned varIndex);
+    void hydroLevel(unsigned varIndex);
+    void overflow(unsigned varIndex);
+    void finalStorage(unsigned varIndex);
+    void layerStorage(unsigned varIndex, int layerIndex);
+    void unsuppliedEnergy(unsigned varIndex);
+    void spillage(unsigned varIndex);
+    void areaBalance(unsigned varIndex);
 
 private:
-    void SetAreaVariableName(unsigned varIndex, const std::string& variableType, int layerIndex);
-    void SetShortTermStorageVariableName(unsigned varIndex,
+    void setAreaVariableName(unsigned varIndex, const std::string& variableType, int layerIndex);
+    void setShortTermStorageVariableName(unsigned varIndex,
                                          const std::string& variableType,
                                          const std::string& sts_name);
 };
@@ -79,42 +79,42 @@ class ConstraintNamer: public Namer
 public:
     using Namer::Namer;
 
-    void FlowDissociation(unsigned constrIndex);
-    void AreaBalance(unsigned constrIndex);
-    void FictiveLoads(unsigned constrIndex);
-    void MaxUnsuppliedEnergy(unsigned constrIndex);
-    void HydroPower(unsigned constrIndex);
-    void HydroPowerSmoothingUsingVariationSum(unsigned constrIndex);
-    void HydroPowerSmoothingUsingVariationMaxDown(unsigned constrIndex);
-    void HydroPowerSmoothingUsingVariationMaxUp(unsigned constrIndex);
-    void MinHydroPower(unsigned constrIndex);
-    void MaxHydroPower(unsigned constrIndex);
-    void MaxPumping(unsigned constrIndex);
-    void AreaHydroLevel(unsigned constrIndex);
-    void FinalStockEquivalent(unsigned constrIndex);
-    void FinalStockExpression(unsigned constrIndex);
-    void NbUnitsOutageLessThanNbUnitsStop(unsigned constrIndex, const std::string& clusterName);
-    void NbDispUnitsMinBoundSinceMinUpTime(unsigned constrIndex, const std::string& clusterName);
-    void MinDownTime(unsigned constrIndex, const std::string& clusterName);
-    void PMaxDispatchableGeneration(unsigned constrIndex, const std::string& clusterName);
-    void PMinDispatchableGeneration(unsigned constrIndex, const std::string& clusterName);
-    void ConsistenceNODU(unsigned constrIndex, const std::string& clusterName);
-    void ShortTermStorageLevel(unsigned constrIndex, const std::string& name);
-    void BindingConstraintHour(unsigned constrIndex, const std::string& name);
-    void BindingConstraintDay(unsigned constrIndex, const std::string& name);
-    void BindingConstraintWeek(unsigned constrIndex, const std::string& name);
-    void CsrFlowDissociation(unsigned constrIndex);
-    void CsrAreaBalance(unsigned constrIndex);
-    void ShortTermStorageCostVariation(const std::string& constrIndex_name,
+    void flowDissociation(unsigned constrIndex);
+    void areaBalance(unsigned constrIndex);
+    void fictiveLoads(unsigned constrIndex);
+    void maxUnsuppliedEnergy(unsigned constrIndex);
+    void hydroPower(unsigned constrIndex);
+    void hydroPowerSmoothingUsingVariationSum(unsigned constrIndex);
+    void hydroPowerSmoothingUsingVariationMaxDown(unsigned constrIndex);
+    void hydroPowerSmoothingUsingVariationMaxUp(unsigned constrIndex);
+    void minHydroPower(unsigned constrIndex);
+    void maxHydroPower(unsigned constrIndex);
+    void maxPumping(unsigned constrIndex);
+    void areaHydroLevel(unsigned constrIndex);
+    void finalStockEquivalent(unsigned constrIndex);
+    void finalStockExpression(unsigned constrIndex);
+    void nbUnitsOutageLessThanNbUnitsStop(unsigned constrIndex, const std::string& clusterName);
+    void nbDispUnitsMinBoundSinceMinUpTime(unsigned constrIndex, const std::string& clusterName);
+    void minDownTime(unsigned constrIndex, const std::string& clusterName);
+    void pMaxDispatchableGeneration(unsigned constrIndex, const std::string& clusterName);
+    void pMinDispatchableGeneration(unsigned constrIndex, const std::string& clusterName);
+    void consistenceNODU(unsigned constrIndex, const std::string& clusterName);
+    void shortTermStorageLevel(unsigned constrIndex, const std::string& name);
+    void bindingConstraintHour(unsigned constrIndex, const std::string& name);
+    void bindingConstraintDay(unsigned constrIndex, const std::string& name);
+    void bindingConstraintWeek(unsigned constrIndex, const std::string& name);
+    void csrFlowDissociation(unsigned constrIndex);
+    void csrAreaBalance(unsigned constrIndex);
+    void shortTermStorageCostVariation(const std::string& constrIndex_name,
                                        unsigned constrIndex,
                                        const std::string& sts_name);
-    void ShortTermStorageCumulation(const std::string& constraint_type,
+    void shortTermStorageCumulation(const std::string& constraint_type,
                                     unsigned constrIndex,
                                     const std::string& sts_name,
                                     const std::string& constrIndex_name);
 
 private:
-    void BindingConstraint(unsigned constrIndex,
+    void bindingConstraint(unsigned constrIndex,
                            const std::string& name,
                            const std::pair<std::string, std::string>& timeGranularity);
 };

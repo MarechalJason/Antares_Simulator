@@ -18,12 +18,12 @@ public:
 
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
-     * @param pays : area
+     * @param area : area
      * @param cluster : global index of the cluster
-     * @param pdt : timestep
+     * @param timeStep : timestep
      * @param Simulation : ---
      */
-    void add(int pays, int index, int pdt);
+    void add(int area, int index, int timeStep);
 
 private:
     StartUpCostsData& data;

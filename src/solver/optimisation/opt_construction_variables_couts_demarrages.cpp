@@ -21,7 +21,7 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireCoutsDeDemarra
     const bool intVariables = problemeHebdo->OptimisationAvecVariablesEntieres;
     for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
     {
-        variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
+        variableNamer.updateArea(problemeHebdo->NomsDesPays[pays]);
         const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo
                                                               ->PaliersThermiquesDuPays[pays];
 
@@ -34,43 +34,43 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaireCoutsDeDemarra
 
             for (int pdt = 0; pdt < nombreDePasDeTempsPourUneOptimisation; pdt++)
             {
-                variableNamer.UpdateTimeStep(problemeHebdo->weekInTheYear * 168 + pdt);
+                variableNamer.updateTimeStep(problemeHebdo->weekInTheYear * 168 + pdt);
                 if (Simulation)
                 {
                     nombreDeVariables += 4;
                     continue;
                 }
 
-                variableManager.NumberOfDispatchableUnits(palier, pdt) = nombreDeVariables;
+                variableManager.numberOfDispatchableUnits(palier, pdt) = nombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[nombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
 
                 ProblemeAResoudre->VariablesEntieres[nombreDeVariables] = intVariables;
-                variableNamer.NODU(nombreDeVariables, clusterName);
+                variableNamer.nodu(nombreDeVariables, clusterName);
                 nombreDeVariables++;
 
-                variableManager.NumberStartingDispatchableUnits(palier, pdt) = nombreDeVariables;
+                variableManager.numberStartingDispatchableUnits(palier, pdt) = nombreDeVariables;
 
                 ProblemeAResoudre->TypeDeVariable[nombreDeVariables]
                   = VARIABLE_BORNEE_INFERIEUREMENT;
                 ProblemeAResoudre->VariablesEntieres[nombreDeVariables] = intVariables;
-                variableNamer.NumberStartingDispatchableUnits(nombreDeVariables, clusterName);
+                variableNamer.numberStartingDispatchableUnits(nombreDeVariables, clusterName);
                 nombreDeVariables++;
 
-                variableManager.NumberStoppingDispatchableUnits(palier, pdt) = nombreDeVariables;
+                variableManager.numberStoppingDispatchableUnits(palier, pdt) = nombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[nombreDeVariables]
                   = VARIABLE_BORNEE_INFERIEUREMENT;
                 ProblemeAResoudre->VariablesEntieres[nombreDeVariables] = intVariables;
-                variableNamer.NumberStoppingDispatchableUnits(nombreDeVariables, clusterName);
+                variableNamer.numberStoppingDispatchableUnits(nombreDeVariables, clusterName);
                 nombreDeVariables++;
 
-                variableManager.NumberBreakingDownDispatchableUnits(palier, pdt)
+                variableManager.numberBreakingDownDispatchableUnits(palier, pdt)
                   = nombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[nombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
 
                 ProblemeAResoudre->VariablesEntieres[nombreDeVariables] = intVariables;
-                variableNamer.NumberBreakingDownDispatchableUnits(nombreDeVariables, clusterName);
+                variableNamer.numberBreakingDownDispatchableUnits(nombreDeVariables, clusterName);
                 nombreDeVariables++;
             }
         }

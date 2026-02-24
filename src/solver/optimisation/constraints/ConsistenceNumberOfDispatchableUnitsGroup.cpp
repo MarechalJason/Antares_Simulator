@@ -13,15 +13,15 @@ void ConsistenceNumberOfDispatchableUnitsGroup::BuildConstraints()
 {
     auto data = GetStartUpCostsDataFromProblemHebdo();
     ConsistenceNumberOfDispatchableUnits consistenceNumberOfDispatchableUnits(builder_, data);
-    for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; pays++)
+    for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
     {
         const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo_
-                                                              ->PaliersThermiquesDuPays[pays];
+                                                              ->PaliersThermiquesDuPays[area];
         for (int index = 0; index < PaliersThermiquesDuPays.NombreDePaliersThermiques; index++)
         {
-            for (int pdt = 0; pdt < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; pdt++)
+            for (int timeStep = 0; timeStep < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; timeStep++)
             {
-                consistenceNumberOfDispatchableUnits.add(pays, index, pdt);
+                consistenceNumberOfDispatchableUnits.add(area, index, timeStep);
             }
         }
     }

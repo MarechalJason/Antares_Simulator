@@ -23,11 +23,11 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
 
     for (int pdt = 0; pdt < NombreDePasDeTempsPourUneOptimisation; pdt++)
     {
-        variableNamer.UpdateTimeStep(problemeHebdo->weekInTheYear * 168 + pdt);
+        variableNamer.updateTimeStep(problemeHebdo->weekInTheYear * 168 + pdt);
 
         for (uint32_t interco = 0; interco < problemeHebdo->NombreDInterconnexions; interco++)
         {
-            variableManager.NTCDirect(interco, pdt) = NombreDeVariables;
+            variableManager.ntcDirect(interco, pdt) = NombreDeVariables;
             ProblemeAResoudre->TypeDeVariable[NombreDeVariables] = VARIABLE_BORNEE_DES_DEUX_COTES;
 
             const auto origin = problemeHebdo->NomsDesPays
@@ -35,20 +35,20 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
             const auto destination = problemeHebdo->NomsDesPays
                                        [problemeHebdo->PaysExtremiteDeLInterconnexion[interco]];
             variableNamer.updateExtremities(origin, destination);
-            variableNamer.NTCDirect(NombreDeVariables);
+            variableNamer.ntcDirect(NombreDeVariables);
             NombreDeVariables++;
 
             if (problemeHebdo->CoutDeTransport[interco].IntercoGereeAvecDesCouts)
             {
-                variableManager.IntercoDirectCost(interco, pdt) = NombreDeVariables;
+                variableManager.interconnectionDirectCost(interco, pdt) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.IntercoDirectCost(NombreDeVariables);
+                variableNamer.interconnectionDirectCost(NombreDeVariables);
                 NombreDeVariables++;
-                variableManager.IntercoIndirectCost(interco, pdt) = NombreDeVariables;
+                variableManager.interconnectionIndirectCost(interco, pdt) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.IntercoIndirectCost(NombreDeVariables);
+                variableNamer.interconnectionIndirectCost(NombreDeVariables);
                 NombreDeVariables++;
             }
         }
@@ -57,16 +57,16 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
         {
             const PALIERS_THERMIQUES& PaliersThermiquesDuPays = problemeHebdo
                                                                   ->PaliersThermiquesDuPays[pays];
-            variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
+            variableNamer.updateArea(problemeHebdo->NomsDesPays[pays]);
             for (int index = 0; index < PaliersThermiquesDuPays.NombreDePaliersThermiques; index++)
             {
                 const int palier = PaliersThermiquesDuPays
                                      .NumeroDuPalierDansLEnsembleDesPaliersThermiques[index];
                 const auto& clusterName = PaliersThermiquesDuPays.NomsDesPaliersThermiques[index];
-                variableManager.DispatchableProduction(palier, pdt) = NombreDeVariables;
+                variableManager.dispatchableProduction(palier, pdt) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.DispatchableProduction(NombreDeVariables, clusterName);
+                variableNamer.dispatchableProduction(NombreDeVariables, clusterName);
                 NombreDeVariables++;
             }
 
@@ -74,104 +74,104 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
             {
                 const int clusterGlobalIndex = storage.clusterGlobalIndex;
                 // 1. Injection
-                variableManager.ShortTermStorageInjection(clusterGlobalIndex, pdt)
+                variableManager.shortTermStorageInjection(clusterGlobalIndex, pdt)
                   = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.ShortTermStorageInjection(NombreDeVariables, storage.name);
+                variableNamer.shortTermStorageInjection(NombreDeVariables, storage.name);
                 NombreDeVariables++;
                 // 2. Withdrawal
-                variableManager.ShortTermStorageWithdrawal(clusterGlobalIndex, pdt)
+                variableManager.shortTermStorageWithdrawal(clusterGlobalIndex, pdt)
                   = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.ShortTermStorageWithdrawal(NombreDeVariables, storage.name);
+                variableNamer.shortTermStorageWithdrawal(NombreDeVariables, storage.name);
                 NombreDeVariables++;
                 // 3. Level
-                variableManager.ShortTermStorageLevel(clusterGlobalIndex, pdt) = NombreDeVariables;
+                variableManager.shortTermStorageLevel(clusterGlobalIndex, pdt) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.ShortTermStorageLevel(NombreDeVariables, storage.name);
+                variableNamer.shortTermStorageLevel(NombreDeVariables, storage.name);
                 NombreDeVariables++;
 
                 // 4. Cost Variation Injection
                 if (storage.penalizeVariationInjection)
                 {
-                    variableManager.ShortTermStorageCostVariationInjection(clusterGlobalIndex, pdt)
+                    variableManager.shortTermStorageCostVariationInjection(clusterGlobalIndex, pdt)
                       = NombreDeVariables;
                     ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                       = VARIABLE_BORNEE_INFERIEUREMENT;
-                    variableNamer.ShortTermStorageCostVariationInjection(NombreDeVariables,
+                    variableNamer.shortTermStorageCostVariationInjection(NombreDeVariables,
                                                                          storage.name);
                     ++NombreDeVariables;
                 }
                 // 5. Cost Variation Withdrawal
                 if (storage.penalizeVariationWithdrawal)
                 {
-                    variableManager.ShortTermStorageCostVariationWithdrawal(clusterGlobalIndex, pdt)
+                    variableManager.shortTermStorageCostVariationWithdrawal(clusterGlobalIndex, pdt)
                       = NombreDeVariables;
                     ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                       = VARIABLE_BORNEE_INFERIEUREMENT;
-                    variableNamer.ShortTermStorageCostVariationWithdrawal(NombreDeVariables,
+                    variableNamer.shortTermStorageCostVariationWithdrawal(NombreDeVariables,
                                                                           storage.name);
                     ++NombreDeVariables;
                 }
                 // 6. Overflow
                 if (storage.allowOverflow)
                 {
-                    variableManager.ShortTermStorageOverflow(clusterGlobalIndex, pdt)
+                    variableManager.shortTermStorageOverflow(clusterGlobalIndex, pdt)
                       = NombreDeVariables;
                     ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                       = VARIABLE_BORNEE_INFERIEUREMENT;
-                    variableNamer.ShortTermStorageOverflow(NombreDeVariables, storage.name);
+                    variableNamer.shortTermStorageOverflow(NombreDeVariables, storage.name);
                     NombreDeVariables++;
                 }
             }
 
-            variableManager.UnsuppliedEnergy(pays, pdt) = NombreDeVariables;
+            variableManager.unsuppliedEnergy(pays, pdt) = NombreDeVariables;
 
             ProblemeAResoudre->TypeDeVariable[NombreDeVariables] = VARIABLE_BORNEE_DES_DEUX_COTES;
-            variableNamer.UnsuppliedEnergy(NombreDeVariables);
+            variableNamer.unsuppliedEnergy(NombreDeVariables);
             NombreDeVariables++;
 
-            variableManager.Spillage(pays, pdt) = NombreDeVariables;
+            variableManager.spillage(pays, pdt) = NombreDeVariables;
 
             ProblemeAResoudre->TypeDeVariable[NombreDeVariables] = VARIABLE_BORNEE_INFERIEUREMENT;
-            variableNamer.Spillage(NombreDeVariables);
+            variableNamer.spillage(NombreDeVariables);
             NombreDeVariables++;
         }
 
         for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
         {
-            variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
+            variableNamer.updateArea(problemeHebdo->NomsDesPays[pays]);
             if (problemeHebdo->CaracteristiquesHydrauliques[pays].PresenceDHydrauliqueModulable)
             {
-                variableManager.HydProd(pays, pdt) = NombreDeVariables;
+                variableManager.hydroPower(pays, pdt) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.HydProd(NombreDeVariables);
+                variableNamer.hydroPower(NombreDeVariables);
                 NombreDeVariables++;
             }
             else
             {
-                variableManager.HydProd(pays, pdt) = -1;
+                variableManager.hydroPower(pays, pdt) = -1;
             }
-            variableManager.HydProdDown(pays, pdt) = -1;
-            variableManager.HydProdUp(pays, pdt) = -1;
+            variableManager.hydroPowerDown(pays, pdt) = -1;
+            variableManager.hydroPowerUp(pays, pdt) = -1;
             if (problemeHebdo->TypeDeLissageHydraulique
                 == LISSAGE_HYDRAULIQUE_SUR_SOMME_DES_VARIATIONS)
             {
                 if (problemeHebdo->CaracteristiquesHydrauliques[pays].PresenceDHydrauliqueModulable)
                 {
-                    variableManager.HydProdDown(pays, pdt) = NombreDeVariables;
+                    variableManager.hydroPowerDown(pays, pdt) = NombreDeVariables;
                     ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                       = VARIABLE_BORNEE_INFERIEUREMENT;
-                    variableNamer.HydProdDown(NombreDeVariables);
+                    variableNamer.hydroPowerDown(NombreDeVariables);
                     NombreDeVariables++;
-                    variableManager.HydProdUp(pays, pdt) = NombreDeVariables;
+                    variableManager.hydroPowerUp(pays, pdt) = NombreDeVariables;
                     ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                       = VARIABLE_BORNEE_INFERIEUREMENT;
-                    variableNamer.HydProdUp(NombreDeVariables);
+                    variableNamer.hydroPowerUp(NombreDeVariables);
                     NombreDeVariables++;
                 }
             }
@@ -181,81 +181,81 @@ void OPT_ConstruireLaListeDesVariablesOptimiseesDuProblemeLineaire(PROBLEME_HEBD
                           .PresenceDHydrauliqueModulable
                      && pdt == 0)
             {
-                variableManager.HydProdDown(pays, pdt) = NombreDeVariables;
+                variableManager.hydroPowerDown(pays, pdt) = NombreDeVariables;
 
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.HydProdDown(NombreDeVariables);
+                variableNamer.hydroPowerDown(NombreDeVariables);
                 NombreDeVariables++;
-                variableManager.HydProdUp(pays, pdt) = NombreDeVariables;
+                variableManager.hydroPowerUp(pays, pdt) = NombreDeVariables;
 
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.HydProdUp(NombreDeVariables);
+                variableNamer.hydroPowerUp(NombreDeVariables);
                 NombreDeVariables++;
             }
 
             if (problemeHebdo->CaracteristiquesHydrauliques[pays].PresenceDePompageModulable)
             {
-                variableManager.Pumping(pays, pdt) = NombreDeVariables;
+                variableManager.pumping(pays, pdt) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.Pumping(NombreDeVariables);
+                variableNamer.pumping(NombreDeVariables);
                 NombreDeVariables++;
             }
             else
             {
-                variableManager.Pumping(pays, pdt) = -1;
+                variableManager.pumping(pays, pdt) = -1;
             }
 
             if (problemeHebdo->CaracteristiquesHydrauliques[pays].SuiviNiveauHoraire)
             {
-                variableManager.HydroLevel(pays, pdt) = NombreDeVariables;
+                variableManager.hydroLevel(pays, pdt) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.HydroLevel(NombreDeVariables);
+                variableNamer.hydroLevel(NombreDeVariables);
                 NombreDeVariables++;
-                variableManager.Overflow(pays, pdt) = NombreDeVariables;
+                variableManager.overflow(pays, pdt) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.Overflow(NombreDeVariables);
+                variableNamer.overflow(NombreDeVariables);
                 NombreDeVariables++;
             }
             else
             {
-                variableManager.HydroLevel(pays, pdt) = -1;
-                variableManager.Overflow(pays, pdt) = -1;
+                variableManager.hydroLevel(pays, pdt) = -1;
+                variableManager.overflow(pays, pdt) = -1;
             }
         }
     }
 
     for (uint32_t pays = 0; pays < problemeHebdo->NombreDePays; pays++)
     {
-        variableNamer.UpdateTimeStep(problemeHebdo->weekInTheYear * 168
+        variableNamer.updateTimeStep(problemeHebdo->weekInTheYear * 168
                                      + NombreDePasDeTempsPourUneOptimisation - 1);
-        variableNamer.UpdateArea(problemeHebdo->NomsDesPays[pays]);
+        variableNamer.updateArea(problemeHebdo->NomsDesPays[pays]);
         if (problemeHebdo->CaracteristiquesHydrauliques[pays].AccurateWaterValue)
         {
-            variableManager.FinalStorage(pays) = NombreDeVariables;
+            variableManager.finalStorage(pays) = NombreDeVariables;
             ProblemeAResoudre->TypeDeVariable[NombreDeVariables] = VARIABLE_NON_BORNEE;
-            variableNamer.FinalStorage(NombreDeVariables);
+            variableNamer.finalStorage(NombreDeVariables);
             NombreDeVariables++;
 
             for (uint nblayer = 0; nblayer < 100; nblayer++)
             {
-                variableManager.LayerStorage(pays, nblayer) = NombreDeVariables;
+                variableManager.layerStorage(pays, nblayer) = NombreDeVariables;
                 ProblemeAResoudre->TypeDeVariable[NombreDeVariables]
                   = VARIABLE_BORNEE_DES_DEUX_COTES;
-                variableNamer.LayerStorage(NombreDeVariables, nblayer);
+                variableNamer.layerStorage(NombreDeVariables, nblayer);
                 NombreDeVariables++;
             }
         }
         else
         {
-            variableManager.FinalStorage(pays) = -1;
+            variableManager.finalStorage(pays) = -1;
             for (uint nblayer = 0; nblayer < 100; nblayer++)
             {
-                variableManager.LayerStorage(pays, nblayer) = -1;
+                variableManager.layerStorage(pays, nblayer) = -1;
             }
         }
     }

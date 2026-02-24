@@ -14,11 +14,11 @@ void AreaHydroLevelGroup::BuildConstraints()
     auto areaHydroLevelData = GetAreaHydroLevelData();
     AreaHydroLevel areaHydroLevel(builder_, areaHydroLevelData);
 
-    for (int pdt = 0; pdt < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; pdt++)
+    for (int timeStep = 0; timeStep < problemeHebdo_->NombreDePasDeTempsPourUneOptimisation; timeStep++)
     {
-        for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; pays++)
+        for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
         {
-            areaHydroLevel.add(pays, pdt);
+            areaHydroLevel.add(area, timeStep);
         }
     }
 }

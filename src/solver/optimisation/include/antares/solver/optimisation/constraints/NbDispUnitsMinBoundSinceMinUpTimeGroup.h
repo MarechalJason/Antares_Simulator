@@ -7,7 +7,7 @@
 #include "NbDispUnitsMinBoundSinceMinUpTime.h"
 
 /**
- * @brief Group of NbDispUnitsMinBoundSinceMinUpTime constraints
+ * @brief Group of nbDispUnitsMinBoundSinceMinUpTime constraints
  *
  */
 

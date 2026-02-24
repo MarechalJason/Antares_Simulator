@@ -24,11 +24,11 @@ void BindingConstraintWeekGroup::BuildConstraints()
     {
         CORRESPONDANCES_DES_CONTRAINTES_HEBDOMADAIRES& CorrespondanceCntNativesCntOptimHebdomadaires
           = problemeHebdo_->CorrespondanceCntNativesCntOptimHebdomadaires;
-        for (uint32_t cntCouplante = 0;
-             cntCouplante < problemeHebdo_->NombreDeContraintesCouplantes;
-             cntCouplante++)
+        for (uint32_t bindingConstraintIndex = 0;
+             bindingConstraintIndex < problemeHebdo_->NombreDeContraintesCouplantes;
+             bindingConstraintIndex++)
         {
-            bindingConstraintWeek.add(cntCouplante);
+            bindingConstraintWeek.add(bindingConstraintIndex);
         }
     }
 }

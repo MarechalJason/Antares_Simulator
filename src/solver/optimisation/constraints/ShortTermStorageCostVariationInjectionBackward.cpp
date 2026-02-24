@@ -6,22 +6,22 @@
 // CostVariationInjection[h] + Injection[h+1] - Injection[h]  >= 0
 void ShortTermStorageCostVariationInjectionBackward::buildConstraint(int index)
 {
-    builder.ShortTermCostVariationInjection(index, 1.0)
-      .ShortTermStorageInjection(index, -1.0)
-      .ShortTermStorageInjection(index, 1.0, 1, builder.data.NombreDePasDeTempsPourUneOptimisation)
+    builder.shortTermCostVariationInjection(index, 1.0)
+      .shortTermStorageInjection(index, -1.0)
+      .shortTermStorageInjection(index, 1.0, 1, builder.data.NombreDePasDeTempsPourUneOptimisation)
       .greaterThan()
       .build();
 }
 
-void ShortTermStorageCostVariationInjectionBackward::add(unsigned int pdt, unsigned int pays)
+void ShortTermStorageCostVariationInjectionBackward::add(unsigned int timeStep, unsigned int area)
 {
-    addStorageConstraint("ShortTermStorageCostVariationInjectionBackward", pdt, pays);
+    addStorageConstraint("ShortTermStorageCostVariationInjectionBackward", timeStep, area);
 }
 
 int& ShortTermStorageCostVariationInjectionBackward::
-  ShortTermStorageCostVariationInjectionBackward::TargetConstraintIndex(int pdt, int index)
+  ShortTermStorageCostVariationInjectionBackward::TargetConstraintIndex(int timeStep, int index)
 {
-    return data.CorrespondanceCntNativesCntOptim[pdt]
+    return data.CorrespondanceCntNativesCntOptim[timeStep]
       .ShortTermStorageCostVariationInjectionBackward[index];
 }
 

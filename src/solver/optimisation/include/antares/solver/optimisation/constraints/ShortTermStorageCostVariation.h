@@ -13,7 +13,7 @@ public:
     {
     }
 
-    virtual void add(unsigned int pdt, unsigned int pays) = 0;
+    virtual void add(unsigned int timeStep, unsigned int area) = 0;
 
     ShortTermStorageData& data;
 
@@ -22,9 +22,9 @@ protected:
 
     virtual bool IsConstraintEnabled(const PROPERTIES& properties) = 0;
 
-    virtual int& TargetConstraintIndex(int pdt, int index) = 0;
+    virtual int& TargetConstraintIndex(int timeStep, int index) = 0;
 
-    void addStorageConstraint(const std::string& constraintName, int pdt, int pays);
+    void addStorageConstraint(const std::string& constraintName, int timeStep, int area);
 };
 
 class ShortTermStorageCostVariationInjectionBackward final: ShortTermStorageCostVariation
@@ -32,11 +32,11 @@ class ShortTermStorageCostVariationInjectionBackward final: ShortTermStorageCost
 public:
     using ShortTermStorageCostVariation::ShortTermStorageCostVariation;
 
-    void add(unsigned int pdt, unsigned int pays) override;
+    void add(unsigned int timeStep, unsigned int area) override;
 
     bool IsConstraintEnabled(const PROPERTIES& properties) override;
 
-    int& TargetConstraintIndex(int pdt, int index) override;
+    int& TargetConstraintIndex(int timeStep, int index) override;
 
     void buildConstraint(int index) override;
 };
@@ -46,11 +46,11 @@ class ShortTermStorageCostVariationInjectionForward final: ShortTermStorageCostV
 public:
     using ShortTermStorageCostVariation::ShortTermStorageCostVariation;
 
-    void add(unsigned int pdt, unsigned int pays) override;
+    void add(unsigned int timeStep, unsigned int area) override;
 
     bool IsConstraintEnabled(const PROPERTIES& properties) override;
 
-    int& TargetConstraintIndex(int pdt, int index) override;
+    int& TargetConstraintIndex(int timeStep, int index) override;
 
     void buildConstraint(int index) override;
 };
@@ -60,11 +60,11 @@ class ShortTermStorageCostVariationWithdrawalBackward final: ShortTermStorageCos
 public:
     using ShortTermStorageCostVariation::ShortTermStorageCostVariation;
 
-    void add(unsigned int pdt, unsigned int pays) override;
+    void add(unsigned int timeStep, unsigned int area) override;
 
     bool IsConstraintEnabled(const PROPERTIES& properties) override;
 
-    int& TargetConstraintIndex(int pdt, int index) override;
+    int& TargetConstraintIndex(int timeStep, int index) override;
 
     void buildConstraint(int index) override;
 };
@@ -74,11 +74,11 @@ class ShortTermStorageCostVariationWithdrawalForward final: ShortTermStorageCost
 public:
     using ShortTermStorageCostVariation::ShortTermStorageCostVariation;
 
-    void add(unsigned int pdt, unsigned int pays) override;
+    void add(unsigned int timeStep, unsigned int area) override;
 
     bool IsConstraintEnabled(const PROPERTIES& properties) override;
 
-    int& TargetConstraintIndex(int pdt, int index) override;
+    int& TargetConstraintIndex(int timeStep, int index) override;
 
     void buildConstraint(int index) override;
 };

@@ -101,35 +101,35 @@ void Group1::BuildConstraints()
     int nombreDePasDeTempsPourUneOptimisation = problemeHebdo_
                                                   ->NombreDePasDeTempsPourUneOptimisation;
 
-    for (int pdt = 0; pdt < nombreDePasDeTempsPourUneOptimisation; pdt++)
+    for (int timeStep = 0; timeStep < nombreDePasDeTempsPourUneOptimisation; timeStep++)
     {
-        for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; pays++)
+        for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; area++)
         {
-            areaBalance.add(pdt, pays);
-            fictitiousLoad.add(pdt, pays);
-            maxUnsuppliedEnergy.add(pdt, pays);
-            shortTermStorageLevel.add(pdt, pays);
-            shortTermStorageCostVariationInjectionBackward.add(pdt, pays);
-            shortTermStorageCostVariationInjectionForward.add(pdt, pays);
-            shortTermStorageCostVariationWithdrawalBackward.add(pdt, pays);
-            shortTermStorageCostVariationWithdrawalForward.add(pdt, pays);
+            areaBalance.add(timeStep, area);
+            fictitiousLoad.add(timeStep, area);
+            maxUnsuppliedEnergy.add(timeStep, area);
+            shortTermStorageLevel.add(timeStep, area);
+            shortTermStorageCostVariationInjectionBackward.add(timeStep, area);
+            shortTermStorageCostVariationInjectionForward.add(timeStep, area);
+            shortTermStorageCostVariationWithdrawalBackward.add(timeStep, area);
+            shortTermStorageCostVariationWithdrawalForward.add(timeStep, area);
         }
 
-        for (uint32_t interco = 0; interco < problemeHebdo_->NombreDInterconnexions; interco++)
+        for (uint32_t interconnection = 0; interconnection < problemeHebdo_->NombreDInterconnexions; interconnection++)
         {
-            flowDissociation.add(pdt, interco);
+            flowDissociation.add(timeStep, interconnection);
         }
 
-        for (uint32_t cntCouplante = 0;
-             cntCouplante < problemeHebdo_->NombreDeContraintesCouplantes;
-             cntCouplante++)
+        for (uint32_t bindingConstraintIndex = 0;
+             bindingConstraintIndex < problemeHebdo_->NombreDeContraintesCouplantes;
+             bindingConstraintIndex++)
         {
-            bindingConstraintHour.add(pdt, cntCouplante);
+            bindingConstraintHour.add(timeStep, bindingConstraintIndex);
         }
     }
 
-    for (uint32_t pays = 0; pays < problemeHebdo_->NombreDePays; ++pays)
+    for (uint32_t area = 0; area < problemeHebdo_->NombreDePays; ++area)
     {
-        shortTermStorageCumulation.add(pays);
+        shortTermStorageCumulation.add(area);
     }
 }

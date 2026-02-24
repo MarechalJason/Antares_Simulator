@@ -7,7 +7,7 @@
 #include "NbUnitsOutageLessThanNbUnitsStop.h"
 
 /**
- * @brief Group of NbUnitsOutageLessThanNbUnitsStop constraints
+ * @brief Group of nbUnitsOutageLessThanNbUnitsStop constraints
  *
  */
 

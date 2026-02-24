@@ -26,27 +26,27 @@ void OPT_InitialiserLesCoutsLineaireCoutsDeDemarrage(PROBLEME_HEBDO* problemeHeb
                 const int palier = PaliersThermiquesDuPays
                                      .NumeroDuPalierDansLEnsembleDesPaliersThermiques[index];
 
-                int var = variableManager.NumberOfDispatchableUnits(palier, pdtJour);
+                int var = variableManager.numberOfDispatchableUnits(palier, pdtJour);
                 if (var >= 0 && var < ProblemeAResoudre->NombreDeVariables)
                 {
                     CoutLineaire[var] = PaliersThermiquesDuPays
                                           .CoutFixeDeMarcheDUnGroupeDuPalierThermique[index];
                 }
 
-                var = variableManager.NumberStoppingDispatchableUnits(palier, pdtJour);
+                var = variableManager.numberStoppingDispatchableUnits(palier, pdtJour);
                 if (var >= 0 && var < ProblemeAResoudre->NombreDeVariables)
                 {
                     CoutLineaire[var] = PaliersThermiquesDuPays
                                           .CoutDArretDUnGroupeDuPalierThermique[index];
                 }
 
-                var = variableManager.NumberBreakingDownDispatchableUnits(palier, pdtJour);
+                var = variableManager.numberBreakingDownDispatchableUnits(palier, pdtJour);
                 if (var >= 0 && var < ProblemeAResoudre->NombreDeVariables)
                 {
                     CoutLineaire[var] = 0;
                 }
 
-                var = variableManager.NumberStartingDispatchableUnits(palier, pdtJour);
+                var = variableManager.numberStartingDispatchableUnits(palier, pdtJour);
                 if (var >= 0 && var < ProblemeAResoudre->NombreDeVariables)
                 {
                     CoutLineaire[var] = PaliersThermiquesDuPays

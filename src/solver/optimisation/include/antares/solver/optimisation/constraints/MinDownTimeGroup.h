@@ -7,7 +7,7 @@
 #include "MinDownTime.h"
 
 /**
- * @brief Group of MinDownTime constraints
+ * @brief Group of minDownTime constraints
  *
  */
 

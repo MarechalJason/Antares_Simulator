@@ -6,9 +6,9 @@
 // CostVariationWithdrawal[h] - Withdrawal[h+1] + Withdrawal[h]  >= 0
 void ShortTermStorageCostVariationWithdrawalForward::buildConstraint(int index)
 {
-    builder.ShortTermCostVariationWithdrawal(index, 1.0)
-      .ShortTermStorageWithdrawal(index, 1.0)
-      .ShortTermStorageWithdrawal(index,
+    builder.shortTermCostVariationWithdrawal(index, 1.0)
+      .shortTermStorageWithdrawal(index, 1.0)
+      .shortTermStorageWithdrawal(index,
                                   -1.0,
                                   1,
                                   builder.data.NombreDePasDeTempsPourUneOptimisation)
@@ -16,9 +16,9 @@ void ShortTermStorageCostVariationWithdrawalForward::buildConstraint(int index)
       .build();
 }
 
-void ShortTermStorageCostVariationWithdrawalForward::add(unsigned int pdt, unsigned int pays)
+void ShortTermStorageCostVariationWithdrawalForward::add(unsigned int timeStep, unsigned int area)
 {
-    addStorageConstraint("ShortTermStorageCostVariationWithdrawalForward", pdt, pays);
+    addStorageConstraint("ShortTermStorageCostVariationWithdrawalForward", timeStep, area);
 }
 
 bool ShortTermStorageCostVariationWithdrawalForward::IsConstraintEnabled(
@@ -27,8 +27,8 @@ bool ShortTermStorageCostVariationWithdrawalForward::IsConstraintEnabled(
     return properties.penalizeVariationWithdrawal;
 }
 
-int& ShortTermStorageCostVariationWithdrawalForward::TargetConstraintIndex(int pdt, int index)
+int& ShortTermStorageCostVariationWithdrawalForward::TargetConstraintIndex(int timeStep, int index)
 {
-    return data.CorrespondanceCntNativesCntOptim[pdt]
+    return data.CorrespondanceCntNativesCntOptim[timeStep]
       .ShortTermStorageCostVariationWithdrawalForward[index];
 }

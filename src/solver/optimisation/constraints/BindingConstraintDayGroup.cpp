@@ -19,9 +19,9 @@ void BindingConstraintDayGroup::BuildConstraints()
 {
     auto bindingConstraintDayData = GetBindingConstraintDayDataFromProblemHebdo();
     BindingConstraintDay bindingConstraintDay(builder_, bindingConstraintDayData);
-    for (uint32_t cntCouplante = 0; cntCouplante < problemeHebdo_->NombreDeContraintesCouplantes;
-         cntCouplante++)
+    for (uint32_t bindingConstraintIndex = 0; bindingConstraintIndex < problemeHebdo_->NombreDeContraintesCouplantes;
+         bindingConstraintIndex++)
     {
-        bindingConstraintDay.add(cntCouplante);
+        bindingConstraintDay.add(bindingConstraintIndex);
     }
 }

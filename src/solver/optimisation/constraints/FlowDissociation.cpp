@@ -3,25 +3,25 @@
 
 #include "antares/solver/optimisation/constraints/FlowDissociation.h"
 
-void FlowDissociation::add(int pdt, int interco)
+void FlowDissociation::add(int timeStep, int interconnection)
 {
-    if (const COUTS_DE_TRANSPORT& CoutDeTransport = data.CoutDeTransport[interco];
+    if (const COUTS_DE_TRANSPORT& CoutDeTransport = data.CoutDeTransport[interconnection];
         CoutDeTransport.IntercoGereeAvecDesCouts)
     {
-        data.CorrespondanceCntNativesCntOptim[pdt].NumeroDeContrainteDeDissociationDeFlux[interco]
+        data.CorrespondanceCntNativesCntOptim[timeStep].NumeroDeContrainteDeDissociationDeFlux[interconnection]
           = builder.data.nombreDeContraintes;
-        const auto origin = builder.data.NomsDesPays[data.PaysOrigineDeLInterconnexion[interco]];
+        const auto origin = builder.data.NomsDesPays[data.PaysOrigineDeLInterconnexion[interconnection]];
         const auto destination = builder.data
-                                   .NomsDesPays[data.PaysExtremiteDeLInterconnexion[interco]];
+                                   .NomsDesPays[data.PaysExtremiteDeLInterconnexion[interconnection]];
         ConstraintNamer namer(builder.data.NomDesContraintes);
         namer.updateExtremities(origin, destination);
-        namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
-        namer.FlowDissociation(builder.data.nombreDeContraintes);
+        namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+        namer.flowDissociation(builder.data.nombreDeContraintes);
 
-        builder.updateHourWithinWeek(pdt);
-        builder.NTCDirect(interco, 1.0)
-          .IntercoDirectCost(interco, -1.0)
-          .IntercoIndirectCost(interco, 1.0);
+        builder.updateHourWithinWeek(timeStep);
+        builder.ntcDirect(interconnection, 1.0)
+          .interconnectionDirectCost(interconnection, -1.0)
+          .interconnectionIndirectCost(interconnection, 1.0);
 
         builder.equalTo();
 

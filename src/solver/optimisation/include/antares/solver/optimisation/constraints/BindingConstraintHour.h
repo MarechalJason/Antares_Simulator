@@ -26,10 +26,10 @@ public:
 
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
-     * @param pdt : timestep
-     * @param cntCouplante : the binding constraint number
+     * @param timeStep : timestep
+     * @param bindingConstraintIndex : the binding constraint number
      */
-    void add(int pdt, int cntCouplante);
+    void add(int timeStep, int bindingConstraintIndex);
 
 private:
     BindingConstraintHourData& data;

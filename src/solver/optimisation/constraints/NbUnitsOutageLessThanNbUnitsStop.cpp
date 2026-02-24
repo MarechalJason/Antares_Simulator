@@ -3,29 +3,29 @@
 
 #include "antares/solver/optimisation/constraints/NbUnitsOutageLessThanNbUnitsStop.h"
 
-void NbUnitsOutageLessThanNbUnitsStop::add(int pays, int index, int pdt)
+void NbUnitsOutageLessThanNbUnitsStop::add(int area, int index, int timeStep)
 {
     if (!data.Simulation)
     {
-        auto cluster = data.PaliersThermiquesDuPays[pays]
+        auto cluster = data.PaliersThermiquesDuPays[area]
                          .NumeroDuPalierDansLEnsembleDesPaliersThermiques[index];
-        data.CorrespondanceCntNativesCntOptim[pdt]
+        data.CorrespondanceCntNativesCntOptim[timeStep]
           .NumeroDeContrainteDesContraintesDeDureeMinDeMarche[cluster]
           = -1;
 
-        builder.updateHourWithinWeek(pdt)
-          .NumberBreakingDownDispatchableUnits(cluster, 1.0)
-          .NumberStoppingDispatchableUnits(cluster, -1.0)
+        builder.updateHourWithinWeek(timeStep)
+          .numberBreakingDownDispatchableUnits(cluster, 1.0)
+          .numberStoppingDispatchableUnits(cluster, -1.0)
           .lessThan();
 
-        if (builder.NumberOfVariables() > 0)
+        if (builder.numberOfVariables() > 0)
         {
             ConstraintNamer namer(builder.data.NomDesContraintes);
-            namer.UpdateArea(builder.data.NomsDesPays[pays]);
-            namer.UpdateTimeStep(builder.data.weekInTheYear * 168 + pdt);
-            namer.NbUnitsOutageLessThanNbUnitsStop(
+            namer.updateArea(builder.data.NomsDesPays[area]);
+            namer.updateTimeStep(builder.data.weekInTheYear * 168 + timeStep);
+            namer.nbUnitsOutageLessThanNbUnitsStop(
               builder.data.nombreDeContraintes,
-              data.PaliersThermiquesDuPays[pays].NomsDesPaliersThermiques[index]);
+              data.PaliersThermiquesDuPays[area].NomsDesPaliersThermiques[index]);
 
             builder.build();
         }

@@ -41,7 +41,7 @@ Math:
 |coeffn1 coeffn2 .. coeffnn||varn| |sign_n|   |rhsn|       |constraintn||sign_n||rhsn|
 
 it propose a set of methods  to attach 'Variables' to the Constraint
-ex: calling NTCDirect() implies adding Direct NTC Variable to the current Constraint
+ex: calling ntcDirect() implies adding Direct NTC Variable to the current Constraint
 finally the build() method gather all variables and put them into the matrix
 \endverbatim
 */
@@ -73,73 +73,73 @@ public:
      *  @return reference of *this
      */
     //@{
-    ConstraintBuilder& DispatchableProduction(unsigned int index,
+    ConstraintBuilder& dispatchableProduction(unsigned int index,
                                               double coeff,
                                               int offset = 0,
                                               int delta = 0);
 
-    ConstraintBuilder& NumberOfDispatchableUnits(unsigned int index, double coeff);
+    ConstraintBuilder& numberOfDispatchableUnits(unsigned int index, double coeff);
 
-    ConstraintBuilder& NumberStoppingDispatchableUnits(unsigned int index, double coeff);
+    ConstraintBuilder& numberStoppingDispatchableUnits(unsigned int index, double coeff);
 
-    ConstraintBuilder& NumberStartingDispatchableUnits(unsigned int index, double coeff);
+    ConstraintBuilder& numberStartingDispatchableUnits(unsigned int index, double coeff);
 
-    ConstraintBuilder& NumberBreakingDownDispatchableUnits(unsigned int index, double coeff);
+    ConstraintBuilder& numberBreakingDownDispatchableUnits(unsigned int index, double coeff);
 
-    ConstraintBuilder& NTCDirect(unsigned int index, double coeff, int offset = 0, int delta = 0);
+    ConstraintBuilder& ntcDirect(unsigned int index, double coeff, int offset = 0, int delta = 0);
 
-    ConstraintBuilder& IntercoDirectCost(unsigned int index, double coeff);
+    ConstraintBuilder& interconnectionDirectCost(unsigned int index, double coeff);
 
-    ConstraintBuilder& IntercoIndirectCost(unsigned int index, double coeff);
+    ConstraintBuilder& interconnectionIndirectCost(unsigned int index, double coeff);
 
-    ConstraintBuilder& ShortTermStorageInjection(unsigned int index,
+    ConstraintBuilder& shortTermStorageInjection(unsigned int index,
                                                  double coeff,
                                                  int offset = 0,
                                                  int delta = 0);
 
-    ConstraintBuilder& ShortTermStorageWithdrawal(unsigned int index,
+    ConstraintBuilder& shortTermStorageWithdrawal(unsigned int index,
                                                   double coeff,
                                                   int offset = 0,
                                                   int delta = 0);
 
-    ConstraintBuilder& ShortTermStorageLevel(unsigned int index,
+    ConstraintBuilder& shortTermStorageLevel(unsigned int index,
                                              double coeff,
                                              int offset = 0,
                                              int delta = 0);
 
-    ConstraintBuilder& ShortTermStorageOverflow(unsigned int index,
+    ConstraintBuilder& shortTermStorageOverflow(unsigned int index,
                                                 double coeff,
                                                 int offset = 0,
                                                 int delta = 0);
 
-    ConstraintBuilder& ShortTermCostVariationInjection(unsigned int index,
+    ConstraintBuilder& shortTermCostVariationInjection(unsigned int index,
                                                        double coeff,
                                                        int offset = 0,
                                                        int delta = 0);
-    ConstraintBuilder& ShortTermCostVariationWithdrawal(unsigned int index,
+    ConstraintBuilder& shortTermCostVariationWithdrawal(unsigned int index,
                                                         double coeff,
                                                         int offset = 0,
                                                         int delta = 0);
 
-    ConstraintBuilder& HydProd(unsigned int index, double coeff);
+    ConstraintBuilder& hydroPower(unsigned int index, double coeff);
 
-    ConstraintBuilder& HydProdDown(unsigned int index, double coeff);
+    ConstraintBuilder& hydroPowerDown(unsigned int index, double coeff);
 
-    ConstraintBuilder& HydProdUp(unsigned int index, double coeff);
+    ConstraintBuilder& hydroPowerUp(unsigned int index, double coeff);
 
-    ConstraintBuilder& Pumping(unsigned int index, double coeff);
+    ConstraintBuilder& pumping(unsigned int index, double coeff);
 
-    ConstraintBuilder& HydroLevel(unsigned int index, double coeff);
+    ConstraintBuilder& hydroLevel(unsigned int index, double coeff);
 
-    ConstraintBuilder& Overflow(unsigned int index, double coeff);
+    ConstraintBuilder& overflow(unsigned int index, double coeff);
 
-    ConstraintBuilder& FinalStorage(unsigned int index, double coeff);
+    ConstraintBuilder& finalStorage(unsigned int index, double coeff);
 
-    ConstraintBuilder& UnsuppliedEnergy(unsigned int index, double coeff);
+    ConstraintBuilder& unsuppliedEnergy(unsigned int index, double coeff);
 
-    ConstraintBuilder& Spillage(unsigned int index, double coeff);
+    ConstraintBuilder& spillage(unsigned int index, double coeff);
 
-    ConstraintBuilder& LayerStorage(unsigned area, unsigned layer, double coeff);
+    ConstraintBuilder& layerStorage(unsigned area, unsigned layer, double coeff);
 
     //@}
 
@@ -154,7 +154,7 @@ public:
        @param op: the operator of the constraint
        @return reference of *this
     */
-    ConstraintBuilder& SetOperator(char op)
+    ConstraintBuilder& setOperator(char op)
     {
         if (op == '<' || op == '=' || op == '>')
         {
@@ -207,7 +207,7 @@ public:
      */
     void build();
 
-    int NumberOfVariables() const
+    int numberOfVariables() const
     {
         return nombreDeTermes_;
     }
@@ -215,14 +215,14 @@ public:
     ConstraintBuilderData& data;
 
 private:
-    void OPT_ChargerLaContrainteDansLaMatriceDesContraintes();
+    void loadConstraintIntoMatrix();
 
     unsigned int hourInWeek_ = 0;
 
     char operator_ = '=';
     int nombreDeTermes_ = 0;
 
-    void AddVariable(int index, double coeff);
+    void addVariable(int index, double coeff);
 
     /*!
      * @brief
@@ -255,7 +255,7 @@ inline void ExportPaliers(const PALIERS_THERMIQUES& PaliersThermiquesDuPays,
     {
         const int palier = PaliersThermiquesDuPays
                              .NumeroDuPalierDansLEnsembleDesPaliersThermiques[index];
-        newConstraintBuilder.DispatchableProduction(palier, -1.0);
+        newConstraintBuilder.dispatchableProduction(palier, -1.0);
     }
 }
 

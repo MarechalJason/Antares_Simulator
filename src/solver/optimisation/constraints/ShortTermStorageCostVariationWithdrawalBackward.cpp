@@ -6,21 +6,21 @@
 // CostVariationWithdrawal[h] + Withdrawal[h+1] - Withdrawal[h]  >= 0
 void ShortTermStorageCostVariationWithdrawalBackward::buildConstraint(int index)
 {
-    builder.ShortTermCostVariationWithdrawal(index, 1.0)
-      .ShortTermStorageWithdrawal(index, -1.0)
-      .ShortTermStorageWithdrawal(index, 1.0, 1, builder.data.NombreDePasDeTempsPourUneOptimisation)
+    builder.shortTermCostVariationWithdrawal(index, 1.0)
+      .shortTermStorageWithdrawal(index, -1.0)
+      .shortTermStorageWithdrawal(index, 1.0, 1, builder.data.NombreDePasDeTempsPourUneOptimisation)
       .greaterThan()
       .build();
 }
 
-void ShortTermStorageCostVariationWithdrawalBackward::add(unsigned int pdt, unsigned int pays)
+void ShortTermStorageCostVariationWithdrawalBackward::add(unsigned int timeStep, unsigned int area)
 {
-    addStorageConstraint("ShortTermStorageCostVariationWithdrawalBackward", pdt, pays);
+    addStorageConstraint("ShortTermStorageCostVariationWithdrawalBackward", timeStep, area);
 }
 
-int& ShortTermStorageCostVariationWithdrawalBackward::TargetConstraintIndex(int pdt, int index)
+int& ShortTermStorageCostVariationWithdrawalBackward::TargetConstraintIndex(int timeStep, int index)
 {
-    return data.CorrespondanceCntNativesCntOptim[pdt]
+    return data.CorrespondanceCntNativesCntOptim[timeStep]
       .ShortTermStorageCostVariationWithdrawalBackward[index];
 }
 

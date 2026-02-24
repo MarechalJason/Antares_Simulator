@@ -13,7 +13,7 @@ public:
     {
     }
 
-    void add(int pdt, int pays);
+    void add(int timeStep, int area);
 
 private:
     ShortTermStorageData& data;

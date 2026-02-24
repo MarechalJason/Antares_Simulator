@@ -3,25 +3,25 @@
 
 #include "antares/solver/optimisation/constraints/ExchangeBalance.h"
 
-void ExchangeBalance::add(uint32_t pays)
+void ExchangeBalance::add(uint32_t area)
 {
     builder.updateHourWithinWeek(0);
 
-    int interco = data.IndexDebutIntercoOrigine[pays];
-    while (interco >= 0)
+    int interconnection = data.IndexDebutIntercoOrigine[area];
+    while (interconnection >= 0)
     {
-        builder.NTCDirect(interco, 1.0);
-        interco = data.IndexSuivantIntercoOrigine[interco];
+        builder.ntcDirect(interconnection, 1.0);
+        interconnection = data.IndexSuivantIntercoOrigine[interconnection];
     }
-    interco = data.IndexDebutIntercoExtremite[pays];
-    while (interco >= 0)
+    interconnection = data.IndexDebutIntercoExtremite[area];
+    while (interconnection >= 0)
     {
-        builder.NTCDirect(interco, -1.0);
+        builder.ntcDirect(interconnection, -1.0);
 
-        interco = data.IndexSuivantIntercoExtremite[interco];
+        interconnection = data.IndexSuivantIntercoExtremite[interconnection];
     }
 
-    data.NumeroDeContrainteDeSoldeDEchange[pays] = builder.data.nombreDeContraintes;
+    data.NumeroDeContrainteDeSoldeDEchange[area] = builder.data.nombreDeContraintes;
     builder.equalTo();
     builder.build();
 }

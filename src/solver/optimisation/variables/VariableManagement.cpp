@@ -14,7 +14,7 @@ VariableManager::VariableManager(
 {
 }
 
-int VariableManager::GetShiftedTimeStep(int offset, int delta, unsigned int hourInWeek) const
+int VariableManager::getShiftedTimeStep(int offset, int delta, unsigned int hourInWeek) const
 {
     int pdt = hourInWeek + offset;
     const int nbTimeSteps = NombreDePasDeTempsPourUneOptimisation_;
@@ -33,198 +33,198 @@ int VariableManager::GetShiftedTimeStep(int offset, int delta, unsigned int hour
     return pdt;
 }
 
-int& VariableManager::DispatchableProduction(unsigned int index,
+int& VariableManager::dispatchableProduction(unsigned int index,
                                              unsigned int hourInWeek,
                                              int offset,
                                              int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
 
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariableDuPalierThermique[index];
 }
 
-int& VariableManager::NumberOfDispatchableUnits(unsigned int index,
+int& VariableManager::numberOfDispatchableUnits(unsigned int index,
                                                 unsigned int hourInWeek,
                                                 int offset,
                                                 int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .NumeroDeVariableDuNombreDeGroupesEnMarcheDuPalierThermique[index];
 }
 
-int& VariableManager::NumberStoppingDispatchableUnits(unsigned int index,
+int& VariableManager::numberStoppingDispatchableUnits(unsigned int index,
                                                       unsigned int hourInWeek,
                                                       int offset,
                                                       int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .NumeroDeVariableDuNombreDeGroupesQuiSArretentDuPalierThermique[index];
 }
 
-int& VariableManager::NumberStartingDispatchableUnits(unsigned int index,
+int& VariableManager::numberStartingDispatchableUnits(unsigned int index,
                                                       unsigned int hourInWeek,
                                                       int offset,
                                                       int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .NumeroDeVariableDuNombreDeGroupesQuiDemarrentDuPalierThermique[index];
 }
 
-int& VariableManager::NumberBreakingDownDispatchableUnits(unsigned int index,
+int& VariableManager::numberBreakingDownDispatchableUnits(unsigned int index,
                                                           unsigned int hourInWeek,
                                                           int offset,
                                                           int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .NumeroDeVariableDuNombreDeGroupesQuiTombentEnPanneDuPalierThermique[index];
 }
 
-int& VariableManager::NTCDirect(unsigned int index, unsigned int hourInWeek, int offset, int delta)
+int& VariableManager::ntcDirect(unsigned int index, unsigned int hourInWeek, int offset, int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariableDeLInterconnexion[index];
 }
 
-int& VariableManager::IntercoDirectCost(unsigned int index,
+int& VariableManager::interconnectionDirectCost(unsigned int index,
                                         unsigned int hourInWeek,
                                         int offset,
                                         int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .NumeroDeVariableCoutOrigineVersExtremiteDeLInterconnexion[index];
 }
 
-int& VariableManager::IntercoIndirectCost(unsigned int index,
+int& VariableManager::interconnectionIndirectCost(unsigned int index,
                                           unsigned int hourInWeek,
                                           int offset,
                                           int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .NumeroDeVariableCoutExtremiteVersOrigineDeLInterconnexion[index];
 }
 
-int& VariableManager::ShortTermStorageInjection(unsigned int index,
+int& VariableManager::shortTermStorageInjection(unsigned int index,
                                                 unsigned int hourInWeek,
                                                 int offset,
                                                 int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].SIM_ShortTermStorage.InjectionVariable[index];
 }
 
-int& VariableManager::ShortTermStorageWithdrawal(unsigned int index,
+int& VariableManager::shortTermStorageWithdrawal(unsigned int index,
                                                  unsigned int hourInWeek,
                                                  int offset,
                                                  int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].SIM_ShortTermStorage.WithdrawalVariable[index];
 }
 
-int& VariableManager::ShortTermStorageLevel(unsigned int index,
+int& VariableManager::shortTermStorageLevel(unsigned int index,
                                             unsigned int hourInWeek,
                                             int offset,
                                             int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].SIM_ShortTermStorage.LevelVariable[index];
 }
 
-int& VariableManager::ShortTermStorageOverflow(unsigned int index,
+int& VariableManager::shortTermStorageOverflow(unsigned int index,
                                                unsigned int hourInWeek,
                                                int offset,
                                                int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].SIM_ShortTermStorage.OverflowVariable[index];
 }
 
-int& VariableManager::ShortTermStorageCostVariationInjection(unsigned int index,
+int& VariableManager::shortTermStorageCostVariationInjection(unsigned int index,
                                                              unsigned int hourInWeek,
                                                              int offset,
                                                              int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .SIM_ShortTermStorage.CostVariationInjection[index];
 }
 
-int& VariableManager::ShortTermStorageCostVariationWithdrawal(unsigned int index,
+int& VariableManager::shortTermStorageCostVariationWithdrawal(unsigned int index,
                                                               unsigned int hourInWeek,
                                                               int offset,
                                                               int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt]
       .SIM_ShortTermStorage.CostVariationWithdrawal[index];
 }
 
-int& VariableManager::HydProd(unsigned int index, unsigned int hourInWeek, int offset, int delta)
+int& VariableManager::hydroPower(unsigned int index, unsigned int hourInWeek, int offset, int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariablesDeLaProdHyd[index];
 }
 
-int& VariableManager::HydProdDown(unsigned int index,
+int& VariableManager::hydroPowerDown(unsigned int index,
                                   unsigned int hourInWeek,
                                   int offset,
                                   int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariablesVariationHydALaBaisse[index];
 }
 
-int& VariableManager::HydProdUp(unsigned int index, unsigned int hourInWeek, int offset, int delta)
+int& VariableManager::hydroPowerUp(unsigned int index, unsigned int hourInWeek, int offset, int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariablesVariationHydALaHausse[index];
 }
 
-int& VariableManager::Pumping(unsigned int index, unsigned int hourInWeek, int offset, int delta)
+int& VariableManager::pumping(unsigned int index, unsigned int hourInWeek, int offset, int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariablesDePompage[index];
 }
 
-int& VariableManager::HydroLevel(unsigned int index, unsigned int hourInWeek, int offset, int delta)
+int& VariableManager::hydroLevel(unsigned int index, unsigned int hourInWeek, int offset, int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariablesDeNiveau[index];
 }
 
-int& VariableManager::Overflow(unsigned int index, unsigned int hourInWeek, int offset, int delta)
+int& VariableManager::overflow(unsigned int index, unsigned int hourInWeek, int offset, int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariablesDeDebordement[index];
 }
 
-int& VariableManager::FinalStorage(unsigned int index)
+int& VariableManager::finalStorage(unsigned int index)
 {
     return NumeroDeVariableStockFinal_[index];
 }
 
-int& VariableManager::LayerStorage(unsigned area, unsigned layer)
+int& VariableManager::layerStorage(unsigned area, unsigned layer)
 {
     return NumeroDeVariableDeTrancheDeStock_[area][layer];
 }
 
-int& VariableManager::UnsuppliedEnergy(unsigned int index,
+int& VariableManager::unsuppliedEnergy(unsigned int index,
                                        unsigned int hourInWeek,
                                        int offset,
                                        int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariableDefaillancePositive[index];
 }
 
-int& VariableManager::Spillage(unsigned int index, unsigned int hourInWeek, int offset, int delta)
+int& VariableManager::spillage(unsigned int index, unsigned int hourInWeek, int offset, int delta)
 {
-    auto pdt = GetShiftedTimeStep(offset, delta, hourInWeek);
+    auto pdt = getShiftedTimeStep(offset, delta, hourInWeek);
     return CorrespondanceVarNativesVarOptim_[pdt].NumeroDeVariableDefaillanceNegative[index];
 }

@@ -30,11 +30,11 @@ public:
 
     /*!
      * @brief Add variables to the constraint and update constraints Matrix
-     * @param pdt : timestep
-     * @param pays : area
+     * @param timeStep : timestep
+     * @param area : area
      */
 
-    void add(int pdt, int pays);
+    void add(int timeStep, int area);
 
 private:
     AreaBalanceData& data;
