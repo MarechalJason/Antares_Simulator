@@ -3,13 +3,12 @@
 
 #include "antares/solver/optimisation/constraints/HydroPowerSmoothingUsingVariationSum.h"
 
-void HydroPowerSmoothingUsingVariationSum::add(int area,
-                                               const int nombreDePasDeTempsPourUneOptimisation)
+void HydroPowerSmoothingUsingVariationSum::add(int area, const int numberOfTimeSteps)
 {
-    for (int timeStep = 0; timeStep < nombreDePasDeTempsPourUneOptimisation; timeStep++)
+    for (int timeStep = 0; timeStep < numberOfTimeSteps; timeStep++)
     {
         int nextTimeStep = timeStep + 1;
-        if (nextTimeStep >= nombreDePasDeTempsPourUneOptimisation)
+        if (nextTimeStep >= numberOfTimeSteps)
         {
             nextTimeStep = 0;
         }

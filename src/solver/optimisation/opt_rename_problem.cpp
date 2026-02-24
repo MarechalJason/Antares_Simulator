@@ -269,17 +269,17 @@ void VariableNamer::areaBalance(unsigned varIndex)
 
 void ConstraintNamer::flowDissociation(unsigned constrIndex)
 {
-    setLinkElementName(constrIndex, "flowDissociation");
+    setLinkElementName(constrIndex, "FlowDissociation");
 }
 
 void ConstraintNamer::csrFlowDissociation(unsigned constrIndex)
 {
-    setLinkElementName(constrIndex, "csrFlowDissociation");
+    setLinkElementName(constrIndex, "CsrFlowDissociation");
 }
 
 void ConstraintNamer::csrAreaBalance(unsigned constrIndex)
 {
-    setAreaElementNameHour(constrIndex, "csrAreaBalance");
+    setAreaElementNameHour(constrIndex, "CsrAreaBalance");
 }
 
 void ConstraintNamer::areaBalance(unsigned constrIndex)
@@ -289,7 +289,7 @@ void ConstraintNamer::areaBalance(unsigned constrIndex)
 
 void ConstraintNamer::fictiveLoads(unsigned constrIndex)
 {
-    setAreaElementNameHour(constrIndex, "fictiveLoads");
+    setAreaElementNameHour(constrIndex, "FictiveLoads");
 }
 
 void ConstraintNamer::maxUnsuppliedEnergy(unsigned constrIndex)
@@ -304,47 +304,47 @@ void ConstraintNamer::hydroPower(unsigned constrIndex)
 
 void ConstraintNamer::hydroPowerSmoothingUsingVariationSum(unsigned constrIndex)
 {
-    setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationSum");
+    setAreaElementNameHour(constrIndex, "HydroPowerSmoothingUsingVariationSum");
 }
 
 void ConstraintNamer::hydroPowerSmoothingUsingVariationMaxDown(unsigned constrIndex)
 {
-    setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationMaxDown");
+    setAreaElementNameHour(constrIndex, "HydroPowerSmoothingUsingVariationMaxDown");
 }
 
 void ConstraintNamer::hydroPowerSmoothingUsingVariationMaxUp(unsigned constrIndex)
 {
-    setAreaElementNameHour(constrIndex, "hydroPowerSmoothingUsingVariationMaxUp");
+    setAreaElementNameHour(constrIndex, "HydroPowerSmoothingUsingVariationMaxUp");
 }
 
 void ConstraintNamer::minHydroPower(unsigned constrIndex)
 {
-    setAreaElementNameWeek(constrIndex, "minHydroPower");
+    setAreaElementNameWeek(constrIndex, "MinHydroPower");
 }
 
 void ConstraintNamer::maxHydroPower(unsigned constrIndex)
 {
-    setAreaElementNameWeek(constrIndex, "maxHydroPower");
+    setAreaElementNameWeek(constrIndex, "MaxHydroPower");
 }
 
 void ConstraintNamer::maxPumping(unsigned constrIndex)
 {
-    setAreaElementNameWeek(constrIndex, "maxPumping");
+    setAreaElementNameWeek(constrIndex, "MaxPumping");
 }
 
 void ConstraintNamer::areaHydroLevel(unsigned constrIndex)
 {
-    setAreaElementNameHour(constrIndex, "areaHydroLevel");
+    setAreaElementNameHour(constrIndex, "AreaHydroLevel");
 }
 
 void ConstraintNamer::finalStockEquivalent(unsigned constrIndex)
 {
-    setAreaElementNameHour(constrIndex, "finalStockEquivalent");
+    setAreaElementNameHour(constrIndex, "FinalStockEquivalent");
 }
 
 void ConstraintNamer::finalStockExpression(unsigned constrIndex)
 {
-    setAreaElementNameHour(constrIndex, "finalStockExpression");
+    setAreaElementNameHour(constrIndex, "FinalStockExpression");
 }
 
 void ConstraintNamer::bindingConstraint(unsigned constrIndex,
@@ -374,35 +374,35 @@ void ConstraintNamer::bindingConstraintWeek(unsigned constrIndex, const std::str
 void ConstraintNamer::nbUnitsOutageLessThanNbUnitsStop(unsigned constrIndex,
                                                        const std::string& clusterName)
 {
-    setThermalClusterElementName(constrIndex, "nbUnitsOutageLessThanNbUnitsStop", clusterName);
+    setThermalClusterElementName(constrIndex, "NbUnitsOutageLessThanNbUnitsStop", clusterName);
 }
 
 void ConstraintNamer::nbDispUnitsMinBoundSinceMinUpTime(unsigned constrIndex,
                                                         const std::string& clusterName)
 {
-    setThermalClusterElementName(constrIndex, "nbDispUnitsMinBoundSinceMinUpTime", clusterName);
+    setThermalClusterElementName(constrIndex, "NbDispUnitsMinBoundSinceMinUpTime", clusterName);
 }
 
 void ConstraintNamer::minDownTime(unsigned constrIndex, const std::string& clusterName)
 {
-    setThermalClusterElementName(constrIndex, "minDownTime", clusterName);
+    setThermalClusterElementName(constrIndex, "MinDownTime", clusterName);
 }
 
 void ConstraintNamer::pMaxDispatchableGeneration(unsigned constrIndex,
                                                  const std::string& clusterName)
 {
-    setThermalClusterElementName(constrIndex, "pMaxDispatchableGeneration", clusterName);
+    setThermalClusterElementName(constrIndex, "PMaxDispatchableGeneration", clusterName);
 }
 
 void ConstraintNamer::pMinDispatchableGeneration(unsigned constrIndex,
                                                  const std::string& clusterName)
 {
-    setThermalClusterElementName(constrIndex, "pMinDispatchableGeneration", clusterName);
+    setThermalClusterElementName(constrIndex, "PMinDispatchableGeneration", clusterName);
 }
 
 void ConstraintNamer::consistenceNODU(unsigned constrIndex, const std::string& clusterName)
 {
-    setThermalClusterElementName(constrIndex, "consistenceNODU", clusterName);
+    setThermalClusterElementName(constrIndex, "ConsistenceNODU", clusterName);
 }
 
 void ConstraintNamer::shortTermStorageLevel(unsigned constrIndex, const std::string& sts_name)

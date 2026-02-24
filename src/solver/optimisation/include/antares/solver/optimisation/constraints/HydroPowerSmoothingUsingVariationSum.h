@@ -17,5 +17,5 @@ public:
      * @brief Add variables to the constraint and update constraints Matrix
      * @param area : area
      */
-    void add(int area, const int nombreDePasDeTempsPourUneOptimisation);
+    void add(int area, const int numberOfTimeSteps);
 };
