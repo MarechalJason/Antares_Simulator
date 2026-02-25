@@ -201,29 +201,40 @@ struct convert<Antares::IO::Inputs::YmlModel::Objective>
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::Model>
 {
-    static bool decode(const Node& node, Antares::IO::Inputs::YmlModel::Model& rhs)
+    static bool decode(const Node& InNode, Antares::IO::Inputs::YmlModel::Model& rhs)
     {
+        auto node = InNode;
+
         if (!node.IsMap())
         {
             return false;
         }
         rhs.id = node["id"].as<std::string>();
+        auto tag = node.Tag() + "\n" + "model:" + rhs.id;
         rhs.description = node["description"].as<std::string>("");
+        node["parameters"].SetTag(tag);
         rhs.parameters = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Parameter>>(
           node["parameters"]);
+        node["variables"].SetTag(tag);
         rhs.variables = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Variable>>(
           node["variables"]);
+        node["ports"].SetTag(tag);
         rhs.ports = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Port>>(
           node["ports"]);
+        node["port-field-definitions"].SetTag(tag);
         rhs.port_field_definitions = as_fallback_default<
           std::vector<Antares::IO::Inputs::YmlModel::PortFieldDefinition>>(
           node["port-field-definitions"]);
+        node["constraints"].SetTag(tag);
         rhs.constraints = as_fallback_default<
           std::vector<Antares::IO::Inputs::YmlModel::Constraint>>(node["constraints"]);
+        node["binding-constraints"].SetTag(tag);
         rhs.binding_constraints = as_fallback_default<
           std::vector<Antares::IO::Inputs::YmlModel::Constraint>>(node["binding-constraints"]);
+        node["objective-contributions"].SetTag(tag);
         rhs.objectives = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Objective>>(
           node["objective-contributions"]);
+        node["extra-outputs"].SetTag(tag);
         rhs.extra_outputs = as_fallback_default<
           std::vector<Antares::IO::Inputs::YmlModel::ExtraOutput>>(node["extra-outputs"]);
         return true;
@@ -238,7 +249,8 @@ struct FieldMatching
 
 inline bool convertConnectionField(const Node& node,
                                    const std::string& connectionName,
-                                   std::vector<FieldMatching>& fieldNames)
+                                   std::vector<FieldMatching>& fieldNames,
+                                   const std::string& tag)
 {
     if (node[connectionName].IsDefined())
     {
@@ -269,7 +281,8 @@ template<>
 struct convert<Antares::IO::Inputs::YmlModel::PortType>
 {
     static bool convertAreaConnectionFields(const Node& node,
-                                            Antares::IO::Inputs::YmlModel::PortType& rhs)
+                                            Antares::IO::Inputs::YmlModel::PortType& rhs,
+                                            const std::string& tag)
     {
         rhs.area_connection = {};
         std::vector<FieldMatching> areaConnection;
@@ -277,11 +290,12 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
         areaConnection.emplace_back("spillage-bound", rhs.area_connection.spillage_bound);
         areaConnection.emplace_back("unsupplied-energy-bound",
                                     rhs.area_connection.unsupplied_energy_bound);
-        return convertConnectionField(node, "area-connection", areaConnection);
+        return convertConnectionField(node, "area-connection", areaConnection, tag);
     }
 
     static bool convertThermalCapacityField(const Node& node,
-                                            Antares::IO::Inputs::YmlModel::PortType& rhs)
+                                            Antares::IO::Inputs::YmlModel::PortType& rhs,
+                                            const std::string& tag)
     {
         std::vector<FieldMatching> thermalCapacityConnection;
 
@@ -289,26 +303,30 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
                                                rhs.thermal_capacity_connection_field);
         return convertConnectionField(node,
                                       "thermal-capacity-connection",
-                                      thermalCapacityConnection);
+                                      thermalCapacityConnection,
+                                      tag);
     }
 
-    static bool decode(const Node& node, Antares::IO::Inputs::YmlModel::PortType& rhs)
+    static bool decode(const Node& InNode, Antares::IO::Inputs::YmlModel::PortType& rhs)
     {
+        auto node = InNode;
         if (!node.IsMap())
         {
             return false;
         }
         rhs.id = node["id"].as<std::string>();
+        const auto tag = node.Tag() + "\n" + "port-type:" + rhs.id;
         rhs.description = node["description"].as<std::string>("");
-        for (const auto& field: node["fields"])
+        for (auto field: node["fields"])
         {
+            field["id"].SetTag(tag);
             rhs.fields.push_back(field["id"].as<std::string>());
         }
-        if (!convertThermalCapacityField(node, rhs))
+        if (!convertThermalCapacityField(node, rhs, tag))
         {
             return false;
         }
-        if (!convertAreaConnectionFields(node, rhs))
+        if (!convertAreaConnectionFields(node, rhs, tag))
         {
             return false;
         }
@@ -320,13 +338,19 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::Library>
 {
-    static bool decode(const Node& node, Antares::IO::Inputs::YmlModel::Library& rhs)
+    static bool decode(const Node& InNode, Antares::IO::Inputs::YmlModel::Library& rhs)
     {
+        auto node = InNode;
+        auto tag = "library:" + rhs.id;
         rhs.id = node["id"].as<std::string>();
+
         rhs.description = node["description"].as<std::string>("");
+        node["port-types"].SetTag(tag);
         rhs.port_types = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::PortType>>(
           node["port-types"]);
-        rhs.models = node["models"].as<std::vector<Antares::IO::Inputs::YmlModel::Model>>();
+        auto models = node["models"];
+        models.SetTag(tag);
+        rhs.models = models.as<std::vector<Antares::IO::Inputs::YmlModel::Model>>();
         return true;
     }
 };

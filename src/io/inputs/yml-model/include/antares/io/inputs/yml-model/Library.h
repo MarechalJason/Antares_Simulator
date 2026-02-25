@@ -10,14 +10,8 @@
 namespace Antares::IO::Inputs::YmlModel
 {
 
-struct Context
-{
-    std::string library;
-    std::string model;
-};
-
 // Define structures
-struct Parameter: Context
+struct Parameter
 {
     std::string id;
     bool time_dependent;
@@ -47,7 +41,7 @@ inline std::string toString(const ValueType& value_type)
     }
 }
 
-struct Variable: Context
+struct Variable
 {
     std::string id;
     std::string lower_bound;
@@ -58,40 +52,40 @@ struct Variable: Context
     std::string location;
 };
 
-struct Port: Context
+struct Port
 {
     std::string id;
     std::string type;
 };
 
-struct PortFieldDefinition: Context
+struct PortFieldDefinition
 {
     std::string port;
     std::string field;
     std::string definition;
 };
 
-struct Constraint: Context
+struct Constraint
 {
     std::string id;
     std::string expression;
     std::string location;
 };
 
-struct ExtraOutput: Context
+struct ExtraOutput
 {
     std::string id;
     std::string expression;
 };
 
-struct Objective: Context
+struct Objective
 {
     std::string id;
     std::string expression;
     std::string location;
 };
 
-struct Model: Context
+struct Model
 {
     std::string id;
     std::string description;
@@ -105,14 +99,14 @@ struct Model: Context
     std::vector<ExtraOutput> extra_outputs;
 };
 
-struct AreaConnection: Context
+struct AreaConnection
 {
     std::string injection;
     std::string spillage_bound;
     std::string unsupplied_energy_bound;
 };
 
-struct PortType: Context
+struct PortType
 {
     std::string id;
     std::string description;
@@ -121,7 +115,7 @@ struct PortType: Context
     AreaConnection area_connection;
 };
 
-struct Library: Context
+struct Library
 {
     std::string id;
     std::string description;
