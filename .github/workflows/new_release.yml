@@ -119,4 +119,4 @@ jobs:
       release_name: ${{ github.event.inputs.release_name }}
       simtest_repo: MarechalJason/SimTest
     secrets:
-      SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
+      SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT }}
