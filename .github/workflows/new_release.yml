@@ -106,7 +106,6 @@ jobs:
       - windows
       - centos7
       - oracle8
-      - user_guide
     # Only run this job if the `generate_results` input is true AND all the required build jobs succeeded.
     # If you'd like to generate results even when some builds fail, replace this condition with a less strict one
     # (for example, exclude some jobs) or add a new input like `allow_partial_results` to control that behavior.
