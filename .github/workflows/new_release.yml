@@ -117,6 +117,6 @@ jobs:
       release_tag: ${{ github.event.inputs.release_tag }}
       release_url: ${{ needs.release.outputs.release_url }}
       release_name: ${{ github.event.inputs.release_name }}
-      simtest_repo: MarechalJason/SimTest
+      simtest_repo: Antares_Simulator/SimTest
     secrets:
       SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT }}
