@@ -1,7 +1,6 @@
 // Copyright 2007-2026, RTE (https://www.rte-france.com)
 // SPDX-License-Identifier: MPL-2.0
 
-
 #include "antares/modeler-optimisation-container/OptimEntityContainer.h"
 
 #include "antares/optimisation/linear-problem-api/ILinearProblemData.h"
@@ -49,6 +48,8 @@ void OptimEntityContainer::addFromSystemComponents(const std::vector<Component>&
         }
         optimComponents_.push_back(
           {.modelVariableGlobalIndices = modelVariableGlobalIndices,
+           .modelConstraintsGlobalIndices = {},
+           .modelConstraintsVariability = {},
            .evaluationContext = Optimisation::EvaluationContext(
              &component,
              data_,
