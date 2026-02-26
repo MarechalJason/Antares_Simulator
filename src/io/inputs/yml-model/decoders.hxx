@@ -9,7 +9,6 @@
 
 #include "antares/io/inputs/yml-model/Library.h"
 
-#include "../../../solver/simulation/include/antares/solver/simulation/adequacy_patch_runtime_data.h"
 #include "yaml-cpp/yaml.h"
 
 // Implement convert specializations
@@ -251,7 +250,7 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
             if (!child_node[fieldName].IsDefined())
             {
                 throw KeyNotFound(child_node.Mark(),
-                                  fmt::format("In area-connection section of library '{}', '{}' "
+                                  fmt::format("In 'area-connection' section in library '{}', '{}' "
                                               "field must be specified even if it has not a value.",
                                               "",
                                               fieldName));
