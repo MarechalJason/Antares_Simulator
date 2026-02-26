@@ -113,7 +113,7 @@ jobs:
     with:
       # Map inputs expected by the external reusable workflow
       release_tag: ${{ github.event.inputs.release_tag }}
-      antares_tag: ${{ needs.release.outputs.tag != '' && needs.release.outputs.tag || github.event.inputs.release_tag }}
+      antares_tag: ${{ github.event.inputs.release_tag }}
       antares_tests_tag: ''
       target_branch: ${{ inputs.target_branch }}
     # Note: the external reusable workflow currently does not declare secrets in its 'workflow_call',
