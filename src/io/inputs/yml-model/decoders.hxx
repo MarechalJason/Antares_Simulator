@@ -249,11 +249,13 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
         {
             if (!child_node[fieldName].IsDefined())
             {
-                throw KeyNotFound(child_node.Mark(),
-                                  fmt::format("In 'area-connection' section in library '{}', '{}' "
-                                              "field must be specified even if it has not a value.",
-                                              "",
-                                              fieldName));
+                throw KeyNotFound(
+                  child_node.Mark(),
+                  fmt::format("In 'area-connection' section in library '{}', '{}' "
+                              "field must be specified even if it has not a value.\n {}",
+                              "",
+                              fieldName,
+                              child_node.Tag()));
             }
         };
 
