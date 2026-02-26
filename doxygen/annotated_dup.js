@@ -75,13 +75,11 @@ var annotated_dup =
         [ "AreaLink", "classAntares_1_1Data_1_1AreaLink.html", "classAntares_1_1Data_1_1AreaLink" ],
         [ "CompareLinkName", "structAntares_1_1Data_1_1CompareLinkName.html", "structAntares_1_1Data_1_1CompareLinkName" ],
         [ "AreaScratchpad", "classAntares_1_1Data_1_1AreaScratchpad.html", "classAntares_1_1Data_1_1AreaScratchpad" ],
-        [ "AreaUI", "classAntares_1_1Data_1_1AreaUI.html", "classAntares_1_1Data_1_1AreaUI" ],
         [ "BindingConstraint", "classAntares_1_1Data_1_1BindingConstraint.html", "classAntares_1_1Data_1_1BindingConstraint" ],
         [ "CompareBindingConstraintName", "structAntares_1_1Data_1_1CompareBindingConstraintName.html", "structAntares_1_1Data_1_1CompareBindingConstraintName" ],
         [ "BindingConstraintGroup", "classAntares_1_1Data_1_1BindingConstraintGroup.html", "classAntares_1_1Data_1_1BindingConstraintGroup" ],
         [ "BindingConstraintGroupRepository", "classAntares_1_1Data_1_1BindingConstraintGroupRepository.html", "classAntares_1_1Data_1_1BindingConstraintGroupRepository" ],
         [ "BindingConstraintLoader", "classAntares_1_1Data_1_1BindingConstraintLoader.html", "classAntares_1_1Data_1_1BindingConstraintLoader" ],
-        [ "BindingConstraintSaver", "classAntares_1_1Data_1_1BindingConstraintSaver.html", "classAntares_1_1Data_1_1BindingConstraintSaver" ],
         [ "BindingConstraintsRepository", "classAntares_1_1Data_1_1BindingConstraintsRepository.html", "classAntares_1_1Data_1_1BindingConstraintsRepository" ],
         [ "WhoseNameContains", "structAntares_1_1Data_1_1WhoseNameContains.html", "structAntares_1_1Data_1_1WhoseNameContains" ],
         [ "BindingConstraintStructures", "structAntares_1_1Data_1_1BindingConstraintStructures.html", "structAntares_1_1Data_1_1BindingConstraintStructures" ],
@@ -96,7 +94,6 @@ var annotated_dup =
         [ "TimeSeriesToCStr< 16 >", "structAntares_1_1Data_1_1TimeSeriesToCStr_3_0116_01_4.html", null ],
         [ "TimeSeriesToCStr< 32 >", "structAntares_1_1Data_1_1TimeSeriesToCStr_3_0132_01_4.html", null ],
         [ "StudyHeader", "classAntares_1_1Data_1_1StudyHeader.html", "classAntares_1_1Data_1_1StudyHeader" ],
-        [ "LayerData", "classAntares_1_1Data_1_1LayerData.html", "classAntares_1_1Data_1_1LayerData" ],
         [ "StudyLoadOptions", "classAntares_1_1Data_1_1StudyLoadOptions.html", "classAntares_1_1Data_1_1StudyLoadOptions" ],
         [ "Output", "classAntares_1_1Data_1_1Output.html", "classAntares_1_1Data_1_1Output" ],
         [ "Parameters", "classAntares_1_1Data_1_1Parameters.html", "classAntares_1_1Data_1_1Parameters" ],
@@ -129,7 +126,6 @@ var annotated_dup =
         [ "SetHandlerAreas", "classAntares_1_1Data_1_1SetHandlerAreas.html", "classAntares_1_1Data_1_1SetHandlerAreas" ],
         [ "SimulationComments", "classAntares_1_1Data_1_1SimulationComments.html", "classAntares_1_1Data_1_1SimulationComments" ],
         [ "Study", "classAntares_1_1Data_1_1Study.html", "classAntares_1_1Data_1_1Study" ],
-        [ "UIRuntimeInfo", "classAntares_1_1Data_1_1UIRuntimeInfo.html", "classAntares_1_1Data_1_1UIRuntimeInfo" ],
         [ "VariablePrintInfo", "classAntares_1_1Data_1_1VariablePrintInfo.html", "classAntares_1_1Data_1_1VariablePrintInfo" ],
         [ "variablePrintInfoCollector", "classAntares_1_1Data_1_1variablePrintInfoCollector.html", "classAntares_1_1Data_1_1variablePrintInfoCollector" ],
         [ "AllVariablesPrintInfo", "classAntares_1_1Data_1_1AllVariablesPrintInfo.html", "classAntares_1_1Data_1_1AllVariablesPrintInfo" ],
@@ -298,6 +294,8 @@ var annotated_dup =
             [ "ConnectionEntry", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1ConnectionEntry.html", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1ConnectionEntry" ],
             [ "Connection", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1Connection.html", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1Connection" ],
             [ "AreaConnection", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1AreaConnection.html", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1AreaConnection" ],
+            [ "ThermalComponent", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1ThermalComponent.html", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1ThermalComponent" ],
+            [ "ThermalCapacityConnection", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1ThermalCapacityConnection.html", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1ThermalCapacityConnection" ],
             [ "System", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1System.html", "structAntares_1_1IO_1_1Inputs_1_1YmlSystem_1_1System" ]
           ] ]
         ] ],
@@ -323,6 +321,7 @@ var annotated_dup =
           [ "Expression", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1Expression.html", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1Expression" ],
           [ "ParameterTypeAndValue", "structAntares_1_1ModelerStudy_1_1SystemModel_1_1ParameterTypeAndValue.html", "structAntares_1_1ModelerStudy_1_1SystemModel_1_1ParameterTypeAndValue" ],
           [ "ComponentData", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1ComponentData.html", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1ComponentData" ],
+          [ "ThermalComponent", "structAntares_1_1ModelerStudy_1_1SystemModel_1_1ThermalComponent.html", "structAntares_1_1ModelerStudy_1_1SystemModel_1_1ThermalComponent" ],
           [ "Component", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1Component.html", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1Component" ],
           [ "ComponentBuilder", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1ComponentBuilder.html", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1ComponentBuilder" ],
           [ "ConnectionEnd", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1ConnectionEnd.html", "classAntares_1_1ModelerStudy_1_1SystemModel_1_1ConnectionEnd" ],
@@ -424,6 +423,7 @@ var annotated_dup =
         [ "ComponentToAreaConnectionFiller", "classAntares_1_1Optimization_1_1ComponentToAreaConnectionFiller.html", "classAntares_1_1Optimization_1_1ComponentToAreaConnectionFiller" ],
         [ "LegacyFiller", "classAntares_1_1Optimization_1_1LegacyFiller.html", "classAntares_1_1Optimization_1_1LegacyFiller" ],
         [ "LegacyOrtoolsLinearProblem", "classAntares_1_1Optimization_1_1LegacyOrtoolsLinearProblem.html", "classAntares_1_1Optimization_1_1LegacyOrtoolsLinearProblem" ],
+        [ "ThermalCapacityFiller", "classAntares_1_1Optimization_1_1ThermalCapacityFiller.html", "classAntares_1_1Optimization_1_1ThermalCapacityFiller" ],
         [ "BasisStatusImpl", "classAntares_1_1Optimization_1_1BasisStatusImpl.html", "classAntares_1_1Optimization_1_1BasisStatusImpl" ],
         [ "BasisStatus", "classAntares_1_1Optimization_1_1BasisStatus.html", "classAntares_1_1Optimization_1_1BasisStatus" ]
       ] ],
@@ -821,24 +821,45 @@ var annotated_dup =
       [ "OptimizationInfo", "structBenchmarking_1_1OptimizationInfo.html", "structBenchmarking_1_1OptimizationInfo" ],
       [ "SimulationInfoCollector", "classBenchmarking_1_1SimulationInfoCollector.html", "classBenchmarking_1_1SimulationInfoCollector" ]
     ] ],
-    [ "check_general", null, [
-      [ "check_interface", "classcheck__general_1_1check__interface.html", "classcheck__general_1_1check__interface" ],
-      [ "check_list", "classcheck__general_1_1check__list.html", "classcheck__general_1_1check__list" ]
-    ] ],
-    [ "check_hydro_level", null, [
-      [ "check_hydro_level", "classcheck__hydro__level_1_1check__hydro__level.html", "classcheck__hydro__level_1_1check__hydro__level" ]
-    ] ],
-    [ "check_logs_content", null, [
-      [ "check_logs_content", "classcheck__logs__content_1_1check__logs__content.html", "classcheck__logs__content_1_1check__logs__content" ]
-    ] ],
-    [ "check_mps_existence", null, [
-      [ "check_mps_existence", "classcheck__mps__existence_1_1check__mps__existence.html", "classcheck__mps__existence_1_1check__mps__existence" ]
-    ] ],
-    [ "check_no_mps", null, [
-      [ "check_no_mps", "classcheck__no__mps_1_1check__no__mps.html", "classcheck__no__mps_1_1check__no__mps" ]
-    ] ],
-    [ "compare_mps_files", null, [
-      [ "compare_mps_files", "classcompare__mps__files_1_1compare__mps__files.html", "classcompare__mps__files_1_1compare__mps__files" ]
+    [ "check_on_results", null, [
+      [ "check_general", null, [
+        [ "check_interface", "classcheck__on__results_1_1check__general_1_1check__interface.html", "classcheck__on__results_1_1check__general_1_1check__interface" ],
+        [ "check_list", "classcheck__on__results_1_1check__general_1_1check__list.html", "classcheck__on__results_1_1check__general_1_1check__list" ]
+      ] ],
+      [ "check_hydro_level", null, [
+        [ "check_hydro_level", "classcheck__on__results_1_1check__hydro__level_1_1check__hydro__level.html", "classcheck__on__results_1_1check__hydro__level_1_1check__hydro__level" ]
+      ] ],
+      [ "check_logs_content", null, [
+        [ "check_logs_content", "classcheck__on__results_1_1check__logs__content_1_1check__logs__content.html", "classcheck__on__results_1_1check__logs__content_1_1check__logs__content" ]
+      ] ],
+      [ "check_mps_existence", null, [
+        [ "check_mps_existence", "classcheck__on__results_1_1check__mps__existence_1_1check__mps__existence.html", "classcheck__on__results_1_1check__mps__existence_1_1check__mps__existence" ]
+      ] ],
+      [ "check_no_mps", null, [
+        [ "check_no_mps", "classcheck__on__results_1_1check__no__mps_1_1check__no__mps.html", "classcheck__on__results_1_1check__no__mps_1_1check__no__mps" ]
+      ] ],
+      [ "compare_mps_files", null, [
+        [ "compare_mps_files", "classcheck__on__results_1_1compare__mps__files_1_1compare__mps__files.html", "classcheck__on__results_1_1compare__mps__files_1_1compare__mps__files" ]
+      ] ],
+      [ "integrity_compare", null, [
+        [ "integrity_compare", "classcheck__on__results_1_1integrity__compare_1_1integrity__compare.html", "classcheck__on__results_1_1integrity__compare_1_1integrity__compare" ]
+      ] ],
+      [ "output_compare", null, [
+        [ "output_compare", "classcheck__on__results_1_1output__compare_1_1output__compare.html", "classcheck__on__results_1_1output__compare_1_1output__compare" ]
+      ] ],
+      [ "sim_return_code", null, [
+        [ "simulation_success", "classcheck__on__results_1_1sim__return__code_1_1simulation__success.html", "classcheck__on__results_1_1sim__return__code_1_1simulation__success" ]
+      ] ],
+      [ "tolerances", null, [
+        [ "Tolerances", "classcheck__on__results_1_1tolerances_1_1Tolerances.html", "classcheck__on__results_1_1tolerances_1_1Tolerances" ],
+        [ "Linux_tolerances", "classcheck__on__results_1_1tolerances_1_1Linux__tolerances.html", "classcheck__on__results_1_1tolerances_1_1Linux__tolerances" ],
+        [ "Win_tolerances", "classcheck__on__results_1_1tolerances_1_1Win__tolerances.html", "classcheck__on__results_1_1tolerances_1_1Win__tolerances" ]
+      ] ],
+      [ "unfeasible_problem", null, [
+        [ "weeks_in_year", "classcheck__on__results_1_1unfeasible__problem_1_1weeks__in__year.html", "classcheck__on__results_1_1unfeasible__problem_1_1weeks__in__year" ],
+        [ "behavior_flag", "classcheck__on__results_1_1unfeasible__problem_1_1behavior__flag.html", "classcheck__on__results_1_1unfeasible__problem_1_1behavior__flag" ],
+        [ "unfeasible_problem", "classcheck__on__results_1_1unfeasible__problem_1_1unfeasible__problem.html", "classcheck__on__results_1_1unfeasible__problem_1_1unfeasible__problem" ]
+      ] ]
     ] ],
     [ "cucumber_collector", null, [
       [ "cucumberCollector", "classcucumber__collector_1_1cucumberCollector.html", "classcucumber__collector_1_1cucumberCollector" ]
@@ -875,9 +896,6 @@ var annotated_dup =
       [ "EventsRegistry", "classFSWalker_1_1EventsRegistry.html", "classFSWalker_1_1EventsRegistry" ],
       [ "Statistics", "classFSWalker_1_1Statistics.html", "classFSWalker_1_1Statistics" ]
     ] ],
-    [ "integrity_compare", null, [
-      [ "integrity_compare", "classintegrity__compare_1_1integrity__compare.html", "classintegrity__compare_1_1integrity__compare" ]
-    ] ],
     [ "json_collector", null, [
       [ "error", "classjson__collector_1_1error.html", "classjson__collector_1_1error" ],
       [ "checksRetriever", "classjson__collector_1_1checksRetriever.html", "classjson__collector_1_1checksRetriever" ],
@@ -890,14 +908,8 @@ var annotated_dup =
     [ "modified_inode", null, [
       [ "UserData", "classmodified__inode_1_1UserData.html", "classmodified__inode_1_1UserData" ]
     ] ],
-    [ "output_compare", null, [
-      [ "output_compare", "classoutput__compare_1_1output__compare.html", "classoutput__compare_1_1output__compare" ]
-    ] ],
     [ "results_remover", null, [
       [ "results_remover", "classresults__remover_1_1results__remover.html", "classresults__remover_1_1results__remover" ]
-    ] ],
-    [ "sim_return_code", null, [
-      [ "simulation_success", "classsim__return__code_1_1simulation__success.html", "classsim__return__code_1_1simulation__success" ]
     ] ],
     [ "solver_input_handler", null, [
       [ "solver_input_handler", "classsolver__input__handler_1_1solver__input__handler.html", "classsolver__input__handler_1_1solver__input__handler" ]
@@ -923,16 +935,6 @@ var annotated_dup =
       ] ],
       [ "BasisStatus", "classTest_1_1BasisStatus.html", "classTest_1_1BasisStatus" ]
     ] ],
-    [ "tolerances", null, [
-      [ "Tolerances", "classtolerances_1_1Tolerances.html", "classtolerances_1_1Tolerances" ],
-      [ "Linux_tolerances", "classtolerances_1_1Linux__tolerances.html", "classtolerances_1_1Linux__tolerances" ],
-      [ "Win_tolerances", "classtolerances_1_1Win__tolerances.html", "classtolerances_1_1Win__tolerances" ]
-    ] ],
-    [ "unfeasible_problem", null, [
-      [ "weeks_in_year", "classunfeasible__problem_1_1weeks__in__year.html", "classunfeasible__problem_1_1weeks__in__year" ],
-      [ "behavior_flag", "classunfeasible__problem_1_1behavior__flag.html", "classunfeasible__problem_1_1behavior__flag" ],
-      [ "unfeasible_problem", "classunfeasible__problem_1_1unfeasible__problem.html", "classunfeasible__problem_1_1unfeasible__problem" ]
-    ] ],
     [ "VariableManagement", null, [
       [ "VariableManager", "classVariableManagement_1_1VariableManager.html", "classVariableManagement_1_1VariableManager" ]
     ] ],
@@ -957,6 +959,8 @@ var annotated_dup =
       [ "convert< Antares::IO::Inputs::YmlSystem::Component >", "structYAML_1_1convert_3_01Antares_1_1IO_1_1Inputs_1_1YmlSystem_1_1Component_01_4.html", null ],
       [ "convert< Antares::IO::Inputs::YmlSystem::Connection >", "structYAML_1_1convert_3_01Antares_1_1IO_1_1Inputs_1_1YmlSystem_1_1Connection_01_4.html", null ],
       [ "convert< Antares::IO::Inputs::YmlSystem::AreaConnection >", "structYAML_1_1convert_3_01Antares_1_1IO_1_1Inputs_1_1YmlSystem_1_1AreaConnection_01_4.html", null ],
+      [ "convert< Antares::IO::Inputs::YmlSystem::ThermalComponent >", "structYAML_1_1convert_3_01Antares_1_1IO_1_1Inputs_1_1YmlSystem_1_1ThermalComponent_01_4.html", null ],
+      [ "convert< Antares::IO::Inputs::YmlSystem::ThermalCapacityConnection >", "structYAML_1_1convert_3_01Antares_1_1IO_1_1Inputs_1_1YmlSystem_1_1ThermalCapacityConnection_01_4.html", null ],
       [ "convert< Antares::IO::Inputs::YmlSystem::System >", "structYAML_1_1convert_3_01Antares_1_1IO_1_1Inputs_1_1YmlSystem_1_1System_01_4.html", null ],
       [ "convert< Antares::Solver::ModelerParameters >", "structYAML_1_1convert_3_01Antares_1_1Solver_1_1ModelerParameters_01_4.html", null ],
       [ "convert< Vec3 >", "structYAML_1_1convert_3_01Vec3_01_4.html", null ],
@@ -1007,7 +1011,6 @@ var annotated_dup =
     [ "build_eval_visitor_fixture", "structbuild__eval__visitor__fixture.html", "structbuild__eval__visitor__fixture" ],
     [ "CellColumnData", "classCellColumnData.html", "classCellColumnData" ],
     [ "CmdLineOptionsFixture", "structCmdLineOptionsFixture.html", "structCmdLineOptionsFixture" ],
-    [ "commonFixture", "structcommonFixture.html", "structcommonFixture" ],
     [ "CommonFixture", "structCommonFixture.html", "structCommonFixture" ],
     [ "ComparisonFixture", "structComparisonFixture.html", "structComparisonFixture" ],
     [ "ComponentBuilderCreationFixture", "structComponentBuilderCreationFixture.html", "structComponentBuilderCreationFixture" ],
@@ -1059,6 +1062,7 @@ var annotated_dup =
     [ "ExchangeBalance", "classExchangeBalance.html", "classExchangeBalance" ],
     [ "ExchangeBalanceData", "structExchangeBalanceData.html", "structExchangeBalanceData" ],
     [ "ExchangeBalanceGroup", "classExchangeBalanceGroup.html", "classExchangeBalanceGroup" ],
+    [ "ExpectedConstraint", "structExpectedConstraint.html", "structExpectedConstraint" ],
     [ "ExpectedResult", "structExpectedResult.html", "structExpectedResult" ],
     [ "ExprBaseVisitor", "classExprBaseVisitor.html", "classExprBaseVisitor" ],
     [ "ExprLexer", "classExprLexer.html", "classExprLexer" ],
@@ -1068,6 +1072,7 @@ var annotated_dup =
     [ "fake_buffer_factory", "classfake__buffer__factory.html", "classfake__buffer__factory" ],
     [ "FictitiousLoad", "classFictitiousLoad.html", "classFictitiousLoad" ],
     [ "FictitiousLoadData", "structFictitiousLoadData.html", "structFictitiousLoadData" ],
+    [ "FillerFixture", "structFillerFixture.html", "structFillerFixture" ],
     [ "FinalStockEquivalent", "classFinalStockEquivalent.html", "classFinalStockEquivalent" ],
     [ "FinalStockEquivalentData", "structFinalStockEquivalentData.html", "structFinalStockEquivalentData" ],
     [ "FinalStockExpression", "classFinalStockExpression.html", "classFinalStockExpression" ],
@@ -1202,7 +1207,6 @@ var annotated_dup =
     [ "RawConnection", "structRawConnection.html", "structRawConnection" ],
     [ "ReadFromStreamFixture", "structReadFromStreamFixture.html", "structReadFromStreamFixture" ],
     [ "referenceIniFile", "classreferenceIniFile.html", "classreferenceIniFile" ],
-    [ "referenceScBuilderFile", "classreferenceScBuilderFile.html", "classreferenceScBuilderFile" ],
     [ "RegistryHolder", "structRegistryHolder.html", "structRegistryHolder" ],
     [ "RenewableClusterStudy", "structRenewableClusterStudy.html", "structRenewableClusterStudy" ],
     [ "RESERVE_JMOINS1", "structRESERVE__JMOINS1.html", "structRESERVE__JMOINS1" ],
@@ -1210,6 +1214,8 @@ var annotated_dup =
     [ "ResultMatrix", "classResultMatrix.html", "classResultMatrix" ],
     [ "RESULTS", "structRESULTS.html", "structRESULTS" ],
     [ "SavingToStreamFixture", "structSavingToStreamFixture.html", "structSavingToStreamFixture" ],
+    [ "ScalingLoader", "classScalingLoader.html", "classScalingLoader" ],
+    [ "ScalingWriter", "classScalingWriter.html", "classScalingWriter" ],
     [ "ScenarioBuilderBaseVisitor", "classScenarioBuilderBaseVisitor.html", "classScenarioBuilderBaseVisitor" ],
     [ "ScenarioBuilderFixture", "structScenarioBuilderFixture.html", "structScenarioBuilderFixture" ],
     [ "ScenarioBuilderLexer", "classScenarioBuilderLexer.html", "classScenarioBuilderLexer" ],
