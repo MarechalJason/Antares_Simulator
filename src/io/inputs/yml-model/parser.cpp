@@ -11,11 +11,12 @@ namespace Antares::IO::Inputs::YmlModel
 {
 void tagNodes(YAML::Node& root)
 {
-    for (auto child: root)
+    if (auto parentId = root["id"]; parentId.IsDefined() && !parentId.IsNull())
     {
-        if (auto parentId = root["id"]; parentId.IsDefined() && !parentId.IsNull())
+        const auto id = parentId.as<std::string>();
+        for (auto child: root)
         {
-            child.SetTag(parentId.as<std::string>() + "->");
+            child.SetTag(id);
             tagNodes(child);
         }
     }

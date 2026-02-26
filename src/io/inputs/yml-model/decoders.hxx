@@ -86,7 +86,7 @@ struct convert<Antares::IO::Inputs::YmlModel::Variable>
         {
             return false;
         }
-        if (!node["id"].IsDefined() || !node["type"].IsNull())
+        if (!node["id"].IsDefined() || node["type"].IsNull())
         {
             throw KeyNotFound(node.Mark(), fmt::format("variable id is mandatory"));
         }
