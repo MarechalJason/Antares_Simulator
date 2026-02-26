@@ -106,13 +106,14 @@ jobs:
     # If you'd like to generate results even when some builds fail, replace this condition with a less strict one
     # (for example, exclude some jobs) or add a new input like `allow_partial_results` to control that behavior.
     if: ${{ github.event.inputs.generate_results == 'true' && needs.ubuntu.result == 'success' && needs.windows.result == 'success' && needs.centos7.result == 'success' && needs.oracle8.result == 'success' && needs.user_guide.result == 'success' }}
-    # Call the reusable workflow at the job level
-    uses: ./.github/workflows/dispatch-simtest.yml
+    # Call the reusable workflow hosted in MarechalJason/SimTest
+    # ASSUMPTION: we call the `main` ref of that repository. Change the ref if you prefer a tag or SHA.
+    uses: MarechalJason/SimTest/.github/workflows/generate-reference.yml@main
     with:
-      tag_name: ${{ needs.release.outputs.tag != '' && needs.release.outputs.tag || github.event.inputs.release_tag }}
+      # Map inputs expected by the external reusable workflow
       release_tag: ${{ github.event.inputs.release_tag }}
-      release_url: ${{ needs.release.outputs.release_url }}
-      release_name: ${{ github.event.inputs.release_name }}
-      simtest_repo: MarechalJason/SimTest
+      antares_tag: ${{ needs.release.outputs.tag != '' && needs.release.outputs.tag || github.event.inputs.release_tag }}
+      antares_tests_tag: ''
+      target_branch: ${{ inputs.target_branch }}
     secrets:
       SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}

@@ -1,3 +1,8 @@
+# DEPRECATED: This local reusable workflow was replaced by a direct call to
+# MarechalJason/SimTest/.github/workflows/generate-reference.yml@main from
+# .github/workflows/new_release.yml. Keep this file for backward compatibility
+# or until you're ready to remove it.
+
 name: Dispatch SimTest (reusable)
 
 on:
