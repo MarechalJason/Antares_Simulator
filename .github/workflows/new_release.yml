@@ -2,6 +2,7 @@ name: Create new release
 
 permissions:
   contents: write
+  actions: read
   id-token: write
 
 on:
@@ -115,5 +116,6 @@ jobs:
       antares_tag: ${{ needs.release.outputs.tag != '' && needs.release.outputs.tag || github.event.inputs.release_tag }}
       antares_tests_tag: ''
       target_branch: ${{ inputs.target_branch }}
-    secrets:
-      SIMTEST_PAT: ${{ secrets.SIMTEST_REPO_PAT_JM }}
+    # Note: the external reusable workflow currently does not declare secrets in its 'workflow_call',
+    # so we cannot pass SIMTEST_PAT here. If the remote workflow needs a PAT, update its 'on: workflow_call: secrets:'
+    # to declare the secret, then re-add mapping here.
