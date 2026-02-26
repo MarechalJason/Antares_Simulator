@@ -4,10 +4,12 @@
 
 #pragma once
 
+#include <fmt/format.h>
 #include <optional>
 
 #include "antares/io/inputs/yml-model/Library.h"
 
+#include "../../../solver/simulation/include/antares/solver/simulation/adequacy_patch_runtime_data.h"
 #include "yaml-cpp/yaml.h"
 
 // Implement convert specializations
@@ -84,6 +86,10 @@ struct convert<Antares::IO::Inputs::YmlModel::Variable>
         if (!node.IsMap())
         {
             return false;
+        }
+        if (!node["id"].IsDefined() || !node["type"].IsNull())
+        {
+            throw KeyNotFound(node.Mark(), fmt::format("variable id is mandatory"));
         }
         rhs.id = node["id"].as<std::string>();
         rhs.lower_bound = node["lower-bound"].as<std::string>("");
@@ -226,6 +232,8 @@ bool isValidMap(const Node& node, const unsigned& nbFields)
     return false;
 }
 
+static constexpr unsigned expectedNbFields = 3;
+
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::PortType>
 {
@@ -238,10 +246,23 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
             return true;
         }
 
-        const unsigned expectedNbFields = 3;
+        auto checkFieldIsDefined = [&child_node](const std::string& fieldName)
+        {
+            if (!child_node[fieldName].IsDefined())
+            {
+                throw KeyNotFound(child_node.Mark(),
+                                  fmt::format("In area-connection section of library '{}', '{}' "
+                                              "field must be specified even if it has not a value.",
+                                              "",
+                                              fieldName));
+            }
+        };
+
         if (!isValidMap(child_node, expectedNbFields))
         {
-            return false;
+            checkFieldIsDefined("injection-to-balance");
+            checkFieldIsDefined("spillage-bound");
+            checkFieldIsDefined("unsupplied-energy-bound");
         }
 
         rhs.area_connection.inject_to_balance = getFieldFromNode(child_node,
