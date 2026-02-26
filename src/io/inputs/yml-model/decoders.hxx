@@ -31,26 +31,6 @@ inline T as_fallback_default(const Node& n)
     return n.as<T>(T());
 }
 
-struct MandatoryFieldNotFound: std::invalid_argument
-{
-    using std::invalid_argument::invalid_argument;
-};
-
-void throwIfMandatoryIsMissing(const std::string& modelId,
-                               const std::string& sectionId,
-                               const Node& node,
-                               const std::string& mandatoryField)
-{
-    if (mandatoryField.empty() || !node[mandatoryField].IsDefined())
-    {
-        throw MandatoryFieldNotFound(
-          fmt::format("mandatory field '{}' is not found in section '{}' of the model '{}'",
-                      mandatoryField,
-                      sectionId,
-                      modelId));
-    }
-}
-
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::Parameter>
 {

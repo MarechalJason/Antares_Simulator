@@ -9,10 +9,22 @@
 
 namespace Antares::IO::Inputs::YmlModel
 {
+void tagNodes(YAML::Node& root)
+{
+    for (auto child: root)
+    {
+        if (auto parentId = root["id"]; parentId.IsDefined() && !parentId.IsNull())
+        {
+            child.SetTag(parentId.as<std::string>() + "->");
+            tagNodes(child);
+        }
+    }
+}
+
 Library Parser::parse(const std::string& content)
 {
     YAML::Node root = YAML::Load(content);
-
+    tagNodes(root);
     Library library = root["library"].as<Library>();
 
     return library;
