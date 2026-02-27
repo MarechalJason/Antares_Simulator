@@ -251,12 +251,6 @@ public:
     */
     void getNumberOfCores(const bool forceParallel, const uint nbYearsParallelForced);
 
-    /*!
-    ** \brief Remove timeseries if ts-generator is enabled
-    */
-    void removeTimeseriesIfTSGeneratorEnabled();
-    //@}
-
     //! \name
     //@{
     /*!
@@ -268,7 +262,7 @@ public:
     ** \param output True for checking output filenames, false for input
     ** \param chfolder The study folder to take into consideration
     */
-    bool checkForFilenameLimits(bool output, const YString& chfolder = nullptr) const;
+    bool checkForFilenameLimits() const;
     //@}
 
     //! \name Logs
