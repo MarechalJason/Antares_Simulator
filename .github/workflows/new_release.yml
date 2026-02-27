@@ -115,7 +115,7 @@ jobs:
       release_tag: ${{ github.event.inputs.release_tag }}
       antares_tag: ${{ github.event.inputs.release_tag }}
       antares_tests_tag: ''
-      target_branch: ${{ inputs.target_branch }}
+      target_branch: ''
     # Note: the external reusable workflow currently does not declare secrets in its 'workflow_call',
     # so we cannot pass SIMTEST_PAT here. If the remote workflow needs a PAT, update its 'on: workflow_call: secrets:'
     # to declare the secret, then re-add mapping here.
