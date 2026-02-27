@@ -4,12 +4,36 @@
 
 #pragma once
 
+#include <filesystem>
 #include <fmt/format.h>
-#include <optional>
 
 #include "antares/io/inputs/yml-model/Library.h"
 
 #include "yaml-cpp/yaml.h"
+
+std::string printPathTree(const std::filesystem::path& p)
+{
+    std::string tree;
+    std::size_t depth = 0;
+    for (const auto& part: p)
+    {
+        if (depth == 0)
+        {
+            tree += part.string();
+            tree += '\n';
+        }
+        else
+        {
+            tree += std::string((depth - 1) * 4, ' ');
+            // "└── " is a u8 and it does not display correctly
+            tree += "|__ ";
+            tree += part.string();
+            tree += '\n';
+        }
+        ++depth;
+    }
+    return tree;
+}
 
 // Implement convert specializations
 namespace YAML
@@ -86,9 +110,12 @@ struct convert<Antares::IO::Inputs::YmlModel::Variable>
         {
             return false;
         }
-        if (!node["id"].IsDefined() || node["type"].IsNull())
+        if (!node["id"].IsDefined() || node["id"].IsNull())
         {
-            throw KeyNotFound(node.Mark(), fmt::format("variable id is mandatory"));
+            std::filesystem::path tree(node.Tag());
+            throw KeyNotFound(node.Mark(),
+                              fmt::format("variable id is mandatory in library\n{}",
+                                          printPathTree(tree)));
         }
         rhs.id = node["id"].as<std::string>();
         rhs.lower_bound = node["lower-bound"].as<std::string>("");
@@ -249,13 +276,12 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
         {
             if (!child_node[fieldName].IsDefined())
             {
+                std::filesystem::path tree(child_node.Tag());
                 throw KeyNotFound(
                   child_node.Mark(),
-                  fmt::format("In 'area-connection' section in library '{}', '{}' "
-                              "field must be specified even if it has not a value.\n {}",
-                              "",
+                  fmt::format("{} field must be specified even if it has not a value.\n{}",
                               fieldName,
-                              child_node.Tag()));
+                              printPathTree(tree)));
             }
         };
 

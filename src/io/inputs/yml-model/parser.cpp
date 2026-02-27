@@ -10,78 +10,51 @@
 namespace Antares::IO::Inputs::YmlModel
 {
 
-struct NodeItem
+void tagNodes(YAML::Node& node);
+
+void visitMap(YAML::Node& node)
 {
-    YAML::Node& node;
-    std::string name;
-};
-
-void tagNodes(NodeItem& nodeItem);
-
-void visitMap(NodeItem& nodeItem)
-{
-    std::string id;
-
-    if (auto parentId = nodeItem.node["id"]; parentId.IsDefined() && !parentId.IsNull())
-    {
-        id = parentId.as<std::string>() + "->";
-    }
-    else
-    {
-        id = nodeItem.name + "->";
-    }
-    for (auto it = nodeItem.node.begin(); it != nodeItem.node.end(); ++it)
+    for (auto it = node.begin(); it != node.end(); ++it)
     {
         YAML::Node child = it->second;
-
-        if (!id.empty())
-        {
-            child.SetTag(id);
-        }
-        NodeItem childItem{child, it->first.as<std::string>()};
-        tagNodes(childItem);
+        child.SetTag(node.Tag() + "/" + it->first.as<std::string>());
+        auto childName = it->first.as<std::string>();
+        tagNodes(child);
     }
 }
 
-void visitSequence(NodeItem& nodeItem)
+void visitSequence(YAML::Node& node)
 {
-    std::string id;
+    for (std::size_t i = 0; i < node.size(); ++i)
+    {
+        YAML::Node child = node[i];
 
-    if (auto parentId = nodeItem.node["id"]; parentId.IsDefined() && !parentId.IsNull())
-    {
-        id = parentId.as<std::string>() + "->";
-    }
-    else
-    {
-        id = nodeItem.name + "->";
-    }
-    for (std::size_t i = 0; i < nodeItem.node.size(); ++i)
-    {
-        YAML::Node child = nodeItem.node[i];
-
-        if (!id.empty())
+        auto childIdNode = child["id"];
+        std::string childName = "__without__id__";
+        if (childIdNode.IsDefined() && !childIdNode.IsNull())
         {
-            child.SetTag(id);
+            childName = childIdNode.as<std::string>();
         }
-        NodeItem childItem{child, std::to_string(i)};
-        tagNodes(childItem);
+        child.SetTag(node.Tag() + "/" + childName);
+
+        tagNodes(child);
     }
 }
 
-void tagNodes(NodeItem& nodeItem)
+void tagNodes(YAML::Node& node)
 {
-    if (!nodeItem.node || nodeItem.node.IsNull())
+    if (!node || node.IsNull())
     {
         return;
     }
 
-    if (nodeItem.node.IsMap())
+    if (node.IsMap())
     {
-        visitMap(nodeItem);
+        visitMap(node);
     }
-    else if (nodeItem.node.IsSequence())
+    else if (node.IsSequence())
     {
-        visitSequence(nodeItem);
+        visitSequence(node);
     }
 }
 
@@ -91,7 +64,13 @@ Library Parser::parse(const std::string& content)
     auto libraryNode = root["library"];
     if (libraryNode.IsDefined() && !libraryNode.IsNull())
     {
-        tagNodes(libraryNode);
+        auto libraryId = libraryNode["id"];
+        if (libraryId.IsDefined() && !libraryId.IsNull())
+        {
+            auto libraryName = libraryId.as<std::string>();
+            libraryNode.SetTag(libraryName);
+            tagNodes(libraryNode);
+        }
     }
     Library library = root["library"].as<Library>();
 
