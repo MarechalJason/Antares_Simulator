@@ -1,9 +1,8 @@
 name: Create new release
 
 permissions:
-  contents: write
-  actions: read
-  id-token: write
+  contents: read #Read tags
+  actions: read #Read workflows
 
 on:
   workflow_dispatch:
@@ -34,6 +33,9 @@ jobs:
   release:
     name: Release pushed tag
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write # For tag creation and release
+      actions: read
     outputs:
       release_url: ${{ steps.create_release.outputs.release_url }}
       tag: ${{ steps.create_release.outputs.tag }}
