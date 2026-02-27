@@ -1,7 +1,5 @@
 var NAVTREEINDEX30 =
 {
-"classjson__collector_1_1checksRetriever.html#a3afc5b1bb36edfba712fa6899a6ed680":[8,0,12,1,8],
-"classjson__collector_1_1checksRetriever.html#a3fe27b29019308916ac43cd6cac3ab70":[8,0,12,1,6],
 "classjson__collector_1_1checksRetriever.html#a41dfb01f3678ffbdf3db89a97435f9c5":[8,0,12,1,10],
 "classjson__collector_1_1checksRetriever.html#a50f9eec0cfd03288fd437d1651d33709":[8,0,12,1,1],
 "classjson__collector_1_1checksRetriever.html#a5be886442c675ee940867639ccd459b5":[8,0,12,1,3],
@@ -249,5 +247,7 @@ var NAVTREEINDEX30 =
 "cucumber_2features_2steps_2____init_____8py.html#a63c51c45c497c2004c9efa3ec81c1471":[7,0,33,2],
 "cucumber_2features_2steps_2____init_____8py.html#aca15ed5364a22a57acfdbc3d1159eb79":[7,0,33,1],
 "cucumber_2features_2steps_2common__steps_2assertions_8py.html#acd3c2265c9f98c73603fbf713bdcb362":[7,0,2,0],
-"dataSeriesRepo_8h_source.html":[9,0,0,7,1,0,0,0,0,1]
+"dataSeriesRepo_8h_source.html":[9,0,0,7,1,0,0,0,0,1],
+"dataSeries_8h_source.html":[9,0,0,7,1,0,0,0,0,0],
+"data_8h.html#aa68e16e57ecc5051a9166fd4d78b7f01":[7,0,0,15,8,5,1]
 };

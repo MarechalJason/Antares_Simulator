@@ -1,7 +1,5 @@
 var NAVTREEINDEX29 =
 {
-"classVariable.html#a5716c9dcafcc8cf59a6f6b5dac3ec7a2":[8,0,333,0],
-"classVariableManagement_1_1VariableManager.html":[8,0,22,0],
 "classVariableManagement_1_1VariableManager.html#a0291b65f654f38b8365f6f2ba35806a3":[8,0,22,0,1],
 "classVariableManagement_1_1VariableManager.html#a1478b8928aeae2b4ad9e20c565c92aa0":[8,0,22,0,20],
 "classVariableManagement_1_1VariableManager.html#a1ead16eaa1e6e072adadf6d8e0fe213c":[8,0,22,0,6],
@@ -249,5 +247,7 @@ var NAVTREEINDEX29 =
 "classjson__collector_1_1checksRetriever.html":[8,0,12,1],
 "classjson__collector_1_1checksRetriever.html#a03b6becfaa748ee15ef25f09a4cdb438":[8,0,12,1,17],
 "classjson__collector_1_1checksRetriever.html#a21aecda39e265791c88a740281ec5eb0":[8,0,12,1,12],
-"classjson__collector_1_1checksRetriever.html#a2efa4f9ef72e974dc4ead2d6a5a5f7ed":[8,0,12,1,13]
+"classjson__collector_1_1checksRetriever.html#a2efa4f9ef72e974dc4ead2d6a5a5f7ed":[8,0,12,1,13],
+"classjson__collector_1_1checksRetriever.html#a3afc5b1bb36edfba712fa6899a6ed680":[8,0,12,1,8],
+"classjson__collector_1_1checksRetriever.html#a3fe27b29019308916ac43cd6cac3ab70":[8,0,12,1,6]
 };

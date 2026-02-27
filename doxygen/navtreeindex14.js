@@ -1,7 +1,5 @@
 var NAVTREEINDEX14 =
 {
-"classAntares_1_1Optimization_1_1TimeDependentLinearExpression.html":[8,0,0,11,18],
-"classAntares_1_1Optimization_1_1TimeDependentLinearExpression.html#a27b7e2ebf6eb8060f6fe28e01e057db9":[8,0,0,11,18,14],
 "classAntares_1_1Optimization_1_1TimeDependentLinearExpression.html#a30be9b5e9a0c50931a812fe93c3fdf94":[8,0,0,11,18,21],
 "classAntares_1_1Optimization_1_1TimeDependentLinearExpression.html#a34a9a3c7d7c1c11e294c3f673c83fce3":[8,0,0,11,18,3],
 "classAntares_1_1Optimization_1_1TimeDependentLinearExpression.html#a3d000a1d28b60af959610113ffa573a2":[8,0,0,11,18,13],
@@ -249,5 +247,7 @@ var NAVTREEINDEX14 =
 "classAntares_1_1Solver_1_1Simulation_1_1Adequacy.html#aa2610ad198fe8b749e943d2ad1762513":[8,0,0,12,5,10,11],
 "classAntares_1_1Solver_1_1Simulation_1_1Adequacy.html#ab99b63d0c859922e5835a7c9562f7114":[8,0,0,12,5,10,8],
 "classAntares_1_1Solver_1_1Simulation_1_1Adequacy.html#ad4eff07d31b9efb821a5ef5474480c3d":[8,0,0,12,5,10,5],
-"classAntares_1_1Solver_1_1Simulation_1_1Adequacy.html#af0a60b88697e6dc8850fa5f2f6b885d1":[8,0,0,12,5,10,3]
+"classAntares_1_1Solver_1_1Simulation_1_1Adequacy.html#af0a60b88697e6dc8850fa5f2f6b885d1":[8,0,0,12,5,10,3],
+"classAntares_1_1Solver_1_1Simulation_1_1AdqPatchPostProcessList.html":[8,0,0,12,5,0],
+"classAntares_1_1Solver_1_1Simulation_1_1AdqPatchPostProcessList.html#a141e8371879f117d14f801dd3539ef92":[8,0,0,12,5,0,0]
 };

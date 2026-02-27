@@ -1,7 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"classScalingLoader.html#aa609d0887eab54d500cc087de705b867":[8,0,260,5],
-"classScalingLoader.html#ac05333405f51d67da4f3f32f2b262276":[8,0,260,2],
 "classScalingLoader.html#ac43d810d0e5a706d128d11081743aba3":[8,0,260,3],
 "classScalingLoader.html#ac8e6679a4a2030ceca9ac1ca28804f79":[8,0,260,7],
 "classScalingWriter.html":[8,0,261],
@@ -249,5 +247,7 @@ var NAVTREEINDEX28 =
 "classUserData.html#ad8d6bab7a86e9de40ed073d94ce23a34":[8,0,331,3],
 "classUserData.html#ae2ff445c93a4b5d6adcc1830984f2513":[8,0,331,5],
 "classUserData.html#aeb5b7324ce4a590c3732a013a1cb7b1d":[8,0,331,1],
-"classVariable.html":[8,0,333]
+"classVariable.html":[8,0,333],
+"classVariable.html#a5716c9dcafcc8cf59a6f6b5dac3ec7a2":[8,0,333,0],
+"classVariableManagement_1_1VariableManager.html":[8,0,22,0]
 };

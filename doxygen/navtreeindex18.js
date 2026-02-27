@@ -1,7 +1,5 @@
 var NAVTREEINDEX18 =
 {
-"classAntares_1_1Solver_1_1Variable_1_1Economy_1_1HydroStorage.html#acb86084f3a9cd029967f57bdb3f24fcd":[8,0,0,12,6,4,40,1],
-"classAntares_1_1Solver_1_1Variable_1_1Economy_1_1HydroStorage.html#ad9b16cca4a6617a46f48a3369c8a9e1d":[8,0,0,12,6,4,40,18],
 "classAntares_1_1Solver_1_1Variable_1_1Economy_1_1HydroStorage.html#af170b8e6a33341d6ffaa3560c16c2c43":[8,0,0,12,6,4,40,9],
 "classAntares_1_1Solver_1_1Variable_1_1Economy_1_1Inflows.html":[8,0,0,12,6,4,42],
 "classAntares_1_1Solver_1_1Variable_1_1Economy_1_1Inflows.html#a0f638e48b61cf4991ef907450d71fbe2":[8,0,0,12,6,4,42,2],
@@ -249,5 +247,7 @@ var NAVTREEINDEX18 =
 "classAntares_1_1Solver_1_1Variable_1_1Economy_1_1NonProportionalCostByDispatchablePlant.html#a1c0634d066a79b56006b047e4a4f190b":[8,0,0,12,6,4,88,18],
 "classAntares_1_1Solver_1_1Variable_1_1Economy_1_1NonProportionalCostByDispatchablePlant.html#a2c383993aac1cfdccd7fdd38efd2ab05":[8,0,0,12,6,4,88,2],
 "classAntares_1_1Solver_1_1Variable_1_1Economy_1_1NonProportionalCostByDispatchablePlant.html#a36cd7926646031991ca608fc623d605b":[8,0,0,12,6,4,88,8],
-"classAntares_1_1Solver_1_1Variable_1_1Economy_1_1NonProportionalCostByDispatchablePlant.html#a377cc41b1d876c4a47ef8edbe6041e66":[8,0,0,12,6,4,88,16]
+"classAntares_1_1Solver_1_1Variable_1_1Economy_1_1NonProportionalCostByDispatchablePlant.html#a377cc41b1d876c4a47ef8edbe6041e66":[8,0,0,12,6,4,88,16],
+"classAntares_1_1Solver_1_1Variable_1_1Economy_1_1NonProportionalCostByDispatchablePlant.html#a3d40aae1be82e52b1a5531937432353a":[8,0,0,12,6,4,88,13],
+"classAntares_1_1Solver_1_1Variable_1_1Economy_1_1NonProportionalCostByDispatchablePlant.html#a3ff66c6d2089967c373f83f8e0c3b095":[8,0,0,12,6,4,88,10]
 };

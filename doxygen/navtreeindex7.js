@@ -1,7 +1,5 @@
 var NAVTREEINDEX7 =
 {
-"classAntares_1_1Data_1_1Solar_1_1Prepro.html#a907e356db7c8862e0850948ec8cff1ad":[8,0,0,3,4,1,6],
-"classAntares_1_1Data_1_1Solar_1_1Prepro.html#a9c0ea0ddf94aa0cde4f6e168e2e7944c":[8,0,0,3,4,1,3],
 "classAntares_1_1Data_1_1Solar_1_1Prepro.html#aa1848260276ed93d10fad553f4334911":[8,0,0,3,4,1,4],
 "classAntares_1_1Data_1_1Study.html":[8,0,0,3,67],
 "classAntares_1_1Data_1_1Study.html#a00b28d976a7a0c044601385aa12269d3":[8,0,0,3,67,44],
@@ -249,5 +247,7 @@ var NAVTREEINDEX7 =
 "classAntares_1_1Data_1_1ThermalClusterList.html#a627183f7bd93a87dbeeb3e4abef10505":[8,0,0,3,55,3],
 "classAntares_1_1Data_1_1ThermalClusterList.html#a6571ba17ab5a261aad5c52881d544843":[8,0,0,3,55,13],
 "classAntares_1_1Data_1_1ThermalClusterList.html#a85572ed427c83991a46989ab697a6f03":[8,0,0,3,55,9],
-"classAntares_1_1Data_1_1ThermalClusterList.html#a9887e31792e0c7b9035267f8717047dd":[8,0,0,3,55,10]
+"classAntares_1_1Data_1_1ThermalClusterList.html#a9887e31792e0c7b9035267f8717047dd":[8,0,0,3,55,10],
+"classAntares_1_1Data_1_1ThermalClusterList.html#abdd61c6dd43e96d51073dd76a207846a":[8,0,0,3,55,14],
+"classAntares_1_1Data_1_1ThermalClusterList.html#abe899cd1531faa599daf3944184889f4":[8,0,0,3,55,15]
 };
