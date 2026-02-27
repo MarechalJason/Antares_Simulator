@@ -101,8 +101,8 @@ jobs:
       run-tests: ${{ inputs.run-tests }}
       target_branch: ${{ inputs.target_branch }}
 
-  notify_simtest:
-    name: Notify SimTest
+  generate_results:
+    name: Generate Results
     needs:
       - ubuntu
     # Only run this job if the `generate_results` input is true AND all the required build jobs succeeded.
