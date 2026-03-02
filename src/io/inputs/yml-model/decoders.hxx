@@ -55,6 +55,18 @@ inline T as_fallback_default(const Node& n)
     return n.as<T>(T());
 }
 
+void checkMandatoryField(const Node& node, const std::string& nodeName)
+{
+    if (!node["id"].IsDefined() || node["id"].IsNull())
+    {
+        std::filesystem::path tree(node.Tag());
+        throw KeyNotFound(node.Mark(),
+                          fmt::format("{} id is mandatory in library\n{}",
+                                      nodeName,
+                                      printPathTree(tree)));
+    }
+}
+
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::Parameter>
 {
@@ -101,18 +113,6 @@ struct convert<Antares::IO::Inputs::YmlModel::ValueType>
         return true;
     }
 };
-
-void checkMandatoryField(const Node& node, const std::string& nodeName)
-{
-    if (!node["id"].IsDefined() || node["id"].IsNull())
-    {
-        std::filesystem::path tree(node.Tag());
-        throw KeyNotFound(node.Mark(),
-                          fmt::format("{} id is mandatory in library\n{}",
-                                      nodeName,
-                                      printPathTree(tree)));
-    }
-}
 
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::Variable>
