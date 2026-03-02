@@ -71,6 +71,10 @@ Library Parser::parse(const std::string& content)
             libraryNode.SetTag(libraryName);
             tagNodes(libraryNode);
         }
+        else
+        {
+            throw std::runtime_error("Library id is not defined");
+        }
     }
     Library library = root["library"].as<Library>();
 

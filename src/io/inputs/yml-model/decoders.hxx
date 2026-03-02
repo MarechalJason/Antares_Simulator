@@ -64,6 +64,7 @@ struct convert<Antares::IO::Inputs::YmlModel::Parameter>
         {
             return false;
         }
+        checkMandatoryField(node, "parameter");
         rhs.id = node["id"].as<std::string>();
         rhs.time_dependent = node["time-dependent"].as<bool>(true);
         rhs.scenario_dependent = node["scenario-dependent"].as<bool>(true);
@@ -101,6 +102,18 @@ struct convert<Antares::IO::Inputs::YmlModel::ValueType>
     }
 };
 
+void checkMandatoryField(const Node& node, const std::string& nodeName)
+{
+    if (!node["id"].IsDefined() || node["id"].IsNull())
+    {
+        std::filesystem::path tree(node.Tag());
+        throw KeyNotFound(node.Mark(),
+                          fmt::format("{} id is mandatory in library\n{}",
+                                      nodeName,
+                                      printPathTree(tree)));
+    }
+}
+
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::Variable>
 {
@@ -110,13 +123,7 @@ struct convert<Antares::IO::Inputs::YmlModel::Variable>
         {
             return false;
         }
-        if (!node["id"].IsDefined() || node["id"].IsNull())
-        {
-            std::filesystem::path tree(node.Tag());
-            throw KeyNotFound(node.Mark(),
-                              fmt::format("variable id is mandatory in library\n{}",
-                                          printPathTree(tree)));
-        }
+        checkMandatoryField(node, "variable");
         rhs.id = node["id"].as<std::string>();
         rhs.lower_bound = node["lower-bound"].as<std::string>("");
         rhs.upper_bound = node["upper-bound"].as<std::string>("");
@@ -138,6 +145,7 @@ struct convert<Antares::IO::Inputs::YmlModel::Port>
         {
             return false;
         }
+        checkMandatoryField(node, "Port");
         rhs.id = node["id"].as<std::string>();
         rhs.type = node["type"].as<std::string>();
         return true;
@@ -170,6 +178,7 @@ struct convert<Antares::IO::Inputs::YmlModel::Constraint>
         {
             return false;
         }
+        checkMandatoryField(node, "constraint");
         rhs.id = node["id"].as<std::string>();
         rhs.expression = node["expression"].as<std::string>();
         rhs.location = node["location"].as<std::string>("subproblems");
@@ -186,6 +195,7 @@ struct convert<Antares::IO::Inputs::YmlModel::ExtraOutput>
         {
             return false;
         }
+        checkMandatoryField(node, "extra-output");
         rhs.id = node["id"].as<std::string>();
         rhs.expression = node["expression"].as<std::string>();
         return true;
@@ -201,6 +211,7 @@ struct convert<Antares::IO::Inputs::YmlModel::Objective>
         {
             return false;
         }
+        checkMandatoryField(node, "objective");
         rhs.id = node["id"].as<std::string>();
         rhs.expression = node["expression"].as<std::string>();
         rhs.location = node["location"].as<std::string>("subproblems");
@@ -217,6 +228,7 @@ struct convert<Antares::IO::Inputs::YmlModel::Model>
         {
             return false;
         }
+        checkMandatoryField(node, "model");
         rhs.id = node["id"].as<std::string>();
         rhs.description = node["description"].as<std::string>("");
         rhs.parameters = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Parameter>>(
