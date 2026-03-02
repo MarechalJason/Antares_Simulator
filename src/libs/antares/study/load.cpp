@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include <fmt/format.h>
+#include <fstream>
+#include <sstream>
 
 #include <antares/solver/modeler/loadFiles/loadFiles.h>
 #include "antares/exception/LoadingError.hpp"
@@ -46,35 +48,28 @@ bool Study::internalLoadIni(const fs::path& path, const StudyLoadOptions& option
 {
     if (!internalLoadHeader(path))
     {
-        if (options.loadOnlyNeeded)
-        {
-            return false;
-        }
+        return false;
     }
 
-    // The simulation settings
-    if (!simulationComments.loadFromFolder(options))
+    // The simulation settings (comments.txt)
+    fs::path commentsPath = folderSettings / "comments.txt";
+    std::ifstream file(commentsPath);
+    if (file)
     {
-        if (options.loadOnlyNeeded)
-        {
-            return false;
-        }
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        simulationComments = buffer.str();
     }
+
     // Load the general data
     fs::path generalDataPath = folderSettings / "generaldata.ini";
-    bool errorWhileLoading = !parameters.loadFromFile(generalDataPath, header.version);
+    if (!parameters.loadFromFile(generalDataPath, header.version))
+    {
+        return false;
+    }
 
     parameters.validateOptions(options);
-
     parameters.fixBadValues();
-
-    if (errorWhileLoading)
-    {
-        if (options.loadOnlyNeeded)
-        {
-            return false;
-        }
-    }
 
     return true;
 }
@@ -182,7 +177,7 @@ bool Study::internalLoadFromFolder(const fs::path& path,
 
         logs.info() << "Loading correlation matrices...";
         // Correlation matrices
-        ret = internalLoadCorrelationMatrices(options) && ret;
+        ret = internalLoadCorrelationMatrices() && ret;
         // Binding constraints
         ret = internalLoadBindingConstraints(options) && ret;
         // Sets of areas & links
@@ -261,31 +256,31 @@ void Study::checkModelerDataCompatibility() const
     }
 }
 
-bool Study::internalLoadCorrelationMatrices(const StudyLoadOptions& options)
+bool Study::internalLoadCorrelationMatrices()
 {
     // Load
-    if (!options.loadOnlyNeeded || timeSeriesLoad & parameters.timeSeriesToGenerate)
+    if (timeSeriesLoad & parameters.timeSeriesToGenerate)
     {
         fs::path loadPath = folderInput / "load" / "prepro" / "correlation.ini";
         preproLoadCorrelation.loadFromFile(*this, loadPath.string());
     }
 
     // Solar
-    if (!options.loadOnlyNeeded || timeSeriesSolar & parameters.timeSeriesToGenerate)
+    if (timeSeriesSolar & parameters.timeSeriesToGenerate)
     {
         fs::path solarPath = folderInput / "solar" / "prepro" / "correlation.ini";
         preproSolarCorrelation.loadFromFile(*this, solarPath.string());
     }
 
     // Wind
-    if (!options.loadOnlyNeeded || timeSeriesWind & parameters.timeSeriesToGenerate)
+    if (timeSeriesWind & parameters.timeSeriesToGenerate)
     {
         fs::path windPath = folderInput / "wind" / "prepro" / "correlation.ini";
         preproWindCorrelation.loadFromFile(*this, windPath.string());
     }
 
     // Hydro
-    if (!options.loadOnlyNeeded || timeSeriesHydro & parameters.timeSeriesToGenerate)
+    if (timeSeriesHydro & parameters.timeSeriesToGenerate)
     {
         fs::path hydroPath = folderInput / "hydro" / "prepro" / "correlation.ini";
         preproHydroCorrelation.loadFromFile(*this, hydroPath.string());
@@ -298,12 +293,11 @@ bool Study::internalLoadBindingConstraints(const StudyLoadOptions& options)
     // All checks are performed in 'loadFromFolder'
     // (actually internalLoadFromFolder)
     fs::path constraintPath = folderInput / "bindingconstraints";
-    bool r = bindingConstraints.loadFromFolder(*this, options, constraintPath);
-    if (r)
+    if (!bindingConstraints.loadFromFolder(*this, options, constraintPath))
     {
-        r &= bindingConstraintsGroups.buildFrom(bindingConstraints);
+        return false;
     }
-    return (!r && options.loadOnlyNeeded) ? false : r;
+    return bindingConstraintsGroups.buildFrom(bindingConstraints);
 }
 
 bool Study::internalLoadSets()

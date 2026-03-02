@@ -122,13 +122,12 @@ void Application::readDataForTheStudy(Data::StudyLoadOptions& options)
     // Name of the simulation
     if (!pSettings.simulationName.empty())
     {
-        study.simulationComments.name = pSettings.simulationName;
+        study.simulationName = pSettings.simulationName;
     }
 
     // Force some options
     options.prepareOutput = !pSettings.noOutput;
     options.ignoreConstraints = pSettings.ignoreConstraints;
-    options.loadOnlyNeeded = true;
 
     // Load the study from a folder
     Benchmarking::Timer timer;
@@ -185,7 +184,7 @@ void Application::readDataForTheStudy(Data::StudyLoadOptions& options)
     // Name of the simulation (again, if the value has been overwritten)
     if (!pSettings.simulationName.empty())
     {
-        study.simulationComments.name = pSettings.simulationName;
+        study.simulationName = pSettings.simulationName;
     }
 
     logs.info();
@@ -231,7 +230,7 @@ void Application::readDataForTheStudy(Data::StudyLoadOptions& options)
     // Checking for filename length limits
     if (!pSettings.noOutput)
     {
-        if (!study.checkForFilenameLimits(true))
+        if (!study.checkForFilenameLimits())
         {
             throw Error::InvalidFileName();
         }
