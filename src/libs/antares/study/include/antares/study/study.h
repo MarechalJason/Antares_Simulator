@@ -26,7 +26,6 @@
 #include "parameters.h"
 #include "progression/progression.h"
 #include "sets.h"
-#include "simulation.h"
 
 namespace Antares::Data
 {
@@ -252,12 +251,6 @@ public:
     */
     void getNumberOfCores(const bool forceParallel, const uint nbYearsParallelForced);
 
-    /*!
-    ** \brief Remove timeseries if ts-generator is enabled
-    */
-    void removeTimeseriesIfTSGeneratorEnabled();
-    //@}
-
     //! \name
     //@{
     /*!
@@ -269,7 +262,7 @@ public:
     ** \param output True for checking output filenames, false for input
     ** \param chfolder The study folder to take into consideration
     */
-    bool checkForFilenameLimits(bool output, const YString& chfolder = nullptr) const;
+    bool checkForFilenameLimits() const;
     //@}
 
     //! \name Logs
@@ -305,9 +298,10 @@ public:
 
     //! \name Simulation
     //@{
-    //! The current Simulation
-    // TODO VP: remove with GUI
-    SimulationComments simulationComments;
+    //! Simulation comments (content of comments.txt)
+    std::string simulationComments;
+    //! Simulation name
+    std::string simulationName;
 
     int64_t pStartTime;
     //! Maximum number of years in a set of parallel years.
@@ -448,7 +442,7 @@ protected:
     //! Load the study header
     bool internalLoadHeader(const std::filesystem::path& folder);
     //! Load all correlation matrices
-    bool internalLoadCorrelationMatrices(const StudyLoadOptions& options);
+    bool internalLoadCorrelationMatrices();
     //! Load all binding constraints
     virtual bool internalLoadBindingConstraints(const StudyLoadOptions& options);
     //! Load all set of areas and links
