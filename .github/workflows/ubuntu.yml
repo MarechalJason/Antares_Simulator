@@ -402,7 +402,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
         tag: ${{ github.event.inputs.release_tag }}
       run: |
-        gh release upload "$tag" _build/*.tar.gz _build/*.deb
+        gh release upload "$tag" _build/*.tar.gz _build/*.deb --repo ${{ github.repository }}
 
 
     - name: Update continuous-delivery release
