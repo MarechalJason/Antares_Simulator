@@ -37,6 +37,8 @@ jobs:
 
   build:
     name: Build
+    permissions:
+      contents: write # For pushing tags and releases
     env:
       ORTOOLS_DIR: ${{ github.workspace }}/or-tools
       os: ubuntu-22.04
@@ -390,10 +392,11 @@ jobs:
         cpack -G DEB -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
 
     - name: Installer deb upload push
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: deb
         path: _build/*.deb
+        archive: 'false'
 
 
     - name: Publish assets
