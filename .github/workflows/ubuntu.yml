@@ -37,8 +37,6 @@ jobs:
 
   build:
     name: Build
-    permissions:
-      contents: write # For pushing tags and releases
     env:
       ORTOOLS_DIR: ${{ github.workspace }}/or-tools
       os: ubuntu-22.04
