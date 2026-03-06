@@ -44,7 +44,6 @@ static YmlModel::Library loadSingleLibrary(const fs::path& filePath)
     }
     catch (const YAML::Exception& e)
     {
-        handleYamlError(e, filePath.string());
         throw ErrorLoadingYaml(e.what());
     }
 }
