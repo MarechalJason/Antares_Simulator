@@ -270,14 +270,12 @@ void Application::readStudy_makeChecks_and_printThings(Data::StudyLoadOptions& o
 
     logs.info() << "  :: log filename: " << logs.logfile();
 
-    pStudy = std::make_unique<Antares::Data::Study>(true /* for the solver */);
+    pStudy = std::make_unique<Antares::Data::Study>();
 
     pParameters = &(pStudy->parameters);
     readDataForTheStudy(options);
 
     postParametersChecks();
-
-    pStudy->initializeProgressMeter(pSettings.tsGeneratorsOnly);
 }
 
 void Application::postParametersChecks() const
@@ -322,7 +320,6 @@ void Application::prepare(int argc, const char* argv[])
 
     // Options
     Data::StudyLoadOptions options;
-    options.usedByTheSolver = true;
 
     // Bind pSettings / options members to command line arguments
     // Something like bind("--foo", options.foo);
@@ -422,9 +419,6 @@ void Application::execute()
 
     // Importing Time-Series if asked
     pStudy->importTimeseriesIntoInput();
-
-    // Stop the display of the progression
-    pStudy->progression.stop();
 }
 
 void Application::resetLogFilename() const
