@@ -7,6 +7,8 @@
 #include <fmt/format.h>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
+#include <iterator>
 
 #include "antares/io/inputs/yml-model/Library.h"
 
@@ -269,85 +271,154 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
         return false;
     }
 
+    // Build actual keys set and keep mapping to line numbers
+    std::unordered_map<std::string, int> actualKeysLine;
+    for (const auto& entry : node)
+    {
+        const Node keyNode = entry.first;
+        std::string keyName = keyNode.IsDefined() ? keyNode.as<std::string>() : std::string("<unknown>");
+        const auto mark = keyNode.Mark();
+        const int line = static_cast<int>(mark.line) + 1;
+        actualKeysLine.emplace(keyName, line);
+    }
+
+    std::unordered_set<std::string> allowedSet;
+    for (const auto& f: allowedFields)
+    {
+        allowedSet.insert(f);
+    }
+
+    // If allowedFields provided, check equality of key sets
+    if (!allowedSet.empty())
+    {
+        std::unordered_set<std::string> actualSet;
+        for (const auto& kv : actualKeysLine)
+        {
+            actualSet.insert(kv.first);
+        }
+
+        if (actualSet == allowedSet)
+        {
+            return true;
+        }
+
+        // compute unexpected = actual - allowed
+        std::vector<std::string> unexpected;
+        for (const auto& k : actualSet)
+        {
+            if (allowedSet.find(k) == allowedSet.end())
+            {
+                unexpected.push_back(k);
+            }
+        }
+
+        // compute missing = allowed - actual
+        std::vector<std::string> missing;
+        for (const auto& k : allowedSet)
+        {
+            if (actualSet.find(k) == actualSet.end())
+            {
+                missing.push_back(k);
+            }
+        }
+
+        // Build output
+        std::filesystem::path nodeTagPath(node.Tag());
+        const std::string baseTree = printPathTree(nodeTagPath);
+
+        // compute indentation based on tag depth
+        std::size_t depthParts = static_cast<std::size_t>(std::distance(nodeTagPath.begin(), nodeTagPath.end()));
+        if (depthParts == 0) depthParts = 1;
+        const std::size_t indentSpaces = (depthParts - 1) * 4;
+
+        std::string markedFieldsTree;
+        // unexpected first, with line numbers and X marker
+        for (const auto& keyName : unexpected)
+        {
+            const int line = actualKeysLine.count(keyName) ? actualKeysLine.at(keyName) : -1;
+            markedFieldsTree += std::string(indentSpaces, ' ');
+            markedFieldsTree += "|__X ";
+            markedFieldsTree += keyName;
+            if (line > 0)
+            {
+                markedFieldsTree += " at line ";
+                markedFieldsTree += std::to_string(line);
+            }
+            markedFieldsTree += '\n';
+        }
+        // then missing, with ? marker
+        for (const auto& keyName : missing)
+        {
+            markedFieldsTree += std::string(indentSpaces, ' ');
+            markedFieldsTree += "|__? ";
+            markedFieldsTree += keyName;
+            markedFieldsTree += " (missing)\n";
+        }
+
+        throw KeyNotFound(node.Mark(),
+                          fmt::format("Unexpected or missing field(s) (expected {} field(s)).\n{}{}",
+                                      allowedSet.size(),
+                                      baseTree,
+                                      markedFieldsTree));
+    }
+
+    // No allowedFields given: use size-based check
     if (node.size() == nbFields)
     {
         return true;
     }
 
-    // If the node has more fields than expected, raise an error and list only the unexpected fields
+    // If size mismatch, list unexpected (if more) or missing (if less) without precise expected names
+    std::filesystem::path nodeTagPath(node.Tag());
+    const std::string baseTree = printPathTree(nodeTagPath);
+
+    std::string markedFieldsTree;
     if (node.size() > nbFields)
     {
-        // Build the printout of the tag path
-        std::filesystem::path nodeTagPath(node.Tag());
-        const std::string baseTree = printPathTree(nodeTagPath);
-
-        // If allowedFields provided, compute unexpected = keys \ allowedFields
-        std::unordered_set<std::string> allowedSet;
-        for (const auto& f: allowedFields)
+        // mark all present keys as unexpected
+        std::size_t depthParts = 0;
+        for (const auto& seg : nodeTagPath)
         {
-            allowedSet.insert(f);
+            ++depthParts;
         }
+        if (depthParts == 0) depthParts = 1;
+        const std::size_t indentSpaces = (depthParts - 1) * 4;
 
-        std::string markedFieldsTree;
-        for (const auto& entry : node)
+        for (const auto& kv : actualKeysLine)
         {
-            const Node keyNode = entry.first;
-            std::string keyName = keyNode.IsDefined() ? keyNode.as<std::string>() : std::string("<unknown>");
-
-            // If allowedSet is non-empty, only mark keys that are not allowed
-            bool isUnexpected = allowedSet.empty() ? true : (allowedSet.find(keyName) == allowedSet.end());
-            if (!isUnexpected)
-            {
-                continue; // skip allowed keys
-            }
-
-            const auto mark = keyNode.Mark();
-            const int line = static_cast<int>(mark.line) + 1;
-            // compute indentation based on tag depth
-            std::size_t depthParts = 0;
-            for (const auto& seg : nodeTagPath)
-            {
-                ++depthParts;
-            }
-            if (depthParts == 0) depthParts = 1;
-            const std::size_t indentSpaces = (depthParts - 1) * 4;
-
             markedFieldsTree += std::string(indentSpaces, ' ');
             markedFieldsTree += "|__X ";
-            markedFieldsTree += keyName;
+            markedFieldsTree += kv.first;
             markedFieldsTree += " at line ";
-            markedFieldsTree += std::to_string(line);
+            markedFieldsTree += std::to_string(kv.second);
             markedFieldsTree += '\n';
-        }
-
-        // If we didn't find any unexpected keys (e.g., allowedFields mismatch), fallback to listing all keys
-        if (markedFieldsTree.empty())
-        {
-            for (const auto& entry : node)
-            {
-                const Node keyNode = entry.first;
-                std::string keyName = keyNode.IsDefined() ? keyNode.as<std::string>() : std::string("<unknown>");
-                const auto mark = keyNode.Mark();
-                const int line = static_cast<int>(mark.line) + 1;
-                std::size_t depthParts = 0;
-                for (const auto& seg : nodeTagPath)
-                {
-                    ++depthParts;
-                }
-                if (depthParts == 0) depthParts = 1;
-                const std::size_t indentSpaces = (depthParts - 1) * 4;
-
-                markedFieldsTree += std::string(indentSpaces, ' ');
-                markedFieldsTree += "|__X ";
-                markedFieldsTree += keyName;
-                markedFieldsTree += " at line ";
-                markedFieldsTree += std::to_string(line);
-                markedFieldsTree += '\n';
-            }
         }
 
         throw KeyNotFound(node.Mark(),
                           fmt::format("Unexpected field(s) found (expected {} field(s), got {}).\n{}{}",
+                                      nbFields,
+                                      node.size(),
+                                      baseTree,
+                                      markedFieldsTree));
+    }
+    else // node.size() < nbFields
+    {
+        // We can't list specific missing names here, just indicate missing count
+        std::size_t depthParts = 0;
+        for (const auto& seg : nodeTagPath)
+        {
+            ++depthParts;
+        }
+        if (depthParts == 0) depthParts = 1;
+        const std::size_t indentSpaces = (depthParts - 1) * 4;
+
+        markedFieldsTree += std::string(indentSpaces, ' ');
+        markedFieldsTree += "|__? missing field(s) (expected ";
+        markedFieldsTree += std::to_string(nbFields);
+        markedFieldsTree += ")\n";
+
+        throw KeyNotFound(node.Mark(),
+                          fmt::format("Missing field(s) (expected {} field(s), got {}).\n{}{}",
                                       nbFields,
                                       node.size(),
                                       baseTree,
