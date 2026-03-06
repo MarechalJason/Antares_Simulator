@@ -38,6 +38,10 @@ inline std::string printPathTree(const std::filesystem::path& p)
     return treeStr;
 }
 
+// getBaseTreeOnce is defined in a single translation unit to avoid multiple
+// copies of the printed-tags cache when this header is included in several TUs.
+std::string getBaseTreeOnce(const std::filesystem::path& nodeTagPath);
+
 // Implement convert specializations
 namespace YAML
 {
@@ -288,6 +292,8 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
         allowedSet.insert(f);
     }
 
+    // (use the global ::getBaseTreeOnce helper defined above)
+
     // If allowedFields provided, check equality of key sets
     if (!allowedSet.empty())
     {
@@ -304,27 +310,27 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
 
         // compute unexpected = actual - allowed
         std::vector<std::string> unexpected;
-        for (const auto& k : actualSet)
+        for (const auto& actual_field_local : actualSet)
         {
-            if (allowedSet.find(k) == allowedSet.end())
+            if (allowedSet.find(actual_field_local) == allowedSet.end())
             {
-                unexpected.push_back(k);
+                unexpected.push_back(actual_field_local);
             }
         }
 
         // compute missing = allowed - actual
         std::vector<std::string> missing;
-        for (const auto& k : allowedSet)
+        for (const auto& allowed_field_local : allowedSet)
         {
-            if (actualSet.find(k) == actualSet.end())
+            if (actualSet.find(allowed_field_local) == actualSet.end())
             {
-                missing.push_back(k);
+                missing.push_back(allowed_field_local);
             }
         }
 
         // Build output
         std::filesystem::path nodeTagPath(node.Tag());
-        const std::string baseTree = printPathTree(nodeTagPath);
+        const std::string baseTree = ::getBaseTreeOnce(nodeTagPath);
 
         // compute indentation based on tag depth
         std::size_t depthParts = static_cast<std::size_t>(std::distance(nodeTagPath.begin(), nodeTagPath.end()));
@@ -370,65 +376,57 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
 
     // If size mismatch, list unexpected (if more) or missing (if less) without precise expected names
     std::filesystem::path nodeTagPath(node.Tag());
-    const std::string baseTree = printPathTree(nodeTagPath);
+    const std::string baseTree = ::getBaseTreeOnce(nodeTagPath);
 
     std::string markedFieldsTree;
     if (node.size() > nbFields)
     {
         // mark all present keys as unexpected
-        std::size_t depthParts = 0;
-        for (const auto& seg : nodeTagPath)
-        {
-            ++depthParts;
-        }
+        std::size_t depthParts = static_cast<std::size_t>(std::distance(nodeTagPath.begin(), nodeTagPath.end()));
         if (depthParts == 0) depthParts = 1;
         const std::size_t indentSpaces = (depthParts - 1) * 4;
 
-        for (const auto& kv : actualKeysLine)
-        {
+        for (const auto& pair_kv : actualKeysLine)
+         {
             markedFieldsTree += std::string(indentSpaces, ' ');
             markedFieldsTree += "|__X ";
-            markedFieldsTree += kv.first;
+            markedFieldsTree += pair_kv.first;
             markedFieldsTree += " at line ";
-            markedFieldsTree += std::to_string(kv.second);
+            markedFieldsTree += std::to_string(pair_kv.second);
             markedFieldsTree += '\n';
-        }
+         }
 
-        throw KeyNotFound(node.Mark(),
-                          fmt::format("Unexpected field(s) found (expected {} field(s), got {}).\n{}{}",
-                                      nbFields,
-                                      node.size(),
-                                      baseTree,
-                                      markedFieldsTree));
-    }
-    else // node.size() < nbFields
-    {
-        // We can't list specific missing names here, just indicate missing count
-        std::size_t depthParts = 0;
-        for (const auto& seg : nodeTagPath)
-        {
-            ++depthParts;
-        }
-        if (depthParts == 0) depthParts = 1;
-        const std::size_t indentSpaces = (depthParts - 1) * 4;
+         throw KeyNotFound(node.Mark(),
+                           fmt::format("Unexpected field(s) found (expected {} field(s), got {}).\n{}{}",
+                                       nbFields,
+                                       node.size(),
+                                       baseTree,
+                                       markedFieldsTree));
+     }
+     else // node.size() < nbFields
+     {
+         // We can't list specific missing names here, just indicate missing count
+         std::size_t depthParts = static_cast<std::size_t>(std::distance(nodeTagPath.begin(), nodeTagPath.end()));
+         if (depthParts == 0) depthParts = 1;
+         const std::size_t indentSpaces = (depthParts - 1) * 4;
 
-        markedFieldsTree += std::string(indentSpaces, ' ');
-        markedFieldsTree += "|__? missing field(s) (expected ";
-        markedFieldsTree += std::to_string(nbFields);
-        markedFieldsTree += ")\n";
+         markedFieldsTree += std::string(indentSpaces, ' ');
+         markedFieldsTree += "|__? missing field(s) (expected ";
+         markedFieldsTree += std::to_string(nbFields);
+         markedFieldsTree += ")\n";
 
-        throw KeyNotFound(node.Mark(),
-                          fmt::format("Missing field(s) (expected {} field(s), got {}).\n{}{}",
-                                      nbFields,
-                                      node.size(),
-                                      baseTree,
-                                      markedFieldsTree));
-    }
+         throw KeyNotFound(node.Mark(),
+                           fmt::format("Missing field(s) (expected {} field(s), got {}).\n{}{}",
+                                       nbFields,
+                                       node.size(),
+                                       baseTree,
+                                       markedFieldsTree));
+     }
 
-    return false;
-}
+     return false;
+ }
 
-static constexpr unsigned expectedNbFields = 3;
+ static constexpr unsigned expectedNbFields = 3;
 
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::PortType>
@@ -457,7 +455,7 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
                   area_conn_node.Mark(),
                   fmt::format("{} field must be specified even if it has not a value.\n{}",
                               "injection-to-balance",
-                              printPathTree(std::filesystem::path(area_conn_node.Tag()))));
+                              ::getBaseTreeOnce(std::filesystem::path(area_conn_node.Tag()))));
             }
             const Node spillageNode = area_conn_node["spillage-bound"];
             if (!spillageNode.IsDefined())
@@ -466,7 +464,7 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
                   area_conn_node.Mark(),
                   fmt::format("{} field must be specified even if it has not a value.\n{}",
                               "spillage-bound",
-                              printPathTree(std::filesystem::path(area_conn_node.Tag()))));
+                              ::getBaseTreeOnce(std::filesystem::path(area_conn_node.Tag()))));
             }
             const Node unsuppliedNode = area_conn_node["unsupplied-energy-bound"];
             if (!unsuppliedNode.IsDefined())
@@ -475,7 +473,7 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
                   area_conn_node.Mark(),
                   fmt::format("{} field must be specified even if it has not a value.\n{}",
                               "unsupplied-energy-bound",
-                              printPathTree(std::filesystem::path(area_conn_node.Tag()))));
+                              ::getBaseTreeOnce(std::filesystem::path(area_conn_node.Tag()))));
             }
         }
 
