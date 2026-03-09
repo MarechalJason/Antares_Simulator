@@ -18,7 +18,6 @@ void visitMap(YAML::Node& node)
     {
         YAML::Node child = it->second;
         child.SetTag(node.Tag() + "/" + it->first.as<std::string>());
-        auto childName = it->first.as<std::string>();
         tagNodes(child);
     }
 }
