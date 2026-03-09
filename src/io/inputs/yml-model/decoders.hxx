@@ -5,10 +5,10 @@
 
 #include <filesystem>
 #include <fmt/format.h>
-#include <vector>
-#include <unordered_set>
-#include <unordered_map>
 #include <iterator>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "antares/io/inputs/yml-model/Library.h"
 
@@ -47,32 +47,32 @@ namespace YAML
 {
 
 /**
- * @brief shortend to default construct a value when node is null
+ * @brief shortened to default construct a value when node is null
  * @tparam T Type to convert the node to
  * @param n node
  * @return Object of type T
- * It's just to simplify repertitive and verbose lines
+ * It's just to simplify repetitive and verbose lines
  * as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Parameter>>(
 node["parameters"]) is equivalent to
  node["parameters"].as<std::vector<Antares::IO::Inputs::YmlModel::Parameter>>(std::vector<Antares::IO::Inputs::YmlModel::Parameter>())
  */
- template<typename T>
- inline T as_fallback_default(const Node& n)
- {
-     return n.as<T>(T());
- }
+template<typename T>
+inline T as_fallback_default(const Node& n)
+{
+    return n.as<T>(T());
+}
 
- inline void checkMandatoryField(const Node& node, const std::string& nodeName)
- {
-     if (!node["id"].IsDefined() || node["id"].IsNull())
-     {
-         std::filesystem::path nodePath(node.Tag());
-         throw KeyNotFound(node.Mark(),
-                           fmt::format("{} id is mandatory in library\n{}",
-                                       nodeName,
-                                       printPathTree(nodePath)));
-     }
- }
+inline void checkMandatoryField(const Node& node, const std::string& nodeName)
+{
+    if (!node["id"].IsDefined() || node["id"].IsNull())
+    {
+        std::filesystem::path nodePath(node.Tag());
+        throw KeyNotFound(node.Mark(),
+                          fmt::format("{} id is mandatory in library\n{}",
+                                      nodeName,
+                                      printPathTree(nodePath)));
+    }
+}
 
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::Parameter>
@@ -268,7 +268,9 @@ inline std::string getFieldFromNode(const Node& node, const std::string& fieldNa
     return node[fieldName].as<std::string>("");
 }
 
-inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::vector<std::string>& allowedFields = {})
+inline bool isValidMap(const Node& node,
+                       const unsigned& nbFields,
+                       const std::vector<std::string>& allowedFields = {})
 {
     if (!node.IsMap())
     {
@@ -277,10 +279,11 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
 
     // Build actual keys set and keep mapping to line numbers
     std::unordered_map<std::string, int> actualKeysLine;
-    for (const auto& entry : node)
+    for (const auto& entry: node)
     {
         const Node keyNode = entry.first;
-        std::string keyName = keyNode.IsDefined() ? keyNode.as<std::string>() : std::string("<unknown>");
+        std::string keyName = keyNode.IsDefined() ? keyNode.as<std::string>()
+                                                  : std::string("<unknown>");
         const auto mark = keyNode.Mark();
         const int line = static_cast<int>(mark.line) + 1;
         actualKeysLine.emplace(keyName, line);
@@ -298,7 +301,7 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
     if (!allowedSet.empty())
     {
         std::unordered_set<std::string> actualSet;
-        for (const auto& kv : actualKeysLine)
+        for (const auto& kv: actualKeysLine)
         {
             actualSet.insert(kv.first);
         }
@@ -310,7 +313,7 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
 
         // compute unexpected = actual - allowed
         std::vector<std::string> unexpected;
-        for (const auto& actual_field_local : actualSet)
+        for (const auto& actual_field_local: actualSet)
         {
             if (allowedSet.find(actual_field_local) == allowedSet.end())
             {
@@ -320,7 +323,7 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
 
         // compute missing = allowed - actual
         std::vector<std::string> missing;
-        for (const auto& allowed_field_local : allowedSet)
+        for (const auto& allowed_field_local: allowedSet)
         {
             if (actualSet.find(allowed_field_local) == actualSet.end())
             {
@@ -333,13 +336,17 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
         const std::string baseTree = ::getBaseTreeOnce(nodeTagPath);
 
         // compute indentation based on tag depth
-        std::size_t depthParts = static_cast<std::size_t>(std::distance(nodeTagPath.begin(), nodeTagPath.end()));
-        if (depthParts == 0) depthParts = 1;
+        std::size_t depthParts = static_cast<std::size_t>(
+          std::distance(nodeTagPath.begin(), nodeTagPath.end()));
+        if (depthParts == 0)
+        {
+            depthParts = 1;
+        }
         const std::size_t indentSpaces = (depthParts - 1) * 4;
 
         std::string markedFieldsTree;
         // unexpected first, with line numbers and X marker
-        for (const auto& keyName : unexpected)
+        for (const auto& keyName: unexpected)
         {
             const int line = actualKeysLine.count(keyName) ? actualKeysLine.at(keyName) : -1;
             markedFieldsTree += std::string(indentSpaces, ' ');
@@ -353,7 +360,7 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
             markedFieldsTree += '\n';
         }
         // then missing, with ? marker
-        for (const auto& keyName : missing)
+        for (const auto& keyName: missing)
         {
             markedFieldsTree += std::string(indentSpaces, ' ');
             markedFieldsTree += "|__? ";
@@ -361,11 +368,12 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
             markedFieldsTree += " (missing)\n";
         }
 
-        throw KeyNotFound(node.Mark(),
-                          fmt::format("Unexpected or missing field(s) (expected {} field(s)).\n{}{}",
-                                      allowedSet.size(),
-                                      baseTree,
-                                      markedFieldsTree));
+        throw KeyNotFound(
+          node.Mark(),
+          fmt::format("Unexpected or missing field(s) (expected {} field(s)).\n{}{}",
+                      allowedSet.size(),
+                      baseTree,
+                      markedFieldsTree));
     }
 
     // No allowedFields given: use size-based check
@@ -374,7 +382,8 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
         return true;
     }
 
-    // If size mismatch, list unexpected (if more) or missing (if less) without precise expected names
+    // If size mismatch, list unexpected (if more) or missing (if less) without precise expected
+    // names
     std::filesystem::path nodeTagPath(node.Tag());
     const std::string baseTree = ::getBaseTreeOnce(nodeTagPath);
 
@@ -382,51 +391,60 @@ inline bool isValidMap(const Node& node, const unsigned& nbFields, const std::ve
     if (node.size() > nbFields)
     {
         // mark all present keys as unexpected
-        std::size_t depthParts = static_cast<std::size_t>(std::distance(nodeTagPath.begin(), nodeTagPath.end()));
-        if (depthParts == 0) depthParts = 1;
+        std::size_t depthParts = static_cast<std::size_t>(
+          std::distance(nodeTagPath.begin(), nodeTagPath.end()));
+        if (depthParts == 0)
+        {
+            depthParts = 1;
+        }
         const std::size_t indentSpaces = (depthParts - 1) * 4;
 
-        for (const auto& pair_kv : actualKeysLine)
-         {
+        for (const auto& pair_kv: actualKeysLine)
+        {
             markedFieldsTree += std::string(indentSpaces, ' ');
             markedFieldsTree += "|__X ";
             markedFieldsTree += pair_kv.first;
             markedFieldsTree += " at line ";
             markedFieldsTree += std::to_string(pair_kv.second);
             markedFieldsTree += '\n';
-         }
+        }
 
-         throw KeyNotFound(node.Mark(),
-                           fmt::format("Unexpected field(s) found (expected {} field(s), got {}).\n{}{}",
-                                       nbFields,
-                                       node.size(),
-                                       baseTree,
-                                       markedFieldsTree));
-     }
-     else // node.size() < nbFields
-     {
-         // We can't list specific missing names here, just indicate missing count
-         std::size_t depthParts = static_cast<std::size_t>(std::distance(nodeTagPath.begin(), nodeTagPath.end()));
-         if (depthParts == 0) depthParts = 1;
-         const std::size_t indentSpaces = (depthParts - 1) * 4;
+        throw KeyNotFound(
+          node.Mark(),
+          fmt::format("Unexpected field(s) found (expected {} field(s), got {}).\n{}{}",
+                      nbFields,
+                      node.size(),
+                      baseTree,
+                      markedFieldsTree));
+    }
+    else // node.size() < nbFields
+    {
+        // We can't list specific missing names here, just indicate missing count
+        std::size_t depthParts = static_cast<std::size_t>(
+          std::distance(nodeTagPath.begin(), nodeTagPath.end()));
+        if (depthParts == 0)
+        {
+            depthParts = 1;
+        }
+        const std::size_t indentSpaces = (depthParts - 1) * 4;
 
-         markedFieldsTree += std::string(indentSpaces, ' ');
-         markedFieldsTree += "|__? missing field(s) (expected ";
-         markedFieldsTree += std::to_string(nbFields);
-         markedFieldsTree += ")\n";
+        markedFieldsTree += std::string(indentSpaces, ' ');
+        markedFieldsTree += "|__? missing field(s) (expected ";
+        markedFieldsTree += std::to_string(nbFields);
+        markedFieldsTree += ")\n";
 
-         throw KeyNotFound(node.Mark(),
-                           fmt::format("Missing field(s) (expected {} field(s), got {}).\n{}{}",
-                                       nbFields,
-                                       node.size(),
-                                       baseTree,
-                                       markedFieldsTree));
-     }
+        throw KeyNotFound(node.Mark(),
+                          fmt::format("Missing field(s) (expected {} field(s), got {}).\n{}{}",
+                                      nbFields,
+                                      node.size(),
+                                      baseTree,
+                                      markedFieldsTree));
+    }
 
-     return false;
- }
+    return false;
+}
 
- static constexpr unsigned expectedNbFields = 3;
+static constexpr unsigned expectedNbFields = 3;
 
 template<>
 struct convert<Antares::IO::Inputs::YmlModel::PortType>
@@ -446,7 +464,11 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
         }
 
         // If map contains unexpected number of fields, ensure required fields exist (even if empty)
-        if (!isValidMap(area_conn_node, expectedNbFields, std::vector<std::string>{"injection-to-balance", "spillage-bound", "unsupplied-energy-bound"}))
+        if (!isValidMap(area_conn_node,
+                        expectedNbFields,
+                        std::vector<std::string>{"injection-to-balance",
+                                                 "spillage-bound",
+                                                 "unsupplied-energy-bound"}))
         {
             const Node injectionNode = area_conn_node["injection-to-balance"];
             if (!injectionNode.IsDefined())
