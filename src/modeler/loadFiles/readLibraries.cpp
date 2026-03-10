@@ -12,6 +12,7 @@
 #include <antares/io/inputs/yml-model/parser.h>
 #include <antares/logs/logs.h>
 #include "antares/exception/InvalidArgumentError.hpp"
+#include "antares/exception/LoadingError.hpp"
 #include "antares/io/inputs/yml-optim-config/OptimConfig.h"
 #include "antares/solver/modeler/loadFiles/loadFiles.h"
 #include "antares/solver/modeler/loadFiles/readOptimConfig.h"
@@ -44,7 +45,8 @@ static YmlModel::Library loadSingleLibrary(const fs::path& filePath)
     }
     catch (const YAML::Exception& e)
     {
-        throw ErrorLoadingYaml(e.what());
+        auto&& err = markYamlError(e, filePath.string());
+        throw Error::LoadingError(err);
     }
 }
 
