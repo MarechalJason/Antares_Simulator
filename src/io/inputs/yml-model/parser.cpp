@@ -5,7 +5,7 @@
 
 #include "antares/io/inputs/yml-model/Library.h"
 
-#include "decoders.h"
+#include "antares/io/inputs/yml-model/decoders.h"
 
 namespace Antares::IO::Inputs::YmlModel
 {
@@ -60,7 +60,7 @@ void tagNodes(YAML::Node& node)
 }
 } // anonymous namespace
 
-/* static */ Library Parser::parse(const std::string& content)
+Library Parser::parse(const std::string& content)
 {
     YAML::Node root = YAML::Load(content);
     auto libraryNode = root["library"];

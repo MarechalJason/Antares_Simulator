@@ -1,10 +1,10 @@
 // Copyright 2007-2026, RTE (https://www.rte-france.com)
 // SPDX-License-Identifier: MPL-2.0
 
-#include "decoders.h"
-
 #include <mutex>
 #include <unordered_set>
+
+#include "antares/io/inputs/yml-model/decoders.h"
 
 namespace
 {
