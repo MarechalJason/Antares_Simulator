@@ -4,9 +4,9 @@
 #pragma once
 
 #include <filesystem>
-#include <vector>
-
 #include <fmt/format.h>
+#include <optional>
+#include <vector>
 
 #include "antares/io/inputs/yml-model/Library.h"
 #include "antares/io/inputs/yml-model/YmlMapMarker.h"
@@ -15,7 +15,6 @@
 
 // printPathTree is defined in decoders_utils.cpp (single TU).
 std::string printPathTree(const std::filesystem::path& p);
-
 
 // Implement convert specializations
 namespace YAML
@@ -59,14 +58,14 @@ inline std::string getFieldFromNode(const Node& node, const std::string& fieldNa
     return node[fieldName].as<std::string>("");
 }
 
-
-inline bool isValidMap(const Node& node,
-                       const unsigned& nbFields,
-                       const std::vector<std::string>& allowedFields = {})
+inline std::optional<YmlMapMarker> isValidMap(const Node& node,
+                                              const unsigned& nbFields,
+                                              const std::vector<std::string>& allowedFields = {})
 {
+    // Only validate maps here; callers must ensure node is a map before calling when necessary.
     if (!node.IsMap())
     {
-        return false;
+        return std::nullopt;
     }
 
     YmlMapMarker marker(node);
@@ -82,74 +81,21 @@ inline bool isValidMap(const Node& node,
     {
         if (marker.actualSet() == allowedSet)
         {
-            return true;
+            return std::nullopt; // valid
         }
 
-        // compute unexpected = actual - allowed
-        std::vector<std::string> unexpected;
-        for (const auto& actual_field_local: marker.actualSet())
-        {
-            if (allowedSet.find(actual_field_local) == allowedSet.end())
-            {
-                unexpected.push_back(actual_field_local);
-            }
-        }
-
-        // compute missing = allowed - actual
-        std::vector<std::string> missing;
-        for (const auto& allowed_field_local: allowedSet)
-        {
-            if (marker.actualSet().find(allowed_field_local) == marker.actualSet().end())
-            {
-                missing.push_back(allowed_field_local);
-            }
-        }
-
-        const std::string markedFieldsTree = marker.buildMarkedTreeForUnexpectedAndMissing(unexpected, missing);
-
-        throw KeyNotFound(
-          node.Mark(),
-          fmt::format("Unexpected or missing field(s) (expected {} field(s)).\n{}{}",
-                      allowedSet.size(),
-                      marker.baseTree(),
-                      markedFieldsTree));
+        // invalid map: return marker so caller can build an error message
+        return std::make_optional<YmlMapMarker>(marker);
     }
 
     // No allowedFields given: use size-based check
     if (node.size() == nbFields)
     {
-        return true;
+        return std::nullopt; // valid
     }
 
-    const std::string& baseTree = marker.baseTree();
-
-    std::string markedFieldsTree;
-    if (node.size() > nbFields)
-    {
-        markedFieldsTree = marker.buildMarkedTreeAllPresent();
-
-        throw KeyNotFound(
-          node.Mark(),
-          fmt::format("Unexpected field(s) found (expected {} field(s), got {}).\n{}{}",
-                      nbFields,
-                      node.size(),
-                      baseTree,
-                      markedFieldsTree));
-    }
-    else // node.size() < nbFields
-    {
-        markedFieldsTree += std::string(marker.indentSpaces(), ' ');
-        markedFieldsTree += "|__? missing field(s) (expected ";
-        markedFieldsTree += std::to_string(nbFields);
-        markedFieldsTree += ")\n";
-
-        throw KeyNotFound(node.Mark(),
-                          fmt::format("Missing field(s) (expected {} field(s), got {}).\n{}{}",
-                                      nbFields,
-                                      node.size(),
-                                      baseTree,
-                                      markedFieldsTree));
-    }
+    // invalid size: return marker so caller can build an error message
+    return std::make_optional<YmlMapMarker>(marker);
 }
 
 static constexpr unsigned kExpectedNbFields = 3;
@@ -171,40 +117,47 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
             return false;
         }
 
-        // If map contains unexpected number of fields, ensure required fields exist (even if empty)
-        if (!isValidMap(area_conn_node,
-                        kExpectedNbFields,
-                        std::vector<std::string>{"injection-to-balance",
-                                                 "spillage-bound",
-                                                 "unsupplied-energy-bound"}))
+        // Validate map: if invalid, get marker and build an error message to throw
+        if (auto maybeMarker = isValidMap(area_conn_node,
+                                          kExpectedNbFields,
+                                          std::vector<std::string>{"injection-to-balance",
+                                                                   "spillage-bound",
+                                                                   "unsupplied-energy-bound"}))
         {
-            const Node injectionNode = area_conn_node["injection-to-balance"];
-            if (!injectionNode.IsDefined())
+            const auto& marker = *maybeMarker;
+            std::unordered_set<std::string> allowedSet = {"injection-to-balance",
+                                                          "spillage-bound",
+                                                          "unsupplied-energy-bound"};
+            // compute unexpected = actual - allowed
+            std::vector<std::string> unexpected;
+            for (const auto& actual_field_local: marker.actualSet())
             {
-                throw KeyNotFound(
-                  area_conn_node.Mark(),
-                  fmt::format("{} field must be specified even if it has not a value.\n{}",
-                              "injection-to-balance",
-                              ::getBaseTreeOnce(std::filesystem::path(area_conn_node.Tag()))));
+                if (allowedSet.find(actual_field_local) == allowedSet.end())
+                {
+                    unexpected.push_back(actual_field_local);
+                }
             }
-            const Node spillageNode = area_conn_node["spillage-bound"];
-            if (!spillageNode.IsDefined())
+
+            // compute missing = allowed - actual
+            std::vector<std::string> missing;
+            for (const auto& allowed_field_local: allowedSet)
             {
-                throw KeyNotFound(
-                  area_conn_node.Mark(),
-                  fmt::format("{} field must be specified even if it has not a value.\n{}",
-                              "spillage-bound",
-                              ::getBaseTreeOnce(std::filesystem::path(area_conn_node.Tag()))));
+                if (marker.actualSet().find(allowed_field_local) == marker.actualSet().end())
+                {
+                    missing.push_back(allowed_field_local);
+                }
             }
-            const Node unsuppliedNode = area_conn_node["unsupplied-energy-bound"];
-            if (!unsuppliedNode.IsDefined())
-            {
-                throw KeyNotFound(
-                  area_conn_node.Mark(),
-                  fmt::format("{} field must be specified even if it has not a value.\n{}",
-                              "unsupplied-energy-bound",
-                              ::getBaseTreeOnce(std::filesystem::path(area_conn_node.Tag()))));
-            }
+
+            const std::string markedFieldsTree = marker.buildMarkedTreeForUnexpectedAndMissing(
+              unexpected,
+              missing);
+
+            throw KeyNotFound(
+              area_conn_node.Mark(),
+              fmt::format("Unexpected or missing field(s) (expected {} field(s).\\n{}{}",
+                          allowedSet.size(),
+                          marker.baseTree(),
+                          markedFieldsTree));
         }
 
         rhs.area_connection.inject_to_balance = getFieldFromNode(area_conn_node,
@@ -224,10 +177,43 @@ struct convert<Antares::IO::Inputs::YmlModel::PortType>
             return true;
         }
 
-        constexpr unsigned kExpectedThermalNbFields = 1;
-        if (!isValidMap(child_node, kExpectedThermalNbFields, std::vector<std::string>{"capacity-field"}))
+        if (!child_node.IsMap())
         {
             return false;
+        }
+
+        constexpr unsigned kExpectedThermalNbFields = 1;
+        if (auto maybeMarker = isValidMap(child_node,
+                                          kExpectedThermalNbFields,
+                                          std::vector<std::string>{"capacity-field"}))
+        {
+            const auto& marker = *maybeMarker;
+            std::unordered_set<std::string> allowedSet = {"capacity-field"};
+            std::vector<std::string> unexpected;
+            for (const auto& actual_field_local: marker.actualSet())
+            {
+                if (allowedSet.find(actual_field_local) == allowedSet.end())
+                {
+                    unexpected.push_back(actual_field_local);
+                }
+            }
+            std::vector<std::string> missing;
+            for (const auto& allowed_field_local: allowedSet)
+            {
+                if (marker.actualSet().find(allowed_field_local) == marker.actualSet().end())
+                {
+                    missing.push_back(allowed_field_local);
+                }
+            }
+            const std::string markedFieldsTree = marker.buildMarkedTreeForUnexpectedAndMissing(
+              unexpected,
+              missing);
+            throw KeyNotFound(
+              child_node.Mark(),
+              fmt::format("Unexpected or missing field(s) (expected {} field(s).\\n{}{}",
+                          allowedSet.size(),
+                          marker.baseTree(),
+                          markedFieldsTree));
         }
 
         rhs.thermal_capacity_connection_field = getFieldFromNode(child_node, "capacity-field");
@@ -429,14 +415,23 @@ struct convert<Antares::IO::Inputs::YmlModel::Model>
         checkMandatoryField(node, "model");
         rhs.id = node["id"].as<std::string>();
         rhs.description = node["description"].as<std::string>("");
-        rhs.parameters = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Parameter>>(node["parameters"]);
-        rhs.variables = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Variable>>(node["variables"]);
-        rhs.ports = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Port>>(node["ports"]);
-        rhs.port_field_definitions = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::PortFieldDefinition>>(node["port-field-definitions"]);
-        rhs.constraints = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Constraint>>(node["constraints"]);
-        rhs.binding_constraints = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Constraint>>(node["binding-constraints"]);
-        rhs.objectives = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Objective>>(node["objective-contributions"]);
-        rhs.extra_outputs = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::ExtraOutput>>(node["extra-outputs"]);
+        rhs.parameters = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Parameter>>(
+          node["parameters"]);
+        rhs.variables = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Variable>>(
+          node["variables"]);
+        rhs.ports = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Port>>(
+          node["ports"]);
+        rhs.port_field_definitions = as_fallback_default<
+          std::vector<Antares::IO::Inputs::YmlModel::PortFieldDefinition>>(
+          node["port-field-definitions"]);
+        rhs.constraints = as_fallback_default<
+          std::vector<Antares::IO::Inputs::YmlModel::Constraint>>(node["constraints"]);
+        rhs.binding_constraints = as_fallback_default<
+          std::vector<Antares::IO::Inputs::YmlModel::Constraint>>(node["binding-constraints"]);
+        rhs.objectives = as_fallback_default<std::vector<Antares::IO::Inputs::YmlModel::Objective>>(
+          node["objective-contributions"]);
+        rhs.extra_outputs = as_fallback_default<
+          std::vector<Antares::IO::Inputs::YmlModel::ExtraOutput>>(node["extra-outputs"]);
         return true;
     }
 };
