@@ -13,6 +13,6 @@ public:
     Parser() = default;
     ~Parser() = default;
 
-    Library parse(const std::string& content);
+    static Library parse(const std::string& content);
 };
 } // namespace Antares::IO::Inputs::YmlModel

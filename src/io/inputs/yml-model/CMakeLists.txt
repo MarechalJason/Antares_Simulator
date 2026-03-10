@@ -1,6 +1,6 @@
 set(SOURCES
         parser.cpp
-        decoders.hxx
+        decoders.h
         decoders_utils.cpp
         include/antares/io/inputs/yml-model/parser.h
 )

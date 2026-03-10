@@ -1,24 +1,61 @@
-// Small translation unit that provides shared utilities for decoders.hxx
-// We keep the printed-tags cache here so the tree is printed only once per process
+// Copyright 2007-2026, RTE (https://www.rte-france.com)
+// SPDX-License-Identifier: MPL-2.0
 
-#include "decoders.hxx"
+#include "decoders.h"
 
+#include <mutex>
 #include <unordered_set>
 
 namespace
 {
-    // single process-wide cache of tags we've already printed
-    std::unordered_set<std::string> g_printed_tags;
+// Thread-safe accessor for the per-process printed-tags cache.
+// Using a function-local static avoids mutable global state.
+std::unordered_set<std::string>& printedTags()
+{
+    static std::unordered_set<std::string> cache;
+    return cache;
+}
+
+std::mutex& printedTagsMutex()
+{
+    static std::mutex mtx;
+    return mtx;
+}
+} // namespace
+
+// Implement printPathTree here (moved out of header to a single TU)
+std::string printPathTree(const std::filesystem::path& p)
+{
+    std::string treeStr;
+    std::size_t depth = 0;
+    for (const auto& part: p)
+    {
+        if (depth == 0)
+        {
+            treeStr += part.string();
+            treeStr += '\n';
+        }
+        else
+        {
+            treeStr += std::string((depth - 1) * 4, ' ');
+            // "└── " is a u8 and it does not display correctly
+            treeStr += "|__ ";
+            treeStr += part.string();
+            treeStr += '\n';
+        }
+        ++depth;
+    }
+    return treeStr;
 }
 
 std::string getBaseTreeOnce(const std::filesystem::path& nodeTagPath)
 {
     const std::string tagStr = nodeTagPath.string();
-    if (g_printed_tags.find(tagStr) != g_printed_tags.end())
+    const std::lock_guard<std::mutex> lock(printedTagsMutex());
+    if (!printedTags().insert(tagStr).second)
     {
         return {};
     }
-    g_printed_tags.insert(tagStr);
     return printPathTree(nodeTagPath);
 }
 

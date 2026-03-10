@@ -17,6 +17,8 @@ using namespace Antares::ModelerStudy::SystemModel; // Mainly for type Connexion
 namespace Antares::IO::Inputs::SystemConverter
 {
 
+namespace
+{
 class ErrorWhileSplittingLibraryAndModel final: public std::runtime_error
 {
 public:
@@ -44,7 +46,7 @@ public:
     }
 };
 
-static std::pair<std::string, std::string> splitLibraryModelString(const std::string& s)
+std::pair<std::string, std::string> splitLibraryModelString(const std::string& s)
 {
     size_t pos = s.find('.');
     if (pos == std::string::npos)
@@ -57,7 +59,7 @@ static std::pair<std::string, std::string> splitLibraryModelString(const std::st
     return {library, model};
 }
 
-static const Model& getModel(const std::vector<Library>& libraries,
+const Model& getModel(const std::vector<Library>& libraries,
                              const std::string& libraryId,
                              const std::string& modelId)
 {
@@ -77,7 +79,7 @@ static const Model& getModel(const std::vector<Library>& libraries,
     return search->second;
 }
 
-static Component createComponent(const YmlSystem::Component& c,
+Component createComponent(const YmlSystem::Component& c,
                                  const std::vector<Library>& libraries,
                                  unsigned int componentIndex)
 {
@@ -107,7 +109,7 @@ static Component createComponent(const YmlSystem::Component& c,
     return component;
 }
 
-static Component& findComponent(const std::string& id, std::vector<Component>& components)
+Component& findComponent(const std::string& id, std::vector<Component>& components)
 
 {
     const auto it = std::ranges::find_if(components,
@@ -119,7 +121,7 @@ static Component& findComponent(const std::string& id, std::vector<Component>& c
     return *it;
 }
 
-static void CheckPortSelfConnection(const std::string& firstComponentId,
+void CheckPortSelfConnection(const std::string& firstComponentId,
                                     const std::string& firstPortId,
                                     const std::string& secondComponentId,
                                     const std::string& secondPortId)
@@ -133,7 +135,7 @@ static void CheckPortSelfConnection(const std::string& firstComponentId,
     }
 }
 
-static void CheckPortsType(const Port& firstPort, const Port& secondPort)
+void CheckPortsType(const Port& firstPort, const Port& secondPort)
 {
     if (firstPort.Type() != secondPort.Type())
     {
@@ -144,7 +146,7 @@ static void CheckPortsType(const Port& firstPort, const Port& secondPort)
     }
 }
 
-static FieldRole ExposeFieldRole(const std::string& portId,
+FieldRole ExposeFieldRole(const std::string& portId,
                                  const std::string& field,
                                  const PortFieldMap& portFieldDefinitions)
 {
@@ -156,7 +158,7 @@ static FieldRole ExposeFieldRole(const std::string& portId,
     return FieldRole::Sender;
 }
 
-static std::pair<PortFieldsRole, PortFieldsRole> ResolveFieldsRole(const Component& firstComponent,
+std::pair<PortFieldsRole, PortFieldsRole> ResolveFieldsRole(const Component& firstComponent,
                                                                    const Port& firstPort,
                                                                    const Component& secondComponent,
                                                                    const Port& secondPort)
@@ -207,7 +209,7 @@ static std::pair<PortFieldsRole, PortFieldsRole> ResolveFieldsRole(const Compone
  * @throw std::invalid_argument if a component or port is not found, if the ports are not
  *        of the same type, or if fields are incorrectly configured for sending/receiving.
  */
-static void connectComponents(const YmlSystem::Connection& connection,
+void connectComponents(const YmlSystem::Connection& connection,
                               std::vector<Component>& components)
 {
     const auto& firstComponentId = connection.firstEntry.componentId;
@@ -246,7 +248,7 @@ static void connectComponents(const YmlSystem::Connection& connection,
  * @throw std::invalid_argument if a component is not found, or if the connection could not be
  * established
  */
-static void connectAreas(const YmlSystem::AreaConnection& connection,
+void connectAreas(const YmlSystem::AreaConnection& connection,
                          std::vector<Component>& components)
 {
     auto& component = findComponent(connection.componentId, components);
@@ -266,7 +268,7 @@ static void connectAreas(const YmlSystem::AreaConnection& connection,
  * @throw std::invalid_argument if a component is not found, or if the connection could not be
  * established
  */
-static void connectThermalCapacity(const YmlSystem::ThermalCapacityConnection& connection,
+void connectThermalCapacity(const YmlSystem::ThermalCapacityConnection& connection,
                                    std::vector<Component>& components)
 {
     // TODO : check that area exists in legacy study? seems complicated here
@@ -276,6 +278,8 @@ static void connectThermalCapacity(const YmlSystem::ThermalCapacityConnection& c
                                            connection.thermalComponent.areaId,
                                            connection.thermalComponent.clusterId);
 }
+
+} // anonymous namespace
 
 System convert(const YmlSystem::System& ymlSystem, const std::vector<Library>& libraries)
 {

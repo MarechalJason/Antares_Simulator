@@ -5,11 +5,13 @@
 
 #include "antares/io/inputs/yml-model/Library.h"
 
-#include "decoders.hxx"
+#include "decoders.h"
 
 namespace Antares::IO::Inputs::YmlModel
 {
 
+namespace
+{
 void tagNodes(YAML::Node& node);
 
 void visitMap(YAML::Node& node)
@@ -56,8 +58,9 @@ void tagNodes(YAML::Node& node)
         visitSequence(node);
     }
 }
+} // anonymous namespace
 
-Library Parser::parse(const std::string& content)
+/* static */ Library Parser::parse(const std::string& content)
 {
     YAML::Node root = YAML::Load(content);
     auto libraryNode = root["library"];
@@ -75,7 +78,7 @@ Library Parser::parse(const std::string& content)
             throw std::runtime_error("Library id is not defined");
         }
     }
-    Library library = root["library"].as<Library>();
+    auto library = root["library"].as<Library>();
 
     return library;
 }

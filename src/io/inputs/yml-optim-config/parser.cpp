@@ -3,7 +3,7 @@
 
 #include "antares/io/inputs/yml-optim-config/parser.h"
 
-#include "decoders.hxx"
+#include "decoders.h"
 
 namespace Antares::IO::Inputs::YmlOptimConfig
 {
