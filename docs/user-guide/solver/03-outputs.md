@@ -319,6 +319,8 @@ Each simulation produces a file "execution\_info.ini" at the root of the output 
 about the execution of the simulation, such as version of Antares used, options selected in generaldata.ini, information
 about the study (nb of areas...) and different steps duration.
 
+The section [duration] contains the same fields as [duration\_ms] with values in hours, minutes and seconds for longer studies.
+
 The section [duration\_ms] contains the following fields:
 
 **full_exec**: total duration
