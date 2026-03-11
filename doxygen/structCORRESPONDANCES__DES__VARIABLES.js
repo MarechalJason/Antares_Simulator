@@ -7,11 +7,11 @@ var structCORRESPONDANCES__DES__VARIABLES =
     [ "CostVariationWithdrawal", "structCORRESPONDANCES__DES__VARIABLES.html#a9ba569d13f2c0b7ac1bd3047537983db", null ],
     [ "InjectionVariable", "structCORRESPONDANCES__DES__VARIABLES.html#a43b5075de700f51ef4e9dcac4fee70fb", null ],
     [ "LevelVariable", "structCORRESPONDANCES__DES__VARIABLES.html#aeef55e68412d729db7bdafbf9ea37433", null ],
-    [ "NumeroDeVariableCoutExtremiteVersOrigineDeLInterconnexion", "structCORRESPONDANCES__DES__VARIABLES.html#a86ba7770ce8cfec6ebd09700722ea2b4", null ],
-    [ "NumeroDeVariableCoutOrigineVersExtremiteDeLInterconnexion", "structCORRESPONDANCES__DES__VARIABLES.html#a6c2a7ee36ec91b0f5f5e96a733e39d7e", null ],
     [ "NumeroDeVariableDefaillanceNegative", "structCORRESPONDANCES__DES__VARIABLES.html#aab139e1893b2db521ed763270d44b016", null ],
     [ "NumeroDeVariableDefaillancePositive", "structCORRESPONDANCES__DES__VARIABLES.html#a4a77f9e4c6e414505599d8245153340f", null ],
-    [ "NumeroDeVariableDeLInterconnexion", "structCORRESPONDANCES__DES__VARIABLES.html#a065824648edf2a56ea664e0d97a33fd0", null ],
+    [ "NumeroDeVariableDuFluxDirect", "structCORRESPONDANCES__DES__VARIABLES.html#a33db44ec0932faed7922ecc6c1fd834f", null ],
+    [ "NumeroDeVariableDuFluxDirectPositif", "structCORRESPONDANCES__DES__VARIABLES.html#a12d02eb7713237765a1790240e67f26e", null ],
+    [ "NumeroDeVariableDuFluxIndirectPositif", "structCORRESPONDANCES__DES__VARIABLES.html#a053107da074848d6ad262cd0c5a50ffe", null ],
     [ "NumeroDeVariableDuNombreDeGroupesEnMarcheDuPalierThermique", "structCORRESPONDANCES__DES__VARIABLES.html#acb6ac41053144e3033b777d8470066db", null ],
     [ "NumeroDeVariableDuNombreDeGroupesQuiDemarrentDuPalierThermique", "structCORRESPONDANCES__DES__VARIABLES.html#a615c9810308ca1ac1db8c45f03d9fd03", null ],
     [ "NumeroDeVariableDuNombreDeGroupesQuiSArretentDuPalierThermique", "structCORRESPONDANCES__DES__VARIABLES.html#a00cb40bdad3a911b40db8ec64ebc6c91", null ],
@@ -24,6 +24,6 @@ var structCORRESPONDANCES__DES__VARIABLES =
     [ "NumeroDeVariablesVariationHydALaBaisse", "structCORRESPONDANCES__DES__VARIABLES.html#abb5a9836d85a7ff725733d62112bede0", null ],
     [ "NumeroDeVariablesVariationHydALaHausse", "structCORRESPONDANCES__DES__VARIABLES.html#a1a960a8738ad46f55a7caf69078cc256", null ],
     [ "OverflowVariable", "structCORRESPONDANCES__DES__VARIABLES.html#a3bfb3f560cadc8699f8e82ead43c90e5", null ],
-    [ "SIM_ShortTermStorage", "structCORRESPONDANCES__DES__VARIABLES.html#a552fd5d7c474607916629814d6706f50", null ],
+    [ "SIM_ShortTermStorage", "structCORRESPONDANCES__DES__VARIABLES.html#af68ef7192f76ea4e6c6cbb65afd7cad4", null ],
     [ "WithdrawalVariable", "structCORRESPONDANCES__DES__VARIABLES.html#a67aea8d5c3d6be4abf25f005d0373aab", null ]
 ];

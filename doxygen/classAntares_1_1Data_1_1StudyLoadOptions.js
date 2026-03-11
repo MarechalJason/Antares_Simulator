@@ -13,7 +13,6 @@ var classAntares_1_1Data_1_1StudyLoadOptions =
     [ "forceYearByYear", "classAntares_1_1Data_1_1StudyLoadOptions.html#a4875ece3163e52e25ac0efdd7faf12e9", null ],
     [ "ignoreConstraints", "classAntares_1_1Data_1_1StudyLoadOptions.html#a59fea6741a9c51f256d82c7ba740b7f5", null ],
     [ "listSolvers", "classAntares_1_1Data_1_1StudyLoadOptions.html#a321b549782e271d775df3390e22f8ba2", null ],
-    [ "loadOnlyNeeded", "classAntares_1_1Data_1_1StudyLoadOptions.html#af047639f21e6aaab8fc1c85f9663c37e", null ],
     [ "logMessage", "classAntares_1_1Data_1_1StudyLoadOptions.html#adf6f5e11176d0b8178e26988b28a5b58", null ],
     [ "maxNbYearsInParallel", "classAntares_1_1Data_1_1StudyLoadOptions.html#afce3627865b70364ce39f6a16ccb3a49", null ],
     [ "mpsToExport", "classAntares_1_1Data_1_1StudyLoadOptions.html#ae8d39c7e1c8b47f84b368499d2c0cdb5", null ],
@@ -24,6 +23,5 @@ var classAntares_1_1Data_1_1StudyLoadOptions =
     [ "simplexOptimizationRange", "classAntares_1_1Data_1_1StudyLoadOptions.html#a2ef386b36efcd3f12fd76d8756207510", null ],
     [ "simulationName", "classAntares_1_1Data_1_1StudyLoadOptions.html#a7f46b763fc9723a43fc17b176f068273", null ],
     [ "solverOptions", "classAntares_1_1Data_1_1StudyLoadOptions.html#a26528ad441dfb71aff8b27dffbaee652", null ],
-    [ "studyFolder", "classAntares_1_1Data_1_1StudyLoadOptions.html#a8b2652d4b8d243b3b49d4f9359f1d2d1", null ],
-    [ "usedByTheSolver", "classAntares_1_1Data_1_1StudyLoadOptions.html#ab44e57f6b6a32ece0b7c96f16f36f3e8", null ]
+    [ "studyFolder", "classAntares_1_1Data_1_1StudyLoadOptions.html#a8b2652d4b8d243b3b49d4f9359f1d2d1", null ]
 ];
