@@ -38,7 +38,7 @@ const char* toString(InputErrorKind kind)
 
 std::string InputError::toString() const
 {
-    std::string result = fmt::format("[{}] {}", toString(kind), message);
+    std::string result = fmt::format("[{}] {}", ::Antares::Error::toString(kind), message);
     if (file)
     {
         result += fmt::format(" (file: {}", *file);

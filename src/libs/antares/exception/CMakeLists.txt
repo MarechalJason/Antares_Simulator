@@ -23,6 +23,11 @@ target_include_directories(${PROJ}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
+target_link_libraries(${PROJ}
+        PUBLIC
+        fmt::fmt
+)
+
 install(DIRECTORY include/antares
         DESTINATION "include"
 )
