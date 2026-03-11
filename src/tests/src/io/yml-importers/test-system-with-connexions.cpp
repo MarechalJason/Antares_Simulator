@@ -202,7 +202,9 @@ BOOST_AUTO_TEST_CASE(two_components_connected_by_ports_of_same_type_but_differen
 
     YmlSystem::Parser parserSystem;
     YmlSystem::System system = parserSystem.parse(systemYaml);
-    auto systemModel = SystemConverter::convert(system, libraries);
+    auto result = SystemConverter::convert(system, libraries);
+    BOOST_REQUIRE(result);
+    auto& systemModel = result.value();
 
     const auto& components = systemModel.Components();
     const auto component_N = std::ranges::find_if(components,
@@ -362,7 +364,9 @@ BOOST_AUTO_TEST_CASE(thermal_capacity_connectivity)
     libraries.push_back(ModelConverter::convert(parserModel.parse(thermalConnectionLib)));
     YmlSystem::Parser parserSystem;
     YmlSystem::System system = parserSystem.parse(thermalConnectionSystem);
-    auto systemModel = SystemConverter::convert(system, libraries);
+    auto result = SystemConverter::convert(system, libraries);
+    BOOST_REQUIRE(result);
+    auto& systemModel = result.value();
     const auto& thermalInvestComponent = systemModel.Components().at(0);
     const auto& connection = thermalInvestComponent.portToThermalCapacityConnections();
     BOOST_CHECK_EQUAL(connection.size(), 1);

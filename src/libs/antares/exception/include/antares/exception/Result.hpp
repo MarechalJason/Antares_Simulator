@@ -23,7 +23,10 @@ public:
     static Result ok(T value)
     {
         Result r;
-        r.value_ = std::move(value);
+        if constexpr (std::is_object_v<T>)
+        {
+            r.value_.emplace(std::move(value));
+        }
         r.is_ok_ = true;
         return r;
     }
@@ -49,6 +52,11 @@ public:
     }
 
     const T& value() const&
+    {
+        return value_.value();
+    }
+
+    T& value() &
     {
         return value_.value();
     }

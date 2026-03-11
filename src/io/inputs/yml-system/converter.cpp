@@ -119,11 +119,10 @@ Antares::Result<void> checkPortSelfConnection(const std::string& firstComponentI
 {
     if (firstComponentId == secondComponentId && firstPortId == secondPortId)
     {
-        // Throw the specific exception expected by tests
-        throw ConnectingPortToItSelf(
+        return Antares::Result<void>::err(Antares::Error::InputError::validationError(
           fmt::format("Cannot connect port '{}' from component '{}' to itself",
                       firstPortId,
-                      firstComponentId));
+                      firstComponentId)));
     }
     return Antares::Result<void>::ok(0);
 }
@@ -170,12 +169,12 @@ Antares::Result<std::pair<PortFieldsRole, PortFieldsRole>> resolveFieldsRole(
 
         if (firstPortFieldRole == secondPortFieldRole)
         {
-            // Throw specific exception expected by tests
-            throw TwoFieldsOfSameRole(
-              fmt::format("Field '{}' has same role in both ports '{}' and '{}'",
-                          field.Id(),
-                          firstPort.Id(),
-                          secondPort.Id()));
+            return Antares::Result<std::pair<PortFieldsRole, PortFieldsRole>>::err(
+              Antares::Error::InputError::validationError(
+                fmt::format("Field '{}' has same role in both ports '{}' and '{}'",
+                            field.Id(),
+                            firstPort.Id(),
+                            secondPort.Id())));
         }
         firstPortFieldsRole.emplace(field, firstPortFieldRole);
         secondPortFieldsRole.emplace(field, secondPortFieldRole);
@@ -263,8 +262,8 @@ Antares::Result<void> connectThermalCapacity(const YmlSystem::ThermalCapacityCon
 
 } // anonymous namespace
 
-ModelerStudy::SystemModel::System convert(const YmlSystem::System& ymlSystem,
-                                          const std::vector<Library>& libraries)
+Antares::Result<ModelerStudy::SystemModel::System> convert(const YmlSystem::System& ymlSystem,
+                                                           const std::vector<Library>& libraries)
 {
     std::vector<Component> components;
     unsigned int componentIndex = 0;
@@ -274,12 +273,13 @@ ModelerStudy::SystemModel::System convert(const YmlSystem::System& ymlSystem,
                                        [&c](const Component& compo) { return compo.Id() == c.id; });
         if (it != components.end())
         {
-            throw Antares::Error::InputError::alreadyExists("component", c.id).toRuntimeError();
+            return Antares::Result<ModelerStudy::SystemModel::System>::err(
+              Antares::Error::InputError::alreadyExists("component", c.id));
         }
         auto componentResult = createComponent(c, libraries, componentIndex);
         if (!componentResult)
         {
-            throw componentResult.error().toRuntimeError();
+            return Antares::Result<ModelerStudy::SystemModel::System>::err(componentResult.error());
         }
         components.push_back(std::move(componentResult.value()));
         ++componentIndex;
@@ -291,7 +291,7 @@ ModelerStudy::SystemModel::System convert(const YmlSystem::System& ymlSystem,
         auto connResult = connectComponents(connection, components);
         if (!connResult)
         {
-            throw connResult.error().toRuntimeError();
+            return Antares::Result<ModelerStudy::SystemModel::System>::err(connResult.error());
         }
         logs.debug() << "Loaded connection (component1=`" << connection.firstEntry.componentId
                      << "` component2=`" << connection.secondEntry.componentId << "`)";
@@ -302,7 +302,7 @@ ModelerStudy::SystemModel::System convert(const YmlSystem::System& ymlSystem,
         auto connResult = connectAreas(connection, components);
         if (!connResult)
         {
-            throw connResult.error().toRuntimeError();
+            return Antares::Result<ModelerStudy::SystemModel::System>::err(connResult.error());
         }
         logs.debug() << "Loaded area connection (component=`" << connection.componentId
                      << "` area=`" << connection.areaId << "`)";
@@ -312,7 +312,7 @@ ModelerStudy::SystemModel::System convert(const YmlSystem::System& ymlSystem,
         auto connResult = connectThermalCapacity(connection, components);
         if (!connResult)
         {
-            throw connResult.error().toRuntimeError();
+            return Antares::Result<ModelerStudy::SystemModel::System>::err(connResult.error());
         }
         logs.debug() << "Loaded thermal-capacity connection (component=`" << connection.componentId
                      << "` area=`" << connection.thermalComponent.areaId << "` clusterId=`"
@@ -320,7 +320,8 @@ ModelerStudy::SystemModel::System convert(const YmlSystem::System& ymlSystem,
     }
 
     SystemBuilder builder;
-    return builder.withId(ymlSystem.id).withComponents(std::move(components)).build();
+    return Antares::Result<ModelerStudy::SystemModel::System>::ok(
+      builder.withId(ymlSystem.id).withComponents(std::move(components)).build());
 }
 
 } // namespace Antares::IO::Inputs::SystemConverter

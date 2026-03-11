@@ -3,6 +3,9 @@
 
 #include "FillerFixture.h"
 
+#include <boost/test/tools/old/interface.hpp>
+#include <boost/test/unit_test.hpp>
+
 #include "antares/io/inputs/model-converter/modelConverter.h"
 #include "antares/io/inputs/yml-model/parser.h"
 #include "antares/io/inputs/yml-system/converter.h"
@@ -50,7 +53,9 @@ void FillerFixture::setUpModelerSystem(const std::string& systemYaml,
     libraries.push_back(IO::Inputs::ModelConverter::convert(parserModel.parse(libraryYaml)));
     IO::Inputs::YmlSystem::Parser parserSystem;
     auto ymlSystem = parserSystem.parse(systemYaml);
-    auto system = IO::Inputs::SystemConverter::convert(ymlSystem, libraries);
+    auto result = IO::Inputs::SystemConverter::convert(ymlSystem, libraries);
+    BOOST_REQUIRE(result);
+    auto system = std::move(result).value();
     modelerData = std::make_unique<Solver::ModelerData>();
     modelerData->system = std::make_unique<System>(std::move(system));
     problemeHebdo->modelerData = modelerData.get();

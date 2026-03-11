@@ -45,7 +45,9 @@ ModelerStudy::SystemModel::System loadSystem(
 
     try
     {
-        return SystemConverter::convert(systemObj, libraries);
+        auto res = SystemConverter::convert(systemObj, libraries);
+        IO::Inputs::SystemConverter::throwIfError(res);
+        return std::move(res).value();
     }
     catch (const std::exception& e)
     {
