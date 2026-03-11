@@ -47,11 +47,12 @@ ModelerStudy::SystemModel::System loadSystem(
     {
         return SystemConverter::convert(systemObj, libraries);
     }
-    catch (const std::runtime_error& e)
+    catch (const std::exception& e)
     {
-        logs.error() << "Error while converting the system yaml to components";
+        logs.error() << "Error while converting the system yaml to components: " << e.what();
         throw ErrorLoadingYaml(e.what());
     }
-}
+
+} // end loadSystem
 
 } // namespace Antares::Solver::LoadFiles

@@ -6,6 +6,7 @@
 #include <optional>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "antares/exception/InputError.hpp"
 
@@ -65,6 +66,26 @@ public:
     Error::InputError&& error() &&
     {
         return std::move(error_.value());
+    }
+
+    const T* operator->() const
+    {
+        return std::addressof(value_.value());
+    }
+
+    T* operator->()
+    {
+        return std::addressof(value_.value());
+    }
+
+    const T& get() const&
+    {
+        return value();
+    }
+
+    T&& get() &&
+    {
+        return std::move(value());
     }
 
     explicit operator bool() const noexcept
@@ -129,6 +150,7 @@ private:
     std::optional<Error::InputError> error_;
 };
 
+// Reference specialization
 template<typename T>
 class Result<T&>
 {
@@ -214,6 +236,7 @@ private:
     std::optional<Error::InputError> error_;
 };
 
+// void specialization
 template<>
 class Result<void>
 {
@@ -221,7 +244,8 @@ public:
     using ValueType = void;
     using ErrorType = Error::InputError;
 
-    static Result ok()
+    // Keep ok() callable as Result<void>::ok()
+    static Result ok(int /*unused*/ = 0)
     {
         Result r;
         r.is_ok_ = true;

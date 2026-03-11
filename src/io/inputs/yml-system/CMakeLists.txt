@@ -21,6 +21,7 @@ target_include_directories(yml-system
 target_link_libraries(yml-system
         PUBLIC
         Antares::antares-study-system-model
+        Antares::exception
         PRIVATE
         yaml-cpp::yaml-cpp
 )

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <stdexcept>
+
 #include <antares/study/system-model/library.h>
 #include <antares/study/system-model/system.h>
 
@@ -11,12 +13,13 @@
 namespace Antares::IO::Inputs::SystemConverter
 {
 
-struct TwoFieldsOfSameRole final: std::invalid_argument
+// Specific exception types expected by tests
+struct TwoFieldsOfSameRole: public std::invalid_argument
 {
     using std::invalid_argument::invalid_argument;
 };
 
-struct ConnectingPortToItSelf final: std::invalid_argument
+struct ConnectingPortToItSelf: public std::invalid_argument
 {
     using std::invalid_argument::invalid_argument;
 };
