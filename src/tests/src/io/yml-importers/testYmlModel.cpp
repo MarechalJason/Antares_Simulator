@@ -249,11 +249,7 @@ BOOST_AUTO_TEST_CASE(thermal_capacity_connection_should_have_exactly_one_field)
 
             models: []
         )"s;
-    BOOST_REQUIRE_THROW(YmlModel::Library libraryObj = parser.parse(library),
-                        YAML::TypedBadConversion<YmlModel::PortType>);
-    // When the previous line was written, the exception thrown is
-    // YAML::TypedBadConversion<PortType>; this may change, see
-    // https://github.com/jbeder/yaml-cpp/commit/3d2888cc8a45da2f420454ad728cdfad01a3d54f
+    BOOST_REQUIRE_THROW(YmlModel::Library libraryObj = parser.parse(library), YAML::KeyNotFound);
 }
 
 BOOST_AUTO_TEST_CASE(area__connection_should_have_exactly_3_fields)
@@ -271,11 +267,7 @@ BOOST_AUTO_TEST_CASE(area__connection_should_have_exactly_3_fields)
 
             models: []
         )"s;
-    BOOST_REQUIRE_THROW(YmlModel::Library libraryObj = parser.parse(library),
-                        YAML::TypedBadConversion<YmlModel::PortType>);
-    // When the previous line was written, the exception thrown is
-    // YAML::TypedBadConversion<PortType>; this may change, see
-    // https://github.com/jbeder/yaml-cpp/commit/3d2888cc8a45da2f420454ad728cdfad01a3d54f
+    BOOST_REQUIRE_THROW(YmlModel::Library libraryObj = parser.parse(library), YAML::KeyNotFound);
 }
 
 // Test library with multiple port types

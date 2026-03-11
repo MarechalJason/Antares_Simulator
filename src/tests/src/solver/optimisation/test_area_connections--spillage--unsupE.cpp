@@ -130,7 +130,9 @@ std::unique_ptr<Solver::ModelerData> AreaConnectionFixture::buildModelerSystem()
 
     IO::Inputs::YmlSystem::Parser parserSystem;
     auto ymlSystem = parserSystem.parse(systemYamlAreaConnection);
-    auto system = IO::Inputs::SystemConverter::convert(ymlSystem, libraries);
+    auto result = IO::Inputs::SystemConverter::convert(ymlSystem, libraries);
+    BOOST_REQUIRE(result);
+    auto& system = result.value();
 
     to_return->system = std::make_unique<System>(std::move(system));
     return to_return;

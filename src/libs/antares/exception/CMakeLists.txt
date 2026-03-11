@@ -1,13 +1,16 @@
 set(PROJ exception)
 set(SRC_PROJ
         AssertionError.cpp
+        InputError.cpp
         LoadingError.cpp
         UnfeasibleProblemError.cpp
 
         include/antares/exception/AssertionError.hpp
+        include/antares/exception/InputError.hpp
         include/antares/exception/InitializationError.hpp
         include/antares/exception/InvalidArgumentError.hpp
         include/antares/exception/LoadingError.hpp
+        include/antares/exception/Result.hpp
         include/antares/exception/UnfeasibleProblemError.hpp
 )
 source_group("exception" FILES ${SRC_PROJ})
@@ -18,6 +21,11 @@ add_library(Antares::${PROJ} ALIAS ${PROJ})
 target_include_directories(${PROJ}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+target_link_libraries(${PROJ}
+        PUBLIC
+        fmt::fmt
 )
 
 install(DIRECTORY include/antares

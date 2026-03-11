@@ -5,7 +5,7 @@
 
 #include "antares/io/inputs/yml-system/system.h"
 
-#include "decoders.hxx"
+#include "antares/io/inputs/yml-system/decoders.h"
 
 namespace Antares::IO::Inputs::YmlSystem
 {

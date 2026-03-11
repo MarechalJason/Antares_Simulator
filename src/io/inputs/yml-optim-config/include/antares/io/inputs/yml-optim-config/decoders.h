@@ -8,11 +8,9 @@
 
 #include "yaml-cpp/yaml.h"
 
-// Implement convert specializations
 namespace YAML
 {
 
-// TODO this function is defined at least 3 times, deduplicate
 template<typename T>
 inline T as_fallback_default(const Node& n)
 {

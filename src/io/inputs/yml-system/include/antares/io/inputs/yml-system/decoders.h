@@ -7,7 +7,6 @@
 
 #include "yaml-cpp/yaml.h"
 
-// Implement convert specializations
 namespace YAML
 {
 

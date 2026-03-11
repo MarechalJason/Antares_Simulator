@@ -1,7 +1,7 @@
 set(SOURCES
         parser.cpp
         converter.cpp
-        decoders.hxx
+        include/antares/io/inputs/yml-system/decoders.h
         include/antares/io/inputs/yml-system/parser.h
         include/antares/io/inputs/yml-system/converter.h
         include/antares/io/inputs/yml-system/system.h
@@ -21,6 +21,7 @@ target_include_directories(yml-system
 target_link_libraries(yml-system
         PUBLIC
         Antares::antares-study-system-model
+        Antares::exception
         PRIVATE
         yaml-cpp::yaml-cpp
 )
