@@ -10,7 +10,16 @@
 namespace YAML
 {
 
-/// Returns a default-constructed @p T when @p n is null/undefined.
+/**
+ * @brief shortend to default construct a value when node is null
+ * @tparam T Type to convert the node to
+ * @param n node
+ * @return Object of type T
+ * It's just to simplify repertitve and verbose lines
+ * as_fallback_default<std::vector<Antares::IO::Inputs::YmlSystem::Parameter>>(
+node["parameters"]) is equivalent to
+ node["parameters"].as<std::vector<Antares::IO::Inputs::YmlSystem::Parameter>>(std::vector<Antares::IO::Inputs::YmlSystem::Parameter>())
+ */
 template<typename T>
 inline T as_fallback_default(const Node& n)
 {
