@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <string>
 
 #include <antares/exception/Result.hpp>
 #include <antares/study/system-model/library.h>
@@ -14,7 +15,7 @@
 namespace Antares::IO::Inputs::SystemConverter
 {
 
-// Specific exception types expected by tests (backward compatibility)
+// Specific exception types expected by tests
 struct TwoFieldsOfSameRole: public std::invalid_argument
 {
     using std::invalid_argument::invalid_argument;
@@ -41,8 +42,7 @@ void throwIfError(const Antares::Result<T>& result)
             {
                 throw TwoFieldsOfSameRole(err.message);
             }
-            if (err.message.find("Cannot connect") != std::string::npos
-                && err.message.find("to itself") != std::string::npos)
+            if (err.message.find("to itself") != std::string::npos)
             {
                 throw ConnectingPortToItSelf(err.message);
             }
