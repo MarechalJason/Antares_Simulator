@@ -288,6 +288,16 @@ void ConstraintNamer::FictiveLoads(unsigned constrIndex)
     SetAreaElementNameHour(constrIndex, "FictiveLoads");
 }
 
+void ConstraintNamer::CsrFictitiousLoad(unsigned int constraint)
+{
+    SetAreaElementNameHour(constraint, "CsrFictitiousLoad");
+}
+
+void ConstraintNamer::CsrMaxEnsLoad(unsigned int constraint)
+{
+    SetAreaElementNameHour(constraint, "CsrMaxEnsLoad");
+}
+
 void ConstraintNamer::HydroPower(unsigned constrIndex)
 {
     SetAreaElementNameWeek(constrIndex, "HydroPower");
