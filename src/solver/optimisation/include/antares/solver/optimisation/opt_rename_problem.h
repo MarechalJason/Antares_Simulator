@@ -46,9 +46,9 @@ public:
     void NumberStoppingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
     void NumberStartingDispatchableUnits(unsigned varIndex, const std::string& clusterName);
     void NumberBreakingDownDispatchableUnits(unsigned varIndex, const std::string& clusterName);
-    void NTCDirect(unsigned varIndex);
-    void IntercoDirectCost(unsigned varIndex);
-    void IntercoIndirectCost(unsigned varIndex);
+    void DirectFlux(unsigned varIndex);
+    void DirectFluxPositif(unsigned varIndex);
+    void IndirectFluxPositif(unsigned varIndex);
     void ShortTermStorageInjection(unsigned varIndex, const std::string& sts_name);
     void ShortTermStorageWithdrawal(unsigned varIndex, const std::string& sts_name);
     void ShortTermStorageLevel(unsigned varIndex, const std::string& sts_name);
@@ -104,6 +104,8 @@ public:
     void BindingConstraintDay(unsigned constrIndex, const std::string& name);
     void BindingConstraintWeek(unsigned constrIndex, const std::string& name);
     void CsrFlowDissociation(unsigned constrIndex);
+    void CsrFictitiousLoad(unsigned int constraint);
+    void CsrMaxEnsLoad(unsigned int constraint);
     void CsrAreaBalance(unsigned constrIndex);
     void ShortTermStorageCostVariation(const std::string& constrIndex_name,
                                        unsigned constrIndex,
