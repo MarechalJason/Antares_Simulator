@@ -4,6 +4,18 @@ toc_depth: 2
 
 # Antares Changelog
 
+### 9.3.8
+
+#### Features
+
+* Add sts prod to fictitious load [ANT-3739] (#3486)
+* Add constraint fictitious load to adq patch [ANT-4365] (#3487)
+
+#### Bugfixes
+
+* Fix truncated digest [ANT-4630] (#3455)
+* Fix dynamic district aggregation (#3429)
+
 ### 9.3.7
 
 #### Feature
