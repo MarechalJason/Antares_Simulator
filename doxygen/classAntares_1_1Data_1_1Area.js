@@ -1,14 +1,9 @@
 var classAntares_1_1Data_1_1Area =
 [
-    [ "LinkMap", "classAntares_1_1Data_1_1Area.html#a496b7ad1a3261ae7fd7f7391b63292ad", null ],
-    [ "List", "classAntares_1_1Data_1_1Area.html#a19fc2c69f81f6d415f0e36e0221421fb", null ],
     [ "Map", "classAntares_1_1Data_1_1Area.html#a13758b497571a93e58cea8946b26c304", null ],
-    [ "NameMapping", "classAntares_1_1Data_1_1Area.html#ad3caed3a1ed772e8169cb2cfff75c77e", null ],
     [ "NameSet", "classAntares_1_1Data_1_1Area.html#ac604c47cc97aaea6b4c57917f7aa78f0", null ],
     [ "ScratchMap", "classAntares_1_1Data_1_1Area.html#a17e91ee510feceed2ff273c5ea5a0c2c", null ],
-    [ "Set", "classAntares_1_1Data_1_1Area.html#a14e89315f87fb20bcd54a197b8dbafd8", null ],
     [ "Vector", "classAntares_1_1Data_1_1Area.html#a29e8835444836aebefe7a50e6d41a244", null ],
-    [ "VectorConst", "classAntares_1_1Data_1_1Area.html#ab9efe80f5093f448500f731f85179f1a", null ],
     [ "Area", "classAntares_1_1Data_1_1Area.html#abb07b6af58d5c0159029875a44b898d9", null ],
     [ "Area", "classAntares_1_1Data_1_1Area.html#a30006dc6008b7c15778f89e0cebaec53", null ],
     [ "Area", "classAntares_1_1Data_1_1Area.html#a81d6f6e8542eb984acf30604e8bd995e", null ],
@@ -16,7 +11,6 @@ var classAntares_1_1Data_1_1Area =
     [ "buildLinksIndexes", "classAntares_1_1Data_1_1Area.html#ac3667b0763ac949cf358c73b13ef6093", null ],
     [ "clearAllLinks", "classAntares_1_1Data_1_1Area.html#ae2a3939e62d92b4fda3e533b6cd3f3ff", null ],
     [ "createMissingData", "classAntares_1_1Data_1_1Area.html#a5533e5051e281fc5bc4d94c65f915c7f", null ],
-    [ "findExistingLinkWith", "classAntares_1_1Data_1_1Area.html#ab6cbdd5274c3c5d9d3ae76c2a7e7db4a", null ],
     [ "findExistingLinkWith", "classAntares_1_1Data_1_1Area.html#a1868a4e5143c0fa1fb5dcec8afae1887", null ],
     [ "resetToDefaultValues", "classAntares_1_1Data_1_1Area.html#aa8299689caa40aa2c62aa5e2eda700dd", null ],
     [ "resizeAllTimeseriesNumbers", "classAntares_1_1Data_1_1Area.html#ad453f1402603adcd9c49069217a5b009", null ],
