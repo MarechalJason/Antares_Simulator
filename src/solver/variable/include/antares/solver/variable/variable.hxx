@@ -315,7 +315,7 @@ inline void IVariable<ChildT, NextT, VCardT>::buildDigest(SurveyResults& results
                                                           int dataLevel) const
 {
     // Generate the Digest for the local results (areas part)
-    if (VCardType::columnCount != 0
+    if (VCardType::columnCount > 0
         && (VCardType::categoryDataLevel & Category::DataLevel::setOfAreas
             || VCardType::categoryDataLevel & Category::DataLevel::area
             || VCardType::categoryDataLevel & Category::DataLevel::link))
