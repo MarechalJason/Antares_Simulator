@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <antares/memory/memory.h>
 #include <antares/solver/variable/categories.h>
 #include <antares/solver/variable/container.h>
@@ -17,6 +19,25 @@
 
 namespace Antares::Solver::Variable::Economy
 {
+
+namespace detail
+{
+struct EmptyAuxiliaryData
+{
+};
+
+template<class TraitsT, class = void>
+struct AuxiliaryDataType
+{
+    using type = EmptyAuxiliaryData;
+};
+
+template<class TraitsT>
+struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataType>>
+{
+    using type = typename TraitsT::AuxiliaryDataType;
+};
+} // namespace detail
 
 template<class Traits>
 struct VCard_Base
@@ -113,6 +134,8 @@ public:
     };
 
 public:
+    using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
+
     void initializeFromStudy(Data::Study& study)
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
@@ -137,6 +160,8 @@ public:
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
+        initializeFromAreaIfSupported(auxiliaryData_, study, area);
+
         // Next
         NextType::initializeFromArea(study, area);
     }
@@ -166,6 +191,8 @@ public:
     {
         // Reset the values for the current year
         pValuesForTheCurrentYear[numSpace].reset();
+
+        yearBeginIfSupported(pValuesForTheCurrentYear[numSpace], auxiliaryData_, year, numSpace);
 
         // Next variable
         NextType::yearBegin(year, numSpace);
@@ -203,10 +230,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if (Traits::checkCondition(state))
-        {
-            pValuesForTheCurrentYear[numSpace][state.hourInTheYear] = Traits::value(state);
-        }
+        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace], auxiliaryData_, state, numSpace);
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
@@ -238,9 +262,61 @@ public:
     }
 
 private:
+    static void initializeFromAreaIfSupported(AuxiliaryDataType& auxiliaryData,
+                                              Data::Study* study,
+                                              Data::Area* area)
+    {
+        if constexpr (requires { Traits::initializeFromArea(auxiliaryData, study, area); })
+        {
+            Traits::initializeFromArea(auxiliaryData, study, area);
+        }
+    }
+
+    static void yearBeginIfSupported(IntermediateValues& yearlyValues,
+                                     AuxiliaryDataType& auxiliaryData,
+                                     unsigned int year,
+                                     unsigned int numSpace)
+    {
+        if constexpr (requires {
+                        Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
+                    })
+        {
+            Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
+        }
+    }
+
+    static void setHourlyValueIfSupported(IntermediateValues& yearlyValues,
+                                          AuxiliaryDataType& auxiliaryData,
+                                          State& state,
+                                          unsigned int numSpace)
+    {
+        if constexpr (requires {
+                        Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
+                    })
+        {
+            Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
+        }
+        else if constexpr (requires { Traits::checkCondition(auxiliaryData, state); })
+        {
+            if (Traits::checkCondition(auxiliaryData, state))
+            {
+                yearlyValues[state.hourInTheYear] = Traits::value(auxiliaryData, state);
+            }
+        }
+        else if constexpr (requires { Traits::checkCondition(state); })
+        {
+            if (Traits::checkCondition(state))
+            {
+                yearlyValues[state.hourInTheYear] = Traits::value(state);
+            }
+        }
+    }
+
+private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    unsigned int pNbYearsParallel;
+    AuxiliaryDataType auxiliaryData_{};
+    unsigned int pNbYearsParallel = 0;
 
 }; // class Economy_Base
 
