@@ -24,9 +24,9 @@ public:
     }
 
     EnvForLoading(const EnvForLoading&) = default;
-    EnvForLoading& operator=(const EnvForLoading&) = default;
+    EnvForLoading& operator=(const EnvForLoading&) = delete;
     EnvForLoading(EnvForLoading&&) noexcept = default;
-    EnvForLoading& operator=(EnvForLoading&&) noexcept = default;
+    EnvForLoading& operator=(EnvForLoading&&) noexcept = delete;
 
     //! INI file
     std::filesystem::path iniFilename;
