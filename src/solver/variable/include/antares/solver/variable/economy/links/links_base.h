@@ -191,13 +191,28 @@ public:
 
     void hourForEachLink(State& state, unsigned int numSpace)
     {
-        Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
+        if constexpr (requires {
+                          Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
+                      })
+        {
+            Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
+        }
+        else if constexpr (requires { Traits::hourValue(state); })
+        {
+            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] += Traits::hourValue(state);
+        }
         // Next item in the list
         NextType::hourForEachLink(state, numSpace);
     }
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
+        if constexpr (requires {
+                          Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);
+                      })
+        {
+            Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);
+        }
         // Next
         NextType::buildDigest(results, digestLevel, dataLevel);
     }
