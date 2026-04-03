@@ -29,7 +29,7 @@ struct VCardSTStorageByClusterBase
         return Traits::Description();
     }
 
-    //! The expecte results
+    //! The expected results
     typedef Results<R::AllYears::Average< // The average values throughout all years
       >>
       ResultsType;
