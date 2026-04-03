@@ -66,10 +66,9 @@ struct VCardSTStorageByClusterBase
 }; // class VCardSTStorageByClusterBase
 
 template<class Traits, class NextT = Container::EndOfList>
-class STStorageByClusterBase
-    : public Variable::IVariable<STStorageByClusterBase<Traits, NextT>,
-                                 NextT,
-                                 VCardSTStorageByClusterBase<Traits>>
+class STStorageByClusterBase: public Variable::IVariable<STStorageByClusterBase<Traits, NextT>,
+                                                         NextT,
+                                                         VCardSTStorageByClusterBase<Traits>>
 {
 public:
     //! Type of the next static variable
