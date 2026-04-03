@@ -29,7 +29,8 @@ struct STStorageLevelsByClusterTraits
         intermediateValues.computeAveragesForCurrentYearFromHourlyResults();
     }
 
-    static void setHourlyValue(std::vector<IntermediateValues>& clusterValues, State& state)
+    static void setHourlyValue(const std::vector<IntermediateValues>& clusterValues,
+                               const State& state)
     {
         for (uint clusterIndex = 0; clusterIndex != state.area->shortTermStorage.count();
              ++clusterIndex)
