@@ -134,6 +134,73 @@ Stratégie: clauses `requires` dans `EconomyLink_Base` (pattern déjà utilisé 
 
 Uniformisation globale `VCard`/`Statistics` si le ROI est confirmé.
 
+## Phase 6 - Duplication résiduelle dans `economy/`
+
+Après les phases 1-4, ~20 headers standalone de 230-300 lignes subsistent dans `economy/`. Classification issue d'un catalogage exhaustif:
+
+**Status: Bucket A ✅ COMPLETED** (11 fichiers migrés)
+**Status: Bucket B ✅ PARTIALLY COMPLETED** (PR B0 + 3/5 fichiers migrés, 2 skip)
+**Status: Bucket C ✅ PARTIALLY COMPLETED** (PR C0 + PR C1 migrés, nouveaux fichiers créés)
+
+### Bucket A - Migrations triviales vers `Economy_Base<Traits>` (~2 500 → ~650 lignes)
+
+Pattern identique à `residual.h` (66 lignes finales). Chaque fichier expose un `FooTraits` + `using Foo = Economy_Base<FooTraits, NextT>;`. Aucun changement dans `economy_base.h`.
+
+- [x] **PR A1** – `balance.h`, `hydrostorage.h`, `inflow.h`, `overflow.h`, `pumping.h` (variables hydrauliques/balance, `setHourlyValue` direct depuis `state.problemeHebdo`)
+- [x] **PR A2** – `operatingCost.h`, `nonProportionalCost.h`, `hydroCost.h`, `max-mrg.h`, `domesticUnsuppliedEnergy.h` (variables coûts/marges)
+- [x] **PR A3** – `price.h` (cas particulier: `computeAveragesForCurrentYearFromHourlyResults` encapsulé dans `Traits::computeStats`)
+
+Note: corrige au passage la ligne `hydrostorage.h` cochée par erreur en Phase 2.
+
+### Bucket B - Migrations avec 1 nouveau hook `yearEndBuild` (~1 220 → ~350 lignes)
+
+- [x] **PR B0** – Étendre `economy_base.h`: dispatch optionnel dans `Economy_Base::yearEndBuild` via `requires { Traits::yearEndBuild(iv, aux, state, year, numSpace); }` (même pattern que les autres hooks existants, aucun impact sur A).
+- [x] **PR B1** – Migrer les 2 variantes CSR simples: `priceCSR.h`, `dtgMarginAfterCsr.h` via `Economy_Base`. Reporté: `overallCostCsr.h` (utilise `hourForEachArea` + `yearEndBuildForEachThermalCluster`), `max-mrg-csr.h` (utilise template `PrepareMaxMRGFor`).
+- [x] **PR B2** – Migrer `localMatchingRuleViolations.h` via `Traits::AuxiliaryDataType`.
+
+**Skipped (complex, à revoir)**:
+- `overallCostCsr.h` - nécessite `hourForEachArea` (coût calculé à chaque heure) + `yearEndBuildForEachThermalCluster`
+- `max-mrg-csr.h` - utilise template `PrepareMaxMRGFor<>` avec template parameter `WithSimplexT`
+
+### Bucket C - Multi-colonnes dynamiques, nouvelle base dédiée (~1 260 → ~400 lignes)
+
+Chantier séparé, scope risqué (colonnes dynamiques = digest non trivial).
+
+- [x] **PR C0** – Créer `multi_column_base.h` avec `Traits::columnDescriptors()` + `Traits::computeStats`. Inspiration: `static_link_base.h`.
+- [x] **PR C1** – Migrer `thermalAirPollutantEmissions.h` (7 polluants statiques, le plus simple).
+- [ ] **PR C2** – Migrer `STSbyGroup.h`, `dispatchableGeneration.h`, `renewableGeneration.h` (colonnes dynamiques liées aux données d'étude, une PR par fichier).
+
+**Attention**: exiger une capture avant/après des digests sur une étude de référence pour PR C1-C2.
+
+### Gain total Phase 6
+
+~5 000 lignes supprimables sur ~20 fichiers. Buckets A et B livrables rapidement; bucket C = chantier indépendant.
+
+**Terminé: Bucket A + Bucket B (partiel) + Bucket C (partiel)**
+- 15 fichiers migrés (~1 500 lignes → ~750 lignes)
+- ~50% réduction boilerplate obtenue
+- 2 nouveaux fichiers créés: `economy/multi_column_base.h`, `economy/economy_base.h` (hook yearEndBuild)
+- 2 fichiers reportés: `overallCostCsr.h`, `max-mrg-csr.h` (complexes)
+
+### Vérification (par PR)
+
+```bash
+cd /home/jmarechal/Projects/src
+/home/jmarechal/miniconda3/bin/cmake --build --target antares-solver --preset Debug-vcpkg
+/home/jmarechal/miniconda3/bin/cmake --build --target test-migrated-variables-metadata --preset Debug-vcpkg
+cd /home/jmarechal/CLionProjects/build_simulator
+ctest --output-on-failure -R "test-intermediate|test-surveyresults|test-dynamic-aggregation|test-setofareas-reports|test-residual-load|test-migrated-variables-metadata"
+```
+
+Ajouter une assertion Caption/Unit dans `test_migrated_variables_metadata.cpp` pour chaque variable migrée.
+
+### Risques spécifiques Phase 6
+
+1. **`price.h`** – vérifier qu'aucun autre chemin n'appelle `computeAverages…` indirectement.
+2. **CSR (bucket B)** – s'assurer que les champs de `State` lus dans `Traits::yearEndBuild` (p.ex. `state.resSpilled`, `state.hourlyValues`) sont bien disponibles au moment du hook.
+3. **Bucket C** – colonnes dynamiques = risque digest; capturer des sorties avant tout changement.
+4. **Drift plan/code** – la dérive `hydrostorage.h` détectée en phase 2 prouve qu'il faut cocher uniquement après vérification `grep Economy_Base` du fichier migré.
+
 ## Critères d'acceptation
 
 1. **Comportement identique**: mêmes valeurs de rapports annuels/digest pour les variables migrées (captions, unités, colonnes, précision).
