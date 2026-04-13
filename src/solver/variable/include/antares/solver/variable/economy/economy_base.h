@@ -85,11 +85,16 @@ struct VCard_Base
     //! Intermediate values
     static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
-    static constexpr uint8_t isPossiblyNonApplicable = [] {
+    static constexpr uint8_t isPossiblyNonApplicable = []
+    {
         if constexpr (requires { Traits::isPossiblyNonApplicable; })
+        {
             return Traits::isPossiblyNonApplicable;
+        }
         else
+        {
             return uint8_t{0};
+        }
     }();
 
     typedef IntermediateValues IntermediateValuesBaseType;
@@ -205,6 +210,20 @@ public:
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
+        if constexpr (requires {
+                          Traits::yearEndBuild(pValuesForTheCurrentYear[numSpace],
+                                               auxiliaryData_,
+                                               state,
+                                               year,
+                                               numSpace);
+                      })
+        {
+            Traits::yearEndBuild(pValuesForTheCurrentYear[numSpace],
+                                 auxiliaryData_,
+                                 state,
+                                 year,
+                                 numSpace);
+        }
         // Next variable
         NextType::yearEndBuild(state, year, numSpace);
     }
@@ -213,11 +232,16 @@ public:
     {
         if constexpr (requires {
                           Traits::yearEndBuildForEachThermalCluster(
-                            pValuesForTheCurrentYear[numSpace], state, year, numSpace);
+                            pValuesForTheCurrentYear[numSpace],
+                            state,
+                            year,
+                            numSpace);
                       })
         {
-            Traits::yearEndBuildForEachThermalCluster(
-              pValuesForTheCurrentYear[numSpace], state, year, numSpace);
+            Traits::yearEndBuildForEachThermalCluster(pValuesForTheCurrentYear[numSpace],
+                                                      state,
+                                                      year,
+                                                      numSpace);
         }
         // Next variable
         NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
@@ -249,7 +273,10 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace], auxiliaryData_, state, numSpace);
+        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace],
+                                  auxiliaryData_,
+                                  state,
+                                  numSpace);
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
@@ -296,9 +323,7 @@ private:
                                      unsigned int year,
                                      unsigned int numSpace)
     {
-        if constexpr (requires {
-                        Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
-                    })
+        if constexpr (requires { Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace); })
         {
             Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
         }
@@ -310,8 +335,8 @@ private:
                                           unsigned int numSpace)
     {
         if constexpr (requires {
-                        Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
-                    })
+                          Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
+                      })
         {
             Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
         }
