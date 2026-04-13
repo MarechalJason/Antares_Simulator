@@ -43,7 +43,7 @@ struct PumpingTraits
         return area != nullptr;
     }
 
-    static double value(AuxiliaryDataType area, const State& state)
+    static double value(AuxiliaryDataType /*area*/, const State& state)
     {
         return state.hourlyResults->PompageHoraire[state.hourInTheWeek];
     }
