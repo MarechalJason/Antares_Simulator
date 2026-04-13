@@ -62,7 +62,7 @@ Avancement:
 - [x] `avail-dispatchable-generation.h` migré vers `economy_base.h`
 - [x] `dispatchable-generation-margin.h` migré vers `economy_base.h`
 - [x] `nearPriceCap.h` migré vers `economy_base.h`
-- [x] `hydrostorage.h` migré vers `economy_base.h`
+- [ ] `hydrostorage.h` **non migré** (drift plan/code détecté): `VCardHydroStorage` et la classe `HydroStorage` restent standalones (245 lignes, 0 référence à `Economy_Base`). Probablement à cause de `IntermediateValuesTypeForSpatialAg = std::unique_ptr<IntermediateValuesBaseType[]>` utilisé pour l'agrégation spatiale, non couvert par `VCard_Base`. À reprendre si le ROI le justifie.
 - [x] `spilledEnergy.h` migré vers `economy_base.h`
 
 ### Phase 3 - Moyen risque
@@ -84,7 +84,7 @@ Variables de lien avec cycles alternatifs (pas `pNbYearsParallel`, calcul en `si
 
 - [x] `flowQuad.h` – migré vers `StaticLinkBase` via `FlowQuadTraits` (PR C5)
 - [x] `loopFlow.h` – migré vers `StaticLinkBase` via `LoopFlowTraits` (PR C5)
-- [ ] `congestionProbability.h` – colonnes dynamiques, exclu (standalone, nettoyage interne seulement)
+- [x] `congestionProbability.h` – colonnes dynamiques, exclu de la migration. Nettoyage interne appliqué: `std::array`/`std::vector` en remplacement des pointeurs bruts (suppression du destructeur manuel), `beforeYearByYearExport` factorisé via un lambda `binarize` et des références locales `src`/`dst`.
 
 Ces 3 fichiers nécessitent des bases dédiées ou des hooks supplémentaires dans les bases existantes.
 flowQuad + loopFlow → nouvelle `StaticLinkBase` (PR C5 ci-dessous).
@@ -159,6 +159,7 @@ Uniformisation globale `VCard`/`Statistics` si le ROI est confirmé.
 
 1. Étendre les tests unitaires dans `src/tests/src/solver/variable` pour valider le cycle de vie standardisé (`initializeFromStudy`, `yearBegin`, `yearEnd`, `computeSummary`) via un faux `Traits`.
 2. Ajouter des tests de non-régression de métadonnées (`Caption`, `Unit`, nombre de colonnes) et de `Statistics<count>` pour les classes migrées.
+   - Fait: `tests/src/solver/variable/test_migrated_variables_metadata.cpp` couvre 4 familles (area `Economy_Base`, STS by cluster, dispatchable by cluster, liens `EconomyLink_Base`/`StaticLinkBase`) — 5 cas Boost.Test, exécution < 50 ms.
 3. Ajouter des tests ciblés `buildAnnualSurveyReport` / `buildDigest` sur les variables migrées de `economy/links`.
 4. Exécuter les tests existants: `test-intermediate`, `test-surveyresults`, `test-dynamic-aggregation`, `test-setofareas-reports` après chaque phase.
 5. Pour les phases 3-4, comparer les sorties solver avant/après sur un petit jeu d'étude de référence, centré sur les variables touchées.
@@ -192,10 +193,10 @@ Fichiers explicitement exclus de la PR #1:
 - [x] Migrer `STStorageInjectionByCluster` vers `STStorageByClusterBase` via un `Traits` dédié.
 - [x] Migrer `STStorageWithdrawalByCluster` vers `STStorageByClusterBase` via un `Traits` dédié.
 - [x] Migrer `STStorageLevelsByCluster` vers `STStorageByClusterBase` avec hook de stats "average".
-- [ ] Vérifier que les symboles publics (`STstorage*ByCluster`) restent inchangés.
-- [ ] Vérifier captions/units/descriptions inchangées.
-- [ ] Construire `antares-solver`.
-- [ ] Exécuter tests ciblés variable/reports.
+- [x] Vérifier que les symboles publics (`STstorage*ByCluster`) restent inchangés (utilisés dans `economy/all.h` et `adequacy/all.h`, aliases préservés).
+- [x] Vérifier captions/units/descriptions inchangées (déportées dans les `Traits` dédiés).
+- [x] Construire via le preset: `cmake --build --target antares-solver --preset Debug-vcpkg` — OK (16 objets, link `solver/antares-solver` réussi).
+- [x] Exécuter tests ciblés variable/reports — 4/4 OK (`test-intermediate`, `test-surveyresults`, `test-dynamic-aggregation`, `test-setofareas-reports`).
 
 ### Ordre de migration
 
@@ -212,13 +213,13 @@ Fichiers explicitement exclus de la PR #1:
 
 ### Validation minimale
 
-Depuis `src/`:
+Build (depuis la racine du repo):
 
 ```bash
-cmake --build ../build-debug --target antares-solver -j$(nproc)
+/home/jmarechal/miniconda3/bin/cmake --build --target all --preset Debug-vcpkg
 ```
 
-Depuis `build-debug/`:
+Tests ciblés (depuis le répertoire de build du preset):
 
 ```bash
 ctest --output-on-failure -R "test-intermediate|test-surveyresults|test-dynamic-aggregation|test-setofareas-reports"
