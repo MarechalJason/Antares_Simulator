@@ -187,10 +187,7 @@ Corrige au passage la ligne `hydrostorage.h` cochée par erreur en Phase 2.
 - [x] **PR B1a** – `priceCSR.h`, `dtgMarginAfterCsr.h` via `Economy_Base` + `Traits::yearEndBuild`.
 - [x] **PR B2** – `localMatchingRuleViolations.h` via `Traits::AuxiliaryDataType`.
 - [x] **PR B1b** – `overallCostCsr.h` (239 → 68 lignes).
-- [ ] **PR B1c** – `max-mrg-csr.h` (233 lignes) : même pattern que `max-mrg.h` (weekForEachArea), avec `MaxMrgCSRdataFactory` au lieu de `MaxMrgUsualDataFactory`. Le template `PrepareMaxMRGFor<WithSimplexT>` est déclaré mais non utilisé dans la classe `MaxMrgCsr` (vérifier usages externes).
-  - **Prérequis** : hook `weekForEachArea` de PR A4 (même mécanisme).
-  - **Traits** `MaxMargeCsrTraits` : `Caption() = "MAX MRG CSR"`, reste identique à `MaxMargeTraits` sauf `weekForEachArea` qui utilise `MaxMrgCSRdataFactory`.
-  - **Risque** : si `PrepareMaxMRGFor<WithSimplexT>` est appelé depuis `MaxMrgCsr` via spécialisation externe, traiter en deux `Traits` distincts (`WithSimplex`/`WithoutSimplex`) ou conserver standalone.
+- [x] **PR B1c** – `max-mrg-csr.h` (233 → 53 lignes): même pattern que `max-mrg.h` avec `MaxMrgCSRdataFactory`.
 
 ### Bucket C – multi-colonnes dynamiques
 
