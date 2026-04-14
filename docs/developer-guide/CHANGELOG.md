@@ -22,6 +22,7 @@ toc_depth: 2
 Districts: fix offest with disabled set | simplify [ANT-4830]
 Relax expressions in port definition : fixes after tests [ANT-4646]
 Fix: remove dynamique variables from digest, fix error in digests (#3535)
+Fix: several issues on CentOS7 (#3561)
 
 #### For developers
 
