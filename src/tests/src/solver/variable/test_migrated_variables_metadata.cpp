@@ -33,6 +33,7 @@
 #include "antares/solver/variable/economy/price.h"
 #include "antares/solver/variable/economy/priceCSR.h"
 #include "antares/solver/variable/economy/pumping.h"
+#include "antares/solver/variable/economy/reservoirlevel.h"
 #include "antares/solver/variable/economy/residual.h"
 #include "antares/solver/variable/economy/spilledEnergy.h"
 #include "antares/solver/variable/economy/thermalAirPollutantEmissions.h"
@@ -65,6 +66,10 @@ BOOST_AUTO_TEST_CASE(area_variables_on_economy_base)
 
     BOOST_CHECK_EQUAL(VCardPumping::Caption(), "H. PUMP");
     BOOST_CHECK_EQUAL(VCardPumping::Unit(), "MWh");
+
+    BOOST_CHECK_EQUAL(VCardReservoirLevel::Caption(), "H. LEV");
+    BOOST_CHECK_EQUAL(VCardReservoirLevel::Unit(), "%");
+    BOOST_CHECK_EQUAL(static_cast<int>(VCardReservoirLevel::decimal), 2);
 
     BOOST_CHECK_EQUAL(VCardOperatingCost::Caption(), "OP. COST");
     BOOST_CHECK_EQUAL(VCardOperatingCost::Unit(), "Euro");
