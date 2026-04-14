@@ -133,7 +133,8 @@ public:
             groupToNumbers_[descriptors_[i].caption] = i;
         }
 
-        pValuesForTheCurrentYear.assign(pNbYearsParallel, IntermediateValuesBaseType(nbColumns_));
+        pValuesForTheCurrentYear.assign(pNbYearsParallel,
+                                        typename VCardType::IntermediateValuesBaseType(nbColumns_));
 
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
         {
