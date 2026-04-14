@@ -282,6 +282,20 @@ public:
         NextType::hourForEachArea(state, numSpace);
     }
 
+    void weekForEachArea(State& state, unsigned int numSpace)
+    {
+        if constexpr (requires {
+                          Traits::weekForEachArea(pValuesForTheCurrentYear[numSpace],
+                                                  state,
+                                                  numSpace);
+                      })
+        {
+            Traits::weekForEachArea(pValuesForTheCurrentYear[numSpace], state, numSpace);
+        }
+        // Next variable
+        NextType::weekForEachArea(state, numSpace);
+    }
+
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int,
       unsigned int numSpace) const
