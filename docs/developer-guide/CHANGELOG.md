@@ -17,6 +17,7 @@ Districts: fix offest with disabled set | simplify [ANT-4830] (#3533)
 chore: update gitignore
 Fix unit tests binding constraints (#3453)
 Fix: windows runtime libraries (#3435)
+Fix: several issues on CentOS7 (#3561)
 
 #### CI/CD
 
