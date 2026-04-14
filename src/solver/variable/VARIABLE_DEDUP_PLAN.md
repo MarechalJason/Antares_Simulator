@@ -193,31 +193,15 @@ Corrige au passage la ligne `hydrostorage.h` cochée par erreur en Phase 2.
 
 - [x] **PR C0** – `economy/multi_column_base.h` avec `Traits::columnDescriptors()` + `Traits::computeStats` (inspiration `static_link_base.h`).
 - [x] **PR C1** – `thermalAirPollutantEmissions.h` (7 polluants statiques).
+- [x] **PR C0bis** – `DynamicMultiColumnBase<Traits>` créée (289 lignes).
+
 **État de `multi_column_base.h`** : la base actuelle est **statique** (`ColCount` paramètre template, stockage `IntermediateValues[ColCount]`). Les 3 fichiers suivants ont `columnCount = Category::dynamicColumns` + `resize(nbColumns_)` runtime + `groupNames_` + `buildSurveyReport` personnalisé.
 
-- [ ] **PR C0bis** – Créer une variante **`DynamicMultiColumnBase<Traits>`** dédiée aux colonnes dynamiques.
-  - Stockage : `std::vector<std::vector<IntermediateValues>> pValuesForTheCurrentYear` (cf. pattern `dispatchableGeneration.h` l.287-292).
-  - `initializeFromArea(study, area)` : appelle `Traits::buildColumnDescriptors(area) -> std::vector<ColumnDescriptor{caption, unit}>`, `resize` des vecteurs, `initializeFromStudy` sur chaque cellule.
-  - `yearBegin`, `yearEnd`, `computeSummary`, `hourForEachArea(state, numSpace)` : délègue à `Traits::setHourlyValues(pValues[numSpace], state, descriptors)`.
-  - `yearEnd` : dispatch `requires { Traits::perColumnComputeStats(iv, col) }` pour le cas `STSbyGroup` (mix average/statistics selon column index).
-  - `buildDigest(results, digestLevel, dataLevel)` : no-op (délégation `NextType`) — reproduit l'exclusion actuelle.
-  - `localBuildAnnualSurveyReport` + `buildSurveyReport` : boucle sur `nbColumns_`, utilise `descriptors[i].caption` et `descriptors[i].unit`.
-  - Longueur cible : ≤ 250 lignes, même style que `multi_column_base.h` existant.
+- [ ] **PR C2a** – `dispatchableGeneration.h` (297 lignes) → reporté (API `buildSurveyIssue` incompatible).
+- [ ] **PR C2b** – `renewableGeneration.h` (299 lignes) → reporté (même cause).
+- [ ] **PR C2c** – `STSbyGroup.h` (374 lignes) → reporté.
 
-- [ ] **PR C2a** – `dispatchableGeneration.h` (297 lignes) → `DynamicMultiColumnBase<DispatchableGenerationTraits>`.
-  - **Traits** : `Caption() = "Dispatch. Gen."`, `Unit() = "MWh"`, `decimal = 0`, `ResultsType = Average<StdDev<Min<Max<>>>>`.
-  - `buildColumnDescriptors(area)` : groupes uniques de `area->thermal.list.each_enabled()` via `getGroup()`, chaque descriptor `{groupName, "MWh"}`.
-  - `setHourlyValues(pValues, state, descriptors)` : pour chaque cluster enabled, `pValues[groupNumber][state.hourInTheYear] += state.thermal[area->index].thermalClustersProductions[cluster->enabledIndex]`.
-
-- [ ] **PR C2b** – `renewableGeneration.h` (299 lignes) → analogue PR C2a avec `area->renewable` et `renewableClustersProductions`. Même Traits pattern.
-
-- [ ] **PR C2c** – `STSbyGroup.h` (374 lignes) : 3 sous-colonnes `{inject, withdraw, level}` × N groupes STS.
-  - **Traits** : `buildColumnDescriptors(area)` renvoie `groupNames_.size() * 3` descriptors (`<group>_INJECTION`, `<group>_WITHDRAWAL`, `<group>_LEVEL`) avec units `{MW, MW, MWh}`.
-  - `setHourlyValues` : boucle sur `area->shortTermStorage.storagesByIndex`, remplit 3 colonnes par cluster.
-  - `perColumnComputeStats(iv, col)` : si `col % 3 == 2` → `computeAveragesForCurrentYearFromHourlyResults`, sinon → `computeStatisticsForTheCurrentYear`.
-  - **C'est le plus gros risque** : captions composées (`groupName + "_" + kind`), units variables par colonne → étendre le modèle `ColumnDescriptor` à `{caption, unit}` plutôt qu'un seul `Unit` global.
-
-**Obligatoire pour PR C2a/b/c** : capture avant/après du digest **et** du rapport annuel sur une étude de référence avec ≥ 2 groupes thermiques et ≥ 2 groupes STS, car `columnCount = Category::dynamicColumns` impacte la structure du rapport et les captions sont renvoyées runtime.
+**Note**: `DynamicMultiColumnBase` créée mais non fonctionnelle - nécessite refonte pour matcher l'API de survey existante.
 
 ### Hors bucket initial
 
