@@ -16,6 +16,7 @@
 #include "antares/io/outputs/MPSGenerator.h"
 #include "antares/solver/modeler/ILoader.h"
 #include "antares/solver/modeler/IWriter.h"
+#include "antares/solver/modeler/loadFiles/loadFiles.h"
 #include "antares/utils/utils.h"
 
 using namespace Antares;
@@ -30,16 +31,16 @@ Modeler::Modeler(ILoader& loader, IWriter& writer):
     loader_{loader},
     writer_{writer}
 {
-    parameters_ = loader_.loadParameters();
-    logs.info() << "Parameters loaded";
-    auto data = loader_.loadAll();
-    if (!data.has_value())
+    try
+    {
+        parameters_ = loader_.loadParameters();
+        logs.info() << "Parameters loaded";
+        data_ = loader_.loadAll();
+    }
+    catch (const LoadFiles::ErrorLoadingYaml&)
     {
         throw ModelerError("Error while loading files, exiting");
     }
-    // Move the loaded ModelerData out of the optional to avoid copying
-    // (ModelerData contains unique_ptr members and is move-only).
-    data_ = std::move(*data);
 }
 
 class SystemLinearProblemBuilder final
