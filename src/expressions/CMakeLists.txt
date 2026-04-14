@@ -81,6 +81,7 @@ target_include_directories(expressions
 target_link_libraries(expressions
         PUBLIC
         Boost::headers
+        Antares::system-model-base
         Antares::antares-study-system-model
         Antares::logs
         fmt::fmt
