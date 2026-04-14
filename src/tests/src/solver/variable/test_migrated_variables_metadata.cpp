@@ -10,20 +10,32 @@
 #include "antares/solver/variable/economy/STStorageLevelsByCluster.h"
 #include "antares/solver/variable/economy/STStorageWithdrawalByCluster.h"
 #include "antares/solver/variable/economy/avail-dispatchable-generation.h"
+#include "antares/solver/variable/economy/balance.h"
 #include "antares/solver/variable/economy/dispatchable-generation-margin.h"
+#include "antares/solver/variable/economy/domesticUnsuppliedEnergy.h"
+#include "antares/solver/variable/economy/dtgMarginAfterCsr.h"
+#include "antares/solver/variable/economy/hydroCost.h"
+#include "antares/solver/variable/economy/hydrostorage.h"
+#include "antares/solver/variable/economy/inflow.h"
 #include "antares/solver/variable/economy/links/congestionFee.h"
 #include "antares/solver/variable/economy/links/flowLinear.h"
 #include "antares/solver/variable/economy/links/flowQuad.h"
 #include "antares/solver/variable/economy/links/hurdleCosts.h"
 #include "antares/solver/variable/economy/links/loopFlow.h"
 #include "antares/solver/variable/economy/links/marginalCost.h"
+#include "antares/solver/variable/economy/localMatchingRuleViolations.h"
+#include "antares/solver/variable/economy/max-mrg-csr.h"
 #include "antares/solver/variable/economy/max-mrg.h"
-#include "antares/solver/variable/economy/minDispatchableGenByPlant.h"
-#include "antares/solver/variable/economy/nearPriceCap.h"
-#include "antares/solver/variable/economy/productionByRenewablePlant.h"
-#include "antares/solver/variable/economy/profitByPlant.h"
+#include "antares/solver/variable/economy/nonProportionalCost.h"
+#include "antares/solver/variable/economy/operatingCost.h"
+#include "antares/solver/variable/economy/overallCostCsr.h"
+#include "antares/solver/variable/economy/overflow.h"
+#include "antares/solver/variable/economy/price.h"
+#include "antares/solver/variable/economy/priceCSR.h"
+#include "antares/solver/variable/economy/pumping.h"
 #include "antares/solver/variable/economy/residual.h"
 #include "antares/solver/variable/economy/spilledEnergy.h"
+#include "antares/solver/variable/economy/thermalAirPollutantEmissions.h"
 
 using namespace Antares::Solver::Variable::Economy;
 
@@ -38,6 +50,37 @@ BOOST_AUTO_TEST_SUITE(migrated_variables_metadata)
 
 BOOST_AUTO_TEST_CASE(area_variables_on_economy_base)
 {
+    BOOST_CHECK_EQUAL(VCardBalance::Caption(), "BALANCE");
+    BOOST_CHECK_EQUAL(VCardBalance::Unit(), "MWh");
+    BOOST_CHECK_EQUAL(static_cast<int>(VCardBalance::columnCount), 1);
+
+    BOOST_CHECK_EQUAL(VCardHydroStorage::Caption(), "H. STOR");
+    BOOST_CHECK_EQUAL(VCardHydroStorage::Unit(), "MWh");
+
+    BOOST_CHECK_EQUAL(VCardInflows::Caption(), "H. INFL");
+    BOOST_CHECK_EQUAL(VCardInflows::Unit(), "MWh");
+
+    BOOST_CHECK_EQUAL(VCardOverflow::Caption(), "H. OVFL");
+    BOOST_CHECK_EQUAL(VCardOverflow::Unit(), "%");
+
+    BOOST_CHECK_EQUAL(VCardPumping::Caption(), "H. PUMP");
+    BOOST_CHECK_EQUAL(VCardPumping::Unit(), "MWh");
+
+    BOOST_CHECK_EQUAL(VCardOperatingCost::Caption(), "OP. COST");
+    BOOST_CHECK_EQUAL(VCardOperatingCost::Unit(), "Euro");
+
+    BOOST_CHECK_EQUAL(VCardNonProportionalCost::Caption(), "NP COST");
+    BOOST_CHECK_EQUAL(VCardNonProportionalCost::Unit(), "Euro");
+
+    BOOST_CHECK_EQUAL(VCardHydroCost::Caption(), "H. COST");
+    BOOST_CHECK_EQUAL(VCardHydroCost::Unit(), "Euro");
+
+    BOOST_CHECK_EQUAL(VCardPrice::Caption(), "MRG. PRICE");
+    BOOST_CHECK_EQUAL(VCardPrice::Unit(), "Euro");
+
+    BOOST_CHECK_EQUAL(VCardDomesticUnsuppliedEnergy::Caption(), "DENS");
+    BOOST_CHECK_EQUAL(VCardDomesticUnsuppliedEnergy::Unit(), "MWh");
+
     BOOST_CHECK_EQUAL(VCardResidualLoad::Caption(), "RES LOAD");
     BOOST_CHECK_EQUAL(VCardResidualLoad::Unit(), "MWh");
     BOOST_CHECK_EQUAL(static_cast<int>(VCardResidualLoad::columnCount), 1);
@@ -50,6 +93,28 @@ BOOST_AUTO_TEST_CASE(area_variables_on_economy_base)
 
     BOOST_CHECK_EQUAL(VCardMARGE::Caption(), "MAX MRG");
     BOOST_CHECK_EQUAL(VCardMARGE::Unit(), "MWh");
+}
+
+BOOST_AUTO_TEST_CASE(csr_variables)
+{
+    BOOST_CHECK_EQUAL(VCardPriceCSR::Caption(), "MRG. PRICE CSR");
+    BOOST_CHECK_EQUAL(VCardPriceCSR::Unit(), "Euro");
+
+    BOOST_CHECK_EQUAL(VCardDtgMarginCsr::Caption(), "DTG MRG CSR");
+    BOOST_CHECK_EQUAL(VCardDtgMarginCsr::Unit(), "MWh");
+
+    BOOST_CHECK_EQUAL(VCardLMRViolations::Caption(), "LMR VIOL.");
+    BOOST_CHECK_EQUAL(VCardLMRViolations::Unit(), " ");
+
+    BOOST_CHECK_EQUAL(VCardMAX_MRG_CSR::Caption(), "MAX MRG CSR");
+    BOOST_CHECK_EQUAL(VCardMAX_MRG_CSR::Unit(), "MWh");
+}
+
+BOOST_AUTO_TEST_CASE(multi_column_variables)
+{
+    BOOST_CHECK_EQUAL(VCardThermalAirPollutantEmissions::Caption(), "");
+    BOOST_CHECK_EQUAL(VCardThermalAirPollutantEmissions::Unit(), "Tons");
+    BOOST_CHECK_EQUAL(static_cast<int>(VCardThermalAirPollutantEmissions::columnCount), 13);
 }
 
 BOOST_AUTO_TEST_CASE(sts_by_cluster_variables)
