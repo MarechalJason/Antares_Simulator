@@ -136,51 +136,110 @@ Uniformisation globale `VCard`/`Statistics` si le ROI est confirmé.
 
 ## Phase 6 - Duplication résiduelle dans `economy/`
 
-Après les phases 1-4, ~20 headers standalone de 230-300 lignes subsistent dans `economy/`. Classification issue d'un catalogage exhaustif:
+ComplèteObjectif: éliminer le boilerplate des headers standalone restants dans `economy/` (~20 fichiers initialement, 230-300 lignes chacun).
 
-**Status: Bucket A ✅ COMPLETED** (11 fichiers migrés)
-**Status: Bucket B ✅ PARTIALLY COMPLETED** (PR B0 + 3/5 fichiers migrés, 2 skip)
-**Status: Bucket C ✅ PARTIALLY COMPLETED** (PR C0 + PR C1 migrés, nouveaux fichiers créés)
+### Synthèse de l'avancement
 
-### Bucket A - Migrations triviales vers `Economy_Base<Traits>` (~2 500 → ~650 lignes)
+| Bucket | Fait | Reste | Prérequis base |
+|--------|------|-------|----------------|
+| A – triviaux vers `Economy_Base` | 10 fichiers | `max-mrg.h` (PR A4) | Hook `weekForEachArea` dans `Economy_Base` |
+| B – hook `yearEndBuild` + auxiliaire | PR B0 + 3 fichiers | `overallCostCsr.h` (B1b), `max-mrg-csr.h` (B1c) | Réutilise hook `weekForEachArea` de PR A4 pour B1c |
+| C – base multi-colonnes | PR C0 (statique) + `thermalAirPollutantEmissions.h` | `dispatchableGeneration.h`, `renewableGeneration.h`, `STSbyGroup.h` | Nouvelle base `DynamicMultiColumnBase` (PR C0bis) |
+| Hors bucket initial | — | `reservoirlevel.h` (PR D1) | Aucun (bucket A avec `AuxiliaryDataType`) |
 
-Pattern identique à `residual.h` (66 lignes finales). Chaque fichier expose un `FooTraits` + `using Foo = Economy_Base<FooTraits, NextT>;`. Aucun changement dans `economy_base.h`.
+Au total: **14 fichiers effectivement migrés**, 7 PRs restants (A4, B1b, B1c, C0bis, C2a, C2b, C2c, D1 = 8 tâches dont 1 nouvelle base).
 
-- [x] **PR A1** – `balance.h`, `hydrostorage.h`, `inflow.h`, `overflow.h`, `pumping.h` (variables hydrauliques/balance, `setHourlyValue` direct depuis `state.problemeHebdo`)
-- [x] **PR A2** – `operatingCost.h`, `nonProportionalCost.h`, `hydroCost.h`, `max-mrg.h`, `domesticUnsuppliedEnergy.h` (variables coûts/marges)
-- [x] **PR A3** – `price.h` (cas particulier: `computeAveragesForCurrentYearFromHourlyResults` encapsulé dans `Traits::computeStats`)
+### Ordre d'exécution recommandé
 
-Note: corrige au passage la ligne `hydrostorage.h` cochée par erreur en Phase 2.
+1. **PR A4** (hook `weekForEachArea` + `max-mrg.h`) → débloque **PR B1c**.
+2. **PR B1b** (`overallCostCsr.h`) en parallèle — aucun prérequis.
+3. **PR B1c** (`max-mrg-csr.h`) après A4.
+4. **PR D1** (`reservoirlevel.h`) — autonome, peut partir à tout moment.
+5. **PR C0bis** (`DynamicMultiColumnBase`) → débloque **C2a/b/c**. **Capturer digest/survey de référence avant C0bis** sur une étude multi-groupes.
+6. **PR C2a** (`dispatchableGeneration`), puis **C2b** (`renewableGeneration`) — patterns quasi-identiques.
+7. **PR C2c** (`STSbyGroup`) en dernier : demande une extension `ColumnDescriptor = {caption, unit}` dans `DynamicMultiColumnBase`.
 
-### Bucket B - Migrations avec 1 nouveau hook `yearEndBuild` (~1 220 → ~350 lignes)
+### Bucket A – migrations triviales vers `Economy_Base<Traits>`
 
-- [x] **PR B0** – Étendre `economy_base.h`: dispatch optionnel dans `Economy_Base::yearEndBuild` via `requires { Traits::yearEndBuild(iv, aux, state, year, numSpace); }` (même pattern que les autres hooks existants, aucun impact sur A).
-- [x] **PR B1** – Migrer les 2 variantes CSR simples: `priceCSR.h`, `dtgMarginAfterCsr.h` via `Economy_Base`. Reporté: `overallCostCsr.h` (utilise `hourForEachArea` + `yearEndBuildForEachThermalCluster`), `max-mrg-csr.h` (utilise template `PrepareMaxMRGFor`).
-- [x] **PR B2** – Migrer `localMatchingRuleViolations.h` via `Traits::AuxiliaryDataType`.
+Pattern `residual.h`: `FooTraits` + `using Foo = Economy_Base<FooTraits, NextT>;`. Aucun changement dans `economy_base.h`.
 
-**Skipped (complex, à revoir)**:
-- `overallCostCsr.h` - nécessite `hourForEachArea` (coût calculé à chaque heure) + `yearEndBuildForEachThermalCluster`
-- `max-mrg-csr.h` - utilise template `PrepareMaxMRGFor<>` avec template parameter `WithSimplexT`
+- [x] **PR A1** – `balance.h`, `hydrostorage.h`, `inflow.h`, `overflow.h`, `pumping.h`
+- [x] **PR A2** – `operatingCost.h`, `nonProportionalCost.h`, `hydroCost.h`, `domesticUnsuppliedEnergy.h`
+- [x] **PR A3** – `price.h` (`computeAveragesForCurrentYearFromHourlyResults` encapsulé dans `Traits::computeStats`)
+- [x] **PR A4** – `max-mrg.h` (192 lignes, `Marge`) : standalone, calcul fait dans `weekForEachArea` (pas `hourForEachArea`) via `computeMaxMRG(rawhourly + state.hourInTheYear, maxMRGinput)`.
+  - **Prérequis base** : ajouter dans `economy_base.h` un dispatch optionnel `weekForEachArea` :
+    ```cpp
+    void weekForEachArea(State& state, unsigned int numSpace) {
+        if constexpr (requires { Traits::weekForEachArea(pValuesForTheCurrentYear[numSpace], state, numSpace); })
+            Traits::weekForEachArea(pValuesForTheCurrentYear[numSpace], state, numSpace);
+        NextType::weekForEachArea(state, numSpace);
+    }
+    ```
+  - **Traits** : `MaxMargeTraits` avec `Caption() = "MAX MRG"`, `Unit() = "MWh"`, `decimal = 0`, `ResultsType = Average<StdDev<Min<Max<>>>>`, `computeStats = computeStatisticsForTheCurrentYear`, et `weekForEachArea(iv, state, numSpace)` qui appelle `MaxMrgUsualDataFactory` + `computeMaxMRG(&iv.hour[state.hourInTheYear], ...)`.
+  - **Alias** : `using Marge = Economy_Base<MaxMargeTraits, NextT>;` + `using VCardMARGE = VCard_Base<MaxMargeTraits>;`.
+  - **Test** : ajouter dans `test_migrated_variables_metadata.cpp` : `VCardMARGE::Caption() == "MAX MRG"`, `Unit() == "MWh"`.
 
-### Bucket C - Multi-colonnes dynamiques, nouvelle base dédiée (~1 260 → ~400 lignes)
+Corrige au passage la ligne `hydrostorage.h` cochée par erreur en Phase 2.
 
-Chantier séparé, scope risqué (colonnes dynamiques = digest non trivial).
+### Bucket B – migrations avec hook `yearEndBuild`
 
-- [x] **PR C0** – Créer `multi_column_base.h` avec `Traits::columnDescriptors()` + `Traits::computeStats`. Inspiration: `static_link_base.h`.
-- [x] **PR C1** – Migrer `thermalAirPollutantEmissions.h` (7 polluants statiques, le plus simple).
-- [ ] **PR C2** – Migrer `STSbyGroup.h`, `dispatchableGeneration.h`, `renewableGeneration.h` (colonnes dynamiques liées aux données d'étude, une PR par fichier).
+- [x] **PR B0** – `Economy_Base::yearEndBuild` dispatch optionnel via `requires { Traits::yearEndBuild(iv, aux, state, year, numSpace); }`.
+- [x] **PR B1a** – `priceCSR.h`, `dtgMarginAfterCsr.h` via `Economy_Base` + `Traits::yearEndBuild`.
+- [x] **PR B2** – `localMatchingRuleViolations.h` via `Traits::AuxiliaryDataType`.
+- [x] **PR B1b** – `overallCostCsr.h` (239 → 68 lignes).
+- [ ] **PR B1c** – `max-mrg-csr.h` (233 lignes) : même pattern que `max-mrg.h` (weekForEachArea), avec `MaxMrgCSRdataFactory` au lieu de `MaxMrgUsualDataFactory`. Le template `PrepareMaxMRGFor<WithSimplexT>` est déclaré mais non utilisé dans la classe `MaxMrgCsr` (vérifier usages externes).
+  - **Prérequis** : hook `weekForEachArea` de PR A4 (même mécanisme).
+  - **Traits** `MaxMargeCsrTraits` : `Caption() = "MAX MRG CSR"`, reste identique à `MaxMargeTraits` sauf `weekForEachArea` qui utilise `MaxMrgCSRdataFactory`.
+  - **Risque** : si `PrepareMaxMRGFor<WithSimplexT>` est appelé depuis `MaxMrgCsr` via spécialisation externe, traiter en deux `Traits` distincts (`WithSimplex`/`WithoutSimplex`) ou conserver standalone.
 
-**Attention**: exiger une capture avant/après des digests sur une étude de référence pour PR C1-C2.
+### Bucket C – multi-colonnes dynamiques
+
+- [x] **PR C0** – `economy/multi_column_base.h` avec `Traits::columnDescriptors()` + `Traits::computeStats` (inspiration `static_link_base.h`).
+- [x] **PR C1** – `thermalAirPollutantEmissions.h` (7 polluants statiques).
+**État de `multi_column_base.h`** : la base actuelle est **statique** (`ColCount` paramètre template, stockage `IntermediateValues[ColCount]`). Les 3 fichiers suivants ont `columnCount = Category::dynamicColumns` + `resize(nbColumns_)` runtime + `groupNames_` + `buildSurveyReport` personnalisé.
+
+- [ ] **PR C0bis** – Créer une variante **`DynamicMultiColumnBase<Traits>`** dédiée aux colonnes dynamiques.
+  - Stockage : `std::vector<std::vector<IntermediateValues>> pValuesForTheCurrentYear` (cf. pattern `dispatchableGeneration.h` l.287-292).
+  - `initializeFromArea(study, area)` : appelle `Traits::buildColumnDescriptors(area) -> std::vector<ColumnDescriptor{caption, unit}>`, `resize` des vecteurs, `initializeFromStudy` sur chaque cellule.
+  - `yearBegin`, `yearEnd`, `computeSummary`, `hourForEachArea(state, numSpace)` : délègue à `Traits::setHourlyValues(pValues[numSpace], state, descriptors)`.
+  - `yearEnd` : dispatch `requires { Traits::perColumnComputeStats(iv, col) }` pour le cas `STSbyGroup` (mix average/statistics selon column index).
+  - `buildDigest(results, digestLevel, dataLevel)` : no-op (délégation `NextType`) — reproduit l'exclusion actuelle.
+  - `localBuildAnnualSurveyReport` + `buildSurveyReport` : boucle sur `nbColumns_`, utilise `descriptors[i].caption` et `descriptors[i].unit`.
+  - Longueur cible : ≤ 250 lignes, même style que `multi_column_base.h` existant.
+
+- [ ] **PR C2a** – `dispatchableGeneration.h` (297 lignes) → `DynamicMultiColumnBase<DispatchableGenerationTraits>`.
+  - **Traits** : `Caption() = "Dispatch. Gen."`, `Unit() = "MWh"`, `decimal = 0`, `ResultsType = Average<StdDev<Min<Max<>>>>`.
+  - `buildColumnDescriptors(area)` : groupes uniques de `area->thermal.list.each_enabled()` via `getGroup()`, chaque descriptor `{groupName, "MWh"}`.
+  - `setHourlyValues(pValues, state, descriptors)` : pour chaque cluster enabled, `pValues[groupNumber][state.hourInTheYear] += state.thermal[area->index].thermalClustersProductions[cluster->enabledIndex]`.
+
+- [ ] **PR C2b** – `renewableGeneration.h` (299 lignes) → analogue PR C2a avec `area->renewable` et `renewableClustersProductions`. Même Traits pattern.
+
+- [ ] **PR C2c** – `STSbyGroup.h` (374 lignes) : 3 sous-colonnes `{inject, withdraw, level}` × N groupes STS.
+  - **Traits** : `buildColumnDescriptors(area)` renvoie `groupNames_.size() * 3` descriptors (`<group>_INJECTION`, `<group>_WITHDRAWAL`, `<group>_LEVEL`) avec units `{MW, MW, MWh}`.
+  - `setHourlyValues` : boucle sur `area->shortTermStorage.storagesByIndex`, remplit 3 colonnes par cluster.
+  - `perColumnComputeStats(iv, col)` : si `col % 3 == 2` → `computeAveragesForCurrentYearFromHourlyResults`, sinon → `computeStatisticsForTheCurrentYear`.
+  - **C'est le plus gros risque** : captions composées (`groupName + "_" + kind`), units variables par colonne → étendre le modèle `ColumnDescriptor` à `{caption, unit}` plutôt qu'un seul `Unit` global.
+
+**Obligatoire pour PR C2a/b/c** : capture avant/après du digest **et** du rapport annuel sur une étude de référence avec ≥ 2 groupes thermiques et ≥ 2 groupes STS, car `columnCount = Category::dynamicColumns` impacte la structure du rapport et les captions sont renvoyées runtime.
+
+### Hors bucket initial
+
+- [ ] **PR D1** – `reservoirlevel.h` (247 lignes, standalone) — candidat Bucket A avec `AuxiliaryDataType`.
+  - **Traits** `ReservoirLevelTraits` :
+    - `Caption() = "H. LEV"`, `Unit() = "%"`, `decimal = 2`, `isPossiblyNonApplicable = 1`, `spatialAggregate = Category::noSpatialAggregate`.
+    - `ResultsType = Average<StdDev<Min<Max<>>>>`.
+    - `AuxiliaryDataType = double` (capacité réservoir, `area->hydro.reservoirCapacity`).
+    - `initializeFromArea(aux, study, area)` : `aux = area->hydro.reservoirCapacity; return area->hydro.reservoirManagement;` pour le flag `isNonApplicable`.
+    - `setHourlyValue(iv, aux, state, numSpace)` : `iv.hour[state.hourInTheYear] = state.hourlyResults->niveauxHoraires[state.hourInTheWeek] / aux * 100.0`.
+    - `computeStats = computeAveragesForCurrentYearFromHourlyResults` (même divergence que `price.h`).
+  - **Alias** : `using ReservoirLevel = Economy_Base<ReservoirLevelTraits, NextT>;`.
+  - **Vérifier** : `Economy_Base` + `VCard_Base` supportent déjà `isPossiblyNonApplicable = 1` (PR C2 `waterValue` de Phase 4 l'a activé).
+  - **Test** : ajouter assertions `VCardReservoirLevel::Caption() == "H. LEV"`, `Unit() == "%"`, `decimal == 2`.
 
 ### Gain total Phase 6
 
-~5 000 lignes supprimables sur ~20 fichiers. Buckets A et B livrables rapidement; bucket C = chantier indépendant.
-
-**Terminé: Bucket A + Bucket B (partiel) + Bucket C (partiel)**
-- 15 fichiers migrés (~1 500 lignes → ~750 lignes)
-- ~50% réduction boilerplate obtenue
-- 2 nouveaux fichiers créés: `economy/multi_column_base.h`, `economy/economy_base.h` (hook yearEndBuild)
-- 2 fichiers reportés: `overallCostCsr.h`, `max-mrg-csr.h` (complexes)
+- **Acquis** : ~14 fichiers → ≤ 90 lignes chacun; nouveau base `multi_column_base.h` (241 lignes); hook `yearEndBuild` dans `Economy_Base`. Réduction d'environ 2 400 lignes de boilerplate.
+- **Potentiel restant** : ~6 fichiers, ~1 750 lignes (surtout bucket C).
 
 ### Vérification (par PR)
 
