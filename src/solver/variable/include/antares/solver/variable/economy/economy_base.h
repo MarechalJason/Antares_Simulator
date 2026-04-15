@@ -46,7 +46,6 @@ struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataTyp
 };
 } // namespace detail
 
-
 template<class Traits>
 struct VCard_Base
 {
