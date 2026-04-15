@@ -36,7 +36,9 @@ struct STstorageCashFlowByClusterTraits
         iv.computeStatisticsForTheCurrentYear();
     }
 
-    static void setHourlyValue(std::vector<IntermediateValues>& clusterValues, State& state)
+    static void setHourlyValue(std::vector<IntermediateValues>& clusterValues,
+                               State& state,
+                               [[maybe_unused]] unsigned int numSpace)
     {
         const unsigned int hourInYear = state.hourInTheYear;
         for (uint clusterIndex = 0; clusterIndex != state.area->shortTermStorage.count();
@@ -64,15 +66,17 @@ struct STstorageCashFlowByClusterTraits
             results.variableCaption = sts.properties.name;
             results.variableUnit = Unit();
             clusterValues[clusterIndex]
-              .template buildAnnualSurveyReport<VCardSTStorageByClusterBase<
-                STstorageCashFlowByClusterTraits>>(results, fileLevel, precision);
+              .template buildAnnualSurveyReport<
+                VCardSTStorageByClusterBase<STstorageCashFlowByClusterTraits>>(results,
+                                                                               fileLevel,
+                                                                               precision);
             clusterIndex++;
         }
     }
 };
 
-using VCardSTstorageCashFlowByCluster =
-  VCardSTStorageByClusterBase<STstorageCashFlowByClusterTraits>;
+using VCardSTstorageCashFlowByCluster = VCardSTStorageByClusterBase<
+  STstorageCashFlowByClusterTraits>;
 
 /*!
 ** \brief Cash flow by short term storage clusters

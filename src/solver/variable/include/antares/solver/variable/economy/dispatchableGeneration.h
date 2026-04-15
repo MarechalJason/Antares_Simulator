@@ -49,15 +49,19 @@ struct DispatchableGenerationTraits
         return descriptors;
     }
 
-    static void setHourlyValuesWithDescriptors(
+    static void setHourlyValue(
       VCardDynamicMultiColumn<DispatchableGenerationTraits>::IntermediateValuesBaseType& pValues,
       State& state,
       unsigned int,
-      [[maybe_unused]] const std::vector<ColumnDescriptor>&,
-      const std::map<std::string, size_t>& groupToNumbers)
+      const std::vector<ColumnDescriptor>& descriptors)
     {
         auto& area = state.area;
         auto& thermal = state.thermal;
+        std::map<std::string, size_t> groupToNumbers;
+        for (size_t i = 0; i < descriptors.size(); ++i)
+        {
+            groupToNumbers[descriptors[i].caption] = i;
+        }
         for (auto& cluster: area->thermal.list.each_enabled())
         {
             size_t groupNumber = groupToNumbers.at(cluster->getGroup());

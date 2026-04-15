@@ -65,10 +65,9 @@ struct VCardSTStorageByClusterBase
 }; // class VCardSTStorageByClusterBase
 
 template<class Traits, class NextT = Container::EndOfList>
-class STStorageByClusterBase
-    : public Variable::IVariable<STStorageByClusterBase<Traits, NextT>,
-                                 NextT,
-                                 VCardSTStorageByClusterBase<Traits>>
+class STStorageByClusterBase: public Variable::IVariable<STStorageByClusterBase<Traits, NextT>,
+                                                         NextT,
+                                                         VCardSTStorageByClusterBase<Traits>>
 {
 public:
     //! Type of the next static variable
@@ -192,7 +191,20 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state);
+        if constexpr (requires {
+                          Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace],
+                                                 state,
+                                                 numSpace);
+                      })
+        {
+            Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace);
+        }
+        else if constexpr (requires {
+                               Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state);
+                           })
+        {
+            Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state);
+        }
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);

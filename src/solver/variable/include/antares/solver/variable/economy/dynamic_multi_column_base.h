@@ -224,12 +224,25 @@ public:
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         if constexpr (requires {
-                          Traits::setHourlyValuesWithDescriptors(pValuesForTheCurrentYear[numSpace],
-                                                                 state,
-                                                                 numSpace,
-                                                                 descriptors_,
-                                                                 groupToNumbers_);
+                          Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace],
+                                                 state,
+                                                 numSpace,
+                                                 descriptors_);
                       })
+        {
+            Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace],
+                                   state,
+                                   numSpace,
+                                   descriptors_);
+        }
+        else if constexpr (requires {
+                               Traits::setHourlyValuesWithDescriptors(
+                                 pValuesForTheCurrentYear[numSpace],
+                                 state,
+                                 numSpace,
+                                 descriptors_,
+                                 groupToNumbers_);
+                           })
         {
             Traits::setHourlyValuesWithDescriptors(pValuesForTheCurrentYear[numSpace],
                                                    state,

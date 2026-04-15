@@ -61,15 +61,20 @@ struct STSbyGroupTraits
         return descriptors;
     }
 
-    static void setHourlyValuesWithDescriptors(
+    static void setHourlyValue(
       VCardDynamicMultiColumn<STSbyGroupTraits>::IntermediateValuesBaseType& pValues,
       State& state,
       unsigned int,
-      [[maybe_unused]] const std::vector<ColumnDescriptor>& descriptors,
-      const std::map<std::string, size_t>& groupToNumbers)
+      const std::vector<ColumnDescriptor>& descriptors)
     {
         using namespace Antares::Data::ShortTermStorage;
         const auto& shortTermStorage = state.area->shortTermStorage;
+
+        std::map<std::string, size_t> groupToNumbers;
+        for (size_t i = 0; i < descriptors.size(); ++i)
+        {
+            groupToNumbers[descriptors[i].caption] = i / STS::NB_COLS_PER_GROUP;
+        }
 
         uint clusterIndex = 0;
         for (const auto& sts: shortTermStorage.storagesByIndex)

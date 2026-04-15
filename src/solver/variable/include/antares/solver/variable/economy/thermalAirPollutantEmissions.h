@@ -42,9 +42,9 @@ struct ThermalAirPollutantEmissionsTraits
     }
 
     template<int ColCount>
-    static void setHourlyValues(IntermediateValues (&values)[ColCount],
-                                State& state,
-                                [[maybe_unused]] unsigned int numSpace)
+    static void setHourlyValue(IntermediateValues (&values)[ColCount],
+                               State& state,
+                               unsigned int numSpace)
     {
         auto& area = state.area;
         auto& thermal = state.thermal;
