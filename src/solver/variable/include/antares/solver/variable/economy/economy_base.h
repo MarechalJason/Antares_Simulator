@@ -18,6 +18,26 @@
 namespace Antares::Solver::Variable::Economy
 {
 
+namespace detail
+{
+struct EmptyAuxiliaryData
+{
+};
+
+template<class TraitsT, class = void>
+struct AuxiliaryDataType
+{
+    using type = EmptyAuxiliaryData;
+};
+
+template<class TraitsT>
+struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataType>>
+{
+    using type = typename TraitsT::AuxiliaryDataType;
+};
+} // namespace detail
+
+
 template<class Traits>
 struct VCard_Base
 {
