@@ -25,21 +25,145 @@ Revue ciblée sur 9 axes (S1–S9 ci-dessous). Chaque axe est indépendant : le 
 
 ### S1 — Dérive de nommage des hooks `Traits::setHourlyValue*` **(HAUTE)**
 
-Cinq noms distincts coexistent pour le même concept « écrire la valeur horaire dans les IntermediateValues » :
+#### Inventaire complet
 
-| Nom | Fichier:ligne |
-|-----|---------------|
-| `Traits::setHourlyValue` | `economy/economy_base.h:352,355`, `economy/STStorageByCluster_base.h:195` |
-| `Traits::setHourlyValues` (pluriel) | `economy/multi_column_base.h:205`, `economy/dynamic_multi_column_base.h:241,246` |
-| `Traits::setHourlyValuesWithDescriptors` | `economy/dynamic_multi_column_base.h:227,234` |
-| `Traits::setHourlyValuesForCurrentYear` | `economy/DispatchablePlantByCluster_base.h:321,327,330,333` |
-| `Traits::hourValue(state)` / `Traits::computeHourlyValue(state, up, down)` | `economy/links/links_base.h:200,204` |
+**8 points d'entrée dans les bases**, dispatchés par cascades `if constexpr (requires { ... })` :
 
-Plus les fallbacks `Traits::checkCondition` / `Traits::value` (`economy_base.h:357-371`) : cascade de 7 entry-points via `if constexpr (requires { ... })`.
+| # | Entry-point côté base | Fichier:ligne | Signature |
+|---|------------------------|---------------|-----------|
+| 1 | `Traits::setHourlyValue(iv, aux, state, numSpace)` | `economy_base.h:351-355` | `(IntermediateValues&, Aux&, State&, uint)` |
+| 2 | `Traits::checkCondition(aux, state)` + `Traits::value(aux, state)` | `economy_base.h:357-363` | `(Aux&, const State&) → bool` / `(Aux&, const State&) → double` |
+| 3 | `Traits::checkCondition(state)` + `Traits::value(state)` | `economy_base.h:364-370` | `(const State&) → bool` / `(const State&) → double` |
+| 4 | `Traits::setHourlyValue(clusterValues, state)` | `STStorageByCluster_base.h:195` | `(std::vector<IntermediateValues>&, State&)` |
+| 5 | `Traits::setHourlyValuesForCurrentYear(clusterValues, aux, state, numSpace)` | `DispatchablePlantByCluster_base.h:320-327` | `(std::vector<IntermediateValues>&, Aux&, State&, uint)` |
+| 6 | `Traits::setHourlyValuesForCurrentYear(clusterValues, state)` | `DispatchablePlantByCluster_base.h:329-333` | `(std::vector<IntermediateValues>&, State&)` |
+| 7 | `Traits::setHourlyValues(iv_array, state, numSpace)` | `multi_column_base.h:205`, `dynamic_multi_column_base.h:241,246` | `(IntermediateValues(&)[N] \| std::vector<std::vector<IV>>&, State&, uint)` |
+| 8 | `Traits::setHourlyValuesWithDescriptors(iv_array, state, numSpace, descriptors, g2n)` | `dynamic_multi_column_base.h:227,234` | `(..., const std::vector<ColumnDescriptor>&, const std::map<std::string, size_t>&)` |
 
-**But** : unifier sur `Traits::setHourlyValue(iv, state, numSpace [, aux] [, descriptors])` avec dispatch par type de premier paramètre. Garder `hourValue` / `computeHourlyValue` uniquement là où le hook fait un vrai calcul de prix lien.
+**Lien** (`links_base.h:192-216`) — cascade à 3 niveaux orthogonale au reste :
 
-**Done si** : ≤ 2 noms de hooks dans tout le répertoire, dispatch par signature et non par nom. Effort : ~1 j, mécanique.
+| # | Entry-point | Signature |
+|---|------------|-----------|
+| L1 | `Traits::hourForEachLink(iv, state)` | `(IntermediateValues&, State&)` |
+| L2 | `Traits::hourValue(state) → double` | `(State&) → double`, somme sur `iv.hour[h]` |
+| L3 | `Traits::computeHourlyValue(state, upstreamPrice, downstreamPrice) → double` | avec pré-fetch des prix depuis `problemeHebdo` |
+
+#### Implémentations concrètes recensées
+
+- `setHourlyValue(IV&, Aux&, State&, uint)` — 7 implémentations (`balance`, `hydroCost`, `hydrostorage`, `overallCost`, `overallCostCsr`, `reservoirlevel`, `dispatchable-generation-margin`, `waterValue`).
+- `setHourlyValue(vector<IV>&, State&)` — 5 implémentations STS by cluster (`STStorage{Injection,Withdrawal,Levels,CashFlow}ByCluster`, `productionByRenewablePlant`).
+- `setHourlyValuesForCurrentYear(vector<IV>&, [Aux&,] State&, [uint])` — 4 implémentations (`profitByPlant`, `productionByDispatchablePlant`, `minDispatchableGenByPlant`, `nbOfDispatchedUnitsByPlant`).
+- `setHourlyValues(IV_array&, State&, uint)` — `thermalAirPollutantEmissions`.
+- `setHourlyValuesWithDescriptors(...)` — `STSbyGroup`, `dispatchableGeneration`, `renewableGeneration`.
+- `checkCondition/value` — 15+ implémentations (le pattern « condition + valeur scalaire »).
+- `hourForEachLink` — 2 (`marginalCost`, `hurdleCosts`).
+- `hourValue` — 2 (`flowLinear`, `flowLinearAbs`).
+- `computeHourlyValue` — 2 (`congestionFee`, `congestionFeeAbs`).
+
+#### Problèmes concrets
+
+1. **Nom surchargé entre scopes** : `setHourlyValue` signifie à la fois « écrire 1 valeur sur 1 IV » (area, entry 1) ET « écrire N valeurs sur un vecteur IV » (by-cluster, entry 4). Un lecteur ne peut pas inférer le scope depuis le nom.
+2. **Redondance cascade dans `economy_base.h`** : les paires `setHourlyValue` vs `checkCondition+value` existent en parallèle parce qu'on n'a jamais migré les Traits existants. `checkCondition+value` est toujours équivalent à un `setHourlyValue` qui teste et assigne.
+3. **Suffixe `ForCurrentYear`** (`DispatchablePlantByCluster_base.h`) sans raison structurelle — tous les autres hooks sont « for current year » implicitement via `pValuesForTheCurrentYear`. Drift de nommage historique.
+4. **Suffixe `WithDescriptors`** (`dynamic_multi_column_base.h`) — le fallback `setHourlyValues` sans descriptors n'est utilisé par **aucune** variable dynamique réelle (les 3 migrées passent toutes par `WithDescriptors`). Chemin mort.
+5. **Dispatch par nom** (`if constexpr (requires { Traits::X... })`) au lieu de par signature rend impossible la surcharge propre et multiplie les branches pour chaque variante de paramètres.
+
+#### API cible unifiée
+
+Un seul nom par concept, dispatch par **signature** (overload) :
+
+```cpp
+// Area / scalar
+static void setHourlyValue(IntermediateValues& iv,
+                           State& state,
+                           unsigned int numSpace);
+// + overload avec Aux si Traits::AuxiliaryDataType est défini :
+static void setHourlyValue(IntermediateValues& iv,
+                           AuxiliaryDataType& aux,
+                           State& state,
+                           unsigned int numSpace);
+
+// By cluster (vector of IVs indexé par cluster)
+static void setHourlyValue(std::vector<IntermediateValues>& clusterValues,
+                           State& state,
+                           unsigned int numSpace);
+static void setHourlyValue(std::vector<IntermediateValues>& clusterValues,
+                           AuxiliaryDataType& aux,
+                           State& state,
+                           unsigned int numSpace);
+
+// Multi-column statique
+static void setHourlyValue(IntermediateValues (&columns)[ColCount],
+                           State& state,
+                           unsigned int numSpace);
+
+// Multi-column dynamique : descriptors passés en paramètre (pas de WithDescriptors)
+static void setHourlyValue(std::vector<std::vector<IntermediateValues>>& columns,
+                           State& state,
+                           unsigned int numSpace,
+                           const std::vector<ColumnDescriptor>& descriptors);
+
+// Lien
+static double hourValue(State& state);
+// ou
+static double hourValue(State& state, double upstreamPrice, double downstreamPrice);
+```
+
+**Résultats** :
+- 8 entry-points → **1 nom** (`setHourlyValue`) en area/cluster/multi-column.
+- Les 2 variantes lien (`hourValue` simple vs avec prix) restent sous **un seul nom** (`hourValue`), surchargé par signature.
+- Le couple `checkCondition + value` est **déprécié** : les Traits concernés migrent vers un `setHourlyValue` unique de 4 lignes (`if (cond) iv[state.hourInTheYear] = v;`).
+- Le suffixe `WithDescriptors` disparaît — les descriptors sont un paramètre ordinaire.
+- Le suffixe `ForCurrentYear` disparaît — convention implicite.
+
+#### Mapping old → new
+
+| Ancien hook | Nouveau hook | Nb implémentations à migrer |
+|-------------|--------------|-----------------------------|
+| `setHourlyValue(IV&, Aux&, State&, uint)` | `setHourlyValue(IV&, Aux&, State&, uint)` | 8 (inchangé) |
+| `setHourlyValue(vector<IV>&, State&)` | `setHourlyValue(vector<IV>&, State&, uint)` | 5 (ajout `numSpace`) |
+| `setHourlyValuesForCurrentYear(...)` | `setHourlyValue(vector<IV>&, [Aux&,] State&, uint)` | 4 |
+| `setHourlyValues(IV_array&, State&, uint)` | `setHourlyValue(IV_array&, State&, uint)` | 1 |
+| `setHourlyValuesWithDescriptors(..., descriptors, g2n)` | `setHourlyValue(vector<vector<IV>>&, State&, uint, descriptors)` | 3 (simplification signature) |
+| `checkCondition(state) + value(state)` | `setHourlyValue(IV&, Aux&, State&, uint)` avec `if (cond) iv[...] = v;` | ~15 (mécanique) |
+| `checkCondition(Aux&, state) + value(Aux&, state)` | idem avec Aux | 5 |
+| `hourForEachLink(iv, state)` | `setHourlyValue(IV&, State&, uint)` côté lien **OU** conserver (cas où on accumule `+=`) | 2 — à décider |
+| `hourValue(state) → double` | conserver (utile pour sommation hour par hour) | 2 |
+| `computeHourlyValue(state, up, down) → double` | `hourValue(state, up, down) → double` | 2 |
+
+#### Question ouverte : `checkCondition + value`
+
+Le pattern `checkCondition` est aussi utilisé par `lolpCsr`, `loldCsr`, `lolp`, `lold` (via `lolp_base.h` / `lold_base.h`). **Avant** de le déprécier globalement, vérifier que ces bases dédiées (qui portent le sens « compter les violations ») ne veulent pas garder cette sémantique expressive. Possiblement : garder `checkCondition+value` **uniquement** pour `lolp_base`/`lold_base`, et migrer les cas area génériques (`price.h`, `priceCSR.h`, `dtgMarginAfterCsr.h`, `spilledEnergy.h`, `unsupliedEnergy.h`, `domesticUnsuppliedEnergy.h`, `avail-dispatchable-generation.h`, `dispatchable-generation-margin.h`, `inflow.h`, `overflow.h`, `pumping.h`, `nearPriceCap.h`, `residual.h`, `localMatchingRuleViolations.h`) vers `setHourlyValue` explicite.
+
+#### Plan de refactor (PR séquentielles)
+
+1. **Ajouter les nouveaux overloads `setHourlyValue`** dans `economy_base.h`, `STStorageByCluster_base.h`, `DispatchablePlantByCluster_base.h`, `multi_column_base.h`, `dynamic_multi_column_base.h`. Les anciens hooks restent reconnus (coexistence temporaire via `if constexpr` chaîné).
+2. **Migrer les Traits area/cluster** pour renommer `setHourlyValuesForCurrentYear` → `setHourlyValue`. Mécanique, un fichier à la fois. Tests : `test-migrated-variables-metadata`, `test-surveyresults`, `test-intermediate` sur chaque lot.
+3. **Migrer les Traits multi-column dynamique** : remplacer `setHourlyValuesWithDescriptors` par `setHourlyValue(..., descriptors)`. Supprimer le paramètre `groupToNumbers_` (les 3 Traits peuvent reconstruire la map depuis `descriptors` — ou on la porte dans `AuxiliaryDataType`).
+4. **Renommer `computeHourlyValue` → `hourValue(state, up, down)`** (lien). 2 fichiers.
+5. **Migrer `checkCondition + value` (area uniquement, pas LOLP/LOLD)** vers `setHourlyValue` explicite. ~15 fichiers mécaniques, chacun passe de 10 lignes à 5.
+6. **Supprimer les vieux entry-points** dans les 5 bases une fois les Traits migrés. Nettoyage des cascades `if constexpr`.
+
+#### Done si
+
+- Un seul nom `setHourlyValue` (aire/cluster/multi-column) + un seul nom `hourValue` (lien) dans tout `src/solver/variable/include`.
+- Aucune cascade `if constexpr (requires { ... })` à plus de 2 branches par base (la 2e pour la variante avec Aux).
+- `checkCondition + value` restent **uniquement** dans `lolp_base.h` / `lold_base.h` si décision retenue (sinon 0 sites).
+- Suffixes `ForCurrentYear` / `WithDescriptors` totalement éliminés.
+- Suite de tests complète passe, et un snapshot digest + annual survey sur étude de référence reste byte-identique avant/après.
+
+#### Effort estimé
+
+- Refactor des bases + ajout des overloads : ~½ j.
+- Migration des Traits (35-40 fichiers mécaniquement similaires) : 1,5 j.
+- Validation digest/survey byte-à-byte : ½ j.
+- **Total : ~2,5 j**, avec S8 en filet de sécurité.
+
+#### Risques
+
+1. **Ambiguïté de surcharge** : certains Traits définissent à la fois `setHourlyValue(IV&, State&, uint)` et `setHourlyValue(IV&, Aux&, State&, uint)` — si `Aux = EmptyAuxiliaryData` on peut avoir des résolutions ambiguës. Mitigation : utiliser SFINAE ou `requires` sur le membre `AuxiliaryDataType` pour n'exposer qu'un overload à la fois.
+2. **ADL cross-namespace** : `Variable::Economy::setHourlyValue` surchargé dans `Variable::Adequacy::setHourlyValue` — les Traits locaux doivent rester qualifiés `Traits::setHourlyValue`. Mitigation : garder toute résolution à travers le Traits concret, pas d'ADL.
+3. **Signature `std::vector<std::vector<IV>>&`** sur multi-column dynamique plus verbeuse que `pValuesForTheCurrentYear[numSpace]` du côté base. Mitigation : introduire un alias `using DynamicColumnsIV = ...;` dans `dynamic_multi_column_base.h`.
 
 ### S2 — `economy_base.h` explose en hooks optionnels **(HAUTE)**
 
