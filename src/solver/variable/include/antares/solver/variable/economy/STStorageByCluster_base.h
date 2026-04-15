@@ -199,9 +199,7 @@ public:
         {
             Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace);
         }
-        else if constexpr (requires {
-                               Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state);
-                           })
+        else
         {
             Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state);
         }

@@ -378,10 +378,6 @@ private:
         {
             Traits::setHourlyValue(clusterValues, state, numSpace);
         }
-        else if constexpr (requires { Traits::setHourlyValue(clusterValues, state); })
-        {
-            Traits::setHourlyValue(clusterValues, state);
-        }
     }
 
 private:

@@ -202,22 +202,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if constexpr (requires {
-                          Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace],
-                                                 state,
-                                                 numSpace);
-                      })
-        {
-            Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace);
-        }
-        else if constexpr (requires {
-                               Traits::setHourlyValues(pValuesForTheCurrentYear[numSpace],
-                                                       state,
-                                                       numSpace);
-                           })
-        {
-            Traits::setHourlyValues(pValuesForTheCurrentYear[numSpace], state, numSpace);
-        }
+        Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace);
         NextType::hourForEachArea(state, numSpace);
     }
 

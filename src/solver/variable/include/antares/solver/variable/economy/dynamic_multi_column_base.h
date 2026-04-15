@@ -126,12 +126,6 @@ public:
         nbColumns_ = descriptors.size();
         descriptors_ = std::move(descriptors);
 
-        groupToNumbers_.clear();
-        for (size_t i = 0; i < nbColumns_; ++i)
-        {
-            groupToNumbers_[descriptors_[i].caption] = i;
-        }
-
         pValuesForTheCurrentYear.assign(pNbYearsParallel,
                                         typename VCardType::IntermediateValuesBaseType(nbColumns_));
 
@@ -223,41 +217,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        if constexpr (requires {
-                          Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace],
-                                                 state,
-                                                 numSpace,
-                                                 descriptors_);
-                      })
-        {
-            Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace],
-                                   state,
-                                   numSpace,
-                                   descriptors_);
-        }
-        else if constexpr (requires {
-                               Traits::setHourlyValuesWithDescriptors(
-                                 pValuesForTheCurrentYear[numSpace],
-                                 state,
-                                 numSpace,
-                                 descriptors_,
-                                 groupToNumbers_);
-                           })
-        {
-            Traits::setHourlyValuesWithDescriptors(pValuesForTheCurrentYear[numSpace],
-                                                   state,
-                                                   numSpace,
-                                                   descriptors_,
-                                                   groupToNumbers_);
-        }
-        else if constexpr (requires {
-                               Traits::setHourlyValues(pValuesForTheCurrentYear[numSpace],
-                                                       state,
-                                                       numSpace);
-                           })
-        {
-            Traits::setHourlyValues(pValuesForTheCurrentYear[numSpace], state, numSpace);
-        }
+        Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace, descriptors_);
         NextType::hourForEachArea(state, numSpace);
     }
 
@@ -327,7 +287,6 @@ public:
 private:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     std::vector<ColumnDescriptor> descriptors_;
-    std::map<std::string, size_t> groupToNumbers_;
     size_t nbColumns_ = 0;
     unsigned int pNbYearsParallel;
 };
