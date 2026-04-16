@@ -30,6 +30,12 @@ struct StudyWithOneArea
         study->parameters.nbYears = 1;
 
         area = addAreaToListOfAreas(study->areas, "TestArea");
+        if (area)
+        {
+            area->createMissingData();
+            area->resetToDefaultValues();
+        }
+        study->areas.rebuildIndexes();
         area->index = 0;
         cluster = addClusterToArea(area, "TestCluster").get();
 
