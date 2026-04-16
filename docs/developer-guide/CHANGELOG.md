@@ -4,6 +4,33 @@ toc_depth: 2
 
 # Antares Changelog
 
+## Branch 10.1.x
+
+### Features
+
+Multiple Hydro Rule Curves: New optional feature and compatibility flag for scenarized hydro reservoir levels (#2829)
+
+### Bugfixes
+
+Add behave tests for simple tests [ANT-4643] (#3545)
+Fix remix hydro sts levels computation [ANT-4888] (#3557)
+
+### Documentation
+
+Fix(doc): modeler doc (#3529)
+
+### For developers
+
+Remove ortools dependency from antares-problem-generator [ANT-4846] (#3538)
+replace raw Area* with unique_ptr in AreaList (#3550)
+refacto: remove duplication in "sorties" (#3541)
+refacto: Clean up scenario-builder (#3567)
+
+### CI
+
+chore(deps): bump SonarSource/sonarqube-scan-action from 7.0.0 to 7.1.0 (#3544)
+Use fixed submodule for Antares_Simulator_Tests_NR instead of branch main (#3568)
+
 ## Branch 10.0.x
 
 ### 10.0.1
