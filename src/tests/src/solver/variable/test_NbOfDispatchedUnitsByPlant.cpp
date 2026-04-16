@@ -56,8 +56,9 @@ BOOST_AUTO_TEST_SUITE(NbOfDispatchedUnitsByPlantTests)
 // by the base class for NbOfDispatchedUnitsByPlantTraits, i.e. that
 // thermalClusterDispatchedUnitsCountForYear is populated from the hourly NODU values.
 //
-// Before the fix, DispatchablePlantByClusterBase::yearEndBuildPrepareDataForEachThermalClusterIfSupported
-// only checked for a 5-parameter variant of the trait method (with auxiliaryData).
+// Before the fix,
+// DispatchablePlantByClusterBase::yearEndBuildPrepareDataForEachThermalClusterIfSupported only
+// checked for a 5-parameter variant of the trait method (with auxiliaryData).
 // NbOfDispatchedUnitsByPlantTraits provides a 4-parameter variant (without auxiliaryData), so the
 // dispatch silently did nothing, leaving thermalClusterDispatchedUnitsCountForYear as zeros and
 // causing wrong NODU and OP. COST output values.
