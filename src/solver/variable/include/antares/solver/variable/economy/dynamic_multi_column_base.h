@@ -126,8 +126,17 @@ public:
         nbColumns_ = descriptors.size();
         descriptors_ = std::move(descriptors);
 
-        pValuesForTheCurrentYear.assign(pNbYearsParallel,
-                                        typename VCardType::IntermediateValuesBaseType(nbColumns_));
+        groupToNumbers_.clear();
+        for (size_t i = 0; i < nbColumns_; ++i)
+        {
+            groupToNumbers_[descriptors_[i].caption] = i;
+        }
+
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
+        for (auto& vec: pValuesForTheCurrentYear)
+        {
+            vec.resize(nbColumns_);
+        }
 
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
         {
