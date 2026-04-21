@@ -6,30 +6,32 @@ toc_depth: 2
 
 ## Branch 10.1.x
 
-### Features
+### 10.1.0
 
-Multiple Hydro Rule Curves: New optional feature and compatibility flag for scenarized hydro reservoir levels (#2829)
+#### Features
 
-### Bugfixes
+* Multiple Hydro Rule Curves: New optional feature and compatibility flag for scenarized hydro reservoir levels (#2829)
 
-Add behave tests for simple tests [ANT-4643] (#3545)
-Fix remix hydro sts levels computation [ANT-4888] (#3557)
+#### Bugfixes
 
-### Documentation
+* Add behave tests for simple tests [ANT-4643] (#3545)
+* Fix remix hydro sts levels computation [ANT-4888] (#3557)
 
-Fix(doc): modeler doc (#3529)
+#### Documentation
 
-### For developers
+* Fix(doc): modeler doc (#3529)
 
-Remove ortools dependency from antares-problem-generator [ANT-4846] (#3538)
-replace raw Area* with unique_ptr in AreaList (#3550)
-refacto: remove duplication in "sorties" (#3541)
-refacto: Clean up scenario-builder (#3567)
+#### For developers
 
-### CI
+* Remove ortools dependency from antares-problem-generator [ANT-4846] (#3538)
+* replace raw Area* with unique_ptr in AreaList (#3550)
+* refacto: remove duplication in "sorties" (#3541)
+* refacto: Clean up scenario-builder (#3567)
 
-chore(deps): bump SonarSource/sonarqube-scan-action from 7.0.0 to 7.1.0 (#3544)
-Use fixed submodule for Antares_Simulator_Tests_NR instead of branch main (#3568)
+#### CI
+
+* chore(deps): bump SonarSource/sonarqube-scan-action from 7.0.0 to 7.1.0 (#3544)
+* Use fixed submodule for Antares_Simulator_Tests_NR instead of branch main (#3568)
 
 ## Branch 10.0.x
 
@@ -49,6 +51,7 @@ Use fixed submodule for Antares_Simulator_Tests_NR instead of branch main (#3568
 Districts: fix offest with disabled set | simplify [ANT-4830]
 Relax expressions in port definition : fixes after tests [ANT-4646]
 Fix: remove dynamique variables from digest, fix error in digests (#3535)
+Fix: several issues on CentOS7 (#3561)
 
 #### For developers
 
@@ -149,6 +152,34 @@ Fix: remove dynamique variables from digest, fix error in digests (#3535)
 * Fix failure of sonar scans due to disk space limitation (#3495, #3497)
 
 ## Branch 9.3.x
+
+### 9.3.9
+
+#### Features
+
+* feat: Write longer durations in execution_info.ini (#3476)
+
+#### Bugfixes
+
+* Fix: remove dynamique variables from digest, fix errors in digest (#3535)
+* Districts: fix offest with disabled set | simplify [ANT-4830] (#3533)
+* chore: update gitignore
+* Fix unit tests binding constraints (#3453)
+* Fix: windows runtime libraries (#3435)
+* Fix: several issues on CentOS7 (#3561)
+
+#### CI/CD
+
+* feat: Speed up SonarCloud job, increase cache hit rate to 100% (#3518)
+* chore(deps): Up build.os@readthedocs.yml (#3531)
+* chore(deps): bump docker/build-push-action from 6 to 7 (#3472)
+* chore(deps): bump docker/login-action from 3 to 4 (#3473)
+* ci: Bump actions/upload-artifact from 6 to 7 (#3447)
+
+#### For developers
+
+Add tools/antares-version.py (#3534)
+feat: allow generating results on release (#3427)
 
 ### 9.3.8
 
