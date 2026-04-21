@@ -132,8 +132,11 @@ public:
             groupToNumbers_[descriptors_[i].caption] = i;
         }
 
-        pValuesForTheCurrentYear.assign(pNbYearsParallel,
-                                        typename VCardType::IntermediateValuesBaseType(nbColumns_));
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
+        for (auto& vec: pValuesForTheCurrentYear)
+        {
+            vec.resize(nbColumns_);
+        }
 
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
         {
