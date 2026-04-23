@@ -239,7 +239,10 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace], auxiliaryData_, state, numSpace);
+        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace],
+                                  auxiliaryData_,
+                                  state,
+                                  numSpace);
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
@@ -286,9 +289,7 @@ private:
                                      unsigned int year,
                                      unsigned int numSpace)
     {
-        if constexpr (requires {
-                        Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
-                    })
+        if constexpr (requires { Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace); })
         {
             Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
         }
@@ -300,8 +301,8 @@ private:
                                           unsigned int numSpace)
     {
         if constexpr (requires {
-                        Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
-                    })
+                          Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
+                      })
         {
             Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
         }
