@@ -3,6 +3,34 @@
 
 #pragma once
 
+/*!
+** \file multi_column_base.h
+**
+** \brief Base class for static multi-column variables (fixed column count)
+**
+** ## Traits Contract
+**
+** A valid MultiColumn Traits must provide:
+** - Required static methods:
+**   - \c Caption() -> std::string
+**   - \c Unit() -> std::string
+**   - \c Description() -> std::string
+**   - \c ResultsType : typedef for results template
+**   - \c decimal : uint8_t
+**   - \c columnCaption(unsigned int) -> std::string (for GUI display)
+**
+** - Required static member constants:
+**   - \c columnCount : constexpr int (number of columns)
+**
+** - Optional hooks:
+**   - \c onInitializeFromStudy(Data::Study&) -> void
+**   - \c onInitializeFromArea(Data::Area*, Data::Study*) -> void
+**   - \c onSimulationBegin(IntermediateValuesBaseType*, unsigned int) -> void
+**   - \c setHourlyValue(IntermediateValues(&)[ColCount], State&, unsigned int numSpace) -> void
+*/
+
+#include <type_traits>
+
 #include "economy_base.h"
 
 namespace Antares::Solver::Variable::Economy

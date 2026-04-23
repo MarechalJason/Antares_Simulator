@@ -3,6 +3,31 @@
 
 #pragma once
 
+/*!
+** \file dynamic_multi_column_base.h
+**
+** \brief Base class for dynamic multi-column variables (runtime column count)
+**
+** ## Traits Contract
+**
+** A valid DynamicMultiColumn Traits must provide:
+** - Required static methods:
+**   - \c Caption() -> std::string
+**   - \c Unit() -> std::string
+**   - \c Description() -> std::string
+**   - \c ResultsType : typedef for results template
+**   - \c decimal : uint8_t
+**   - \c buildColumnDescriptors(Data::Area*) -> std::vector<ColumnDescriptor>
+**
+** - Optional hooks:
+**   - \c onSimulationBegin(IntermediateValuesBaseType&, unsigned int) -> void
+**   - \c perColumnComputeStats(IntermediateValues&, size_t columnIndex) -> void
+**   - \c setHourlyValue(IntermediateValuesBaseType&, State&, unsigned int, const
+*std::vector<ColumnDescriptor>&) -> void
+**
+** Note: The traits should rebuild groupToNumbers map internally from descriptors if needed.
+*/
+
 #include "economy_base.h"
 
 namespace Antares::Solver::Variable::Economy

@@ -3,6 +3,29 @@
 
 #pragma once
 
+/*!
+** \file STStorageByCluster_base.h
+**
+** \brief Base class for short-term storage by cluster variables
+**
+** ## Traits Contract
+**
+** A valid STStorageByCluster Traits must provide:
+** - Required static methods:
+**   - \c Caption() -> std::string
+**   - \c Unit() -> std::string
+**   - \c Description() -> std::string
+**   - \c ResultsType : typedef for results template
+**   - \c clusterCount(const Data::Area*) -> size_t
+**   - \c computeStats(IntermediateValues&) -> void
+**   - \c buildSurveyReport(const std::vector<IntermediateValues>&, SurveyResults&, int, int) ->
+*void
+**
+** - Optional hooks:
+**   - \c setHourlyValue(std::vector<IntermediateValues>&, State&, unsigned int numSpace) -> void
+**   - Fallback (deprecated): \c setHourlyValue(std::vector<IntermediateValues>&, State&) -> void
+*/
+
 #include "antares/solver/variable/variable.h"
 
 namespace Antares::Solver::Variable::Economy

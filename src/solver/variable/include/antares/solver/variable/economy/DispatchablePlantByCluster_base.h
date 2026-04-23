@@ -3,6 +3,35 @@
 
 #pragma once
 
+/*!
+** \file DispatchablePlantByCluster_base.h
+**
+** \brief Base class for dispatchable plant by cluster variables
+**
+** ## Traits Contract
+**
+** A valid DispatchablePlantByCluster Traits must provide:
+** - Required static methods:
+**   - \c Caption() -> std::string
+**   - \c Unit() -> std::string
+**   - \c Description() -> std::string
+**   - \c ResultsType : typedef for results template
+**
+** - Optional hooks (dispatched via \c if constexpr):
+**   - \c AuxiliaryDataType : typedef
+**   - \c initializeAuxiliaryData(AuxiliaryDataType&, Data::Study*, unsigned int, size_t) -> void
+**   - \c yearBegin(AuxiliaryDataType&, unsigned int, unsigned int, size_t) -> void
+**   - \c setHourlyValue(std::vector<IntermediateValues>&, AuxiliaryDataType&, State&, unsigned int)
+*-> void
+**   - Fallback: \c setHourlyValue(std::vector<IntermediateValues>&, State&, unsigned int) -> void
+**   - Fallback: \c setHourlyValue(std::vector<IntermediateValues>&, State&) -> void
+**   - \c
+*yearEndBuildPrepareDataForEachThermalCluster(std::vector<std::vector<IntermediateValues>>&,
+*AuxiliaryDataType&, State&, unsigned int, unsigned int) -> void
+**   - \c yearEndBuildForEachThermalCluster(std::vector<std::vector<IntermediateValues>>&, State&,
+*unsigned int, unsigned int) -> void
+*/
+
 #include <type_traits>
 
 #include "economy_base.h"
