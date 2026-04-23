@@ -296,6 +296,7 @@ public:
 private:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     std::vector<ColumnDescriptor> descriptors_;
+    std::map<std::string, size_t> groupToNumbers_;
     size_t nbColumns_ = 0;
     unsigned int pNbYearsParallel;
 };
