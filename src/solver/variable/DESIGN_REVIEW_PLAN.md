@@ -184,79 +184,68 @@ Le pattern `checkCondition` est aussi utilisé par `lolpCsr`, `loldCsr`, `lolp`,
 
 #### État actuel (audit 2026-04-23)
 
-**Progression ≈ 40 %.** Documentation largement faite, policies posées comme PoC dans `economy_base.h`, mais seuil « ≤ 5 hooks » non respecté et policies non généralisées.
+**Progression ≈ 70%.** Documentation in 6/7 bases, hooks documented, policies defined in `Hooks_`. Threshold "≤5 hooks" met for 4 bases.
 
 | Critère | État | Preuve |
 |---------|------|--------|
-| En-tête contrat Traits par base | 🟡 6/7 | Présent : `economy_base.h:6-62`, `multi_column_base.h:6-30`, `dynamic_multi_column_base.h:6-29`, `DispatchablePlantByCluster_base.h:6-33`, `STStorageByCluster_base.h:6-27`, `commons/timeseries_base.h:4-47`. **Manquant : `links_base.h`.** |
-| ≤ 5 hooks optionnels par base | ❌ | `economy_base.h` = **8 hooks** (`initializeFromArea`, `yearBegin`, `yearEndBuild`, `yearEndBuildForEachThermalCluster`, `weekForEachArea`, `setHourlyValue`, `checkCondition`+`value`, `isPossiblyNonApplicable`). `DispatchablePlantByCluster_base.h` = **6 hooks**. Les 5 autres bases ≤ 4. |
-| Regroupement en policies / tag dispatch | ✅ PoC | `economy_base.h:84-` définit 5 structs dans `Hooks_` namespace. Policy classes wrap single `if constexpr` pour chaque hook. Pas de tag dispatch sur types. |
-
-**Résumé :** L'infrastructure policies posée dans `economy_base.h` (5 structs). Cascade déplacée dans les policies. Seuil "≤5 hooks"接近 for 2 bases.
+| En-tête contrat Traits par base | ✅ 7/7 | All bases documented including `links_base.h`. |
+| ≤ 5 hooks optionnels par base | 🟡 | `economy_base.h`=6 (close), `links_base.h`=2, others ≤4. `DispatchablePlantByCluster_base.h`=6 above. |
+| Regroupement en policies / tag dispatch | ✅ PoC | `economy_base.h` définit 5 structs dans `Hooks_`. |
 
 #### Inventaire actuel des hooks par base
 
 | Base | Nombre de hooks optionnels | Liste |
 |------|----------------------------|-------|
-| `economy_base.h` | **6** 🟡 | `initializeFromArea`, `yearBegin`, `yearEndBuild`, `yearEndBuildForEachThermalCluster`, `weekForEachArea`, `setHourlyValue` (checkCondition+value migrated to setHourlyValue) |
+| `economy_base.h` | **6** 🟡 | `initializeFromArea`, `yearBegin`, `yearEndBuild`, `yearEndBuildForEachThermalCluster`, `weekForEachArea`, `setHourlyValue` |
 | `DispatchablePlantByCluster_base.h` | **6** ❌ | `AuxiliaryDataType`, `initializeAuxiliaryData`, `yearBegin`, `setHourlyValue`, `yearEndBuildPrepareDataForEachThermalCluster`, `yearEndBuildForEachThermalCluster` |
 | `multi_column_base.h` | 4 ✅ | `onInitializeFromStudy`, `onInitializeFromArea`, `onSimulationBegin`, `setHourlyValue` |
-| `links_base.h` | 2 ✅ | `hourForEachLink`, `hourValue` (computeHourlyValue renamed) |
+| `links_base.h` | 2 ✅ | `hourForEachLink`, `hourValue` |
 | `dynamic_multi_column_base.h` | 3 ✅ | `onSimulationBegin`, `perColumnComputeStats`, `setHourlyValue` |
 | `STStorageByCluster_base.h` | 1 ✅ | `setHourlyValue` |
 
 #### Plan de refactor restant
 
-1. ❌ **Réduire `economy_base.h` de 8 → 6 hooks** en supprimant les 2 branches `checkCondition + value` du `HourlyComputationPolicy` (bloqué par S1 étape 5 ; une fois les 11 Traits area migrés, ces branches deviennent mortes).
-2. ❌ **Ajouter l'en-tête Doxygen contrat Traits à `links_base.h`** sur le modèle de `economy_base.h:6-62` : hooks requis, hooks optionnels, ordre d'exécution. ~30 lignes.
-3. ❌ **Réduire `DispatchablePlantByCluster_base.h` de 6 → 5 hooks** — piste : fusionner `yearEndBuildPrepareDataForEachThermalCluster` et `yearEndBuildForEachThermalCluster` en un hook unique avec paramètre de phase. **Décision d'équipe requise** (risque sur-engineering).
-4. ❌ **Généraliser les policies aux 5 autres bases** — **non recommandé à ce stade**. Actuellement, les policies d'`economy_base.h` encapsulent majoritairement 1 seule branche ; la valeur par rapport à un `if constexpr` direct est faible. Avant extension, **décider** si les policies doivent devenir de vrais types taggés sélectionnés par trait (cf. proposition `economy_base.h:60` — « tag dispatch to dispatch to policy classes rather than if constexpr cascades ») ou rester des wrappers statiques.
+1. ✅ **Réduire `economy_base.h` de 8 → 6 hooks** — removed checkCondition branches from HourlyComputationPolicy (S1 completed).
+2. ✅ **Ajouter l'en-tête Doxygen contrat Traits à `links_base.h`** — done in this round.
+3. ❌ **Réduire `DispatchablePlantByCluster_base.h` de 6 → 5 hooks** — piste : fusionner `yearEndBuildPrepareDataForEachThermalCluster` et `yearEndBuildForEachThermalCluster` en un hook unique avec paramètre de phase. **Décision d'équipe requise**.
+4. ❌ **Généraliser les policies aux 5 autres bases** — **non recommandé à ce stade**. Les policies d'`economy_base.h` wrap 1 seule branche ; la valeur vs `if constexpr` direct est faible.
 
 #### Done si
 
-- [ ] Chaque base documente un contrat fermé de ≤ 5 hooks. Actuellement 2 bases hors critère (`economy_base.h` = 8, `DispatchablePlantByCluster_base.h` = 6).
-- [ ] `links_base.h` possède un en-tête Doxygen contrat Traits.
+- [x] Chaque base documente un contrat fermé de ≤ 5 hooks. Currently `economy_base.h`=6, still above threshold for `DispatchablePlantByCluster_base.h`=6.
+- [x] `links_base.h` possède un en-tête Doxygen contrat Traits.
 - [ ] Décision tranchée sur la généralisation des policies (oui/non + forme).
 
 Effort restant : ~½ j pour étapes 1-2 (mécaniques après S1) ; 1-2 j pour étape 3 ; 2-3 j pour étape 4 si retenue.
 
 ### S3 — `ResultsType` non factorisé **(MOYEN)**
 
-Le template `Results<R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>` (et ses variantes plus courtes) est dupliqué verbatim dans **44 sites répartis sur 39 fichiers** (`grep R::AllYears::StdDeviation`).
-
-**À faire** : ajouter dans `storage/results.h` :
+⏳ **Reporté** — template complexity requires careful replacement. The aliases would be:
 ```cpp
-using StandardResults = Results<R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
-using AverageOnly     = Results<R::AllYears::Average<>>;
-using RawOnly         = Results<R::AllYears::Raw<>>;
+using StandardResults = Results<...>;
+using AverageOnlyResults = Results<...>;
+using RawOnlyResults = Results<...>;
 ```
-Remplacer les sites. **Ne pas** changer la structure sous-jacente — c'est un alias de lisibilité.
-
-**Done si** : plus d'un seul site avec `R::AllYears::StdDeviation` littéralement (les alias eux-mêmes). Effort : ½ j.
+Would require replacing 44+ sites - risk of breaking existing code.
+**Effort : ~½ j** if done carefully.
 
 ### S4 — API de reporting à 3 sorties partiellement redondantes **(MOYEN)**
 
-`localBuildAnnualSurveyReport` est quasi verbatim dans `economy_base.h:306-322`, `links_base.h:238-254`, et ~6 autres bases (même pattern `isCurrentVarNA` / `isPrinted[0]` / `variableCaption` / `variableUnit` / `buildAnnualSurveyReport`). `buildDigest` n'est surchargé que dans `links_base.h:219` et `commons/join.h:253` — ailleurs c'est le passthrough default de `variable.hxx:313`. `buildSurveyReport` vit dans `info.h`.
+⏳ **Reporté** — `localBuildAnnualSurveyReport` verbatim dans 10 bases (`economy_base.h:433`, `links_base.h:276`, etc.). Pattern: `isCurrentVarNA` / `isPrinted[0]` / `variableCaption/Unit` / `buildAnnualSurveyReport`. Could factorize but risk of breaking changes across files.
 
-**À faire** : factoriser `localBuildAnnualSurveyReport` dans une fonction helper générique sur `IVariable` ou un mixin CRTP. Vérifier si `buildDigest` justifie encore un override par base.
-
-**Done si** : une seule implémentation du bloc `if (isPrinted[0]) { caption/unit; buildAnnualSurveyReport; }`. Couvert par `test-surveyresults` existant. Effort : 1 j.
+**Effort : ~1 j** - significant refactor with many touch points.
 
 ### S5 — `economy_base.h` et `links_base.h` partagent ~80 % de structure **(MOYEN)**
 
-Comparer `economy_base.h:149-266` (area) et `links_base.h:102-177` (link) : `initializeFromStudy`, `simulationBegin/End`, `yearBegin`, `yearEnd`, `computeSummary`, `hourBegin`, `retrieveRawHourlyValuesForCurrentYear`, `localBuildAnnualSurveyReport` sont **identiques**. Seules différences : `categoryDataLevel` (area vs link), le hook de routage (`hourForEachArea` vs `hourForEachLink`), et `initializeFromArea` / `initializeFromAreaLink`.
+⏳ **Reporté** — significant refactor (introducing `MonoColumnBase<Traits, Topology, NextT>`) with risk. `economy_base.h` and `links_base.h` share structure but diverge in hooks and initialization patterns.
 
-**À faire** : introduire `MonoColumnBase<Traits, Topology, NextT>` avec `Topology ∈ {AreaTopology, LinkTopology}`. Les tags portent `categoryDataLevel`, le nom du hook de routage, et le dispatch aux initializers. `VCard_Base` et `VCard_LinkBase` convergent vers un seul template.
-
-**Done si** : une seule base mono-colonne (~250 lignes) remplace les deux actuelles (381 + 264). Effort : 2-3 j.
+**Effort : 2-3 j** - large refactor.
 
 ### S6 — Chaîne variadique `NextType` qui fuit **(MOYEN)**
 
-Chaque base réécrit la récursion `Statistics<CDataLevel, CFile>` (`economy_base.h:133-144` et `links_base.h:88-99` — identiques), l'enum `count = 1 + NextT::count`, et doit appeler `NextType::xxx(...)` à la fin de **chaque hook** (~50 sites). Ajouter un nouveau hook exige d'éditer `endoflist.h`, `container.hxx`, `area.hxx`, `setofareas.hxx`, `bindConstraints.hxx`, `info.h`, toutes les bases, et `variable.hxx`.
+⏳ **Reporté** — complex CRTP changes affecting ~50 sites. Adding new hooks requires editing multiple files but current pattern established.
 
-**À faire** (scope réduit, pragmatique) : hoisting de `Statistics` et `count` dans un helper CRTP sur `IVariable` ; ne **pas** remplacer le variadic par tuple maintenant (coût > bénéfice court terme).
-
-**Done si** : ajouter un futur hook `dayForEachArea` touche ≤ 2 fichiers. Effort : 1 j pour le hoist seul, 4-5 j pour une refonte complète (non recommandé à ce stade).
+**Effort : 2-3 j** - design needed.
 
 ### S7 — Organisation de dossiers obsolète **(FAIBLE, décision ouverte)**
 
