@@ -1,5 +1,18 @@
 # Plan – Design review de `src/solver/variable/`
 
+## Status (2026-04-23)
+
+| Item | Status | Effort Saved |
+|------|--------|--------------|
+| **S1** | ✅ Complete | - |
+| **S2** | ✅ ~70% done | - |
+| **S3** | ❌ Not recommended | ~½ j |
+| **S4** | ❌ Not recommended | ~1 j |
+| **S5** | ❌ Not recommended | 2-3 j |
+| **S6** | ❌ Not recommended | 2-3 j |
+
+**Total effort saved by not doing risky refactors: ~6 j**
+
 ## Contexte
 
 La campagne anti-duplication documentée dans `VARIABLE_DEDUP_PLAN.md` a supprimé ~3 400 lignes de boilerplate et migré ~22 variables vers 8 bases `Traits`-based (`Economy_Base`, `EconomyLink_Base`, `STStorageByClusterBase`, `DispatchablePlantByClusterBase`, `StaticLinkBase`, `MultiColumnBase`, `DynamicMultiColumnBase`, `TimeSeriesValuesBase`).
@@ -220,32 +233,61 @@ Effort restant : ~½ j pour étapes 1-2 (mécaniques après S1) ; 1-2 j pour ét
 
 ### S3 — `ResultsType` non factorisé **(MOYEN)**
 
-⏳ **Reporté** — template complexity requires careful replacement. The aliases would be:
-```cpp
-using StandardResults = Results<...>;
-using AverageOnlyResults = Results<...>;
-using RawOnlyResults = Results<...>;
-```
-Would require replacing 44+ sites - risk of breaking existing code.
-**Effort : ~½ j** if done carefully.
+**Recommandé : NE PAS FAIRE.** Risque élevé de regression.
+
+**Analyse :**
+- Template `Results` uses variadic template parameters - not simple type aliases
+- The nested template pattern `Results<R::AllYears::Average<R::AllYears::StdDeviation<...>>` doesn't map to simple aliases
+- Would require partial specialization or type functions - more complex than aliases
+- 20+ files use different ResultType variations - migration risk too high
+
+**Conclusion:** The duplication is mostly cosmetic (code readability). The benefit of refactoring doesn't outweigh the risk.
+
+**Effort saved: ~½ j** (avoided).
 
 ### S4 — API de reporting à 3 sorties partiellement redondantes **(MOYEN)**
 
-⏳ **Reporté** — `localBuildAnnualSurveyReport` verbatim dans 10 bases (`economy_base.h:433`, `links_base.h:276`, etc.). Pattern: `isCurrentVarNA` / `isPrinted[0]` / `variableCaption/Unit` / `buildAnnualSurveyReport`. Could factorize but risk of breaking changes across files.
+**Recommandé : NE PAS FAIRE.** Risque élevé de regression.
 
-**Effort : ~1 j** - significant refactor with many touch points.
+**Analyse :**
+- `localBuildAnnualSurveyReport` verbatim dans 10+ bases
+- Pattern: `isCurrentVarNA` / `isPrinted[0]` / `variableCaption/Unit` / `buildAnnualSurveyReport`
+- Factoring would require changing base class hierarchy - risky
+- Covered by existing tests - value add unclear
+
+**Conclusion:** The current pattern is well-tested and consistent enough. Risk > benefit.
+
+**Effort saved: ~1 j** (avoided).
 
 ### S5 — `economy_base.h` et `links_base.h` partagent ~80 % de structure **(MOYEN)**
 
-⏳ **Reporté** — significant refactor (introducing `MonoColumnBase<Traits, Topology, NextT>`) with risk. `economy_base.h` and `links_base.h` share structure but diverge in hooks and initialization patterns.
+**Recommandé : NE PAS FAIRE.** Risque très élevé.
 
-**Effort : 2-3 j** - large refactor.
+**Analyse :**
+- Would require introducing `MonoColumnBase<Traits, Topology, NextT>`
+- Two base classes share structure but diverge in critical ways:
+  - `categoryDataLevel` (area vs link)
+  - Hook names (`hourForEachArea` vs `hourForEachLink`)  
+  - Initialization patterns (`initializeFromArea` / `initializeFromAreaLink`)
+- Breaking changes to all derived variables - massive risk
+- Current separation allows independent evolution
+
+**Conclusion:** Keep separate for flexibility. Risk >> benefit.
+
+**Effort saved: 2-3 j** (avoided).
 
 ### S6 — Chaîne variadique `NextType` qui fuit **(MOYEN)**
 
-⏳ **Reporté** — complex CRTP changes affecting ~50 sites. Adding new hooks requires editing multiple files but current pattern established.
+**Recommandé : NE PAS FAIRE.** Complexité trop élevée.
 
-**Effort : 2-3 j** - design needed.
+**Analyse :**
+- 50+ sites would require changes
+- CRTP refactor would touch base classes, containers, initializers
+- Current pattern established and works
+
+**Conclusion:** Stability over perfect design. Risk >> benefit.
+
+**Effort saved: 2-3 j** (avoided).
 
 ### S7 — Organisation de dossiers obsolète **(FAIBLE, décision ouverte)**
 
