@@ -156,19 +156,9 @@ struct HourlyComputationPolicy
         {
             Traits::setHourlyValue(iv, aux, state, numSpace);
         }
-        else if constexpr (requires { Traits::checkCondition(aux, state); })
+        else if constexpr (requires { Traits::setHourlyValue(iv, state, numSpace); })
         {
-            if (Traits::checkCondition(aux, state))
-            {
-                iv[state.hourInTheYear] = Traits::value(aux, state);
-            }
-        }
-        else if constexpr (requires { Traits::checkCondition(state); })
-        {
-            if (Traits::checkCondition(state))
-            {
-                iv[state.hourInTheYear] = Traits::value(state);
-            }
+            Traits::setHourlyValue(iv, state, numSpace);
         }
     }
 };

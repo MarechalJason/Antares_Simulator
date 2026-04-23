@@ -38,11 +38,6 @@ struct PumpingTraits
         area = inputArea;
     }
 
-    static bool checkCondition(AuxiliaryDataType area, const State&)
-    {
-        return area != nullptr;
-    }
-
     static double value(AuxiliaryDataType /*area*/, const State& state)
     {
         return state.hourlyResults->PompageHoraire[state.hourInTheWeek];
