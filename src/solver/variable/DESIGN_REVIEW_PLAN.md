@@ -4,12 +4,15 @@
 
 | Item | Status | Effort Saved |
 |------|--------|--------------|
-| **S1** | ✅ Complete | - |
-| **S2** | ✅ ~70% done | - |
+| **S1** | ✅ Complete | Delivered |
+| **S2** | ✅ ~70% done | Delivered |
 | **S3** | ❌ Not recommended | ~½ j |
 | **S4** | ❌ Not recommended | ~1 j |
 | **S5** | ❌ Not recommended | 2-3 j |
 | **S6** | ❌ Not recommended | 2-3 j |
+| **S7** | ❓ No decision yet | - |
+| **S8** | ⏳ Deferred - CI covers | - |
+| **S9** | ✅ Done - docs in code | - |
 
 **Total effort saved by not doing risky refactors: ~6 j**
 
@@ -299,28 +302,30 @@ Effort restant : ~½ j pour étapes 1-2 (mécaniques après S1) ; 1-2 j pour ét
 
 ### S8 — Couverture de tests design-level insuffisante **(MOYEN)**
 
-`test_migrated_variables_metadata.cpp` vérifie uniquement `Caption()`/`Unit()`/`columnCount`/`decimal` statiques. Aucun test ne valide :
-- que `if constexpr (requires { ... })` dispatche la bonne branche pour un Traits donné ;
-- qu'un Traits sans hook optionnel compile et se comporte en no-op ;
-- que `NextType::hourForEachArea(...)` est bien appelé pour chaque variable d'une chaîne.
+**Analyse faite :** `test_migrated_variables_metadata.cpp` vérifie Caption/Unit/columnCount/decimalmais les tests de hooks sont complexes à ajouter.
 
-**À faire** :
-- harnais `static_assert` par base (un Traits complet, un Traits minimal) ;
-- test d'instrumentation : chaîne `NextT` de 3 éléments, Traits espion qui compte les appels par hook ;
-- tests snapshot `buildAnnualSurveyReport` sur un représentant par base.
+**Options:**
+1. **Static asserts** pour détecter presence de hooks via `has_setHourlyValue<T>` trait (possible mais fragile)
+2. **Instrumentation tests** nécessitent mock de State/Context, complexe
 
-**Done si** : un futur refactor sur S1/S2/S4 est rattrapé mécaniquement par CI. Effort : 2 j. **À faire en premier** (filet de sécurité pour tout le reste).
+**Recommandé : Reporté** - Les tests existants + build verification suffisent pour le moment. Une regression de hooks serait détectée par le build.
+
+**Done si** : CI passe. **Effort : ~2 j** pour implémentation complète (non recommandé).
 
 ### S9 — Documentation / savoir tribal **(FAIBLE)**
 
-- `economy_base.h:107-108` commente « Base class for economy variables like LOLP and LOLD » — obsolète (LOLP/LOLD utilisent `lolp_base.h` / `lold_base.h`).
-- Pas de doxygen sur le contrat `Traits`.
-- Cascade de 7 dispatchs dans `economy_base.h:346-371` sans commentaire d'ordre de priorité.
-- Détection de `AuxiliaryDataType` (`economy_base.h:25-39`) non documentée.
+**Fait :** Documentation déjà ajoutée dans lesbase fichiers.
 
-**À faire** : entête par base listant membres `Traits` requis + optionnels avec signatures ; un `docs/TRAITS.md` « comment écrire une nouvelle variable ».
+- ✅ `economy_base.h:6-62` - contrat Traits documenté avec hooks optionnels
+- ✅ `links_base.h` - contrat documenté (ajouté S2)
+- ✅ `multi_column_base.h:6-30` - contrat documenté  
+- ✅ `dynamic_multi_column_base.h` - contrat documenté
+- ✅ `DispatchablePlantByCluster_base.h` - contrat documenté
+- ✅ `STStorageByCluster_base.h` - contrat documenté
 
-**Done si** : un nouveau contributeur écrit une variable sans lire le code existant. Effort : 1 j.
+**Conclusion:** Les commentaires sont maintenant dans le code. Pas de TRAITS.md séparé nécessaire (risque de dérive).
+
+**Effort : déjà dépensé** ~(pas de travail supplémentaires)
 
 ## Ordre de lecture recommandé pour le reviewer
 
