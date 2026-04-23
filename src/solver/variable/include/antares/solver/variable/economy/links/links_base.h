@@ -3,6 +3,38 @@
 
 #pragma once
 
+/*!
+** \file links_base.h
+**
+** \brief Base class for link-level economy variables
+**
+** ## Traits Contract
+**
+** A valid Links variable Traits must provide:
+** - Required static methods:
+**   - \c Caption() -> std::string
+**   - \c Unit() -> std::string
+**   - \c Description() -> std::string
+**   - \c ResultsType : typedef for results template
+**   - \c decimal : uint8_t
+**   - \c spatialAggregate : uint8_t
+**   - \c computeStats(IntermediateValues&) -> void
+**
+** - Optional hooks (dispatched via \c if constexpr):
+**   - \c hourForEachLink(IntermediateValues&, State&) -> void
+**   - \c hourValue(State&) -> double (accumulates to hourly values)
+**   - \c hourValue(State&, double upstreamPrice, double downstreamPrice) -> double (computes link
+*value)
+**   - \c buildDigest(SurveyResults&, int digestLevel, int dataLevel, AncestorType&) -> void
+**
+** ## Hook execution order
+** - initializeFromStudy() / initializeFromLink()
+** - simulationBegin() / simulationEnd()
+** - yearBegin() / yearEnd()
+** - computeSummary() / hourBegin() -> hourForEachLink() -> [hourValue hook]
+** - buildDigest() / localBuildAnnualSurveyReport()
+*/
+
 #include <antares/solver/variable/variable.h>
 
 namespace Antares::Solver::Variable::Economy
