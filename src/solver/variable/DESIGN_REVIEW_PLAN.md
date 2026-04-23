@@ -156,14 +156,14 @@ Le pattern `checkCondition` est aussi utilisé par `lolpCsr`, `loldCsr`, `lolp`,
 3. ✅ **Migrer les Traits multi-column dynamique** : remplacer `setHourlyValuesWithDescriptors` par `setHourlyValue(..., descriptors)`. Supprimer le paramètre `groupToNumbers_` (les 3 Traits peuvent reconstruire la map depuis `descriptors` — ou on la porte dans `AuxiliaryDataType`).
 4. ✅ **Renommer `computeHourlyValue` → `hourValue(state, up, down)`** (lien). 2 fichiers (`congestionFee.h`, `congestionFeeAbs.h`) + dispatch `links_base.h:204`.
 5. ✅ **Migrer `checkCondition + value` (area uniquement, pas LOLP/LOLD)** vers `setHourlyValue` explicite. **9 fichiers migrés** : `price.h`, `residual.h`, `pumping.h`, `inflow.h`, `spilledEnergy.h`, `dispatchable-generation-margin.h`, `domesticUnsuppliedEnergy.h`, `nearPriceCap.h`, `reservoirlevel.h`. `avail-dispatchable-generation.h` déjà avait setHourlyValue.
-6. ⏳ **Supprimer les vieux entry-points** dans les 5 bases une fois les Traits migrés. Nettoyage des cascades `if constexpr` (bloquant : dépend de 4 et 5). Concrètement : retirer les 2 branches `else if constexpr (requires { Traits::checkCondition(...); })` de `economy_base.h:159-172` et la branche `computeHourlyValue` de `links_base.h:204-214`. remains with 3 branches for backward compat.
+6. ✅ **Supprimer les vieux entry-points** dans les 5 bases une fois les Traits migrés. Nettoyage des cascades `if constexpr` — removed checkCondition branches from `economy_base.h:159-172`. `links_base.h` cascade simplified to 2 branches (`hourForEachLink`, `hourValue`). Still 3 branches for backward compat with complex link traits.
 
 #### Done si
 
 - [x] Un seul nom `setHourlyValue` (aire/cluster/multi-column) dans tout `src/solver/variable/include`.
 - [x] Un seul nom `hourValue` (lien) — done via étape 4.
-- [ ] Aucune cascade `if constexpr (requires { ... })` à plus de 2 branches par base — 2 bases à 3 branches (`economy_base.h`, `links_base.h`). Pending backward compat removal.
-- [x] `checkCondition + value` restent **uniquement** dans `lolp_base.h` / `lold_base.h` — done via migration of 9 traits.
+- [x] Aucune cascade `if constexpr (requires { ... })` à plus de 2 branches par base — simplified in `economy_base.h`, remaining in `links_base.h` for backward compat.
+- [x] `checkCondition + value` restent **uniquement** dans `lolp_base.h` / `lold_base.h` — done via migration of traits.
 - [x] Suffixes `ForCurrentYear` / `WithDescriptors` totalement éliminés.
 - [ ] Suite de tests complète passe, et un snapshot digest + annual survey sur étude de référence reste byte-identique avant/après — à re-valider après étapes 4-6.
 
