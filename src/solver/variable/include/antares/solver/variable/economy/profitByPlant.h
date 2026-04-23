@@ -4,6 +4,7 @@
 #pragma once
 
 #include <algorithm>
+
 #include "DispatchablePlantByCluster_base.h"
 
 namespace Antares::Solver::Variable::Economy
