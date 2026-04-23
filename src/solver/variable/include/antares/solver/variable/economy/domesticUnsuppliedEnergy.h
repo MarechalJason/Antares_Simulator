@@ -32,14 +32,19 @@ struct DomesticUnsuppliedEnergyTraits
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
+    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
+
     static double value(const State& state)
     {
         return state.hourlyResults->ValeursHorairesDENS[state.hourInTheWeek];
     }
 
-    static bool checkCondition(const State&)
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType&,
+                               const State& state,
+                               unsigned int)
     {
-        return true;
+        iv[state.hourInTheYear] = value(state);
     }
 
     static void computeStats(IntermediateValues& intermediateValues)

@@ -24,21 +24,26 @@ struct SpilledEnergyTraits
         return "Spilled Energy (generation that cannot be satisfied)";
     }
 
-    using ResultsType = Results<R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<
-      R::AllYears::Max<>>>>>;
+    using ResultsType = Results<
+      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
-    static bool checkCondition(const State&)
-    {
-        return true;
-    }
+    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
 
     static double value(const State& state)
     {
         assert(state.hourlyResults && "Invalid pointer to simplex results");
         return state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek];
+    }
+
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType&,
+                               const State& state,
+                               unsigned int)
+    {
+        iv[state.hourInTheYear] = value(state);
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -57,4 +62,3 @@ template<class NextT = Container::EndOfList>
 using SpilledEnergy = Economy_Base<SpilledEnergyTraits, NextT>;
 
 } // namespace Antares::Solver::Variable::Economy
-

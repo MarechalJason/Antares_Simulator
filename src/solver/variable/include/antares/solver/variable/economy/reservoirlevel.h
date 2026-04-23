@@ -39,11 +39,6 @@ struct ReservoirLevelTraits
         capacity = area->hydro.reservoirCapacity;
     }
 
-    static bool checkCondition(AuxiliaryDataType capacity, const State&)
-    {
-        return capacity > 0.0;
-    }
-
     static void setHourlyValue(IntermediateValues& intermediateValues,
                                AuxiliaryDataType& capacity,
                                State& state,

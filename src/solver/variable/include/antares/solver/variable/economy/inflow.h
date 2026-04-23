@@ -49,6 +49,17 @@ struct InflowsTraits
           .ApportNaturelHoraire[state.hourInTheWeek];
     }
 
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType area,
+                               const State& state,
+                               unsigned int)
+    {
+        if (area != nullptr)
+        {
+            iv[state.hourInTheYear] = value(area, state);
+        }
+    }
+
     static void computeStats(IntermediateValues& intermediateValues)
     {
         intermediateValues.computeStatisticsForTheCurrentYear();
