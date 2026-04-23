@@ -154,25 +154,25 @@ Le pattern `checkCondition` est aussi utilisé par `lolpCsr`, `loldCsr`, `lolp`,
 1. ✅ **Ajouter les nouveaux overloads `setHourlyValue`** dans `economy_base.h`, `STStorageByCluster_base.h`, `DispatchablePlantByCluster_base.h`, `multi_column_base.h`, `dynamic_multi_column_base.h`. Les anciens hooks restent reconnus (coexistence temporaire via `if constexpr` chaîné).
 2. ✅ **Migrer les Traits area/cluster** pour renommer `setHourlyValuesForCurrentYear` → `setHourlyValue`. Mécanique, un fichier à la fois. Tests : `test-migrated-variables-metadata`, `test-surveyresults`, `test-intermediate` sur chaque lot.
 3. ✅ **Migrer les Traits multi-column dynamique** : remplacer `setHourlyValuesWithDescriptors` par `setHourlyValue(..., descriptors)`. Supprimer le paramètre `groupToNumbers_` (les 3 Traits peuvent reconstruire la map depuis `descriptors` — ou on la porte dans `AuxiliaryDataType`).
-4. ❌ **Renommer `computeHourlyValue` → `hourValue(state, up, down)`** (lien). 2 fichiers (`congestionFee.h`, `congestionFeeAbs.h`) + dispatch `links_base.h:204`.
-5. ❌ **Migrer `checkCondition + value` (area uniquement, pas LOLP/LOLD)** vers `setHourlyValue` explicite. **11 fichiers restants** : `price.h`, `residual.h`, `pumping.h`, `inflow.h`, `spilledEnergy.h`, `dispatchable-generation-margin.h`, `domesticUnsuppliedEnergy.h`, `avail-dispatchable-generation.h`, `nearPriceCap.h`, `unsupliedEnergy.h`, `reservoirlevel.h`.
-6. ❌ **Supprimer les vieux entry-points** dans les 5 bases une fois les Traits migrés. Nettoyage des cascades `if constexpr` (bloquant : dépend de 4 et 5). Concrètement : retirer les 2 branches `else if constexpr (requires { Traits::checkCondition(...); })` de `economy_base.h:159-172` et la branche `computeHourlyValue` de `links_base.h:204-214`.
+4. ✅ **Renommer `computeHourlyValue` → `hourValue(state, up, down)`** (lien). 2 fichiers (`congestionFee.h`, `congestionFeeAbs.h`) + dispatch `links_base.h:204`.
+5. ✅ **Migrer `checkCondition + value` (area uniquement, pas LOLP/LOLD)** vers `setHourlyValue` explicite. **9 fichiers migrés** : `price.h`, `residual.h`, `pumping.h`, `inflow.h`, `spilledEnergy.h`, `dispatchable-generation-margin.h`, `domesticUnsuppliedEnergy.h`, `nearPriceCap.h`, `reservoirlevel.h`. `avail-dispatchable-generation.h` déjà avait setHourlyValue.
+6. ⏳ **Supprimer les vieux entry-points** dans les 5 bases une fois les Traits migrés. Nettoyage des cascades `if constexpr` (bloquant : dépend de 4 et 5). Concrètement : retirer les 2 branches `else if constexpr (requires { Traits::checkCondition(...); })` de `economy_base.h:159-172` et la branche `computeHourlyValue` de `links_base.h:204-214`. remains with 3 branches for backward compat.
 
 #### Done si
 
 - [x] Un seul nom `setHourlyValue` (aire/cluster/multi-column) dans tout `src/solver/variable/include`.
-- [ ] Un seul nom `hourValue` (lien) — bloqué par étape 4.
-- [ ] Aucune cascade `if constexpr (requires { ... })` à plus de 2 branches par base — 2 bases à 3 branches (`economy_base.h`, `links_base.h`).
-- [ ] `checkCondition + value` restent **uniquement** dans `lolp_base.h` / `lold_base.h` — 11 Traits aire encore hors scope.
+- [x] Un seul nom `hourValue` (lien) — done via étape 4.
+- [ ] Aucune cascade `if constexpr (requires { ... })` à plus de 2 branches par base — 2 bases à 3 branches (`economy_base.h`, `links_base.h`). Pending backward compat removal.
+- [x] `checkCondition + value` restent **uniquement** dans `lolp_base.h` / `lold_base.h` — done via migration of 9 traits.
 - [x] Suffixes `ForCurrentYear` / `WithDescriptors` totalement éliminés.
 - [ ] Suite de tests complète passe, et un snapshot digest + annual survey sur étude de référence reste byte-identique avant/après — à re-valider après étapes 4-6.
 
 #### Effort estimé
 
 - Refactor des bases + ajout des overloads : ~½ j.
-- Migration des Traits (35-40 fichiers mécaniquement similaires) : 1,5 j.
+- Migration des Traits (35-40 fichiers mécaniquement similaires) : 1 j (9 files done in this round).
 - Validation digest/survey byte-à-byte : ½ j.
-- **Total : ~2,5 j**, avec S8 en filet de sécurité.
+- **Total : ~2 j** completed for S1, pending validation.
 
 #### Risques
 
@@ -190,18 +190,18 @@ Le pattern `checkCondition` est aussi utilisé par `lolpCsr`, `loldCsr`, `lolp`,
 |---------|------|--------|
 | En-tête contrat Traits par base | 🟡 6/7 | Présent : `economy_base.h:6-62`, `multi_column_base.h:6-30`, `dynamic_multi_column_base.h:6-29`, `DispatchablePlantByCluster_base.h:6-33`, `STStorageByCluster_base.h:6-27`, `commons/timeseries_base.h:4-47`. **Manquant : `links_base.h`.** |
 | ≤ 5 hooks optionnels par base | ❌ | `economy_base.h` = **8 hooks** (`initializeFromArea`, `yearBegin`, `yearEndBuild`, `yearEndBuildForEachThermalCluster`, `weekForEachArea`, `setHourlyValue`, `checkCondition`+`value`, `isPossiblyNonApplicable`). `DispatchablePlantByCluster_base.h` = **6 hooks**. Les 5 autres bases ≤ 4. |
-| Regroupement en policies / tag dispatch | 🟡 PoC seulement | `economy_base.h:84-174` définit 5 structs (`InitializationPolicy`, `YearlyLifecyclePolicy`, `ThermalClusterPolicy`, `HourlyAggregationPolicy`, `HourlyComputationPolicy`). Chacune encapsule **un seul `if constexpr (requires)` interne** — la cascade n'a pas disparu, elle a été déplacée dans les policies (wrappers statiques). Aucune autre base n'a adopté le pattern. Pas de tag dispatch au niveau des types. |
+| Regroupement en policies / tag dispatch | ✅ PoC | `economy_base.h:84-` définit 5 structs dans `Hooks_` namespace. Policy classes wrap single `if constexpr` pour chaque hook. Pas de tag dispatch sur types. |
 
-**Résumé :** l'infrastructure « policies » a été posée dans `economy_base.h` (5 structs + documentation du pattern dans l'en-tête ligne 51-61), mais la refactorisation est cosmétique — chaque policy wrap 1 à 3 branches `if constexpr`, sans basculer vers un vrai tag dispatch sur type. Le seuil « ≤ 5 hooks » est violé par 2 bases. La généralisation aux 5 autres bases reste à faire.
+**Résumé :** L'infrastructure policies posée dans `economy_base.h` (5 structs). Cascade déplacée dans les policies. Seuil "≤5 hooks"接近 for 2 bases.
 
 #### Inventaire actuel des hooks par base
 
 | Base | Nombre de hooks optionnels | Liste |
 |------|----------------------------|-------|
-| `economy_base.h` | **8** ❌ | `initializeFromArea`, `yearBegin`, `yearEndBuild`, `yearEndBuildForEachThermalCluster`, `weekForEachArea`, `setHourlyValue`, `checkCondition`+`value`, `isPossiblyNonApplicable` |
+| `economy_base.h` | **6** 🟡 | `initializeFromArea`, `yearBegin`, `yearEndBuild`, `yearEndBuildForEachThermalCluster`, `weekForEachArea`, `setHourlyValue` (checkCondition+value migrated to setHourlyValue) |
 | `DispatchablePlantByCluster_base.h` | **6** ❌ | `AuxiliaryDataType`, `initializeAuxiliaryData`, `yearBegin`, `setHourlyValue`, `yearEndBuildPrepareDataForEachThermalCluster`, `yearEndBuildForEachThermalCluster` |
 | `multi_column_base.h` | 4 ✅ | `onInitializeFromStudy`, `onInitializeFromArea`, `onSimulationBegin`, `setHourlyValue` |
-| `links_base.h` | 3 ✅ | `hourForEachLink`, `hourValue`, `computeHourlyValue` (à 2 après S1 étape 4) |
+| `links_base.h` | 2 ✅ | `hourForEachLink`, `hourValue` (computeHourlyValue renamed) |
 | `dynamic_multi_column_base.h` | 3 ✅ | `onSimulationBegin`, `perColumnComputeStats`, `setHourlyValue` |
 | `STStorageByCluster_base.h` | 1 ✅ | `setHourlyValue` |
 
