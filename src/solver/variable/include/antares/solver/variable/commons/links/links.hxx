@@ -5,7 +5,6 @@
 #define __SOLVER_VARIABLE_INC_LINK_HXX__
 
 #include <antares/study/filter.h>
-#include "antares/solver/variable/endoflist.h" // For UNUSED_VARIABLE, should be somewhere else
 
 namespace Antares::Solver::Variable
 {
@@ -128,9 +127,8 @@ inline void Links<VariablePerLinkList>::weekBegin(State& state)
 }
 
 template<class VariablePerLinkList>
-inline void Links<VariablePerLinkList>::weekForEachArea(State&, uint numSpace)
+inline void Links<VariablePerLinkList>::weekForEachArea(State&, [[maybe_unused]] uint numSpace)
 {
-    UNUSED_VARIABLE(numSpace);
 }
 
 template<class VariablePerLinkList>
