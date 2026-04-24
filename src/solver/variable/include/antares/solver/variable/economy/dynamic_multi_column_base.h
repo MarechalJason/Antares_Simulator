@@ -95,7 +95,7 @@ struct VCardDynamicMultiColumn
     };
 };
 
-template<class Traits, class NextT = Container::EndOfList>
+template<class Traits, class NextT = void>
 class DynamicMultiColumnBase: public Variable::IVariable<DynamicMultiColumnBase<Traits, NextT>,
                                                          NextT,
                                                          VCardDynamicMultiColumn<Traits>>
@@ -112,7 +112,7 @@ public:
 
     enum
     {
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -122,9 +122,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -141,8 +140,6 @@ public:
             AncestorType::pResults[i].initializeFromStudy(study);
             AncestorType::pResults[i].reset();
         }
-
-        NextType::initializeFromStudy(study);
     }
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
@@ -177,8 +174,6 @@ public:
             AncestorType::pResults[i].initializeFromStudy(*study);
             AncestorType::pResults[i].reset();
         }
-
-        NextType::initializeFromArea(study, area);
     }
 
     size_t getMaxNumberColumns() const
@@ -194,12 +189,10 @@ public:
         {
             Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
         }
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
@@ -208,12 +201,10 @@ public:
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
@@ -233,7 +224,6 @@ public:
                 pValuesForTheCurrentYear[numSpace][column].computeStatisticsForTheCurrentYear();
             }
         }
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
@@ -241,23 +231,19 @@ public:
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace, descriptors_);
-        NextType::hourForEachArea(state, numSpace);
     }
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
-        NextType::buildDigest(results, digestLevel, dataLevel);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
@@ -315,7 +301,6 @@ public:
                   precision);
             }
         }
-        NextType::buildSurveyReport(results, dataLevel, fileLevel, precision);
     }
 
 private:

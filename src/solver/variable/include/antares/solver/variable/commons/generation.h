@@ -201,21 +201,17 @@ using VCardTimeSeriesValuesGeneration = VCardTimeSeriesBase<GenerationTraits<Tag
  * - `yearlyValues[space]` provides isolation between parallel executions
  * - No shared state between spaces during processing
  */
-template<class TraitsType, class NextT = Container::EndOfList>
+template<class TraitsType, class NextT = void>
 class TimeSeriesValuesGenerationImpl
     : public TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType, NextT>,
-                                  NextT,
-                                  VCardTimeSeriesBase<TraitsType>>
+                                  VCardTimeSeriesBase<TraitsType>,
+                                  NextT>
 {
 public:
-    /// @name Type Definitions
-    /// @{
     using BaseType = TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType, NextT>,
-                                          NextT,
-                                          VCardTimeSeriesBase<TraitsType>>;
+                                          VCardTimeSeriesBase<TraitsType>,
+                                          NextT>;
     using VCardType = VCardTimeSeriesBase<TraitsType>;
-
-    /// @}
 
     /**
      * @brief Initialize generation-specific settings from study

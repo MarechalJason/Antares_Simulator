@@ -90,7 +90,7 @@ struct VCardMultiColumn
     };
 };
 
-template<class Traits, int ColCount, class NextT = Container::EndOfList>
+template<class Traits, int ColCount, class NextT = void>
 class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCount, NextT>,
                                                   NextT,
                                                   VCardMultiColumn<Traits, ColCount>>
@@ -107,7 +107,7 @@ public:
 
     enum
     {
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -117,9 +117,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -147,8 +146,6 @@ public:
         {
             Traits::onInitializeFromStudy(study);
         }
-
-        NextType::initializeFromStudy(study);
     }
 
     template<class R>
@@ -170,12 +167,10 @@ public:
         {
             Traits::onInitializeFromArea(area, study);
         }
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
@@ -186,12 +181,10 @@ public:
         {
             Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
         }
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
@@ -200,19 +193,16 @@ public:
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
         VariableAccessorType::template ComputeStatistics<VCardType>(
           pValuesForTheCurrentYear[numSpace]);
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
@@ -220,18 +210,15 @@ public:
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace);
-        NextType::hourForEachArea(state, numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(

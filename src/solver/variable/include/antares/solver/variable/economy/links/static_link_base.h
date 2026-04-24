@@ -61,7 +61,7 @@ struct VCardStaticLinkBase
 
 }; // struct VCardStaticLinkBase
 
-template<class Traits, class NextT = Container::EndOfList>
+template<class Traits, class NextT = void>
 class StaticLinkBase
     : public Variable::IVariable<StaticLinkBase<Traits, NextT>, NextT, VCardStaticLinkBase<Traits>>
 {
@@ -76,7 +76,7 @@ public:
 
     enum
     {
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -86,9 +86,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -105,20 +104,14 @@ public:
         {
             Traits::onInitializeFromStudy(pValuesForTheCurrentYear, aux_, study);
         }
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
@@ -130,8 +123,6 @@ public:
         {
             Traits::onInitializeFromAreaLink(pValuesForTheCurrentYear, aux_, study, link);
         }
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
@@ -140,8 +131,6 @@ public:
         {
             Traits::onSimulationBegin(pValuesForTheCurrentYear, aux_);
         }
-        // Next
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
@@ -152,46 +141,36 @@ public:
         {
             Traits::loadDataForSimulationEnd(pValuesForTheCurrentYear, aux_);
         }
-        // Compute stats then merge into results (always at index 0 — single MC pass)
         pValuesForTheCurrentYear.computeStatisticsForTheCurrentYear();
         AncestorType::pResults.merge(0, pValuesForTheCurrentYear);
-        // Next
-        NextType::simulationEnd();
     }
 
     void yearBegin(uint year, unsigned int numSpace)
     {
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(uint year, unsigned int numSpace)
     {
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(uint hourInTheYear)
     {
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        NextType::hourForEachArea(state, numSpace);
     }
 
     void hourForEachLink(State& state, unsigned int numSpace)
     {
-        NextType::hourForEachLink(state, numSpace);
     }
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
@@ -202,8 +181,6 @@ public:
         {
             Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);
         }
-        // Next
-        NextType::buildDigest(results, digestLevel, dataLevel);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(

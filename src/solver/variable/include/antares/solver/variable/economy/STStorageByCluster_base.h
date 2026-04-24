@@ -87,7 +87,7 @@ struct VCardSTStorageByClusterBase
 
 }; // class VCardSTStorageByClusterBase
 
-template<class Traits, class NextT = Container::EndOfList>
+template<class Traits, class NextT = void>
 class STStorageByClusterBase: public Variable::IVariable<STStorageByClusterBase<Traits, NextT>,
                                                          NextT,
                                                          VCardSTStorageByClusterBase<Traits>>
@@ -108,8 +108,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -119,20 +118,17 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
 public:
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        // Get the number of years in parallel
         pNbYearsParallel = study->maxNbYearsInParallel;
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
-        // Get the area
         nbClusters_ = Traits::clusterCount(area);
         if (nbClusters_)
         {
@@ -161,8 +157,6 @@ public:
         {
             AncestorType::pResults.clear();
         }
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
     size_t getMaxNumberColumns() const
@@ -172,44 +166,31 @@ public:
 
     void yearBegin(unsigned int year, unsigned int numSpace)
     {
-        // Reset the values for the current year
         for (unsigned int i = 0; i != nbClusters_; ++i)
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
-        // Next variable
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
         for (unsigned int clusterIndex = 0; clusterIndex < nbClusters_; ++clusterIndex)
         {
-            // Compute all statistics from hourly results for the current year (daily, weekly,
-            // monthly, ...)
             Traits::computeStats(pValuesForTheCurrentYear[numSpace][clusterIndex]);
         }
-        // Next variable
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
         for (unsigned int clusterIndex = 0; clusterIndex < nbClusters_; ++clusterIndex)
         {
-            // Merge all those values with the global results
             AncestorType::pResults[clusterIndex]
               .merge(year, pValuesForTheCurrentYear[numSpace][clusterIndex]);
         }
-
-        // Next variable
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
@@ -226,9 +207,6 @@ public:
         {
             Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state);
         }
-
-        // Next variable
-        NextType::hourForEachArea(state, numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
@@ -243,7 +221,6 @@ public:
                                       int precision,
                                       unsigned int numSpace) const
     {
-        // Initializing external pointer on current variable non applicable status
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
         if (AncestorType::isPrinted[0])

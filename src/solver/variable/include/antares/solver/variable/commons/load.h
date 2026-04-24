@@ -63,16 +63,14 @@ using VCardTimeSeriesValuesLoad = VCardTimeSeriesBase<LoadTraits>;
  * @tparam NextT The next variable in the processing chain
  *
  */
-template<class NextT = Container::EndOfList>
+template<class NextT = void>
 class TimeSeriesValuesLoad
-    : public TimeSeriesValuesBase<TimeSeriesValuesLoad<NextT>, NextT, VCardTimeSeriesValuesLoad>
+    : public TimeSeriesValuesBase<TimeSeriesValuesLoad<NextT>, VCardTimeSeriesValuesLoad, NextT>
 {
 public:
-    /// @name Type Definitions
-    /// @{
     using BaseType = TimeSeriesValuesBase<TimeSeriesValuesLoad<NextT>,
-                                          NextT,
-                                          VCardTimeSeriesValuesLoad>;
+                                          VCardTimeSeriesValuesLoad,
+                                          NextT>;
 
     /// @}
 
