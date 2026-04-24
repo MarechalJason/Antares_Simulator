@@ -121,7 +121,7 @@ public:
     };
 
 public:
-    void initializeFromStudy(Data::Study& study)
+    void initializeFromStudy([[maybe_unused]] Data::Study& study)
     {
     }
 
@@ -167,7 +167,8 @@ public:
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink([[maybe_unused]] Data::Study* study,
+                            [[maybe_unused]] Data::AreaLink* link)
     {
     }
 
@@ -189,7 +190,9 @@ public:
         yearBeginIfSupported(auxiliaryData_, year, numSpace, pSize);
     }
 
-    void yearEndBuild(State& state, uint year, uint numSpace)
+    void yearEndBuild([[maybe_unused]] State& state,
+                      [[maybe_unused]] uint year,
+                      [[maybe_unused]] uint numSpace)
     {
     }
 
@@ -212,7 +215,7 @@ public:
                                                      numSpace);
     }
 
-    void yearEnd(uint year, uint numSpace)
+    void yearEnd([[maybe_unused]] uint year, uint numSpace)
     {
         for (uint i = 0; i < pSize; ++i)
         {
@@ -228,7 +231,7 @@ public:
         }
     }
 
-    void hourBegin(uint hourInTheYear)
+    void hourBegin([[maybe_unused]] uint hourInTheYear)
     {
     }
 

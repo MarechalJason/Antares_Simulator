@@ -133,11 +133,12 @@ public:
         }
     }
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
+    void initializeFromArea([[maybe_unused]] Data::Study* study, [[maybe_unused]] Data::Area* area)
     {
     }
 
-    void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromAreaLink([[maybe_unused]] Data::Study* study,
+                                [[maybe_unused]] Data::AreaLink* link)
     {
     }
 
@@ -153,16 +154,18 @@ public:
     {
     }
 
-    void yearBegin(uint year, uint numSpace)
+    void yearBegin([[maybe_unused]] uint year, uint numSpace)
     {
         pValuesForTheCurrentYear[numSpace].reset();
     }
 
-    void yearEndBuild(State& state, uint year, uint numSpace)
+    void yearEndBuild([[maybe_unused]] State& state,
+                      [[maybe_unused]] uint year,
+                      [[maybe_unused]] uint numSpace)
     {
     }
 
-    void yearEnd(uint year, uint numSpace)
+    void yearEnd([[maybe_unused]] uint year, uint numSpace)
     {
         Traits::computeStats(pValuesForTheCurrentYear[numSpace]);
     }
@@ -172,11 +175,11 @@ public:
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
     }
 
-    void hourBegin(uint hourInTheYear)
+    void hourBegin([[maybe_unused]] uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, uint numSpace)
+    void hourForEachArea([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
     {
     }
 

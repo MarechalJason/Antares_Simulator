@@ -97,11 +97,12 @@ public:
         }
     }
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
+    void initializeFromArea([[maybe_unused]] Data::Study* study, [[maybe_unused]] Data::Area* area)
     {
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink([[maybe_unused]] Data::Study* study,
+                            [[maybe_unused]] Data::AreaLink* link)
     {
     }
 
@@ -136,31 +137,33 @@ public:
         AncestorType::pResults.merge(0, pValuesForTheCurrentYear);
     }
 
-    void yearBegin(uint year, uint numSpace)
+    void yearBegin([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void yearEndBuild(State& state, uint year, uint numSpace)
+    void yearEndBuild([[maybe_unused]] State& state,
+                      [[maybe_unused]] uint year,
+                      [[maybe_unused]] uint numSpace)
     {
     }
 
-    void yearEnd(uint year, uint numSpace)
+    void yearEnd([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void computeSummary(uint year, uint numSpace)
+    void computeSummary([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void hourBegin(uint hourInTheYear)
+    void hourBegin([[maybe_unused]] uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, uint numSpace)
+    void hourForEachArea([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void hourForEachLink(State& state, uint numSpace)
+    void hourForEachLink([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
     {
     }
 
