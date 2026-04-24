@@ -88,13 +88,13 @@ struct VCardSTStorageByClusterBase
 }; // class VCardSTStorageByClusterBase
 
 template<class Traits>
-class STStorageByClusterBase: public Variable::IVariable<STStorageByClusterBase<Traits>,
-                                                         void,
-                                                         VCardSTStorageByClusterBase<Traits>>
+class STStorageByClusterBase
+    : public Variable::IVariable<STStorageByClusterBase<Traits>,
+                                 VCardSTStorageByClusterBase<Traits>>
 {
 public:
     using VCardType = VCardSTStorageByClusterBase<Traits>;
-    using AncestorType = Variable::IVariable<STStorageByClusterBase<Traits>, void, VCardType>;
+    using AncestorType = Variable::IVariable<STStorageByClusterBase<Traits>, VCardType>;
 
     using ResultsType = typename VCardType::ResultsType;
 

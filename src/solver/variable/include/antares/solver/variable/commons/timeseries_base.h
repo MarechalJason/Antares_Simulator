@@ -224,11 +224,11 @@ struct VCardTimeSeriesBase: public TimeSeriesTraits<TraitsType>
  * - `nbYearsParallel`: Cached for performance
  */
 template<typename Derived, typename VCardType, typename NextT = void>
-class TimeSeriesValuesBase: public Variable::IVariable<Derived, NextT, VCardType>
+class TimeSeriesValuesBase: public Variable::IVariable<Derived, VCardType>
 {
 public:
     using NextType = NextT;
-    using AncestorType = Variable::IVariable<Derived, NextT, VCardType>;
+    using AncestorType = Variable::IVariable<Derived, VCardType>;
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 

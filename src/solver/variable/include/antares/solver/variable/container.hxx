@@ -37,7 +37,7 @@ template<class NextT>
 inline void List<NextT>::initializeFromLink(Data::Study* study, Data::AreaLink* link)
 {
     // Next
-    NextT::initializeFromAreaLink(study, link);
+    NextT::initializeFromLink(study, link);
 }
 
 template<class NextT>

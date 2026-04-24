@@ -13,7 +13,7 @@ namespace Antares::Solver::Variable::Economy
 **
 ** Unlike EconomyLink_Base, these variables hold a single IntermediateValues
 ** (not one per parallel year). Data is loaded during initializeFromStudy or
-** initializeFromAreaLink, and stats+merge happen once in simulationEnd.
+** initializeFromLink, and stats+merge happen once in simulationEnd.
 **
 ** Traits hooks (all optional, dispatched via requires):
 **   onInitializeFromStudy(iv, aux, study)        -- store study pointers / sizes
@@ -63,11 +63,11 @@ struct VCardStaticLinkBase
 
 template<class Traits>
 class StaticLinkBase
-    : public Variable::IVariable<StaticLinkBase<Traits>, void, VCardStaticLinkBase<Traits>>
+    : public Variable::IVariable<StaticLinkBase<Traits>, VCardStaticLinkBase<Traits>>
 {
 public:
     using VCardType = VCardStaticLinkBase<Traits>;
-    using AncestorType = Variable::IVariable<StaticLinkBase<Traits>, void, VCardType>;
+    using AncestorType = Variable::IVariable<StaticLinkBase<Traits>, VCardType>;
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
@@ -101,12 +101,7 @@ public:
     {
     }
 
-    void initializeFromLink([[maybe_unused]] Data::Study* study,
-                            [[maybe_unused]] Data::AreaLink* link)
-    {
-    }
-
-    void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
         if constexpr (requires {
                           Traits::onInitializeFromAreaLink(

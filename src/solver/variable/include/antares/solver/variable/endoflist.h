@@ -46,6 +46,9 @@ public:
     static void initializeFromAreaLink(Data::Study*, Data::AreaLink*)
     {
     }
+    static void initializeFromLink(Data::Study*, Data::AreaLink*)
+    {
+    }
     static void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*)
     {
     }

@@ -155,13 +155,13 @@ struct VCardProxy
 
 template<class VarT>
 class SpatialAggregate
-    : public Variable::IVariable<SpatialAggregate<VarT>, void, VCardProxy<VarT>>
+    : public Variable::IVariable<SpatialAggregate<VarT>, VCardProxy<VarT>>
 {
 public:
     //! VCard
     typedef VCardProxy<VarT> VCardType;
     //! Ancestor
-    typedef Variable::IVariable<SpatialAggregate<VarT>, void, VCardType> AncestorType;
+    typedef Variable::IVariable<SpatialAggregate<VarT>, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

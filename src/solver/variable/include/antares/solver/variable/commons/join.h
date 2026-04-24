@@ -63,7 +63,7 @@ struct VCardJoin
 ** \brief Join
 */
 template<class LeftT, class RightT>
-class Join: public Variable::IVariable<Join<LeftT, RightT>, Yuni::Default, VCardJoin>,
+class Join: public Variable::IVariable<Join<LeftT, RightT>, VCardJoin>,
             public LeftT,
             public RightT
 {
@@ -74,7 +74,7 @@ public:
     //! VCard
     typedef VCardJoin VCardType;
     //! Ancestor
-    typedef Variable::IVariable<Join<LeftT, RightT>, Yuni::Default, VCardType> AncestorType;
+    typedef Variable::IVariable<Join<LeftT, RightT>, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -126,8 +126,8 @@ public:
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        LeftType::initializeFromAreaLink(study, link);
-        RightType::initializeFromAreaLink(study, link);
+        LeftType::initializeFromLink(study, link);
+        RightType::initializeFromLink(study, link);
     }
 
     void initializeFromThermalCluster(Data::Study* study,

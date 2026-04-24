@@ -72,7 +72,7 @@ struct VCardDummyVariable
 ** \brief Marginal DummyVariable
 */
 class DummyVariable
-    : public Variable::IVariable<DummyVariable, Container::EndOfList, VCardDummyVariable>
+    : public Variable::IVariable<DummyVariable, VCardDummyVariable>
 {
 public:
     using NextT = Container::EndOfList;
@@ -81,7 +81,7 @@ public:
     //! VCard
     typedef VCardDummyVariable VCardType;
     //! Ancestor
-    typedef Variable::IVariable<DummyVariable, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<DummyVariable, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

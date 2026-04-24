@@ -68,13 +68,13 @@ struct VCardBindingConstMarginCost
    the system that would result in increasing the BC's rhs of 1 MW.
 */
 class BindingConstMarginCost
-    : public Variable::IVariable<BindingConstMarginCost, void, VCardBindingConstMarginCost>
+    : public Variable::IVariable<BindingConstMarginCost, VCardBindingConstMarginCost>
 {
 public:
     //! VCard
     typedef VCardBindingConstMarginCost VCardType;
     //! Ancestor
-    typedef Variable::IVariable<BindingConstMarginCost, void, VCardType> AncestorType;
+    typedef Variable::IVariable<BindingConstMarginCost, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

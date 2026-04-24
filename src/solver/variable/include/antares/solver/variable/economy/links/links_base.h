@@ -96,13 +96,13 @@ struct VCard_LinkBase
 
 template<class Traits>
 class EconomyLink_Base
-    : public Variable::IVariable<EconomyLink_Base<Traits>, void, VCard_LinkBase<Traits>>
+    : public Variable::IVariable<EconomyLink_Base<Traits>, VCard_LinkBase<Traits>>
 {
 public:
     //! VCard
     using VCardType = VCard_LinkBase<Traits>;
     //! Ancestor
-    using AncestorType = Variable::IVariable<EconomyLink_Base<Traits>, void, VCardType>;
+    using AncestorType = Variable::IVariable<EconomyLink_Base<Traits>, VCardType>;
 
     //! List of expected results
     using ResultsType = typename VCardType::ResultsType;
@@ -137,8 +137,8 @@ public:
     {
     }
 
-    void initializeFromAreaLink([[maybe_unused]] Data::Study* study,
-                                [[maybe_unused]] Data::AreaLink* link)
+    void initializeFromLink([[maybe_unused]] Data::Study* study,
+                            [[maybe_unused]] Data::AreaLink* link)
     {
     }
 

@@ -230,17 +230,17 @@ struct EconomyVariableCard
 ** \brief Base class for area-level economy variables like LOLP and LOLD
 **
 ** Post-A refactor: variables are standalone (no NextT propagation).
-** Each variable inherits from IVariable but NextT is unused.
+** Each variable inherits directly from the 2-parameter IVariable.
 */
 template<class Traits>
 class EconomyVariableBase
-    : public Variable::IVariable<EconomyVariableBase<Traits>, void, EconomyVariableCard<Traits>>
+    : public Variable::IVariable<EconomyVariableBase<Traits>, EconomyVariableCard<Traits>>
 {
 public:
     //! VCard
     using VCardType = EconomyVariableCard<Traits>;
     //! Ancestor
-    using AncestorType = Variable::IVariable<EconomyVariableBase<Traits>, void, VCardType>;
+    using AncestorType = Variable::IVariable<EconomyVariableBase<Traits>, VCardType>;
 
     //! List of expected results
     using ResultsType = typename VCardType::ResultsType;

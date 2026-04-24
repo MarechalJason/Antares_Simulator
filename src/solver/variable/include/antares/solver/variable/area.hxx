@@ -23,7 +23,7 @@ inline void Areas<NextT>::initializeFromArea(Data::Study*, Data::Area*)
 }
 
 template<class NextT>
-inline void Areas<NextT>::initializeFromAreaLink(Data::Study*, Data::AreaLink*)
+inline void Areas<NextT>::initializeFromLink(Data::Study*, Data::AreaLink*)
 {
     // Nothing to do here
 }
