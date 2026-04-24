@@ -91,13 +91,13 @@ struct VCardMultiColumn
 };
 
 template<class Traits, int ColCount>
-class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCount>,
-                                                  void,
-                                                  VCardMultiColumn<Traits, ColCount>>
+class MultiColumnBase
+    : public Variable::IVariable<MultiColumnBase<Traits, ColCount>,
+                                 VCardMultiColumn<Traits, ColCount>>
 {
 public:
     using VCardType = VCardMultiColumn<Traits, ColCount>;
-    using AncestorType = Variable::IVariable<MultiColumnBase<Traits, ColCount>, void, VCardType>;
+    using AncestorType = Variable::IVariable<MultiColumnBase<Traits, ColCount>, VCardType>;
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 

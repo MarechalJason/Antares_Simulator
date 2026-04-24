@@ -96,13 +96,12 @@ struct VCardDynamicMultiColumn
 };
 
 template<class Traits>
-class DynamicMultiColumnBase: public Variable::IVariable<DynamicMultiColumnBase<Traits>,
-                                                         void,
-                                                         VCardDynamicMultiColumn<Traits>>
+class DynamicMultiColumnBase
+    : public Variable::IVariable<DynamicMultiColumnBase<Traits>, VCardDynamicMultiColumn<Traits>>
 {
 public:
     using VCardType = VCardDynamicMultiColumn<Traits>;
-    using AncestorType = Variable::IVariable<DynamicMultiColumnBase<Traits>, void, VCardType>;
+    using AncestorType = Variable::IVariable<DynamicMultiColumnBase<Traits>, VCardType>;
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 

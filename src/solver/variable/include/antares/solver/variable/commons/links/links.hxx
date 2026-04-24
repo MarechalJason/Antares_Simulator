@@ -20,7 +20,7 @@ inline void Links<VariablePerLinkList>::initializeFromStudy([[maybe_unused]] Dat
 }
 
 template<class VariablePerLinkList>
-inline void Links<VariablePerLinkList>::initializeFromAreaLink(Data::Study*, Data::AreaLink*)
+inline void Links<VariablePerLinkList>::initializeFromLink(Data::Study*, Data::AreaLink*)
 {
 }
 
@@ -334,7 +334,7 @@ void Links<VariablePerLinkList>::initializeFromArea(Data::Study* study, Data::Ar
 
             n.initializeFromStudy(*study);
             n.initializeFromArea(study, area);
-            n.initializeFromAreaLink(study, i->second);
+            n.initializeFromLink(study, i->second);
         }
     }
     else

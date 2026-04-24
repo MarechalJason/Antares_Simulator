@@ -90,9 +90,7 @@ public:
         std::apply([&](auto&... v) { (v.initializeFromArea(study, area), ...); }, vars_);
     }
 
-    // Note: the legacy chain forwards this through NextType::initializeFromAreaLink
-    // (see variable.hxx:73), so we honour that exact name at the tuple level too.
-    void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
         std::apply([&](auto&... v) { (v.initializeFromLink(study, link), ...); }, vars_);
     }

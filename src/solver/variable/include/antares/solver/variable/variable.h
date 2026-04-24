@@ -23,27 +23,17 @@
 namespace Antares::Solver::Variable
 {
 
-template<class NextT>
-struct IVariableBase : protected NextT {};
-
-template<>
-struct IVariableBase<void>
-{
-};
-
 /*!
 ** \brief Interface for any variable
 */
-template<class ChildT, class NextT, class VCardT>
-class IVariable: public IVariableBase<NextT>
+template<class ChildT, class VCardT>
+class IVariable
 {
 public:
     //! Child
     typedef ChildT ChildType;
-    //! Type of the next static variable
-    typedef NextT NextType;
     //! Variable
-    typedef IVariable<ChildT, NextT, VCardT> VariableType;
+    typedef IVariable<ChildT, VCardT> VariableType;
     //! VCard
     typedef VCardT VCardType;
     //! List of expected results

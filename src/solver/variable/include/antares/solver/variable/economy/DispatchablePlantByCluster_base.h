@@ -99,13 +99,11 @@ struct VCardDispatchablePlantByClusterBase
 template<class Traits>
 class DispatchablePlantByClusterBase
     : public Variable::IVariable<DispatchablePlantByClusterBase<Traits>,
-                                 void,
                                  VCardDispatchablePlantByClusterBase<Traits>>
 {
 public:
     using VCardType = VCardDispatchablePlantByClusterBase<Traits>;
-    using AncestorType =
-      Variable::IVariable<DispatchablePlantByClusterBase<Traits>, void, VCardType>;
+    using AncestorType = Variable::IVariable<DispatchablePlantByClusterBase<Traits>, VCardType>;
 
     using ResultsType = typename VCardType::ResultsType;
 

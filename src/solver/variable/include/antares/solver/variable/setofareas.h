@@ -58,8 +58,6 @@ public:
     typedef NextT NextType;
     //! VCard
     typedef VCardAllSetsOfAreas VCardType;
-    //! Ancestor
-    typedef Variable::IVariable<SetsOfAreas<NextT>, NextT, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -103,7 +101,7 @@ public:
     void initializeFromStudy(Data::Study& study);
     void initializeFromArea(Data::Study*, Data::Area*);
     void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*);
-    void initializeFromAreaLink(Data::Study*, Data::AreaLink*);
+    void initializeFromLink(Data::Study*, Data::AreaLink*);
 
     void simulationBegin();
     void simulationEnd();
