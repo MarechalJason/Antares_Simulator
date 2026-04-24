@@ -20,9 +20,9 @@
 **   - \c buildColumnDescriptors(Data::Area*) -> std::vector<ColumnDescriptor>
 **
 ** - Optional hooks:
-**   - \c onSimulationBegin(IntermediateValuesBaseType&, unsigned int) -> void
+**   - \c onSimulationBegin(IntermediateValuesBaseType&, uint) -> void
 **   - \c perColumnComputeStats(IntermediateValues&, size_t columnIndex) -> void
-**   - \c setHourlyValue(IntermediateValuesBaseType&, State&, unsigned int, const
+**   - \c setHourlyValue(IntermediateValuesBaseType&, State&, uint, const
 *std::vector<ColumnDescriptor>&) -> void
 **
 ** Note: The traits should rebuild groupToNumbers map internally from descriptors if needed.
@@ -82,13 +82,13 @@ struct VCardDynamicMultiColumn
 
     struct Multiple
     {
-        static std::string Caption(unsigned int indx,
+        static std::string Caption(uint indx,
                                    const std::vector<ColumnDescriptor>& descriptors)
         {
             return indx < descriptors.size() ? descriptors[indx].caption : "<unknown>";
         }
 
-        static std::string Unit(unsigned int indx, const std::vector<ColumnDescriptor>& descriptors)
+        static std::string Unit(uint indx, const std::vector<ColumnDescriptor>& descriptors)
         {
             return indx < descriptors.size() ? descriptors[indx].unit : Traits::Unit();
         }
@@ -127,7 +127,7 @@ public:
 
         AncestorType::pResults.clear();
         AncestorType::pResults.resize(nbColumns_);
-        for (unsigned int i = 0; i < nbColumns_; ++i)
+        for (uint i = 0; i < nbColumns_; ++i)
         {
             AncestorType::pResults[i].initializeFromStudy(study);
             AncestorType::pResults[i].reset();
@@ -152,7 +152,7 @@ public:
             vec.resize(nbColumns_);
         }
 
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
+        for (uint numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
         {
             for (size_t col = 0; col < nbColumns_; ++col)
             {
@@ -161,7 +161,7 @@ public:
         }
 
         AncestorType::pResults.resize(nbColumns_);
-        for (unsigned int i = 0; i < nbColumns_; ++i)
+        for (uint i = 0; i < nbColumns_; ++i)
         {
             AncestorType::pResults[i].initializeFromStudy(*study);
             AncestorType::pResults[i].reset();
@@ -187,7 +187,7 @@ public:
     {
     }
 
-    void yearBegin(unsigned int year, unsigned int numSpace)
+    void yearBegin(uint year, uint numSpace)
     {
         for (size_t i = 0; i < nbColumns_; ++i)
         {
@@ -195,11 +195,11 @@ public:
         }
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild(State& state, uint year, uint numSpace)
     {
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd(uint year, uint numSpace)
     {
         for (size_t column = 0; column < nbColumns_; ++column)
         {
@@ -218,18 +218,18 @@ public:
         }
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin(uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, uint numSpace)
     {
         Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace, descriptors_);
     }
@@ -239,8 +239,8 @@ public:
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int column,
-      unsigned int numSpace) const
+      uint column,
+      uint numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }
@@ -248,7 +248,7 @@ public:
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
@@ -300,7 +300,7 @@ private:
     std::vector<ColumnDescriptor> descriptors_;
     std::map<std::string, size_t> groupToNumbers_;
     size_t nbColumns_ = 0;
-    unsigned int pNbYearsParallel;
+    uint pNbYearsParallel;
 };
 
 } // namespace Antares::Solver::Variable::Economy

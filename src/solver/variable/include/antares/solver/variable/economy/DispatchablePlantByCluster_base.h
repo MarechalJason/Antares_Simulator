@@ -19,17 +19,17 @@
 **
 ** - Optional hooks (dispatched via \c if constexpr):
 **   - \c AuxiliaryDataType : type alias
-**   - \c initializeAuxiliaryData(AuxiliaryDataType&, Data::Study*, unsigned int, size_t) -> void
-**   - \c yearBegin(AuxiliaryDataType&, unsigned int, unsigned int, size_t) -> void
-**   - \c setHourlyValue(std::vector<IntermediateValues>&, AuxiliaryDataType&, State&, unsigned int)
+**   - \c initializeAuxiliaryData(AuxiliaryDataType&, Data::Study*, uint, size_t) -> void
+**   - \c yearBegin(AuxiliaryDataType&, uint, uint, size_t) -> void
+**   - \c setHourlyValue(std::vector<IntermediateValues>&, AuxiliaryDataType&, State&, uint)
 *-> void
-**   - Fallback: \c setHourlyValue(std::vector<IntermediateValues>&, State&, unsigned int) -> void
+**   - Fallback: \c setHourlyValue(std::vector<IntermediateValues>&, State&, uint) -> void
 **   - Fallback: \c setHourlyValue(std::vector<IntermediateValues>&, State&) -> void
 **   - \c
 *yearEndBuildPrepareDataForEachThermalCluster(std::vector<std::vector<IntermediateValues>>&,
-*AuxiliaryDataType&, State&, unsigned int, unsigned int) -> void
+*AuxiliaryDataType&, State&, uint, uint) -> void
 **   - \c yearEndBuildForEachThermalCluster(std::vector<std::vector<IntermediateValues>>&, State&,
-*unsigned int, unsigned int) -> void
+*uint, uint) -> void
 */
 
 #include <type_traits>
@@ -137,20 +137,20 @@ public:
         {
             AncestorType::pResults.resize(pSize);
 
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
                 pValuesForTheCurrentYear[numSpace].resize(pSize);
             }
 
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
-                for (unsigned int i = 0; i != pSize; ++i)
+                for (uint i = 0; i != pSize; ++i)
                 {
                     pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
                 }
             }
 
-            for (unsigned int i = 0; i != pSize; ++i)
+            for (uint i = 0; i != pSize; ++i)
             {
                 AncestorType::pResults[i].initializeFromStudy(*study);
                 AncestorType::pResults[i].reset();
@@ -181,9 +181,9 @@ public:
     {
     }
 
-    void yearBegin(unsigned int year, unsigned int numSpace)
+    void yearBegin(uint year, uint numSpace)
     {
-        for (unsigned int i = 0; i != pSize; ++i)
+        for (uint i = 0; i != pSize; ++i)
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
@@ -191,13 +191,13 @@ public:
         yearBeginIfSupported(auxiliaryData_, year, numSpace, pSize);
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild(State& state, uint year, uint numSpace)
     {
     }
 
     void yearEndBuildPrepareDataForEachThermalCluster(State& state,
                                                       uint year,
-                                                      unsigned int numSpace)
+                                                      uint numSpace)
     {
         yearEndBuildPrepareDataForEachThermalClusterIfSupported(pValuesForTheCurrentYear,
                                                                 auxiliaryData_,
@@ -206,7 +206,7 @@ public:
                                                                 numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
+    void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace)
     {
         yearEndBuildForEachThermalClusterIfSupported(pValuesForTheCurrentYear,
                                                      state,
@@ -214,27 +214,27 @@ public:
                                                      numSpace);
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd(uint year, uint numSpace)
     {
-        for (unsigned int i = 0; i < pSize; ++i)
+        for (uint i = 0; i < pSize; ++i)
         {
             pValuesForTheCurrentYear[numSpace][i].computeStatisticsForTheCurrentYear();
         }
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
-        for (unsigned int i = 0; i < pSize; ++i)
+        for (uint i = 0; i < pSize; ++i)
         {
             AncestorType::pResults[i].merge(year, pValuesForTheCurrentYear[numSpace][i]);
         }
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin(uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, uint numSpace)
     {
         setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace],
                                   auxiliaryData_,
@@ -243,8 +243,8 @@ public:
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int column,
-      unsigned int numSpace) const
+      uint column,
+      uint numSpace) const
     {
         if constexpr (requires {
                           Traits::retrieveRawHourlyValuesForCurrentYear(pValuesForTheCurrentYear,
@@ -263,7 +263,7 @@ public:
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
@@ -288,7 +288,7 @@ protected:
     static void setHourlyValueIfSupported(std::vector<IntermediateValues>& clusterValues,
                                           AuxiliaryDataType& auxiliaryData,
                                           State& state,
-                                          unsigned int numSpace)
+                                          uint numSpace)
     {
         if constexpr (requires {
                           Traits::setHourlyValue(clusterValues, auxiliaryData, state, numSpace);
@@ -304,7 +304,7 @@ protected:
 
     static void initializeAuxiliaryDataIfSupported(AuxiliaryDataType& auxiliaryData,
                                                    Data::Study* study,
-                                                   unsigned int nbYearsParallel,
+                                                   uint nbYearsParallel,
                                                    size_t nbClusters)
     {
         if constexpr (requires {
@@ -319,8 +319,8 @@ protected:
     }
 
     static void yearBeginIfSupported(AuxiliaryDataType& auxiliaryData,
-                                     unsigned int year,
-                                     unsigned int numSpace,
+                                     uint year,
+                                     uint numSpace,
                                      size_t nbClusters)
     {
         if constexpr (requires { Traits::yearBegin(auxiliaryData, year, numSpace, nbClusters); })
@@ -334,7 +334,7 @@ protected:
       AuxiliaryDataType& auxiliaryData,
       State& state,
       uint year,
-      unsigned int numSpace)
+      uint numSpace)
     {
         if constexpr (requires {
                           Traits::yearEndBuildPrepareDataForEachThermalCluster(yearlyValues,
@@ -356,7 +356,7 @@ protected:
       std::vector<std::vector<IntermediateValues>>& yearlyValues,
       State& state,
       uint year,
-      unsigned int numSpace)
+      uint numSpace)
     {
         if constexpr (requires {
                           Traits::yearEndBuildForEachThermalCluster(yearlyValues,
@@ -373,7 +373,7 @@ protected:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     AuxiliaryDataType auxiliaryData_;
     size_t pSize = 0;
-    unsigned int pNbYearsParallel = 0;
+    uint pNbYearsParallel = 0;
 
 }; // class DispatchablePlantByClusterBase
 

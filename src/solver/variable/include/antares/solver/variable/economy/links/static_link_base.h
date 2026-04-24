@@ -138,19 +138,19 @@ public:
         AncestorType::pResults.merge(0, pValuesForTheCurrentYear);
     }
 
-    void yearBegin(uint year, unsigned int numSpace)
+    void yearBegin(uint year, uint numSpace)
     {
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild(State& state, uint year, uint numSpace)
     {
     }
 
-    void yearEnd(uint year, unsigned int numSpace)
+    void yearEnd(uint year, uint numSpace)
     {
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
     }
 
@@ -158,11 +158,11 @@ public:
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, uint numSpace)
     {
     }
 
-    void hourForEachLink(State& state, unsigned int numSpace)
+    void hourForEachLink(State& state, uint numSpace)
     {
     }
 

@@ -129,7 +129,7 @@ public:
         AncestorType::pResults.reset();
 
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
         }
@@ -145,7 +145,7 @@ public:
 
     void simulationBegin()
     {
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].reset();
         }
@@ -155,21 +155,21 @@ public:
     {
     }
 
-    void yearBegin(uint year, unsigned int numSpace)
+    void yearBegin(uint year, uint numSpace)
     {
         pValuesForTheCurrentYear[numSpace].reset();
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild(State& state, uint year, uint numSpace)
     {
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd(uint year, uint numSpace)
     {
         Traits::computeStats(pValuesForTheCurrentYear[numSpace]);
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
     }
@@ -178,11 +178,11 @@ public:
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, uint numSpace)
     {
     }
 
-    void hourForEachLink(State& state, unsigned int numSpace)
+    void hourForEachLink(State& state, uint numSpace)
     {
         if constexpr (requires {
                           Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
@@ -224,8 +224,8 @@ public:
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int,
-      unsigned int numSpace) const
+      uint,
+      uint numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace].hour;
     }
@@ -233,7 +233,7 @@ public:
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
@@ -248,7 +248,7 @@ public:
 
 private:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    unsigned int pNbYearsParallel;
+    uint pNbYearsParallel;
 
 }; // class EconomyLink_Base
 

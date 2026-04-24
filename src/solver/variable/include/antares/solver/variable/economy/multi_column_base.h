@@ -17,7 +17,7 @@
 **   - \c Description() -> std::string
 **   - \c ResultsType : type alias for results template
 **   - \c decimal : uint8_t
-**   - \c columnCaption(unsigned int) -> std::string (for GUI display)
+**   - \c columnCaption(uint) -> std::string (for GUI display)
 **
 ** - Required static member constants:
 **   - \c columnCount : constexpr int (number of columns)
@@ -25,8 +25,8 @@
 ** - Optional hooks:
 **   - \c onInitializeFromStudy(Data::Study&) -> void
 **   - \c onInitializeFromArea(Data::Area*, Data::Study*) -> void
-**   - \c onSimulationBegin(IntermediateValuesBaseType*, unsigned int) -> void
-**   - \c setHourlyValue(IntermediateValues(&)[ColCount], State&, unsigned int numSpace) -> void
+**   - \c onSimulationBegin(IntermediateValuesBaseType*, uint) -> void
+**   - \c setHourlyValue(IntermediateValues(&)[ColCount], State&, uint numSpace) -> void
 */
 
 #include <type_traits>
@@ -78,12 +78,12 @@ struct VCardMultiColumn
 
     struct Multiple
     {
-        static std::string Caption(unsigned int indx)
+        static std::string Caption(uint indx)
         {
             return Traits::columnCaption(indx);
         }
 
-        static std::string Unit([[maybe_unused]] unsigned int indx)
+        static std::string Unit([[maybe_unused]] uint indx)
         {
             return Traits::Unit();
         }
@@ -126,7 +126,7 @@ public:
         InitializeResultsFromStudy(AncestorType::pResults, study);
 
         pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
+        for (uint numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
         {
             for (int i = 0; i < ColCount; ++i)
             {
@@ -179,7 +179,7 @@ public:
     {
     }
 
-    void yearBegin(unsigned int year, unsigned int numSpace)
+    void yearBegin(uint year, uint numSpace)
     {
         for (int i = 0; i < ColCount; ++i)
         {
@@ -187,35 +187,35 @@ public:
         }
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild(State& state, uint year, uint numSpace)
     {
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd(uint year, uint numSpace)
     {
         VariableAccessorType::template ComputeStatistics<VCardType>(
           pValuesForTheCurrentYear[numSpace]);
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin(uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, uint numSpace)
     {
         Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int column,
-      unsigned int numSpace) const
+      uint column,
+      uint numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }
@@ -223,7 +223,7 @@ public:
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
@@ -242,7 +242,7 @@ public:
 
 private:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    unsigned int pNbYearsParallel;
+    uint pNbYearsParallel;
 };
 
 } // namespace Antares::Solver::Variable::Economy

@@ -25,15 +25,15 @@
 **   - \c isPossiblyNonApplicable : uint8_t (0 or 1)
 **   - \c initializeFromArea(AuxiliaryDataType&, Data::Study*, Data::Area*) -> void
 *(InitializationPolicy)
-**   - \c yearBegin(IntermediateValues&, AuxiliaryDataType&, unsigned int year, unsigned int
+**   - \c yearBegin(IntermediateValues&, AuxiliaryDataType&, uint year, uint
 *numSpace) -> void  (YearlyLifecyclePolicy)
-**   - \c yearEndBuild(IntermediateValues&, AuxiliaryDataType&, State&, unsigned int year, unsigned
+**   - \c yearEndBuild(IntermediateValues&, AuxiliaryDataType&, State&, uint year, unsigned
 *int numSpace) -> void  (YearlyLifecyclePolicy)
-**   - \c yearEndBuildForEachThermalCluster(IntermediateValues&, State&, unsigned int year, unsigned
+**   - \c yearEndBuildForEachThermalCluster(IntermediateValues&, State&, uint year, unsigned
 *int numSpace) -> void  (ThermalClusterPolicy)
-**   - \c weekForEachArea(IntermediateValues&, State&, unsigned int numSpace) -> void
+**   - \c weekForEachArea(IntermediateValues&, State&, uint numSpace) -> void
 *(HourlyAggregationPolicy)
-**   - \c setHourlyValue(IntermediateValues&, AuxiliaryDataType&, State&, unsigned int numSpace) ->
+**   - \c setHourlyValue(IntermediateValues&, AuxiliaryDataType&, State&, uint numSpace) ->
 *void  (HourlyComputationPolicy)
 **
 ** ## Hook execution order
@@ -91,7 +91,7 @@ struct InitializationPolicy
 struct YearlyLifecyclePolicy
 {
     template<class Traits, class IV, class Aux>
-    static void yearBeginIfSupported(IV& iv, Aux& aux, unsigned int year, unsigned int numSpace)
+    static void yearBeginIfSupported(IV& iv, Aux& aux, uint year, uint numSpace)
     {
         if constexpr (requires { Traits::yearBegin(iv, aux, year, numSpace); })
         {
@@ -103,8 +103,8 @@ struct YearlyLifecyclePolicy
     static void yearEndBuildIfSupported(IV& iv,
                                         Aux& aux,
                                         State& state,
-                                        unsigned int year,
-                                        unsigned int numSpace)
+                                        uint year,
+                                        uint numSpace)
     {
         if constexpr (requires { Traits::yearEndBuild(iv, aux, state, year, numSpace); })
         {
@@ -118,8 +118,8 @@ struct ThermalClusterPolicy
     template<class Traits, class IV, class State>
     static void yearEndBuildForEachIfSupported(IV& iv,
                                                State& state,
-                                               unsigned int year,
-                                               unsigned int numSpace)
+                                               uint year,
+                                               uint numSpace)
     {
         if constexpr (requires {
                           Traits::yearEndBuildForEachThermalCluster(iv, state, year, numSpace);
@@ -133,7 +133,7 @@ struct ThermalClusterPolicy
 struct HourlyAggregationPolicy
 {
     template<class Traits, class IV, class State>
-    static void weekForEachAreaIfSupported(IV& iv, State& state, unsigned int numSpace)
+    static void weekForEachAreaIfSupported(IV& iv, State& state, uint numSpace)
     {
         if constexpr (requires { Traits::weekForEachArea(iv, state, numSpace); })
         {
@@ -145,7 +145,7 @@ struct HourlyAggregationPolicy
 struct HourlyComputationPolicy
 {
     template<class Traits, class IV, class Aux, class State>
-    static void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numSpace)
+    static void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, uint numSpace)
     {
         if constexpr (requires { Traits::setHourlyValue(iv, aux, state, numSpace); })
         {
@@ -285,7 +285,7 @@ public:
         InitializeResultsFromStudy(AncestorType::pResults, study);
 
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
         }
@@ -308,7 +308,7 @@ public:
 
     void simulationBegin()
     {
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].reset();
         }
@@ -318,7 +318,7 @@ public:
     {
     }
 
-    void yearBegin(unsigned int year, unsigned int numSpace)
+    void yearBegin(uint year, uint numSpace)
     {
         // Reset the values for the current year
         pValuesForTheCurrentYear[numSpace].reset();
@@ -330,7 +330,7 @@ public:
           numSpace);
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild(State& state, uint year, uint numSpace)
     {
         Hooks_::YearlyLifecyclePolicy::yearEndBuildIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
@@ -340,7 +340,7 @@ public:
           numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
+    void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace)
     {
         Hooks_::ThermalClusterPolicy::yearEndBuildForEachIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
@@ -349,23 +349,23 @@ public:
           numSpace);
     }
 
-    void yearEnd(unsigned int /*year*/, unsigned int numSpace)
+    void yearEnd(uint /*year*/, uint numSpace)
     {
         // Compute all statistics for the current year (daily,weekly,monthly)
         Traits::computeStats(pValuesForTheCurrentYear[numSpace]);
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
         // Merge all those values with the global results
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
     }
 
-    void hourBegin(unsigned int /*hourInTheYear*/)
+    void hourBegin(uint /*hourInTheYear*/)
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, uint numSpace)
     {
         Hooks_::HourlyComputationPolicy::setHourlyValueIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
@@ -374,7 +374,7 @@ public:
           numSpace);
     }
 
-    void weekForEachArea(State& state, unsigned int numSpace)
+    void weekForEachArea(State& state, uint numSpace)
     {
         Hooks_::HourlyAggregationPolicy::weekForEachAreaIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
@@ -383,8 +383,8 @@ public:
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int,
-      unsigned int numSpace) const
+      uint,
+      uint numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace].hour;
     }
@@ -392,7 +392,7 @@ public:
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         // Initializing external pointer on current variable non applicable status
         results.isCurrentVarNA = AncestorType::isNonApplicable;
@@ -420,7 +420,7 @@ private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     AuxiliaryDataType auxiliaryData_{};
-    unsigned int pNbYearsParallel = 0;
+    uint pNbYearsParallel = 0;
 
 }; // class EconomyVariableBase
 

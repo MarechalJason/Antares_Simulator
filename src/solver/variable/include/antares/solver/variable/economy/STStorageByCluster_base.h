@@ -22,7 +22,7 @@
 *void
 **
 ** - Optional hooks:
-**   - \c setHourlyValue(std::vector<IntermediateValues>&, State&, unsigned int numSpace) -> void
+**   - \c setHourlyValue(std::vector<IntermediateValues>&, State&, uint numSpace) -> void
 **   - Fallback (deprecated): \c setHourlyValue(std::vector<IntermediateValues>&, State&) -> void
 */
 
@@ -122,20 +122,20 @@ public:
         {
             AncestorType::pResults.resize(nbClusters_);
 
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
                 pValuesForTheCurrentYear[numSpace].resize(nbClusters_);
             }
 
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
-                for (unsigned int i = 0; i != nbClusters_; ++i)
+                for (uint i = 0; i != nbClusters_; ++i)
                 {
                     pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
                 }
             }
 
-            for (unsigned int i = 0; i != nbClusters_; ++i)
+            for (uint i = 0; i != nbClusters_; ++i)
             {
                 AncestorType::pResults[i].initializeFromStudy(*study);
                 AncestorType::pResults[i].reset();
@@ -152,36 +152,36 @@ public:
         return nbClusters_ * ResultsType::count;
     }
 
-    void yearBegin(unsigned int year, unsigned int numSpace)
+    void yearBegin(uint year, uint numSpace)
     {
-        for (unsigned int i = 0; i != nbClusters_; ++i)
+        for (uint i = 0; i != nbClusters_; ++i)
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd(uint year, uint numSpace)
     {
-        for (unsigned int clusterIndex = 0; clusterIndex < nbClusters_; ++clusterIndex)
+        for (uint clusterIndex = 0; clusterIndex < nbClusters_; ++clusterIndex)
         {
             Traits::computeStats(pValuesForTheCurrentYear[numSpace][clusterIndex]);
         }
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
-        for (unsigned int clusterIndex = 0; clusterIndex < nbClusters_; ++clusterIndex)
+        for (uint clusterIndex = 0; clusterIndex < nbClusters_; ++clusterIndex)
         {
             AncestorType::pResults[clusterIndex]
               .merge(year, pValuesForTheCurrentYear[numSpace][clusterIndex]);
         }
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin(uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, uint numSpace)
     {
         if constexpr (requires {
                           Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace],
@@ -198,8 +198,8 @@ public:
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int column,
-      unsigned int numSpace) const
+      uint column,
+      uint numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace][column].hour;
     }
@@ -207,7 +207,7 @@ public:
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
@@ -225,7 +225,7 @@ private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     size_t nbClusters_ = 0;
-    unsigned int pNbYearsParallel = 0;
+    uint pNbYearsParallel = 0;
 
 }; // class STStorageByClusterBase
 
