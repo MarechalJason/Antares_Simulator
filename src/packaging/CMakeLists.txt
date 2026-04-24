@@ -30,6 +30,7 @@ set(TARGET_LIBS #No alias
         path
         mersenne
         result_writer
+	parquet_writer
         series
         antares-core
         antares-solver-hydro
@@ -103,6 +104,7 @@ set(TARGET_LIBS #No alias
         expressions
         optim-model-filler
 		forbidden-nodes
+        input-error
         yml-system
         yml-model
 		yml-utils
