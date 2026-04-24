@@ -36,11 +36,6 @@
 **   - \c setHourlyValue(IntermediateValues&, AuxiliaryDataType&, State&, unsigned int numSpace) ->
 *void  (HourlyComputationPolicy)
 **
-**   For backwards compatibility, if setHourlyValue is not provided, the following are also checked:
-**   - \c checkCondition(AuxiliaryDataType&, State&) -> bool + \c value(AuxiliaryDataType&, State&)
-*-> double
-**   - \c checkCondition(State&) -> bool + \c value(State&) -> double
-**
 ** ## Hook execution order
 ** - initializeFromStudy() / initializeFromArea() / initializeFromLink()
 ** - simulationBegin() / simulationEnd()
@@ -465,43 +460,6 @@ private:
                                                                     auxiliaryData,
                                                                     year,
                                                                     numSpace);
-    }
-
-    static void setHourlyValueIfSupported(IntermediateValues& yearlyValues,
-                                          AuxiliaryDataType& auxiliaryData,
-                                          State& state,
-                                          unsigned int numSpace)
-    {
-        if constexpr (requires {
-                          Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
-                      })
-        {
-            Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
-        }
-        else if constexpr (requires { Traits::checkCondition(auxiliaryData, state); })
-        {
-            if (Traits::checkCondition(auxiliaryData, state))
-            {
-                yearlyValues[state.hourInTheYear] = Traits::value(auxiliaryData, state);
-            }
-        }
-        else if constexpr (requires { Traits::checkCondition(state); })
-        {
-            if (Traits::checkCondition(state))
-            {
-                yearlyValues[state.hourInTheYear] = Traits::value(state);
-            }
-        }
-    }
-
-    static void setHourlyValueIfSupported(std::vector<IntermediateValues>& clusterValues,
-                                          State& state,
-                                          unsigned int numSpace)
-    {
-        if constexpr (requires { Traits::setHourlyValue(clusterValues, state, numSpace); })
-        {
-            Traits::setHourlyValue(clusterValues, state, numSpace);
-        }
     }
 
 private:

@@ -26,6 +26,7 @@
 */
 #pragma once
 
+#include "economy_base.h"
 #include "lolp_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -43,10 +44,17 @@ struct LOLP_CSRTraits: public LOLP_Base_Traits
         return "LOLP for CSR";
     }
 
-    static bool checkCondition(const State& state)
+    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
+
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType&,
+                               const State& state,
+                               unsigned int)
     {
-        return state.hourlyResults->ValeursHorairesDeDefaillancePositiveCSR[state.hourInTheWeek]
-               > 0.0;
+        if (state.hourlyResults->ValeursHorairesDeDefaillancePositiveCSR[state.hourInTheWeek] > 0.0)
+        {
+            iv[state.hourInTheYear] = value(state);
+        }
     }
 };
 
