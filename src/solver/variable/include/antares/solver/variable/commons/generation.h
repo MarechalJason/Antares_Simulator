@@ -201,7 +201,7 @@ using VCardTimeSeriesValuesGeneration = VCardTimeSeriesBase<GenerationTraits<Tag
  * - `yearlyValues[space]` provides isolation between parallel executions
  * - No shared state between spaces during processing
  */
-template<class TraitsType, class NextT = void>
+template<class TraitsType, class NextT = Container::EndOfList>
 class TimeSeriesValuesGenerationImpl
     : public TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType, NextT>,
                                   VCardTimeSeriesBase<TraitsType>,
@@ -314,8 +314,7 @@ private:
  * TimeSeriesValuesWind<> wind;
  * ```
  */
-template<class Tag, class NextT = Container::EndOfList>
-using TimeSeriesValuesGeneration = TimeSeriesValuesGenerationImpl<GenerationTraits<Tag>, NextT>;
+// Note: This legacy wrapper is deprecated. Use TimeSeriesValuesSolar or TimeSeriesValuesWind directly.
 
 /**
  * @brief Solar generation time series variable

@@ -59,6 +59,6 @@ using VCardSpilledEnergy = VCard_Base<SpilledEnergyTraits>;
 **   the thermal dispatchable clusters
 */
 template<class NextT = Container::EndOfList>
-using SpilledEnergy = Economy_Base<SpilledEnergyTraits, NextT>;
+using SpilledEnergy = Economy_Base<SpilledEnergyTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

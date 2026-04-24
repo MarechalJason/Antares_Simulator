@@ -54,7 +54,7 @@ using VCardWaterValue = VCard_Base<WaterValueTraits>;
 ** \brief Water values
 */
 template<class NextT = Container::EndOfList>
-using WaterValue = Economy_Base<WaterValueTraits, NextT>;
+using WaterValue = Economy_Base<WaterValueTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

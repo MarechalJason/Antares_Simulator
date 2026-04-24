@@ -53,6 +53,6 @@ struct OperatingCostTraits
 using VCardOperatingCost = VCard_Base<OperatingCostTraits>;
 
 template<class NextT = Container::EndOfList>
-using OperatingCost = Economy_Base<OperatingCostTraits, NextT>;
+using OperatingCost = Economy_Base<OperatingCostTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

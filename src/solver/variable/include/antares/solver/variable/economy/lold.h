@@ -38,6 +38,6 @@ struct LOLDTraits: public LOLD_Base_Traits
 using VCardLOLD = VCard_Base<LOLDTraits>;
 
 template<class NextT = Container::EndOfList>
-using LOLD = Economy_Base<LOLDTraits, NextT>;
+using LOLD = Economy_Base<LOLDTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

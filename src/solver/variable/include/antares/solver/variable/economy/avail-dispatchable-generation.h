@@ -70,6 +70,6 @@ using VCardAvailableDispatchGen = VCard_Base<AvailableDispatchGenTraits>;
 ** \brief Marginal AvailableDispatchGen
 */
 template<class NextT = Container::EndOfList>
-using AvailableDispatchGen = Economy_Base<AvailableDispatchGenTraits, NextT>;
+using AvailableDispatchGen = Economy_Base<AvailableDispatchGenTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

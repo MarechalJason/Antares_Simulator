@@ -55,6 +55,6 @@ struct PriceTraits
 using VCardPrice = VCard_Base<PriceTraits>;
 
 template<class NextT = Container::EndOfList>
-using Price = Economy_Base<PriceTraits, NextT>;
+using Price = Economy_Base<PriceTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

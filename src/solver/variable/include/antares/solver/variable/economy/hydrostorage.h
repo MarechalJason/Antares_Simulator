@@ -49,6 +49,6 @@ struct HydroStorageTraits
 using VCardHydroStorage = VCard_Base<HydroStorageTraits>;
 
 template<class NextT = Container::EndOfList>
-using HydroStorage = Economy_Base<HydroStorageTraits, NextT>;
+using HydroStorage = Economy_Base<HydroStorageTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

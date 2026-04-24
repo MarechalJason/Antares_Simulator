@@ -65,7 +65,7 @@ struct MarginalCostTraits
 ** \brief Marginal MarginalCost
 */
 template<class NextT = Container::EndOfList>
-using MarginalCost = EconomyLink_Base<MarginalCostTraits, NextT>;
+using MarginalCost = EconomyLink_Base<MarginalCostTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

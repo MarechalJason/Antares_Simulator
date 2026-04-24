@@ -64,6 +64,6 @@ struct InflowsTraits
 using VCardInflows = VCard_Base<InflowsTraits>;
 
 template<class NextT = Container::EndOfList>
-using Inflows = Economy_Base<InflowsTraits, NextT>;
+using Inflows = Economy_Base<InflowsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

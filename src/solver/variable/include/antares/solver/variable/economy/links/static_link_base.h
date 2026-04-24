@@ -63,12 +63,12 @@ struct VCardStaticLinkBase
 
 template<class Traits, class NextT = void>
 class StaticLinkBase
-    : public Variable::IVariable<StaticLinkBase<Traits, NextT>, NextT, VCardStaticLinkBase<Traits>>
+    : public Variable::IVariable<StaticLinkBase<Traits>, NextT, VCardStaticLinkBase<Traits>>
 {
 public:
     typedef NextT NextType;
     typedef VCardStaticLinkBase<Traits> VCardType;
-    typedef Variable::IVariable<StaticLinkBase<Traits, NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<StaticLinkBase<Traits>, NextT, VCardType> AncestorType;
     typedef typename VCardType::ResultsType ResultsType;
     typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
 

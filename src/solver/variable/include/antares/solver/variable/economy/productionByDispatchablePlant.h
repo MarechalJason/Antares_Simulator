@@ -85,7 +85,6 @@ using VCardProductionByDispatchablePlant = VCardDispatchablePlantByClusterBase<
 */
 template<class NextT = Container::EndOfList>
 using ProductionByDispatchablePlant = DispatchablePlantByClusterBase<
-  ProductionByDispatchablePlantTraits,
-  NextT>;
+  ProductionByDispatchablePlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

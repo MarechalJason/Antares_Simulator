@@ -45,6 +45,6 @@ struct PriceCSRTraits
 using VCardPriceCSR = VCard_Base<PriceCSRTraits>;
 
 template<class NextT = Container::EndOfList>
-using PriceCSR = Economy_Base<PriceCSRTraits, NextT>;
+using PriceCSR = Economy_Base<PriceCSRTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

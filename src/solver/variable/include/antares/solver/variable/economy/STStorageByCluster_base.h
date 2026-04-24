@@ -87,40 +87,29 @@ struct VCardSTStorageByClusterBase
 
 }; // class VCardSTStorageByClusterBase
 
-template<class Traits, class NextT = void>
-class STStorageByClusterBase: public Variable::IVariable<STStorageByClusterBase<Traits, NextT>,
-                                                         NextT,
+template<class Traits>
+class STStorageByClusterBase: public Variable::IVariable<STStorageByClusterBase<Traits>,
+                                                         void,
                                                          VCardSTStorageByClusterBase<Traits>>
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
-    //! VCard
     typedef VCardSTStorageByClusterBase<Traits> VCardType;
-    //! Ancestor
-    typedef Variable::IVariable<STStorageByClusterBase<Traits, NextT>, NextT, VCardType>
+    typedef Variable::IVariable<STStorageByClusterBase<Traits>, void, VCardType>
       AncestorType;
 
-    //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
 
     typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
 
-    enum
-    {
-        count = 1,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        enum
-        {
-            count = ((VCardType::categoryDataLevel & CDataLevel
-                      && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
-        };
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                      && VCardType::categoryFileLevel & CFile)
+                                      ? VCardType::columnCount * ResultsType::count
+                                      : 0);
     };
 
 public:

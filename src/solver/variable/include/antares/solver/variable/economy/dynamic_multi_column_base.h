@@ -95,36 +95,29 @@ struct VCardDynamicMultiColumn
     };
 };
 
-template<class Traits, class NextT = void>
-class DynamicMultiColumnBase: public Variable::IVariable<DynamicMultiColumnBase<Traits, NextT>,
-                                                         NextT,
+template<class Traits>
+class DynamicMultiColumnBase: public Variable::IVariable<DynamicMultiColumnBase<Traits>,
+                                                         void,
                                                          VCardDynamicMultiColumn<Traits>>
 {
 public:
-    typedef NextT NextType;
     typedef VCardDynamicMultiColumn<Traits> VCardType;
-    typedef Variable::IVariable<DynamicMultiColumnBase<Traits, NextT>, NextT, VCardType>
+    typedef Variable::IVariable<DynamicMultiColumnBase<Traits>, void, VCardType>
       AncestorType;
     typedef typename VCardType::ResultsType ResultsType;
     typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
 
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 
-    enum
-    {
-        count = 1,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        enum
-        {
-            count = ((VCardType::categoryDataLevel & CDataLevel
-                      && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
-        };
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                      && VCardType::categoryFileLevel & CFile)
+                                      ? VCardType::columnCount * ResultsType::count
+                                      : 0);
     };
 
 public:

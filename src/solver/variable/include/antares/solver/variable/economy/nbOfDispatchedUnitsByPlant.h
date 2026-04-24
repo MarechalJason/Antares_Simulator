@@ -82,7 +82,6 @@ using VCardNbOfDispatchedUnitsByPlant = VCardDispatchablePlantByClusterBase<
 **   the thermal dispatchable clusters
 */
 template<class NextT = Container::EndOfList>
-using NbOfDispatchedUnitsByPlant = DispatchablePlantByClusterBase<NbOfDispatchedUnitsByPlantTraits,
-                                                                  NextT>;
+using NbOfDispatchedUnitsByPlant = DispatchablePlantByClusterBase<NbOfDispatchedUnitsByPlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

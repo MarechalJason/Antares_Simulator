@@ -90,36 +90,29 @@ struct VCardMultiColumn
     };
 };
 
-template<class Traits, int ColCount, class NextT = void>
-class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCount, NextT>,
-                                                  NextT,
+template<class Traits, int ColCount>
+class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCount>,
+                                                  void,
                                                   VCardMultiColumn<Traits, ColCount>>
 {
 public:
-    typedef NextT NextType;
     typedef VCardMultiColumn<Traits, ColCount> VCardType;
-    typedef Variable::IVariable<MultiColumnBase<Traits, ColCount, NextT>, NextT, VCardType>
+    typedef Variable::IVariable<MultiColumnBase<Traits, ColCount>, void, VCardType>
       AncestorType;
     typedef typename VCardType::ResultsType ResultsType;
     typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
 
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 
-    enum
-    {
-        count = 1,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        enum
-        {
-            count = ((VCardType::categoryDataLevel & CDataLevel
-                      && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
-        };
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                      && VCardType::categoryFileLevel & CFile)
+                                      ? VCardType::columnCount * ResultsType::count
+                                      : 0);
     };
 
 public:

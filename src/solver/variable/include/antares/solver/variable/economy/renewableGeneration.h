@@ -73,6 +73,6 @@ struct RenewableGenerationTraits
 using VCardRenewableGeneration = VCardDynamicMultiColumn<RenewableGenerationTraits>;
 
 template<class NextT = Container::EndOfList>
-using RenewableGeneration = DynamicMultiColumnBase<RenewableGenerationTraits, NextT>;
+using RenewableGeneration = DynamicMultiColumnBase<RenewableGenerationTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

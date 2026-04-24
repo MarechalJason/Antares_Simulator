@@ -57,7 +57,7 @@ using VCardNonProportionalCostByDispatchablePlant =
 */
 template<class NextT = Container::EndOfList>
 using NonProportionalCostByDispatchablePlant =
-  DispatchablePlantByClusterBase<NonProportionalCostByDispatchablePlantTraits, NextT>;
+  DispatchablePlantByClusterBase<NonProportionalCostByDispatchablePlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

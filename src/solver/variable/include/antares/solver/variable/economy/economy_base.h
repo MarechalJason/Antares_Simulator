@@ -246,29 +246,26 @@ struct VCard_Base
 }; // class VCard
 
 /*!
-** \brief Base class for economy variables like LOLP and LOLD
+** \brief Base class for area-level economy variables like LOLP and LOLD
+**
+** Post-A refactor: variables are standalone (no NextT propagation).
+** Each variable inherits from IVariable but NextT is unused.
 */
-template<class Traits, class NextT = void>
-class Economy_Base
-    : public Variable::IVariable<Economy_Base<Traits, NextT>, NextT, VCard_Base<Traits>>
+template<class Traits>
+class Economy_Base : public Variable::IVariable<Economy_Base<Traits>, void, VCard_Base<Traits>>
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
     //! VCard
     typedef VCard_Base<Traits> VCardType;
     //! Ancestor
-    typedef Variable::IVariable<Economy_Base<Traits, NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<Economy_Base<Traits>, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
 
     typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
 
-    enum
-    {
-        count = 1,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics

@@ -44,6 +44,6 @@ struct LMRViolationsTraits
 using VCardLMRViolations = VCard_Base<LMRViolationsTraits>;
 
 template<class NextT = Container::EndOfList>
-using LMRViolations = Economy_Base<LMRViolationsTraits, NextT>;
+using LMRViolations = Economy_Base<LMRViolationsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

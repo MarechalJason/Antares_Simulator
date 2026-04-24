@@ -137,11 +137,11 @@ private:
 }; // class MinMaxBase
 
 template<class NextT>
-class Min: public MinMaxBase<true, NextT>
+class Min: public MinMaxBase<true>
 {
 public:
     //! Implementation
-    typedef MinMaxBase<true, NextT> MinMaxImplementationType;
+    typedef MinMaxBase<true> MinMaxImplementationType;
     //! Type of the net item in the list
     typedef NextT NextType;
 
@@ -160,11 +160,11 @@ public:
 };
 
 template<class NextT>
-class Max: public MinMaxBase<false, NextT>
+class Max: public MinMaxBase<false>
 {
 public:
     //! Implementation
-    typedef MinMaxBase<false, NextT> MinMaxImplementationType;
+    typedef MinMaxBase<false> MinMaxImplementationType;
     //! Type of the net item in the list
     typedef NextT NextType;
 

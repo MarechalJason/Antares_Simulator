@@ -33,7 +33,7 @@
  * using VCardMyTimeSeries = VCardTimeSeriesBase<MyTimeSeriesTraits>;
  *
  * // 3. Implement your time series class
- * template<class NextT = Container::EndOfList>
+ * template<>
  * class MyTimeSeries : public TimeSeriesValuesBase<MyTimeSeries<NextT>, NextT, VCardMyTimeSeries> {
  * public:
  *     void initializeDerivedFromStudy(Data::Study& study) { ... }
@@ -232,14 +232,14 @@ public:
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
-    static constexpr int count = 1;
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
         static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
                                       && VCardType::categoryFileLevel & CFile)
-                                      ? VCardType::columnCount * VCardType::ResultsType::count
+                                      ? VCardType::columnCount * ResultsType::count
                                       : 0);
     };
 

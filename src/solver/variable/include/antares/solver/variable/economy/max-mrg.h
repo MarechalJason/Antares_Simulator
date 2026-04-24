@@ -49,6 +49,6 @@ struct MaxMargeTraits
 using VCardMARGE = VCard_Base<MaxMargeTraits>;
 
 template<class NextT = Container::EndOfList>
-using Marge = Economy_Base<MaxMargeTraits, NextT>;
+using Marge = Economy_Base<MaxMargeTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

@@ -69,7 +69,6 @@ using VCardThermalAirPollutantEmissions = VCardMultiColumn<
 template<class NextT = Container::EndOfList>
 using ThermalAirPollutantEmissions = MultiColumnBase<
   ThermalAirPollutantEmissionsTraits,
-  ThermalAirPollutantEmissionsTraits::columnCount,
-  NextT>;
+  ThermalAirPollutantEmissionsTraits::columnCount>;
 
 } // namespace Antares::Solver::Variable::Economy

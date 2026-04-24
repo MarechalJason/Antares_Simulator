@@ -6,10 +6,25 @@
 #include "antares/solver/variable/tuple_variable_list.h"
 #include "antares/solver/variable/variable.h"
 
+#include <type_traits>
+
 // #include <antares/logs/logs.h>	// In case it is needed
 
 namespace Antares::Solver::Variable::Common
 {
+template<class VCardOriginT, class = void>
+struct VCardForSpatialAggregateSelector
+{
+    using type = VCardOriginT;
+};
+
+template<class VCardOriginT>
+struct VCardForSpatialAggregateSelector<VCardOriginT,
+                                        std::void_t<typename VCardOriginT::VCardForSpatialAggregate>>
+{
+    using type = typename VCardOriginT::VCardForSpatialAggregate;
+};
+
 template<int ColumnCountT, class VCardT>
 struct MultipleCaptionProxy
 {
@@ -70,7 +85,7 @@ template<template<class> class V>
 struct VCardProxy
 {
     //! The real VCard for the variable
-    typedef typename V<Container::EndOfList>::VCardType VCardOrigin;
+    using VCardOrigin = typename V<Container::EndOfList>::VCardType;
 
     //! Caption
     static std::string Caption()
@@ -91,14 +106,15 @@ struct VCardProxy
     }
 
     //! The expecte results
-    typedef typename VCardOrigin::ResultsType ResultsType;
+    using ResultsType = typename VCardOrigin::ResultsType;
     //! The VCard to look for for calculating spatial aggregates
-    typedef typename VCardOrigin::VCardForSpatialAggregate VCardForSpatialAggregate;
+    using VCardForSpatialAggregate =
+      typename VCardForSpatialAggregateSelector<VCardOrigin>::type;
 
-    typedef typename VCardOrigin::IntermediateValuesType IntermediateValuesType;
-    typedef typename VCardOrigin::IntermediateValuesBaseType IntermediateValuesBaseType;
-    typedef
-      typename VCardOrigin::IntermediateValuesTypeForSpatialAg IntermediateValuesTypeForSpatialAg;
+    using IntermediateValuesType = typename VCardOrigin::IntermediateValuesType;
+    using IntermediateValuesBaseType = typename VCardOrigin::IntermediateValuesBaseType;
+    using IntermediateValuesTypeForSpatialAg =
+      typename VCardOrigin::IntermediateValuesTypeForSpatialAg;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::setOfAreas;
@@ -139,7 +155,7 @@ struct VCardProxy
 
 template<template<class> class VarT, class NextT = void>
 class SpatialAggregate
-    : public Variable::IVariable<SpatialAggregate<VarT, NextT>, NextT, VCardProxy<VarT>>
+    : public Variable::IVariable<SpatialAggregate<VarT>, NextT, VCardProxy<VarT>>
 {
 public:
     //! Type of the next static variable
@@ -148,7 +164,7 @@ public:
     //! VCard
     typedef VCardProxy<VarT> VCardType;
     //! Ancestor
-    typedef Variable::IVariable<SpatialAggregate<VarT, NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<SpatialAggregate<VarT>, NextT, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -430,7 +446,7 @@ private:
     //! Intermediate values for each year
     VCardType::IntermediateValuesTypeForSpatialAg pValuesForTheCurrentYear;
 
-    unsigned int pNbYearsParallel;
+    unsigned int pNbYearsParallel = 0;
 
 }; // class SpatialAggregate
 

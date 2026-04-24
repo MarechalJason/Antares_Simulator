@@ -75,6 +75,6 @@ struct DispatchableGenerationTraits
 using VCardDispatchableGeneration = VCardDynamicMultiColumn<DispatchableGenerationTraits>;
 
 template<class NextT = Container::EndOfList>
-using DispatchableGeneration = DynamicMultiColumnBase<DispatchableGenerationTraits, NextT>;
+using DispatchableGeneration = DynamicMultiColumnBase<DispatchableGenerationTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

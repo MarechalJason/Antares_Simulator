@@ -68,9 +68,8 @@ class TimeSeriesValuesLoad
     : public TimeSeriesValuesBase<TimeSeriesValuesLoad<NextT>, VCardTimeSeriesValuesLoad, NextT>
 {
 public:
-    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesLoad<NextT>,
-                                          VCardTimeSeriesValuesLoad,
-                                          NextT>;
+    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesLoad,
+                                          VCardTimeSeriesValuesLoad>;
 
     /// @}
 

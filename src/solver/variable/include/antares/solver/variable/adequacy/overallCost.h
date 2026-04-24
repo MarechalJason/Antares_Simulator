@@ -88,7 +88,7 @@ using VCardOverallCost = Economy::VCard_Base<OverallCostTraits>;
 ** \brief Overall cost over all MC years (adequacy)
 */
 template<class NextT = Container::EndOfList>
-using OverallCost = Economy::Economy_Base<OverallCostTraits, NextT>;
+using OverallCost = Economy::Economy_Base<OverallCostTraits>;
 
 } // namespace Adequacy
 } // namespace Antares::Solver::Variable
