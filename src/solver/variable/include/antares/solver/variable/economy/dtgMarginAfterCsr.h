@@ -25,8 +25,7 @@ struct DtgMarginCsrTraits
         return "Dispatchable Generation Margin (after CSR optimization)";
     }
 
-    using ResultsType = Results<
-      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
+    using ResultsType = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

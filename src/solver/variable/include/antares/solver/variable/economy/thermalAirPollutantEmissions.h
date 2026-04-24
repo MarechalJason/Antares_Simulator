@@ -26,8 +26,7 @@ struct ThermalAirPollutantEmissionsTraits
         return "Overall pollutant emissions expected from all the thermal clusters";
     }
 
-    using ResultsType = Results<
-      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
+    using ResultsType = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr int columnCount = Antares::Data::Pollutant::POLLUTANT_MAX;

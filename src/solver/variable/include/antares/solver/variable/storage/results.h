@@ -16,6 +16,12 @@ template<class FirstDecoratorT = Empty, // The first decorator for the results
          template<class, int> class DecoratorForSpatialAggregateT = R::AllYears::Raw>
 class Results;
 
+using StandardAllYearsDecorators
+  = R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>;
+
+template<template<class, int> class DecoratorForSpatialAggregateT = R::AllYears::Raw>
+using StandardResults = Results<StandardAllYearsDecorators, DecoratorForSpatialAggregateT>;
+
 /*!
 ** \brief
 **

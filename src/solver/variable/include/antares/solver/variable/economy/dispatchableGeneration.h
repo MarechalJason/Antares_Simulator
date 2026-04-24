@@ -26,8 +26,7 @@ struct DispatchableGenerationTraits
         return "Value of all the dispatchable generation throughout all MC years";
     }
 
-    using ResultsType = Results<
-      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
+    using ResultsType = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
 
