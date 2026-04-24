@@ -299,8 +299,6 @@ public:
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
         }
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     template<class R>
@@ -312,15 +310,10 @@ public:
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         initializeFromAreaIfSupported(auxiliaryData_, study, area);
-
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink(Data::Study* /*study*/, Data::AreaLink* /*link*/)
     {
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
@@ -329,13 +322,10 @@ public:
         {
             pValuesForTheCurrentYear[numSpace].reset();
         }
-        // Next
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
@@ -344,9 +334,6 @@ public:
         pValuesForTheCurrentYear[numSpace].reset();
 
         yearBeginIfSupported(pValuesForTheCurrentYear[numSpace], auxiliaryData_, year, numSpace);
-
-        // Next variable
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
@@ -357,8 +344,6 @@ public:
           state,
           year,
           numSpace);
-        // Next variable
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
@@ -368,32 +353,22 @@ public:
           state,
           year,
           numSpace);
-        // Next variable
-        NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd(unsigned int /*year*/, unsigned int numSpace)
     {
         // Compute all statistics for the current year (daily,weekly,monthly)
         Traits::computeStats(pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
         // Merge all those values with the global results
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
-        NextType::computeSummary(year, numSpace);
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin(unsigned int /*hourInTheYear*/)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
@@ -403,9 +378,6 @@ public:
           auxiliaryData_,
           state,
           numSpace);
-
-        // Next variable
-        NextType::hourForEachArea(state, numSpace);
     }
 
     void weekForEachArea(State& state, unsigned int numSpace)
@@ -414,8 +386,6 @@ public:
           pValuesForTheCurrentYear[numSpace],
           state,
           numSpace);
-        // Next variable
-        NextType::weekForEachArea(state, numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
