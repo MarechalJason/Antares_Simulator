@@ -63,7 +63,7 @@ using VCardTimeSeriesValuesLoad = VCardTimeSeriesBase<LoadTraits>;
  * @tparam NextT The next variable in the processing chain
  *
  */
-template<class NextT = void>
+template<class NextT>
 class TimeSeriesValuesLoad
     : public TimeSeriesValuesBase<TimeSeriesValuesLoad<NextT>, VCardTimeSeriesValuesLoad, NextT>
 {

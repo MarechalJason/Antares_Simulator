@@ -73,7 +73,7 @@ struct VCardSpilledEnergy
 ** \brief C02 Average value of the overrall SpilledEnergy emissions expected from all
 **   the thermal dispatchable clusters
 */
-template<class NextT = void>
+template<class NextT>
 class SpilledEnergy: public Variable::IVariable<SpilledEnergy<NextT>, NextT, VCardSpilledEnergy>
 {
 public:

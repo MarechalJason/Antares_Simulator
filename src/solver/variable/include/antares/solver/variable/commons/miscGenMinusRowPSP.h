@@ -69,7 +69,7 @@ struct VCardMiscGenMinusRowPSP
 /*!
 ** \brief Marginal MiscGenMinusRowPSP
 */
-template<class NextT = void>
+template<class NextT>
 class MiscGenMinusRowPSP
     : public Variable::IVariable<MiscGenMinusRowPSP<NextT>, NextT, VCardMiscGenMinusRowPSP>
 {

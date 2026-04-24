@@ -70,7 +70,7 @@ struct VCardRowBalance
 /*!
 ** \brief Marginal RowBalance
 */
-template<class NextT = void>
+template<class NextT>
 class RowBalance: public Variable::IVariable<RowBalance<NextT>, NextT, VCardRowBalance>
 {
 public:

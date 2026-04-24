@@ -79,7 +79,7 @@ using VCardTimeSeriesValuesHydro = VCardTimeSeriesBase<HydroTraits>;
  * @tparam NextT The next variable in the processing chain
  *
  */
-template<class NextT = void>
+template<class NextT>
 class TimeSeriesValuesHydro
     : public TimeSeriesValuesBase<TimeSeriesValuesHydro<NextT>, VCardTimeSeriesValuesHydro, NextT>
 {

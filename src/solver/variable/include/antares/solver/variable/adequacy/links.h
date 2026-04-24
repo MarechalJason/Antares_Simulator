@@ -31,7 +31,7 @@ using VariablePerLink = Common::ComposeAll<Economy::FlowLinear<>,
                                            Economy::CongestionFee<>,
                                            Economy::CongestionFeeAbs<>,
                                            Economy::MarginalCost<>,
-                                           Economy::CongestionProbability<>,
+                                           Economy::CongestionProbability<void>,
                                            Economy::HurdleCosts<>>::type;
 
 using Links = Antares::Solver::Variable::Links<VariablePerLink>;

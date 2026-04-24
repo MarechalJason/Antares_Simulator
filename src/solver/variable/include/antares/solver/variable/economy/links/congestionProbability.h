@@ -89,7 +89,7 @@ struct VCardCongestionProbability
 /*!
 ** \brief Marginal CongestionProbability
 */
-template<class NextT = void>
+template<class NextT>
 class CongestionProbability
     : public Variable::IVariable<CongestionProbability<NextT>, NextT, VCardCongestionProbability>
 {

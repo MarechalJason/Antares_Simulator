@@ -69,7 +69,7 @@ struct VCardPSP
 /*!
 ** \brief Marginal PSP
 */
-template<class NextT = void>
+template<class NextT>
 class PSP: public Variable::IVariable<PSP<NextT>, NextT, VCardPSP>
 {
 public:
