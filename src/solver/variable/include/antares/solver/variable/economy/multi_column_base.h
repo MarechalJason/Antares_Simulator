@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : typedef for results template
+**   - \c ResultsType : type alias for results template
 **   - \c decimal : uint8_t
 **   - \c columnCaption(unsigned int) -> std::string (for GUI display)
 **
@@ -55,7 +55,7 @@ struct VCardMultiColumn
     }
 
     using ResultsType = typename Traits::ResultsType;
-    typedef VCardMultiColumn VCardForSpatialAggregate;
+    using VCardForSpatialAggregate = VCardMultiColumn;
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
@@ -71,8 +71,8 @@ struct VCardMultiColumn
     static constexpr uint8_t hasIntermediateValues = 1;
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesBaseType[columnCount];
-    typedef IntermediateValuesBaseType* IntermediateValuesType;
+    using IntermediateValuesBaseType = IntermediateValues[columnCount];
+    using IntermediateValuesType = IntermediateValuesBaseType*;
 
     using IntermediateValuesTypeForSpatialAg = std::unique_ptr<IntermediateValuesBaseType[]>;
 
@@ -96,11 +96,10 @@ class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCou
                                                   VCardMultiColumn<Traits, ColCount>>
 {
 public:
-    typedef VCardMultiColumn<Traits, ColCount> VCardType;
-    typedef Variable::IVariable<MultiColumnBase<Traits, ColCount>, void, VCardType>
-      AncestorType;
-    typedef typename VCardType::ResultsType ResultsType;
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VCardType = VCardMultiColumn<Traits, ColCount>;
+    using AncestorType = Variable::IVariable<MultiColumnBase<Traits, ColCount>, void, VCardType>;
+    using ResultsType = typename VCardType::ResultsType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 

@@ -15,10 +15,10 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : typedef for results template
+**   - \c ResultsType : type alias for results template
 **
 ** - Optional hooks (dispatched via \c if constexpr):
-**   - \c AuxiliaryDataType : typedef
+**   - \c AuxiliaryDataType : type alias
 **   - \c initializeAuxiliaryData(AuxiliaryDataType&, Data::Study*, unsigned int, size_t) -> void
 **   - \c yearBegin(AuxiliaryDataType&, unsigned int, unsigned int, size_t) -> void
 **   - \c setHourlyValue(std::vector<IntermediateValues>&, AuxiliaryDataType&, State&, unsigned int)
@@ -60,13 +60,13 @@ struct VCardDispatchablePlantByClusterBase
         return Traits::Description();
     }
 
-    //! The expecte results
-    typedef Results<R::AllYears::Average< // The average values throughout all years
+    //! The expected results
+    using ResultsType = Results<R::AllYears::Average< // The average values throughout all years
       >>
-      ResultsType;
+      ;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardDispatchablePlantByClusterBase VCardForSpatialAggregate;
+    using VCardForSpatialAggregate = VCardDispatchablePlantByClusterBase;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
@@ -90,9 +90,9 @@ struct VCardDispatchablePlantByClusterBase
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesDeepType;
-    typedef std::vector<IntermediateValues> IntermediateValuesBaseType;
-    typedef std::vector<IntermediateValuesBaseType> IntermediateValuesType;
+    using IntermediateValuesDeepType = IntermediateValues;
+    using IntermediateValuesBaseType = std::vector<IntermediateValues>;
+    using IntermediateValuesType = std::vector<IntermediateValuesBaseType>;
 
 }; // class VCardDispatchablePlantByClusterBase
 
@@ -103,13 +103,13 @@ class DispatchablePlantByClusterBase
                                  VCardDispatchablePlantByClusterBase<Traits>>
 {
 public:
-    typedef VCardDispatchablePlantByClusterBase<Traits> VCardType;
-    typedef Variable::IVariable<DispatchablePlantByClusterBase<Traits>, void, VCardType>
-      AncestorType;
+    using VCardType = VCardDispatchablePlantByClusterBase<Traits>;
+    using AncestorType =
+      Variable::IVariable<DispatchablePlantByClusterBase<Traits>, void, VCardType>;
 
-    typedef typename VCardType::ResultsType ResultsType;
+    using ResultsType = typename VCardType::ResultsType;
 
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
     static constexpr std::size_t count = 1;
 

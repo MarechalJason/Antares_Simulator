@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : typedef for results template
+**   - \c ResultsType : type alias for results template
 **   - \c decimal : uint8_t
 **   - \c spatialAggregate : uint8_t
 **   - \c computeStats(IntermediateValues&) -> void
@@ -61,10 +61,10 @@ struct VCard_LinkBase
         return Traits::Description();
     }
 
-    //! The expecte results
-    typedef typename Traits::ResultsType ResultsType;
+    //! The expected results
+    using ResultsType = typename Traits::ResultsType;
 
-    typedef VCard_LinkBase VCardForSpatialAggregate;
+    using VCardForSpatialAggregate = VCard_LinkBase;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;
@@ -89,8 +89,8 @@ struct VCard_LinkBase
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesBaseType;
-    typedef std::vector<IntermediateValues> IntermediateValuesType;
+    using IntermediateValuesBaseType = IntermediateValues;
+    using IntermediateValuesType = std::vector<IntermediateValues>;
 
 }; // class VCard
 
@@ -100,30 +100,24 @@ class EconomyLink_Base
 {
 public:
     //! VCard
-    typedef VCard_LinkBase<Traits> VCardType;
+    using VCardType = VCard_LinkBase<Traits>;
     //! Ancestor
-    typedef Variable::IVariable<EconomyLink_Base<Traits>, void, VCardType> AncestorType;
+    using AncestorType = Variable::IVariable<EconomyLink_Base<Traits>, void, VCardType>;
 
     //! List of expected results
-    typedef typename VCardType::ResultsType ResultsType;
+    using ResultsType = typename VCardType::ResultsType;
 
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
-    enum
-    {
-        count = 1,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        enum
-        {
-            count = ((VCardType::categoryDataLevel & CDataLevel
-                      && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
-        };
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                       && VCardType::categoryFileLevel & CFile)
+                                      ? VCardType::columnCount * ResultsType::count
+                                      : 0);
     };
 
 public:
@@ -190,7 +184,7 @@ public:
 
     void hourForEachLink(State& state, unsigned int numSpace)
     {
-if constexpr (requires {
+        if constexpr (requires {
                           Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
                       })
         {
@@ -218,7 +212,7 @@ if constexpr (requires {
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
-if constexpr (requires {
+        if constexpr (requires {
                           Traits::buildDigest(results,
                                               digestLevel,
                                               dataLevel,

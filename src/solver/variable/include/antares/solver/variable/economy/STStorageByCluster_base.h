@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : typedef for results template
+**   - \c ResultsType : type alias for results template
 **   - \c clusterCount(const Data::Area*) -> size_t
 **   - \c computeStats(IntermediateValues&) -> void
 **   - \c buildSurveyReport(const std::vector<IntermediateValues>&, SurveyResults&, int, int) ->
@@ -52,13 +52,13 @@ struct VCardSTStorageByClusterBase
         return Traits::Description();
     }
 
-    //! The expecte results
-    typedef Results<R::AllYears::Average< // The average values throughout all years
+    //! The expected results
+    using ResultsType = Results<R::AllYears::Average< // The average values throughout all years
       >>
-      ResultsType;
+      ;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardSTStorageByClusterBase VCardForSpatialAggregate;
+    using VCardForSpatialAggregate = VCardSTStorageByClusterBase;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
@@ -81,9 +81,9 @@ struct VCardSTStorageByClusterBase
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesDeepType;
-    typedef std::vector<IntermediateValues> IntermediateValuesBaseType;
-    typedef std::vector<IntermediateValuesBaseType> IntermediateValuesType;
+    using IntermediateValuesDeepType = IntermediateValues;
+    using IntermediateValuesBaseType = std::vector<IntermediateValues>;
+    using IntermediateValuesType = std::vector<IntermediateValuesBaseType>;
 
 }; // class VCardSTStorageByClusterBase
 
@@ -93,13 +93,12 @@ class STStorageByClusterBase: public Variable::IVariable<STStorageByClusterBase<
                                                          VCardSTStorageByClusterBase<Traits>>
 {
 public:
-    typedef VCardSTStorageByClusterBase<Traits> VCardType;
-    typedef Variable::IVariable<STStorageByClusterBase<Traits>, void, VCardType>
-      AncestorType;
+    using VCardType = VCardSTStorageByClusterBase<Traits>;
+    using AncestorType = Variable::IVariable<STStorageByClusterBase<Traits>, void, VCardType>;
 
-    typedef typename VCardType::ResultsType ResultsType;
+    using ResultsType = typename VCardType::ResultsType;
 
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
     static constexpr std::size_t count = 1;
 

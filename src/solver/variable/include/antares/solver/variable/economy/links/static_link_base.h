@@ -40,8 +40,8 @@ struct VCardStaticLinkBase
         return Traits::Description();
     }
 
-    typedef typename Traits::ResultsType ResultsType;
-    typedef VCardStaticLinkBase VCardForSpatialAggregate;
+    using ResultsType = typename Traits::ResultsType;
+    using VCardForSpatialAggregate = VCardStaticLinkBase;
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
@@ -57,7 +57,7 @@ struct VCardStaticLinkBase
     static constexpr uint8_t hasIntermediateValues = 1;
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesType;
+    using IntermediateValuesType = IntermediateValues;
 
 }; // struct VCardStaticLinkBase
 
@@ -66,17 +66,14 @@ class StaticLinkBase
     : public Variable::IVariable<StaticLinkBase<Traits>, void, VCardStaticLinkBase<Traits>>
 {
 public:
-    typedef VCardStaticLinkBase<Traits> VCardType;
-    typedef Variable::IVariable<StaticLinkBase<Traits>, void, VCardType> AncestorType;
-    typedef typename VCardType::ResultsType ResultsType;
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VCardType = VCardStaticLinkBase<Traits>;
+    using AncestorType = Variable::IVariable<StaticLinkBase<Traits>, void, VCardType>;
+    using ResultsType = typename VCardType::ResultsType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 
-    enum
-    {
-        count = 1,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics

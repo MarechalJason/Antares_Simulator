@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : typedef for results template
+**   - \c ResultsType : type alias for results template
 **   - \c decimal : uint8_t
 **   - \c buildColumnDescriptors(Data::Area*) -> std::vector<ColumnDescriptor>
 **
@@ -58,7 +58,7 @@ struct VCardDynamicMultiColumn
     }
 
     using ResultsType = typename Traits::ResultsType;
-    typedef VCardDynamicMultiColumn VCardForSpatialAggregate;
+    using VCardForSpatialAggregate = VCardDynamicMultiColumn;
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
@@ -74,9 +74,9 @@ struct VCardDynamicMultiColumn
     static constexpr uint8_t hasIntermediateValues = 1;
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesDeepType;
-    typedef std::vector<IntermediateValues> IntermediateValuesBaseType;
-    typedef std::vector<IntermediateValuesBaseType> IntermediateValuesType;
+    using IntermediateValuesDeepType = IntermediateValues;
+    using IntermediateValuesBaseType = std::vector<IntermediateValues>;
+    using IntermediateValuesType = std::vector<IntermediateValuesBaseType>;
 
     using IntermediateValuesTypeForSpatialAg = std::unique_ptr<IntermediateValuesDeepType[]>;
 
@@ -101,11 +101,10 @@ class DynamicMultiColumnBase: public Variable::IVariable<DynamicMultiColumnBase<
                                                          VCardDynamicMultiColumn<Traits>>
 {
 public:
-    typedef VCardDynamicMultiColumn<Traits> VCardType;
-    typedef Variable::IVariable<DynamicMultiColumnBase<Traits>, void, VCardType>
-      AncestorType;
-    typedef typename VCardType::ResultsType ResultsType;
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VCardType = VCardDynamicMultiColumn<Traits>;
+    using AncestorType = Variable::IVariable<DynamicMultiColumnBase<Traits>, void, VCardType>;
+    using ResultsType = typename VCardType::ResultsType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 

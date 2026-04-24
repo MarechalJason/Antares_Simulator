@@ -18,7 +18,7 @@
 
 ## Contexte
 
-La campagne anti-duplication documentée dans `VARIABLE_DEDUP_PLAN.md` a supprimé ~3 400 lignes de boilerplate et migré ~22 variables vers 8 bases `Traits`-based (`Economy_Base`, `EconomyLink_Base`, `STStorageByClusterBase`, `DispatchablePlantByClusterBase`, `StaticLinkBase`, `MultiColumnBase`, `DynamicMultiColumnBase`, `TimeSeriesValuesBase`).
+La campagne anti-duplication documentée dans `VARIABLE_DEDUP_PLAN.md` a supprimé ~3 400 lignes de boilerplate et migré ~22 variables vers 8 bases `Traits`-based (`EconomyVariableBase`, `EconomyLink_Base`, `STStorageByClusterBase`, `DispatchablePlantByClusterBase`, `StaticLinkBase`, `MultiColumnBase`, `DynamicMultiColumnBase`, `TimeSeriesValuesBase`).
 
 Maintenant que l'essentiel du boilerplate est éliminé, la duplication visible a reculé, mais **des incohérences d'API et de structure sont apparues** (naming drift, hooks redondants, organisation de dossiers obsolète). L'objectif de ce plan n'est **pas** plus de dédup ; c'est de cadrer une revue de design pour rendre la surface API cohérente et pérenne avant que d'autres contributeurs s'appuient dessus.
 
@@ -55,7 +55,7 @@ Revue ciblée sur 9 axes (S1–S9 ci-dessous). Chaque axe est indépendant : le 
 
 **Note de régression corrigée :** le commit `6e9488a2a "refactor(economy): simplify setHourlyValue logic"` (2026-04-23) a retiré le support `checkCondition` de la policy **sans migrer LOLP/LOLD**. Résultat : LOLP/LOLD/LOLPCsr/LOLDCsr silencieusement no-op (sortie = 0). Corrigé en migrant les 4 Traits vers `setHourlyValue` explicite, ce qui a aussi permis d'éliminer complètement `checkCondition` du codebase. Tests `test-intermediate`, `test-surveyresults`, `test-residual-load`, `test-migrated-variables-metadata`, `test-dynamic-aggregation`, `test-setofareas-reports` passent. **Validation digest byte-à-byte sur étude de référence LOLP/LOLD recommandée avant merge** (la régression 6e9488a2a rendait LOLP muet, donc le baseline pré-régression n'est pas comparable).
 
-**Résumé :** S1 complet. Migrations `checkCondition + value` → `setHourlyValue` finies (5 fichiers). Code mort `Economy_Base::setHourlyValueIfSupported` (privé, 2 overloads) retiré. `computeHourlyValue` → `hourValue` fait par 2fa50e3af. Reste uniquement la validation digest byte-à-byte.
+**Résumé :** S1 complet. Migrations `checkCondition + value` → `setHourlyValue` finies (5 fichiers). Code mort `EconomyVariableBase::setHourlyValueIfSupported` (privé, 2 overloads) retiré. `computeHourlyValue` → `hourValue` fait par 2fa50e3af. Reste uniquement la validation digest byte-à-byte.
 
 #### Inventaire complet
 
@@ -174,7 +174,7 @@ Le pattern `checkCondition` est aussi utilisé par `lolpCsr`, `loldCsr`, `lolp`,
 3. ✅ **Migrer les Traits multi-column dynamique** : remplacer `setHourlyValuesWithDescriptors` par `setHourlyValue(..., descriptors)`. Supprimer le paramètre `groupToNumbers_` (les 3 Traits peuvent reconstruire la map depuis `descriptors` — ou on la porte dans `AuxiliaryDataType`).
 4. ✅ **Renommer `computeHourlyValue` → `hourValue(state, up, down)`** (lien). 2 fichiers (`congestionFee.h`, `congestionFeeAbs.h`) + dispatch `links_base.h:204`.
 5. ✅ **Migrer `checkCondition + value`** vers `setHourlyValue` explicite. Décision finale : aucune exception — **toute** la famille `checkCondition` a été migrée (y compris LOLP/LOLD/CSR, rendue nécessaire par la régression introduite par 6e9488a2a). Fichiers migrés dans ce cycle : `unsupliedEnergy.h`, `lolp.h`, `lold.h`, `lolpCsr.h`, `loldCsr.h`. Autres fichiers area (`price.h`, `residual.h`, etc.) ont été migrés dans des commits précédents.
-6. ✅ **Supprimer les vieux entry-points** dans les bases. `economy_base.h` : policy `HourlyComputationPolicy` simplifiée à 2 branches (commit 6e9488a2a) ; code mort `Economy_Base::setHourlyValueIfSupported` privé (2 overloads à 3+1 branches) retiré ; mention « backwards compatibility » dans le docstring supprimée. `links_base.h` : 3 branches `if constexpr` restantes pour 2 concepts (`hourForEachLink` + `hourValue` surchargé).
+6. ✅ **Supprimer les vieux entry-points** dans les bases. `economy_base.h` : policy `HourlyComputationPolicy` simplifiée à 2 branches (commit 6e9488a2a) ; code mort `EconomyVariableBase::setHourlyValueIfSupported` privé (2 overloads à 3+1 branches) retiré ; mention « backwards compatibility » dans le docstring supprimée. `links_base.h` : 3 branches `if constexpr` restantes pour 2 concepts (`hourForEachLink` + `hourValue` surchargé).
 
 #### Done si
 

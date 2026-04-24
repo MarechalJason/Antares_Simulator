@@ -15,13 +15,13 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : typedef for results template
+**   - \c ResultsType : type alias for results template
 **   - \c decimal : uint8_t
 **   - \c spatialAggregate : uint8_t
 **   - \c computeStats(IntermediateValues&) -> void
 **
 ** - Optional hooks (dispatched via \c if constexpr (requires { ... })):
-**   - \c AuxiliaryDataType : typedef (enables auxiliary data support)
+**   - \c AuxiliaryDataType : type alias (enables auxiliary data support)
 **   - \c isPossiblyNonApplicable : uint8_t (0 or 1)
 **   - \c initializeFromArea(AuxiliaryDataType&, Data::Study*, Data::Area*) -> void
 *(InitializationPolicy)
@@ -201,10 +201,10 @@ struct EconomyVariableCard
         return Traits::Description();
     }
 
-    //! The expecte results
-    typedef typename Traits::ResultsType ResultsType;
+    //! The expected results
+    using ResultsType = typename Traits::ResultsType;
 
-    typedef EconomyVariableCard VCardForSpatialAggregate;
+    using VCardForSpatialAggregate = EconomyVariableCard;
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
     //! File level (provided by the type of the results)
@@ -238,8 +238,8 @@ struct EconomyVariableCard
         }
     }();
 
-    typedef IntermediateValues IntermediateValuesBaseType;
-    typedef std::vector<IntermediateValues> IntermediateValuesType;
+    using IntermediateValuesBaseType = IntermediateValues;
+    using IntermediateValuesType = std::vector<IntermediateValues>;
 
     using IntermediateValuesTypeForSpatialAg = std::unique_ptr<IntermediateValuesBaseType[]>;
 
@@ -257,24 +257,21 @@ class EconomyVariableBase
 {
 public:
     //! VCard
-    typedef EconomyVariableCard<Traits> VCardType;
+    using VCardType = EconomyVariableCard<Traits>;
     //! Ancestor
-    typedef Variable::IVariable<EconomyVariableBase<Traits>, void, VCardType> AncestorType;
+    using AncestorType = Variable::IVariable<EconomyVariableBase<Traits>, void, VCardType>;
 
     //! List of expected results
-    typedef typename VCardType::ResultsType ResultsType;
+    using ResultsType = typename VCardType::ResultsType;
 
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
     static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
-                                       && VCardType::categoryFileLevel & CFile)
-                                      ? VCardType::columnCount * ResultsType::count
-                                      : 0);
+        static constexpr int count = EconomyVariableBase::template countColumns<CDataLevel, CFile>();
     };
 
 public:
@@ -302,7 +299,7 @@ public:
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        initializeFromAreaIfSupported(auxiliaryData_, study, area);
+        Hooks_::InitializationPolicy::initializeIfSupported<Traits>(auxiliaryData_, study, area);
     }
 
     void initializeFromLink(Data::Study* /*study*/, Data::AreaLink* /*link*/)
@@ -326,7 +323,11 @@ public:
         // Reset the values for the current year
         pValuesForTheCurrentYear[numSpace].reset();
 
-        yearBeginIfSupported(pValuesForTheCurrentYear[numSpace], auxiliaryData_, year, numSpace);
+        Hooks_::YearlyLifecyclePolicy::yearBeginIfSupported<Traits>(
+          pValuesForTheCurrentYear[numSpace],
+          auxiliaryData_,
+          year,
+          numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
@@ -407,22 +408,12 @@ public:
     }
 
 private:
-    static void initializeFromAreaIfSupported(AuxiliaryDataType& auxiliaryData,
-                                              Data::Study* study,
-                                              Data::Area* area)
+    template<int CDataLevel, int CFile>
+    static constexpr int countColumns()
     {
-        Hooks_::InitializationPolicy::initializeIfSupported<Traits>(auxiliaryData, study, area);
-    }
-
-    static void yearBeginIfSupported(IntermediateValues& yearlyValues,
-                                     AuxiliaryDataType& auxiliaryData,
-                                     unsigned int year,
-                                     unsigned int numSpace)
-    {
-        Hooks_::YearlyLifecyclePolicy::yearBeginIfSupported<Traits>(yearlyValues,
-                                                                    auxiliaryData,
-                                                                    year,
-                                                                    numSpace);
+        return ((VCardType::categoryDataLevel & CDataLevel && VCardType::categoryFileLevel & CFile)
+                ? VCardType::columnCount * ResultsType::count
+                : 0);
     }
 
 private:
