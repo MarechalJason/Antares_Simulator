@@ -108,10 +108,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
-                                      && VCardType::categoryFileLevel & CFile)
-                                      ? VCardType::columnCount * ResultsType::count
-                                      : 0);
+        static constexpr int count =
+          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:

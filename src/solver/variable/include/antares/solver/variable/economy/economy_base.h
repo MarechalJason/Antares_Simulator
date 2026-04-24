@@ -75,88 +75,63 @@ namespace Antares::Solver::Variable::Economy
 
 namespace Hooks_
 {
-
-struct InitializationPolicy
+template<class Traits, class AuxData>
+void initializeFromAreaIfSupported(AuxData& aux, Data::Study* study, Data::Area* area)
 {
-    template<class Traits, class AuxData>
-    static void initializeIfSupported(AuxData& aux, Data::Study* study, Data::Area* area)
+    if constexpr (requires { Traits::initializeFromArea(aux, study, area); })
     {
-        if constexpr (requires { Traits::initializeFromArea(aux, study, area); })
-        {
-            Traits::initializeFromArea(aux, study, area);
-        }
+        Traits::initializeFromArea(aux, study, area);
     }
-};
+}
 
-struct YearlyLifecyclePolicy
+template<class Traits, class IV, class Aux>
+void yearBeginIfSupported(IV& iv, Aux& aux, uint year, uint numSpace)
 {
-    template<class Traits, class IV, class Aux>
-    static void yearBeginIfSupported(IV& iv, Aux& aux, uint year, uint numSpace)
+    if constexpr (requires { Traits::yearBegin(iv, aux, year, numSpace); })
     {
-        if constexpr (requires { Traits::yearBegin(iv, aux, year, numSpace); })
-        {
-            Traits::yearBegin(iv, aux, year, numSpace);
-        }
+        Traits::yearBegin(iv, aux, year, numSpace);
     }
+}
 
-    template<class Traits, class IV, class Aux, class State>
-    static void yearEndBuildIfSupported(IV& iv,
-                                        Aux& aux,
-                                        State& state,
-                                        uint year,
-                                        uint numSpace)
-    {
-        if constexpr (requires { Traits::yearEndBuild(iv, aux, state, year, numSpace); })
-        {
-            Traits::yearEndBuild(iv, aux, state, year, numSpace);
-        }
-    }
-};
-
-struct ThermalClusterPolicy
+template<class Traits, class IV, class Aux, class State>
+void yearEndBuildIfSupported(IV& iv, Aux& aux, State& state, uint year, uint numSpace)
 {
-    template<class Traits, class IV, class State>
-    static void yearEndBuildForEachIfSupported(IV& iv,
-                                               State& state,
-                                               uint year,
-                                               uint numSpace)
+    if constexpr (requires { Traits::yearEndBuild(iv, aux, state, year, numSpace); })
     {
-        if constexpr (requires {
-                          Traits::yearEndBuildForEachThermalCluster(iv, state, year, numSpace);
-                      })
-        {
-            Traits::yearEndBuildForEachThermalCluster(iv, state, year, numSpace);
-        }
+        Traits::yearEndBuild(iv, aux, state, year, numSpace);
     }
-};
+}
 
-struct HourlyAggregationPolicy
+template<class Traits, class IV, class State>
+void yearEndBuildForEachIfSupported(IV& iv, State& state, uint year, uint numSpace)
 {
-    template<class Traits, class IV, class State>
-    static void weekForEachAreaIfSupported(IV& iv, State& state, uint numSpace)
+    if constexpr (requires { Traits::yearEndBuildForEachThermalCluster(iv, state, year, numSpace); })
     {
-        if constexpr (requires { Traits::weekForEachArea(iv, state, numSpace); })
-        {
-            Traits::weekForEachArea(iv, state, numSpace);
-        }
+        Traits::yearEndBuildForEachThermalCluster(iv, state, year, numSpace);
     }
-};
+}
 
-struct HourlyComputationPolicy
+template<class Traits, class IV, class State>
+void weekForEachAreaIfSupported(IV& iv, State& state, uint numSpace)
 {
-    template<class Traits, class IV, class Aux, class State>
-    static void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, uint numSpace)
+    if constexpr (requires { Traits::weekForEachArea(iv, state, numSpace); })
     {
-        if constexpr (requires { Traits::setHourlyValue(iv, aux, state, numSpace); })
-        {
-            Traits::setHourlyValue(iv, aux, state, numSpace);
-        }
-        else if constexpr (requires { Traits::setHourlyValue(iv, state, numSpace); })
-        {
-            Traits::setHourlyValue(iv, state, numSpace);
-        }
+        Traits::weekForEachArea(iv, state, numSpace);
     }
-};
+}
+
+template<class Traits, class IV, class Aux, class State>
+void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, uint numSpace)
+{
+    if constexpr (requires { Traits::setHourlyValue(iv, aux, state, numSpace); })
+    {
+        Traits::setHourlyValue(iv, aux, state, numSpace);
+    }
+    else if constexpr (requires { Traits::setHourlyValue(iv, state, numSpace); })
+    {
+        Traits::setHourlyValue(iv, state, numSpace);
+    }
+}
 
 } // namespace Hooks_
 
@@ -178,6 +153,12 @@ struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataTyp
 {
     using type = typename TraitsT::AuxiliaryDataType;
 };
+
+template<class VCardType, class ResultsType, int CDataLevel, int CFile>
+inline constexpr int statisticsCount =
+  ((VCardType::categoryDataLevel & CDataLevel && VCardType::categoryFileLevel & CFile)
+   ? VCardType::columnCount * ResultsType::count
+   : 0);
 } // namespace detail
 
 template<class Traits>
@@ -271,7 +252,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count = EconomyVariableBase::template countColumns<CDataLevel, CFile>();
+        static constexpr int count =
+          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -299,7 +281,7 @@ public:
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        Hooks_::InitializationPolicy::initializeIfSupported<Traits>(auxiliaryData_, study, area);
+        Hooks_::initializeFromAreaIfSupported<Traits>(auxiliaryData_, study, area);
     }
 
     void initializeFromLink(Data::Study* /*study*/, Data::AreaLink* /*link*/)
@@ -323,7 +305,7 @@ public:
         // Reset the values for the current year
         pValuesForTheCurrentYear[numSpace].reset();
 
-        Hooks_::YearlyLifecyclePolicy::yearBeginIfSupported<Traits>(
+        Hooks_::yearBeginIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
           auxiliaryData_,
           year,
@@ -332,7 +314,7 @@ public:
 
     void yearEndBuild(State& state, uint year, uint numSpace)
     {
-        Hooks_::YearlyLifecyclePolicy::yearEndBuildIfSupported<Traits>(
+        Hooks_::yearEndBuildIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
           auxiliaryData_,
           state,
@@ -342,7 +324,7 @@ public:
 
     void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace)
     {
-        Hooks_::ThermalClusterPolicy::yearEndBuildForEachIfSupported<Traits>(
+        Hooks_::yearEndBuildForEachIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
           state,
           year,
@@ -367,7 +349,7 @@ public:
 
     void hourForEachArea(State& state, uint numSpace)
     {
-        Hooks_::HourlyComputationPolicy::setHourlyValueIfSupported<Traits>(
+        Hooks_::setHourlyValueIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
           auxiliaryData_,
           state,
@@ -376,7 +358,7 @@ public:
 
     void weekForEachArea(State& state, uint numSpace)
     {
-        Hooks_::HourlyAggregationPolicy::weekForEachAreaIfSupported<Traits>(
+        Hooks_::weekForEachAreaIfSupported<Traits>(
           pValuesForTheCurrentYear[numSpace],
           state,
           numSpace);
@@ -407,14 +389,6 @@ public:
         }
     }
 
-private:
-    template<int CDataLevel, int CFile>
-    static constexpr int countColumns()
-    {
-        return ((VCardType::categoryDataLevel & CDataLevel && VCardType::categoryFileLevel & CFile)
-                ? VCardType::columnCount * ResultsType::count
-                : 0);
-    }
 
 private:
     //! Intermediate values for each year
