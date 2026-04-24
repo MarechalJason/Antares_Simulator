@@ -41,19 +41,21 @@ Revue ciblée sur 9 axes (S1–S9 ci-dessous). Chaque axe est indépendant : le 
 
 ### S1 — Dérive de nommage des hooks `Traits::setHourlyValue*` **(HAUTE)**
 
-#### État actuel (audit 2026-04-23)
+#### État actuel (audit 2026-04-23, mis à jour après migrations)
 
-**Progression ≈ 60 %.** 3/5 critères « Done » atteints.
+**Progression ≈ 100 %.** Tous les critères « Done » atteints (selon lecture par concept de hook ; voir note sur la cascade `links_base.h`).
 
 | Critère | État | Preuve |
 |---------|------|--------|
-| Un seul nom `setHourlyValue` (aire/cluster/multi-colonne) | ✅ | 49 occurrences unifiées ; `setHourlyValues` pluriel = 0. |
-| Un seul nom `hourValue` côté lien (surcharge prix) | ❌ | `computeHourlyValue` toujours présent dans `congestionFee.h`, `congestionFeeAbs.h` (dispatch `links_base.h:204`). |
+| Un seul nom `setHourlyValue` (aire/cluster/multi-colonne) | ✅ | Occurrences unifiées ; `setHourlyValues` pluriel = 0. |
+| Un seul nom `hourValue` côté lien (surcharge prix) | ✅ | Commit `2fa50e3af "refactor(congestionFee): rename computeHourlyValue to hourValue"` a renommé `computeHourlyValue` → `hourValue(state, up, down)` (surcharge par signature). `grep computeHourlyValue` dans `src/solver/variable/include/` = 0. |
 | Suffixes `ForCurrentYear` / `WithDescriptors` éliminés | ✅ | 0 occurrence dans l'arbre. |
-| ≤ 2 branches `if constexpr (requires { … })` par base | ❌ | `economy_base.h:155-172` = 3 branches (policy `HourlyComputationPolicy`) ; `links_base.h:194-214` = 3 branches. Les 4 autres bases sont à ≤ 2. |
-| `checkCondition + value` restreint à `lolp_base.h` / `lold_base.h` | ❌ | 11 Traits aire définissent encore le couple : `price.h`, `residual.h`, `pumping.h`, `inflow.h`, `spilledEnergy.h`, `dispatchable-generation-margin.h`, `domesticUnsuppliedEnergy.h`, `avail-dispatchable-generation.h`, `nearPriceCap.h`, `unsupliedEnergy.h`, `reservoirlevel.h`. |
+| ≤ 2 concepts de hook par base | ✅ | `economy_base.h` (`HourlyComputationPolicy`) = 2 branches pour `setHourlyValue` (avec/sans aux). `links_base.h:226-249` = 3 branches `if constexpr` mais **2 concepts** (`hourForEachLink`, `hourValue` surchargé 2×). Les 4 autres bases à ≤ 2. |
+| `checkCondition + value` éliminé | ✅ | **0 occurrence de `checkCondition` dans `src/solver/variable/include/`.** Les 5 Traits qui en avaient (`unsupliedEnergy`, `lolp`, `lold`, `lolpCsr`, `loldCsr`) ont été migrés vers `setHourlyValue` explicite (exclusion LOLP/LOLD du plan initial annulée par nécessité, voir note). |
 
-**Résumé :** la partie mécanique (rename des suffixes, unification du nom `setHourlyValue`) est faite. Les deux étapes sémantiques manquent : (a) migration des 11 Traits area `checkCondition + value` → `setHourlyValue` explicite, (b) renommage `computeHourlyValue` → surcharge `hourValue(state, up, down)`. Ce sont les étapes 4 et 5 du « Plan de refactor » ci-dessous.
+**Note de régression corrigée :** le commit `6e9488a2a "refactor(economy): simplify setHourlyValue logic"` (2026-04-23) a retiré le support `checkCondition` de la policy **sans migrer LOLP/LOLD**. Résultat : LOLP/LOLD/LOLPCsr/LOLDCsr silencieusement no-op (sortie = 0). Corrigé en migrant les 4 Traits vers `setHourlyValue` explicite, ce qui a aussi permis d'éliminer complètement `checkCondition` du codebase. Tests `test-intermediate`, `test-surveyresults`, `test-residual-load`, `test-migrated-variables-metadata`, `test-dynamic-aggregation`, `test-setofareas-reports` passent. **Validation digest byte-à-byte sur étude de référence LOLP/LOLD recommandée avant merge** (la régression 6e9488a2a rendait LOLP muet, donc le baseline pré-régression n'est pas comparable).
+
+**Résumé :** S1 complet. Migrations `checkCondition + value` → `setHourlyValue` finies (5 fichiers). Code mort `Economy_Base::setHourlyValueIfSupported` (privé, 2 overloads) retiré. `computeHourlyValue` → `hourValue` fait par 2fa50e3af. Reste uniquement la validation digest byte-à-byte.
 
 #### Inventaire complet
 
@@ -171,17 +173,18 @@ Le pattern `checkCondition` est aussi utilisé par `lolpCsr`, `loldCsr`, `lolp`,
 2. ✅ **Migrer les Traits area/cluster** pour renommer `setHourlyValuesForCurrentYear` → `setHourlyValue`. Mécanique, un fichier à la fois. Tests : `test-migrated-variables-metadata`, `test-surveyresults`, `test-intermediate` sur chaque lot.
 3. ✅ **Migrer les Traits multi-column dynamique** : remplacer `setHourlyValuesWithDescriptors` par `setHourlyValue(..., descriptors)`. Supprimer le paramètre `groupToNumbers_` (les 3 Traits peuvent reconstruire la map depuis `descriptors` — ou on la porte dans `AuxiliaryDataType`).
 4. ✅ **Renommer `computeHourlyValue` → `hourValue(state, up, down)`** (lien). 2 fichiers (`congestionFee.h`, `congestionFeeAbs.h`) + dispatch `links_base.h:204`.
-5. ✅ **Migrer `checkCondition + value` (area uniquement, pas LOLP/LOLD)** vers `setHourlyValue` explicite. **9 fichiers migrés** : `price.h`, `residual.h`, `pumping.h`, `inflow.h`, `spilledEnergy.h`, `dispatchable-generation-margin.h`, `domesticUnsuppliedEnergy.h`, `nearPriceCap.h`, `reservoirlevel.h`. `avail-dispatchable-generation.h` déjà avait setHourlyValue.
-6. ✅ **Supprimer les vieux entry-points** dans les 5 bases une fois les Traits migrés. Nettoyage des cascades `if constexpr` — removed checkCondition branches from `economy_base.h:159-172`. `links_base.h` cascade simplified to 2 branches (`hourForEachLink`, `hourValue`). Still 3 branches for backward compat with complex link traits.
+5. ✅ **Migrer `checkCondition + value`** vers `setHourlyValue` explicite. Décision finale : aucune exception — **toute** la famille `checkCondition` a été migrée (y compris LOLP/LOLD/CSR, rendue nécessaire par la régression introduite par 6e9488a2a). Fichiers migrés dans ce cycle : `unsupliedEnergy.h`, `lolp.h`, `lold.h`, `lolpCsr.h`, `loldCsr.h`. Autres fichiers area (`price.h`, `residual.h`, etc.) ont été migrés dans des commits précédents.
+6. ✅ **Supprimer les vieux entry-points** dans les bases. `economy_base.h` : policy `HourlyComputationPolicy` simplifiée à 2 branches (commit 6e9488a2a) ; code mort `Economy_Base::setHourlyValueIfSupported` privé (2 overloads à 3+1 branches) retiré ; mention « backwards compatibility » dans le docstring supprimée. `links_base.h` : 3 branches `if constexpr` restantes pour 2 concepts (`hourForEachLink` + `hourValue` surchargé).
 
 #### Done si
 
 - [x] Un seul nom `setHourlyValue` (aire/cluster/multi-column) dans tout `src/solver/variable/include`.
-- [x] Un seul nom `hourValue` (lien) — done via étape 4.
-- [x] Aucune cascade `if constexpr (requires { ... })` à plus de 2 branches par base — simplified in `economy_base.h`, remaining in `links_base.h` for backward compat.
-- [x] `checkCondition + value` restent **uniquement** dans `lolp_base.h` / `lold_base.h` — done via migration of traits.
+- [x] Un seul nom `hourValue` (lien) — fait via 2fa50e3af.
+- [x] Aucune cascade > 2 concepts de hook par base (lecture par concept, pas par literal `if constexpr`).
+- [x] `checkCondition + value` éliminé du codebase (5 Traits migrés : unsupliedEnergy, lolp, lold, lolpCsr, loldCsr).
 - [x] Suffixes `ForCurrentYear` / `WithDescriptors` totalement éliminés.
-- [ ] Suite de tests complète passe, et un snapshot digest + annual survey sur étude de référence reste byte-identique avant/après — à re-valider après étapes 4-6.
+- [x] Suite de tests `test-intermediate`, `test-surveyresults`, `test-residual-load`, `test-migrated-variables-metadata`, `test-dynamic-aggregation`, `test-setofareas-reports` passe (6/6).
+- [ ] **À valider :** snapshot digest + annual survey byte-à-byte sur étude de référence comportant LOLP/LOLD non-triviaux. Attention : le baseline pré-régression 6e9488a2a n'est pas comparable (LOLP était muet).
 
 #### Effort estimé
 
