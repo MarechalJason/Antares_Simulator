@@ -67,13 +67,13 @@ struct VCardBindingConstMarginCost
     - if binding constraint is saturated (rhs is reached), the value is the total benefit (�/MW) for
    the system that would result in increasing the BC's rhs of 1 MW.
 */
-template<class NextT = Container::EndOfList>
+template<class NextT = void>
 class BindingConstMarginCost
     : public Variable::IVariable<BindingConstMarginCost<NextT>, NextT, VCardBindingConstMarginCost>
 {
 public:
     //! Type of the next static variable
-    typedef NextT NextType;
+    using NextType = NextT;
     //! VCard
     typedef VCardBindingConstMarginCost VCardType;
     //! Ancestor
@@ -86,8 +86,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -97,9 +96,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -112,12 +110,10 @@ public:
 
     void simulationBegin()
     {
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void initializeFromStudy(Data::Study& study)
@@ -133,8 +129,6 @@ public:
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
         }
-
-        NextType::initializeFromStudy(study);
     }
 
     template<class R>
@@ -162,9 +156,6 @@ public:
     {
         // Reset the values for the current year
         pValuesForTheCurrentYear[numSpace].reset();
-
-        // Next variable
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
@@ -190,18 +181,12 @@ public:
                 break;
             }
         }
-
-        // Next variable
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
         // Merge all those values with the global results
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
-        NextType::computeSummary(year, numSpace);
     }
 
     void weekBegin(State& state)
@@ -251,42 +236,33 @@ public:
             }
             }
         }
-        NextType::weekBegin(state);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        NextType::hourForEachArea(state, numSpace);
     }
 
     void weekForEachArea(State& state, unsigned int numSpace)
     {
-        NextType::weekForEachArea(state, numSpace);
     }
 
     template<class VCardToFindT>
     static void retrieveResultsForArea(typename Storage<VCardToFindT>::ResultsType** result,
                                        const Data::Area* area)
     {
-        // Next variable
-        NextType::template retrieveResultsForArea<VCardToFindT>(result, area);
     }
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
-        NextType::buildDigest(results, digestLevel, dataLevel);
     }
 
     template<class V>
     static void simulationEndSpatialAggregates(V& allVars)
     {
-        NextType::template simulationEndSpatialAggregates<V>(allVars);
     }
 
     template<class V>
@@ -294,25 +270,21 @@ public:
                                                 unsigned int year,
                                                 unsigned int numSpace)
     {
-        NextType::template computeSpatialAggregatesSummary<V>(allVars, year, numSpace);
     }
 
     void beforeYearByYearExport(uint year, uint numSpace)
     {
-        NextType::beforeYearByYearExport(year, numSpace);
     }
 
     template<class SearchVCardT, class O>
     static void computeSpatialAggregateWith(O& out, const Data::Area* area, uint numSpace)
     {
-        NextType::template computeSpatialAggregateWith<SearchVCardT, O>(out, area, numSpace);
     }
 
     template<class VCardToFindT>
     static void retrieveResultsForLink(typename Storage<VCardToFindT>::ResultsType** result,
                                        const Data::AreaLink* link)
     {
-        NextType::template retrieveResultsForLink<VCardToFindT>(result, link);
     }
 
     template<class VCardToFindT>
@@ -320,7 +292,6 @@ public:
       typename Storage<VCardToFindT>::ResultsType** result,
       const Data::ThermalCluster* cluster)
     {
-        NextType::template retrieveResultsForThermalCluster<VCardToFindT>(result, cluster);
     }
 
     void hourEnd(State& state, unsigned int hourInTheYear)
@@ -335,8 +306,6 @@ public:
                        ->ResultatsContraintesCouplantes[associatedBC_][state.hourInTheWeek];
             }
         }
-
-        NextType::hourEnd(state, hourInTheYear);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
@@ -397,7 +366,6 @@ public:
                                                                             false);
             }
         }
-        NextType::buildSurveyReport(results, dataLevel, fileLevel, precision);
     }
 
 private:

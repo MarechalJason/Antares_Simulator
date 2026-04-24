@@ -73,12 +73,12 @@ struct VCardSpilledEnergy
 ** \brief C02 Average value of the overrall SpilledEnergy emissions expected from all
 **   the thermal dispatchable clusters
 */
-template<class NextT = Container::EndOfList>
+template<class NextT = void>
 class SpilledEnergy: public Variable::IVariable<SpilledEnergy<NextT>, NextT, VCardSpilledEnergy>
 {
 public:
     //! Type of the next static variable
-    typedef NextT NextType;
+    using NextType = NextT;
     //! VCard
     typedef VCardSpilledEnergy VCardType;
     //! Ancestor
@@ -91,8 +91,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -102,9 +101,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -121,9 +119,6 @@ public:
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
         }
-
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     template<class R>
@@ -134,14 +129,10 @@ public:
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
@@ -150,51 +141,36 @@ public:
         {
             pValuesForTheCurrentYear[numSpace].reset();
         }
-        // Next
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
     {
         // Reset the values for the current year
         pValuesForTheCurrentYear[numSpace].reset();
-        // Next variable
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
         // Compute all statistics for the current year (daily,weekly,monthly)
         pValuesForTheCurrentYear[numSpace].computeStatisticsForTheCurrentYear();
-
-        // Next variable
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
         // Merge all those values with the global results
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
@@ -205,9 +181,6 @@ public:
         pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
           = +state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
             + state.resSpilled.entry[state.area->index][state.hourInTheWeek];
-
-        // Next variable
-        NextType::hourForEachArea(state, numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(

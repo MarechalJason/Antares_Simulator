@@ -248,7 +248,7 @@ struct VCard_Base
 /*!
 ** \brief Base class for economy variables like LOLP and LOLD
 */
-template<class Traits, class NextT = Container::EndOfList>
+template<class Traits, class NextT = void>
 class Economy_Base
     : public Variable::IVariable<Economy_Base<Traits, NextT>, NextT, VCard_Base<Traits>>
 {
@@ -267,8 +267,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -278,9 +277,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 

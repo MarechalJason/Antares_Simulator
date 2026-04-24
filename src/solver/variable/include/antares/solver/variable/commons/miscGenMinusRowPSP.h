@@ -69,13 +69,13 @@ struct VCardMiscGenMinusRowPSP
 /*!
 ** \brief Marginal MiscGenMinusRowPSP
 */
-template<class NextT = Container::EndOfList>
+template<class NextT = void>
 class MiscGenMinusRowPSP
     : public Variable::IVariable<MiscGenMinusRowPSP<NextT>, NextT, VCardMiscGenMinusRowPSP>
 {
 public:
     //! Type of the next static variable
-    typedef NextT NextType;
+    using NextType = NextT;
     //! VCard
     typedef VCardMiscGenMinusRowPSP VCardType;
     //! Ancestor
@@ -88,8 +88,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -99,9 +98,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -119,9 +117,6 @@ public:
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
         }
-
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
@@ -146,15 +141,10 @@ public:
                 }
             }
         }
-
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     template<class R>
@@ -165,55 +155,38 @@ public:
 
     void simulationBegin()
     {
-        // Next
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
         // Compute all statistics for the current year (daily,weekly,monthly)
         pValuesForTheCurrentYear[numSpace].computeStatisticsForTheCurrentYear();
-
-        // Next variable
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
         // Merge all those values with the global results
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        // Next variable
-        NextType::hourForEachArea(state, numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(

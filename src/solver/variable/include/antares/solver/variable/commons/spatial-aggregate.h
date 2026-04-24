@@ -137,13 +137,13 @@ struct VCardProxy
 
 }; // class VCard
 
-template<template<class> class VarT, class NextT = Container::EndOfList>
+template<template<class> class VarT, class NextT = void>
 class SpatialAggregate
     : public Variable::IVariable<SpatialAggregate<VarT, NextT>, NextT, VCardProxy<VarT>>
 {
 public:
     //! Type of the next static variable
-    typedef NextT NextType;
+    using NextType = NextT;
 
     //! VCard
     typedef VCardProxy<VarT> VCardType;
@@ -157,8 +157,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -168,9 +167,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -188,86 +186,58 @@ public:
         {
             VariableAccessorType::InitializeAndReset(pValuesForTheCurrentYear[numSpace], study);
         }
-
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
     {
-        // Next
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(uint year)
     {
-        // Next variable
-        NextType::yearBegin(year);
     }
 
     void yearEndBuildPrepareDataForEachThermalCluster(State& state, uint year)
     {
-        // Next variable
-        NextType::yearEndBuildPrepareDataForEachThermalCluster(state, year);
     }
 
     void yearEndBuildForEachThermalCluster(State& state, uint year)
     {
-        // Next variable
-        NextType::yearEndBuildForEachThermalCluster(state, year);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(uint year)
     {
-        // Next variable
-        NextType::yearEnd(year);
     }
 
     void weekBegin(State& state)
     {
-        // Next variable
-        NextType::weekBegin(state);
     }
 
     void weekEnd(State& state)
     {
-        // Next variable
-        NextType::weekEnd(state);
     }
 
     void hourBegin(uint hourInTheYear)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        // Next variable
-        NextType::hourForEachArea(state, numSpace);
     }
 
     template<class V, class SetT>
@@ -277,9 +247,6 @@ public:
         {
             internalSpatialAggregateForCurrentYear(allVars, set, numSpace);
         }
-
-        // Next variable
-        NextType::yearEndSpatialAggregates(allVars, year, set, numSpace);
     }
 
     template<class V>
@@ -289,9 +256,6 @@ public:
         {
             internalSpatialAggregateForParallelYears(year, numSpace);
         }
-
-        // Next variable
-        NextType::computeSpatialAggregatesSummary(allVars, year, numSpace);
     }
 
     template<class V, class SetT>
@@ -301,9 +265,6 @@ public:
         {
             internalSpatialAggregate(allVars, 0, set);
         }
-
-        // Next variable
-        NextType::simulationEndSpatialAggregates(allVars, set);
     }
 
     inline void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
@@ -322,8 +283,6 @@ public:
               digestLevel,
               dataLevel);
         }
-        // Ask to build the digest to the next variable
-        NextType::buildDigest(results, digestLevel, dataLevel);
     }
 
     void localBuildAnnualSurveyReport(SurveyResults& results,

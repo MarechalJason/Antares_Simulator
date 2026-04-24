@@ -22,11 +22,20 @@
 
 namespace Antares::Solver::Variable
 {
+
+template<class NextT>
+struct IVariableBase : protected NextT {};
+
+template<>
+struct IVariableBase<void>
+{
+};
+
 /*!
 ** \brief Interface for any variable
 */
 template<class ChildT, class NextT, class VCardT>
-class IVariable: protected NextT
+class IVariable: public IVariableBase<NextT>
 {
 public:
     //! Child
@@ -52,10 +61,7 @@ public:
     {
         enum
         {
-            count = ((categoryDataLevel & CDataLevel && categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+            count = ResultsType::count,
         };
     };
 
