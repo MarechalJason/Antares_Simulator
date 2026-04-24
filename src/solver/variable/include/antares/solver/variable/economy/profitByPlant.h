@@ -62,7 +62,6 @@ using VCardProfitByPlant = VCardDispatchablePlantByClusterBase<ProfitByPlantTrai
 ** \brief C02 Average value of the overrall OperatingCost emissions expected from all
 **   the thermal dispatchable clusters
 */
-template<class = Container::EndOfList>
 using ProfitByPlant = DispatchablePlantByClusterBase<ProfitByPlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

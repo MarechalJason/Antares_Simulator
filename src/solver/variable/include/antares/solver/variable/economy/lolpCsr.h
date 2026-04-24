@@ -60,7 +60,6 @@ struct LOLP_CSRTraits: public LOLP_Base_Traits
 
 using VCardLOLP_CSR = VCard_Base<LOLP_CSRTraits>;
 
-template<class = Container::EndOfList>
 using LOLP_CSR = Economy_Base<LOLP_CSRTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

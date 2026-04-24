@@ -308,8 +308,8 @@ private:
  * For new code, prefer the direct trait-based approach:
  * ```cpp
  * // Modern approach (recommended)
- * TimeSeriesValuesSolar<> solar;
- * TimeSeriesValuesWind<> wind;
+ * TimeSeriesValuesSolar solar;
+ * TimeSeriesValuesWind wind;
  * ```
  */
 // Note: This legacy wrapper is deprecated. Use TimeSeriesValuesSolar or TimeSeriesValuesWind directly.
@@ -328,12 +328,11 @@ private:
  * * ## Usage:
  * ```cpp
  * // Standalone solar variable
- * TimeSeriesValuesSolar<> solarOnly;
+ * TimeSeriesValuesSolar solarOnly;
  * // Chained with other variables
- * TimeSeriesValuesSolar<TimeSeriesValuesWind<>> solarAndWind;
+ * TimeSeriesValuesSolar<TimeSeriesValuesWind> solarAndWind;
  * ```
  */
-template<class NextT = Container::EndOfList>
 using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits>;
 
 /**
@@ -350,12 +349,11 @@ using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits>;
  * * ## Usage:
  * ```cpp
  * // Standalone wind variable
- * TimeSeriesValuesWind<> windOnly;
+ * TimeSeriesValuesWind windOnly;
  * * // Chained with other variables
- * TimeSeriesValuesWind<TimeSeriesValuesSolar<>> windAndSolar;
+ * TimeSeriesValuesWind<TimeSeriesValuesSolar> windAndSolar;
  * ```
  */
-template<class NextT = Container::EndOfList>
 using TimeSeriesValuesWind = TimeSeriesValuesGenerationImpl<WindTraits>;
 
 /// @}

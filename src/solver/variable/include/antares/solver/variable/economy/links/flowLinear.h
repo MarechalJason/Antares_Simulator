@@ -68,7 +68,6 @@ struct FlowLinearTraits
 /*!
 ** \brief Marginal FlowLinear
 */
-template<class = Container::EndOfList>
 using FlowLinear = EconomyLink_Base<FlowLinearTraits>;
 
 using VCardFlowLinear = VCard_LinkBase<FlowLinearTraits>;

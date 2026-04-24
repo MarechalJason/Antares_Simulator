@@ -63,7 +63,6 @@ using VCardNearPriceCap = VCard_Base<NearPriceCapTraits>;
 /*!
 ** \brief
 */
-template<class = Container::EndOfList>
 using NearPriceCap = Economy_Base<NearPriceCapTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

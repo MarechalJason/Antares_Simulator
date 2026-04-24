@@ -66,7 +66,6 @@ using VCardThermalAirPollutantEmissions = VCardMultiColumn<
   ThermalAirPollutantEmissionsTraits,
   ThermalAirPollutantEmissionsTraits::columnCount>;
 
-template<class = Container::EndOfList>
 using ThermalAirPollutantEmissions = MultiColumnBase<
   ThermalAirPollutantEmissionsTraits,
   ThermalAirPollutantEmissionsTraits::columnCount>;

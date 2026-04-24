@@ -78,10 +78,8 @@ struct UnsuppliedEnergyCSRTrait: UnsuppliedEnergyTrait
     }
 };
 
-template<class = Container::EndOfList>
 using UnsupliedEnergy = Economy_Base<UnsuppliedEnergyTrait>;
 
-template<class = Container::EndOfList>
 using UnsupliedEnergyCSR = Economy_Base<UnsuppliedEnergyCSRTrait>;
 
 } // namespace Antares::Solver::Variable::Economy

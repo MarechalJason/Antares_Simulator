@@ -69,7 +69,6 @@ using VCardAvailableDispatchGen = VCard_Base<AvailableDispatchGenTraits>;
 /*!
 ** \brief Marginal AvailableDispatchGen
 */
-template<class = Container::EndOfList>
 using AvailableDispatchGen = Economy_Base<AvailableDispatchGenTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

@@ -19,15 +19,15 @@
 
 namespace Antares::Solver::Variable::Economy
 {
-using VariablePerLink = Common::ComposeAll<FlowLinear<>,
-                                           FlowLinearAbs<>,
-                                           LoopFlow<>,
-                                           FlowQuad<>,
-                                           CongestionFee<>,
-                                           CongestionFeeAbs<>,
-                                           MarginalCost<>,
+using VariablePerLink = Common::ComposeAll<FlowLinear,
+                                           FlowLinearAbs,
+                                           LoopFlow,
+                                           FlowQuad,
+                                           CongestionFee,
+                                           CongestionFeeAbs,
+                                           MarginalCost,
                                            CongestionProbability,
-                                           HurdleCosts<>>::type;
+                                           HurdleCosts>::type;
 
 using Links = Antares::Solver::Variable::Links<VariablePerLink>;
 

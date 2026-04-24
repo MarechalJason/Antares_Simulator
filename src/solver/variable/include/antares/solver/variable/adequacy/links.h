@@ -25,14 +25,14 @@ namespace Antares::Solver::Variable::Adequacy
 *
 * #
 */
-using VariablePerLink = Common::ComposeAll<Economy::FlowLinear<>,
-                                           Economy::FlowLinearAbs<>,
-                                           Economy::FlowQuad<>,
-                                           Economy::CongestionFee<>,
-                                           Economy::CongestionFeeAbs<>,
-                                           Economy::MarginalCost<>,
+using VariablePerLink = Common::ComposeAll<Economy::FlowLinear,
+                                           Economy::FlowLinearAbs,
+                                           Economy::FlowQuad,
+                                           Economy::CongestionFee,
+                                           Economy::CongestionFeeAbs,
+                                           Economy::MarginalCost,
                                            Economy::CongestionProbability,
-                                           Economy::HurdleCosts<>>::type;
+                                           Economy::HurdleCosts>::type;
 
 using Links = Antares::Solver::Variable::Links<VariablePerLink>;
 

@@ -63,7 +63,6 @@ using VCardNbOfDispatchedUnits = VCard_Base<NbOfDispatchedUnitsTraits>;
 /*!
 ** \brief Number of dispatched units over all thermal clusters
 */
-template<class = Container::EndOfList>
 using NbOfDispatchedUnits = Economy_Base<NbOfDispatchedUnitsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
