@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "antares/solver/variable/tuple_variable_list.h"
 #include "antares/solver/variable/variable.h"
 
 // #include <antares/logs/logs.h>	// In case it is needed
@@ -474,17 +475,14 @@ private:
 
 }; // class SpatialAggregate
 
-// Variadic meta-template to build nested spatial aggregates
-template<template<class> class Head, template<class> class... Tail>
+// Variadic composition of spatial-aggregate variables. Produces a flat tuple
+// dispatcher rather than a nested `SpatialAggregate<H, SpatialAggregate<...>>` chain.
+// Each `SpatialAggregate<V>` defaults `NextT` to `Container::EndOfList`, so each
+// tuple slot is a standalone leaf.
+template<template<class> class... Vs>
 struct SpatialAggregateAll
 {
-    using type = SpatialAggregate<Head, typename SpatialAggregateAll<Tail...>::type>;
-};
-
-template<template<class> class Last>
-struct SpatialAggregateAll<Last>
-{
-    using type = SpatialAggregate<Last>;
+    using type = Container::TupleVariableList<SpatialAggregate<Vs>...>;
 };
 
 } // namespace Antares::Solver::Variable::Common
