@@ -53,8 +53,8 @@ struct DomesticUnsuppliedEnergyTraits
     }
 };
 
-using VCardDomesticUnsuppliedEnergy = VCard_Base<DomesticUnsuppliedEnergyTraits>;
+using VCardDomesticUnsuppliedEnergy = EconomyVariableCard<DomesticUnsuppliedEnergyTraits>;
 
-using DomesticUnsuppliedEnergy = Economy_Base<DomesticUnsuppliedEnergyTraits>;
+using DomesticUnsuppliedEnergy = EconomyVariableBase<DomesticUnsuppliedEnergyTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

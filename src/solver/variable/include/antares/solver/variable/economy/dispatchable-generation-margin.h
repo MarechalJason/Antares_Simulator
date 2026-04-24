@@ -47,11 +47,11 @@ struct DispatchableGenMarginTraits
     }
 };
 
-using VCardDispatchableGenMargin = VCard_Base<DispatchableGenMarginTraits>;
+using VCardDispatchableGenMargin = EconomyVariableCard<DispatchableGenMarginTraits>;
 
 /*!
 ** \brief Marginal DispatchableGenMargin
 */
-using DispatchableGenMargin = Economy_Base<DispatchableGenMarginTraits>;
+using DispatchableGenMargin = EconomyVariableBase<DispatchableGenMarginTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

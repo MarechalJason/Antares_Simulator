@@ -51,8 +51,8 @@ struct NonProportionalCostTraits
     }
 };
 
-using VCardNonProportionalCost = VCard_Base<NonProportionalCostTraits>;
+using VCardNonProportionalCost = EconomyVariableCard<NonProportionalCostTraits>;
 
-using NonProportionalCost = Economy_Base<NonProportionalCostTraits>;
+using NonProportionalCost = EconomyVariableBase<NonProportionalCostTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

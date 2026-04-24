@@ -58,12 +58,12 @@ struct NbOfDispatchedUnitsTraits
     }
 };
 
-using VCardNbOfDispatchedUnits = VCard_Base<NbOfDispatchedUnitsTraits>;
+using VCardNbOfDispatchedUnits = EconomyVariableCard<NbOfDispatchedUnitsTraits>;
 
 /*!
 ** \brief Number of dispatched units over all thermal clusters
 */
-using NbOfDispatchedUnits = Economy_Base<NbOfDispatchedUnitsTraits>;
+using NbOfDispatchedUnits = EconomyVariableBase<NbOfDispatchedUnitsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

@@ -60,8 +60,8 @@ struct PumpingTraits
     }
 };
 
-using VCardPumping = VCard_Base<PumpingTraits>;
+using VCardPumping = EconomyVariableCard<PumpingTraits>;
 
-using Pumping = Economy_Base<PumpingTraits>;
+using Pumping = EconomyVariableBase<PumpingTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

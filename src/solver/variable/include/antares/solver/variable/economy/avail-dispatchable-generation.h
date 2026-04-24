@@ -64,11 +64,11 @@ struct AvailableDispatchGenTraits
     }
 };
 
-using VCardAvailableDispatchGen = VCard_Base<AvailableDispatchGenTraits>;
+using VCardAvailableDispatchGen = EconomyVariableCard<AvailableDispatchGenTraits>;
 
 /*!
 ** \brief Marginal AvailableDispatchGen
 */
-using AvailableDispatchGen = Economy_Base<AvailableDispatchGenTraits>;
+using AvailableDispatchGen = EconomyVariableBase<AvailableDispatchGenTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

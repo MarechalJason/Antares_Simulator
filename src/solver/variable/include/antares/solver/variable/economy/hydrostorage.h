@@ -46,8 +46,8 @@ struct HydroStorageTraits
     }
 };
 
-using VCardHydroStorage = VCard_Base<HydroStorageTraits>;
+using VCardHydroStorage = EconomyVariableCard<HydroStorageTraits>;
 
-using HydroStorage = Economy_Base<HydroStorageTraits>;
+using HydroStorage = EconomyVariableBase<HydroStorageTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

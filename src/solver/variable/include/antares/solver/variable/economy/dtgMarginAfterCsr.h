@@ -42,8 +42,8 @@ struct DtgMarginCsrTraits
     }
 };
 
-using VCardDtgMarginCsr = VCard_Base<DtgMarginCsrTraits>;
+using VCardDtgMarginCsr = EconomyVariableCard<DtgMarginCsrTraits>;
 
-using DtgMarginCsr = Economy_Base<DtgMarginCsrTraits>;
+using DtgMarginCsr = EconomyVariableBase<DtgMarginCsrTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

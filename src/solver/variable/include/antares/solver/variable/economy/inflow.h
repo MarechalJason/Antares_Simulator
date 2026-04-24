@@ -61,8 +61,8 @@ struct InflowsTraits
     }
 };
 
-using VCardInflows = VCard_Base<InflowsTraits>;
+using VCardInflows = EconomyVariableCard<InflowsTraits>;
 
-using Inflows = Economy_Base<InflowsTraits>;
+using Inflows = EconomyVariableBase<InflowsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

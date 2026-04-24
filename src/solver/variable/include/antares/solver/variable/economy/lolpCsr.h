@@ -58,8 +58,8 @@ struct LOLP_CSRTraits: public LOLP_Base_Traits
     }
 };
 
-using VCardLOLP_CSR = VCard_Base<LOLP_CSRTraits>;
+using VCardLOLP_CSR = EconomyVariableCard<LOLP_CSRTraits>;
 
-using LOLP_CSR = Economy_Base<LOLP_CSRTraits>;
+using LOLP_CSR = EconomyVariableBase<LOLP_CSRTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

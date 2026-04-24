@@ -52,12 +52,12 @@ struct SpilledEnergyTraits
     }
 };
 
-using VCardSpilledEnergy = VCard_Base<SpilledEnergyTraits>;
+using VCardSpilledEnergy = EconomyVariableCard<SpilledEnergyTraits>;
 
 /*!
 ** \brief C02 Average value of the overrall SpilledEnergy emissions expected from all
 **   the thermal dispatchable clusters
 */
-using SpilledEnergy = Economy_Base<SpilledEnergyTraits>;
+using SpilledEnergy = EconomyVariableBase<SpilledEnergyTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

@@ -181,7 +181,7 @@ struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataTyp
 } // namespace detail
 
 template<class Traits>
-struct VCard_Base
+struct EconomyVariableCard
 {
     //! Caption
     static std::string Caption()
@@ -204,7 +204,7 @@ struct VCard_Base
     //! The expecte results
     typedef typename Traits::ResultsType ResultsType;
 
-    typedef VCard_Base VCardForSpatialAggregate;
+    typedef EconomyVariableCard VCardForSpatialAggregate;
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
     //! File level (provided by the type of the results)
@@ -243,7 +243,7 @@ struct VCard_Base
 
     using IntermediateValuesTypeForSpatialAg = std::unique_ptr<IntermediateValuesBaseType[]>;
 
-}; // class VCard
+}; // struct EconomyVariableCard
 
 /*!
 ** \brief Base class for area-level economy variables like LOLP and LOLD
@@ -252,13 +252,14 @@ struct VCard_Base
 ** Each variable inherits from IVariable but NextT is unused.
 */
 template<class Traits>
-class Economy_Base : public Variable::IVariable<Economy_Base<Traits>, void, VCard_Base<Traits>>
+class EconomyVariableBase
+    : public Variable::IVariable<EconomyVariableBase<Traits>, void, EconomyVariableCard<Traits>>
 {
 public:
     //! VCard
-    typedef VCard_Base<Traits> VCardType;
+    typedef EconomyVariableCard<Traits> VCardType;
     //! Ancestor
-    typedef Variable::IVariable<Economy_Base<Traits>, void, VCardType> AncestorType;
+    typedef Variable::IVariable<EconomyVariableBase<Traits>, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -430,6 +431,7 @@ private:
     AuxiliaryDataType auxiliaryData_{};
     unsigned int pNbYearsParallel = 0;
 
-}; // class Economy_Base
+}; // class EconomyVariableBase
+
 
 } // namespace Antares::Solver::Variable::Economy

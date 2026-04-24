@@ -60,11 +60,11 @@ struct ResidualLoadTraits
     }
 };
 
-using VCardResidualLoad = VCard_Base<ResidualLoadTraits>;
+using VCardResidualLoad = EconomyVariableCard<ResidualLoadTraits>;
 
 /*!
 ** \brief ResidualLoad
 */
-using ResidualLoad = Economy_Base<ResidualLoadTraits>;
+using ResidualLoad = EconomyVariableBase<ResidualLoadTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
