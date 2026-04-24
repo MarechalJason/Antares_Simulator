@@ -96,7 +96,7 @@ Variable::Economy::DispatchableGeneration<>,
                                              Variable::Economy::Marge<>,
                                              Variable::Economy::ProfitByPlant<>,
                                              Variable::Economy::ResidualLoad<>,
-                                             Variable::Adequacy::Links<>>::type;
+                                             Variable::Adequacy::Links>::type;
 
 /*!
 ** \brief All variables for a single set of areas (economy)

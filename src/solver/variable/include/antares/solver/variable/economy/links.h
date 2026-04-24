@@ -29,7 +29,6 @@ using VariablePerLink = Common::ComposeAll<FlowLinear<>,
                                            CongestionProbability<>,
                                            HurdleCosts<>>::type;
 
-template<class N = void>
 using Links = Antares::Solver::Variable::Links<VariablePerLink>;
 
 } // namespace Antares::Solver::Variable::Economy
