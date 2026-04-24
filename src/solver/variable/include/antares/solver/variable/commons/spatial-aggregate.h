@@ -81,11 +81,11 @@ struct MultipleCaptionProxy<Category::dynamicColumns, VCardT>
     }
 };
 
-template<template<class> class V>
+template<class V>
 struct VCardProxy
 {
     //! The real VCard for the variable
-    using VCardOrigin = typename V<Container::EndOfList>::VCardType;
+    using VCardOrigin = typename V::VCardType;
 
     //! Caption
     static std::string Caption()
@@ -153,18 +153,15 @@ struct VCardProxy
 
 }; // class VCard
 
-template<template<class> class VarT, class NextT = void>
+template<class VarT>
 class SpatialAggregate
-    : public Variable::IVariable<SpatialAggregate<VarT>, NextT, VCardProxy<VarT>>
+    : public Variable::IVariable<SpatialAggregate<VarT>, void, VCardProxy<VarT>>
 {
 public:
-    //! Type of the next static variable
-    using NextType = NextT;
-
     //! VCard
     typedef VCardProxy<VarT> VCardType;
     //! Ancestor
-    typedef Variable::IVariable<SpatialAggregate<VarT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<SpatialAggregate<VarT>, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -196,7 +193,7 @@ public:
         pNbYearsParallel = study.maxNbYearsInParallel;
 
         // Intermediate values
-        VarT<Container::EndOfList>::InitializeResultsFromStudy(AncestorType::pResults, study);
+        VarT::InitializeResultsFromStudy(AncestorType::pResults, study);
         pValuesForTheCurrentYear = std::make_unique<IntermediateValuesBaseType[]>(pNbYearsParallel);
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
@@ -451,10 +448,8 @@ private:
 }; // class SpatialAggregate
 
 // Variadic composition of spatial-aggregate variables. Produces a flat tuple
-// dispatcher rather than a nested `SpatialAggregate<H, SpatialAggregate<...>>` chain.
-// Each `SpatialAggregate<V>` defaults `NextT` to `Container::EndOfList`, so each
-// tuple slot is a standalone leaf.
-template<template<class> class... Vs>
+// dispatcher. Each Vs... is an already-instantiated variable type.
+template<class... Vs>
 struct SpatialAggregateAll
 {
     using type = Container::TupleVariableList<SpatialAggregate<Vs>...>;

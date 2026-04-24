@@ -98,7 +98,7 @@ using VCardFlowQuad = VCardStaticLinkBase<FlowQuadTraits>;
 /*!
 ** \brief Flow (quad.)
 */
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using FlowQuad = StaticLinkBase<FlowQuadTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

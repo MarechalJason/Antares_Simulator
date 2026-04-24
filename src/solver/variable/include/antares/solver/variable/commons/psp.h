@@ -69,16 +69,13 @@ struct VCardPSP
 /*!
 ** \brief Marginal PSP
 */
-template<class NextT>
-class PSP: public Variable::IVariable<PSP<NextT>, NextT, VCardPSP>
+class PSP: public Variable::IVariable<PSP, void, VCardPSP>
 {
 public:
-    //! Type of the next static variable
-    using NextType = NextT;
     //! VCard
     typedef VCardPSP VCardType;
     //! Ancestor
-    typedef Variable::IVariable<PSP<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<PSP, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

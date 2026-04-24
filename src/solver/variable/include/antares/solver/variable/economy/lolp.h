@@ -38,7 +38,7 @@ struct LOLPTraits: public LOLP_Base_Traits
 
 using VCardLOLP = VCard_Base<LOLPTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using LOLP = Economy_Base<LOLPTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

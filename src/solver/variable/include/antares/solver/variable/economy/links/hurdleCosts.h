@@ -97,7 +97,7 @@ struct HurdleCostsTraits
 /*!
 ** \brief Marginal HurdleCosts
 */
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using HurdleCosts = EconomyLink_Base<HurdleCostsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

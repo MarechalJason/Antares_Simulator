@@ -49,7 +49,7 @@ struct OverflowsTraits
 
 using VCardOverflow = VCard_Base<OverflowsTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using Overflows = Economy_Base<OverflowsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

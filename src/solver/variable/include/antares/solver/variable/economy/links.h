@@ -26,7 +26,7 @@ using VariablePerLink = Common::ComposeAll<FlowLinear<>,
                                            CongestionFee<>,
                                            CongestionFeeAbs<>,
                                            MarginalCost<>,
-                                           CongestionProbability<void>,
+                                           CongestionProbability,
                                            HurdleCosts<>>::type;
 
 using Links = Antares::Solver::Variable::Links<VariablePerLink>;

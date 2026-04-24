@@ -62,7 +62,7 @@ struct PumpingTraits
 
 using VCardPumping = VCard_Base<PumpingTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using Pumping = Economy_Base<PumpingTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

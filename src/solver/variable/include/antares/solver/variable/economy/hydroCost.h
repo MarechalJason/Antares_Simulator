@@ -60,7 +60,7 @@ struct HydroCostTraits
 
 using VCardHydroCost = VCard_Base<HydroCostTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using HydroCost = Economy_Base<HydroCostTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

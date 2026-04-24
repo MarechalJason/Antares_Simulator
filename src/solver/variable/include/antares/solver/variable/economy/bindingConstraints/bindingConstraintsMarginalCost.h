@@ -67,17 +67,14 @@ struct VCardBindingConstMarginCost
     - if binding constraint is saturated (rhs is reached), the value is the total benefit (�/MW) for
    the system that would result in increasing the BC's rhs of 1 MW.
 */
-template<class NextT>
 class BindingConstMarginCost
-    : public Variable::IVariable<BindingConstMarginCost<NextT>, NextT, VCardBindingConstMarginCost>
+    : public Variable::IVariable<BindingConstMarginCost, void, VCardBindingConstMarginCost>
 {
 public:
-    //! Type of the next static variable
-    using NextType = NextT;
     //! VCard
     typedef VCardBindingConstMarginCost VCardType;
     //! Ancestor
-    typedef Variable::IVariable<BindingConstMarginCost<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<BindingConstMarginCost, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

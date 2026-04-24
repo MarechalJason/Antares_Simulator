@@ -44,7 +44,7 @@ struct DtgMarginCsrTraits
 
 using VCardDtgMarginCsr = VCard_Base<DtgMarginCsrTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using DtgMarginCsr = Economy_Base<DtgMarginCsrTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

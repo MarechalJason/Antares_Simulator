@@ -70,16 +70,13 @@ struct VCardRowBalance
 /*!
 ** \brief Marginal RowBalance
 */
-template<class NextT>
-class RowBalance: public Variable::IVariable<RowBalance<NextT>, NextT, VCardRowBalance>
+class RowBalance: public Variable::IVariable<RowBalance, void, VCardRowBalance>
 {
 public:
-    //! Type of the next static variable
-    using NextType = NextT;
     //! VCard
     typedef VCardRowBalance VCardType;
     //! Ancestor
-    typedef Variable::IVariable<RowBalance<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<RowBalance, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

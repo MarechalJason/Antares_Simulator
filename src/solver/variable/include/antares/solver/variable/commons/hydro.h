@@ -79,14 +79,11 @@ using VCardTimeSeriesValuesHydro = VCardTimeSeriesBase<HydroTraits>;
  * @tparam NextT The next variable in the processing chain
  *
  */
-template<class NextT>
 class TimeSeriesValuesHydro
-    : public TimeSeriesValuesBase<TimeSeriesValuesHydro<NextT>, VCardTimeSeriesValuesHydro, NextT>
+    : public TimeSeriesValuesBase<TimeSeriesValuesHydro, VCardTimeSeriesValuesHydro>
 {
 public:
-    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesHydro<NextT>,
-                                          VCardTimeSeriesValuesHydro,
-                                          NextT>;
+    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesHydro, VCardTimeSeriesValuesHydro>;
 
     void initializeDerivedFromStudy(Data::Study&)
     {

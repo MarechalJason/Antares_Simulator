@@ -60,7 +60,7 @@ struct LOLD_CSRTraits: public LOLD_Base_Traits
 
 using VCardLOLD_CSR = VCard_Base<LOLD_CSRTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using LOLD_CSR = Economy_Base<LOLD_CSRTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

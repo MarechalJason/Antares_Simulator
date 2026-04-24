@@ -89,17 +89,14 @@ struct VCardCongestionProbability
 /*!
 ** \brief Marginal CongestionProbability
 */
-template<class NextT>
 class CongestionProbability
-    : public Variable::IVariable<CongestionProbability<NextT>, NextT, VCardCongestionProbability>
+    : public Variable::IVariable<CongestionProbability, void, VCardCongestionProbability>
 {
 public:
-    //! Type of the next static variable
-    using NextType = NextT;
     //! VCard
     typedef VCardCongestionProbability VCardType;
     //! Ancestor
-    typedef Variable::IVariable<CongestionProbability<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<CongestionProbability, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

@@ -94,17 +94,15 @@ struct VCard_LinkBase
 
 }; // class VCard
 
-template<class Traits, class NextT = void>
+template<class Traits>
 class EconomyLink_Base
-    : public Variable::IVariable<EconomyLink_Base<Traits>, NextT, VCard_LinkBase<Traits>>
+    : public Variable::IVariable<EconomyLink_Base<Traits>, void, VCard_LinkBase<Traits>>
 {
 public:
-    //! Type of the next static variable
-    using NextType = NextT;
     //! VCard
     typedef VCard_LinkBase<Traits> VCardType;
     //! Ancestor
-    typedef Variable::IVariable<EconomyLink_Base<Traits>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<EconomyLink_Base<Traits>, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

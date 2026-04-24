@@ -55,7 +55,7 @@ struct DomesticUnsuppliedEnergyTraits
 
 using VCardDomesticUnsuppliedEnergy = VCard_Base<DomesticUnsuppliedEnergyTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using DomesticUnsuppliedEnergy = Economy_Base<DomesticUnsuppliedEnergyTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

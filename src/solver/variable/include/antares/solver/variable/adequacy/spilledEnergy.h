@@ -73,16 +73,13 @@ struct VCardSpilledEnergy
 ** \brief C02 Average value of the overrall SpilledEnergy emissions expected from all
 **   the thermal dispatchable clusters
 */
-template<class NextT>
-class SpilledEnergy: public Variable::IVariable<SpilledEnergy<NextT>, NextT, VCardSpilledEnergy>
+class SpilledEnergy: public Variable::IVariable<SpilledEnergy, void, VCardSpilledEnergy>
 {
 public:
-    //! Type of the next static variable
-    using NextType = NextT;
     //! VCard
     typedef VCardSpilledEnergy VCardType;
     //! Ancestor
-    typedef Variable::IVariable<SpilledEnergy<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<SpilledEnergy, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

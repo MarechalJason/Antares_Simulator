@@ -81,7 +81,7 @@ using VCardSTstorageCashFlowByCluster = VCardSTStorageByClusterBase<
 /*!
 ** \brief Cash flow by short term storage clusters
 */
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using STstorageCashFlowByCluster = STStorageByClusterBase<STstorageCashFlowByClusterTraits>;
 
 } // End namespace Antares::Solver::Variable::Economy

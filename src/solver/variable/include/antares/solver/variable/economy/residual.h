@@ -65,7 +65,7 @@ using VCardResidualLoad = VCard_Base<ResidualLoadTraits>;
 /*!
 ** \brief ResidualLoad
 */
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using ResidualLoad = Economy_Base<ResidualLoadTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

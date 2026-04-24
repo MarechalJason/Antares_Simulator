@@ -48,7 +48,7 @@ struct CongestionFeeTraits
 /*!
 ** \brief Marginal CongestionFee
 */
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using CongestionFee = EconomyLink_Base<CongestionFeeTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

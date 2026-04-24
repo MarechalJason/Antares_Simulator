@@ -62,7 +62,7 @@ struct BalanceTraits
 
 using VCardBalance = VCard_Base<BalanceTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using Balance = Economy_Base<BalanceTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

@@ -201,16 +201,14 @@ using VCardTimeSeriesValuesGeneration = VCardTimeSeriesBase<GenerationTraits<Tag
  * - `yearlyValues[space]` provides isolation between parallel executions
  * - No shared state between spaces during processing
  */
-template<class TraitsType, class NextT = Container::EndOfList>
+template<class TraitsType>
 class TimeSeriesValuesGenerationImpl
-    : public TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType, NextT>,
-                                  VCardTimeSeriesBase<TraitsType>,
-                                  NextT>
+    : public TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType>,
+                                  VCardTimeSeriesBase<TraitsType>>
 {
 public:
-    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType, NextT>,
-                                          VCardTimeSeriesBase<TraitsType>,
-                                          NextT>;
+    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType>,
+                                          VCardTimeSeriesBase<TraitsType>>;
     using VCardType = VCardTimeSeriesBase<TraitsType>;
 
     /**
@@ -336,7 +334,7 @@ private:
  * ```
  */
 template<class NextT = Container::EndOfList>
-using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits, NextT>;
+using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits>;
 
 /**
  * @brief Wind generation time series variable
@@ -358,7 +356,7 @@ using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits, NextT>
  * ```
  */
 template<class NextT = Container::EndOfList>
-using TimeSeriesValuesWind = TimeSeriesValuesGenerationImpl<WindTraits, NextT>;
+using TimeSeriesValuesWind = TimeSeriesValuesGenerationImpl<WindTraits>;
 
 /// @}
 
