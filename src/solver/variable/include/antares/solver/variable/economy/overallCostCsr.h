@@ -72,7 +72,7 @@ struct OverallCostCsrTraits
 
 using VCardOverallCostCsr = VCard_Base<OverallCostCsrTraits>;
 
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using OverallCostCsr = Economy_Base<OverallCostCsrTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

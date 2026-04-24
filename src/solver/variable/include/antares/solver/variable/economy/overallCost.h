@@ -72,7 +72,7 @@ using VCardOverallCost = VCard_Base<OverallCostTraits>;
 /*!
 ** \brief Overall cost over all MC years
 */
-template<class NextT = Container::EndOfList>
+template<class = Container::EndOfList>
 using OverallCost = Economy_Base<OverallCostTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
