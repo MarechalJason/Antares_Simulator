@@ -8,10 +8,8 @@
 
 namespace Antares::Solver::Variable::R::AllYears
 {
-class Min;
-class Max;
 
-struct MinMaxBase
+class MinMaxBase
 {
 public:
     static constexpr int categoryFile = Variable::Category::FileLevel::allFile;
@@ -55,8 +53,8 @@ public:
                 break;
             case Category::monthly:
                 InternalExportIndices<MONTHS_PER_YEAR, VCardT>(report,
-                                                               minmax.monthly.data(),
-                                                               fileLevel);
+                                                                 minmax.monthly.data(),
+                                                                 fileLevel);
                 break;
             case Category::annual:
                 InternalExportIndices<1, VCardT>(report, minmax.annual.data(), fileLevel);
@@ -91,7 +89,6 @@ public:
     template<class VCardT>
     void buildDigest(SurveyResults& /*report*/, int /*digestLevel*/, int /*dataLevel*/) const
     {
-        // No digest output for min/max.
     }
 
     void reset();
@@ -101,34 +98,41 @@ public:
 protected:
     MinMaxData minmax;
 
+    bool isInf_ = true;
+
 private:
     template<uint Size, class VCardT>
-    static void InternalExportIndices(SurveyResults& report,
-                                      const MinMaxData::Data* array,
-                                      int fileLevel);
+    void InternalExportIndices(SurveyResults& report,
+                                const MinMaxData::Data* array,
+                                int fileLevel);
 
     template<uint Size, class VCardT>
-    static void InternalExportValues(SurveyResults& report, const MinMaxData::Data* array);
+    void InternalExportValues(SurveyResults& report, const MinMaxData::Data* array);
 
 }; // class MinMaxBase
 
-template<bool OpInferior>
-class MinMaxBaseT : public MinMaxBase
-{
-};
-
-class Min: public MinMaxBaseT<true>
+class Min: public MinMaxBase
 {
 public:
+    Min()
+    {
+        isInf_ = true;
+    }
+
     static const char* Name()
     {
         return "min";
     }
 };
 
-class Max: public MinMaxBaseT<false>
+class Max: public MinMaxBase
 {
 public:
+    Max()
+    {
+        isInf_ = false;
+    }
+
     static const char* Name()
     {
         return "max";

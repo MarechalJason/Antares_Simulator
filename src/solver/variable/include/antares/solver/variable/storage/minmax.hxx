@@ -6,15 +6,14 @@
 
 namespace Antares::Solver::Variable::R::AllYears
 {
-template<bool OpInferior, class NextT>
-inline void MinMaxBase<OpInferior, NextT>::initializeFromStudy(Data::Study& /*study*/)
+
+inline void MinMaxBase::initializeFromStudy(Data::Study& /*study*/)
 {
 }
 
-template<bool OpInferior, class NextT>
-inline void MinMaxBase<OpInferior, NextT>::reset()
+inline void MinMaxBase::reset()
 {
-    if (OpInferior)
+    if (isInf_)
     {
         minmax.resetInf();
     }
@@ -24,10 +23,9 @@ inline void MinMaxBase<OpInferior, NextT>::reset()
     }
 }
 
-template<bool OpInferior, class NextT>
-inline void MinMaxBase<OpInferior, NextT>::merge(uint year, const IntermediateValues& rhs)
+inline void MinMaxBase::merge(uint year, const IntermediateValues& rhs)
 {
-    if (OpInferior)
+    if (isInf_)
     {
         minmax.mergeInf(year, rhs);
     }
@@ -37,18 +35,17 @@ inline void MinMaxBase<OpInferior, NextT>::merge(uint year, const IntermediateVa
     }
 }
 
-template<bool OpInferior, class NextT>
 template<uint Size, class VCardT>
-void MinMaxBase<OpInferior, NextT>::InternalExportIndices(SurveyResults& report,
-                                                          const MinMaxData::Data* array,
-                                                          int fileLevel)
+void MinMaxBase::InternalExportIndices(SurveyResults& report,
+                                      const MinMaxData::Data* array,
+                                      int fileLevel)
 {
     assert(array);
     assert(report.data.columnIndex < report.maxVariables && "Column index out of bounds");
 
     report.captions[0][report.data.columnIndex] = report.variableCaption;
     report.captions[1][report.data.columnIndex] = report.variableUnit;
-    report.captions[2][report.data.columnIndex] = (OpInferior ? "min" : "max");
+    report.captions[2][report.data.columnIndex] = (isInf_ ? "min" : "max");
 
     int recommendedPrecision = (int)Category::MaxDecimalPrecision(fileLevel);
     uint decimalPrec = (recommendedPrecision < (int)VCardT::decimal) ? (uint)recommendedPrecision
@@ -68,17 +65,16 @@ void MinMaxBase<OpInferior, NextT>::InternalExportIndices(SurveyResults& report,
     ++report.data.columnIndex;
 }
 
-template<bool OpInferior, class NextT>
 template<uint Size, class VCardT>
-inline void MinMaxBase<OpInferior, NextT>::InternalExportValues(SurveyResults& report,
-                                                                const MinMaxData::Data* array)
+inline void MinMaxBase::InternalExportValues(SurveyResults& report,
+                                              const MinMaxData::Data* array)
 {
     assert(array);
     assert(report.data.columnIndex < report.maxVariables && "Column index out of bounds");
 
     report.captions[0][report.data.columnIndex] = report.variableCaption;
     report.captions[1][report.data.columnIndex] = report.variableUnit;
-    report.captions[2][report.data.columnIndex] = (OpInferior ? "min" : "max");
+    report.captions[2][report.data.columnIndex] = (isInf_ ? "min" : "max");
     Solver::Variable::AssignPrecisionToPrintfFormat(report.precision[report.data.columnIndex],
                                                     VCardT::decimal);
 

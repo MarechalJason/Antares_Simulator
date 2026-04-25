@@ -6,12 +6,8 @@
 
 namespace Antares::Solver::Variable
 {
-// Sentinel used as the legacy chain terminator for the decorator typelist.
-// Decorators no longer inherit from one another; this type only marks the
-// end of the chain so the typelist extractor in Results can stop.
 struct Empty
 {
-    using NextType = void;
 };
 
 } // namespace Antares::Solver::Variable

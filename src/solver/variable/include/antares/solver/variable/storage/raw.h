@@ -14,12 +14,9 @@
 
 namespace Antares::Solver::Variable::R::AllYears
 {
-template<class NextT /*= Empty*/, int FileFilter /*= Variable::Category::FileLevel::allFile*/>
 struct Raw
 {
 public:
-    using NextType = NextT;
-
     static constexpr int categoryFile = Variable::Category::FileLevel::allFile;
 
     static const char* Name()
@@ -49,7 +46,7 @@ public:
                            int fileLevel,
                            int precision) const
     {
-        if (fileLevel & FileFilter && !(fileLevel & Category::FileLevel::id))
+        if (!(fileLevel & Category::FileLevel::id))
         {
             switch (precision)
             {

@@ -16,59 +16,10 @@
 
 namespace Antares::Solver::Variable
 {
-// Variadic typelist wrapper. Preferred form for new call sites:
-//   using ResultsProfile = Results<Chain<Average, StdDeviation, Min, Max>>;
-// (The legacy nested syntax Results<Average<StdDeviation<...>>> still works
-// via ChainToTuple below.)
-template<class... Decorators>
-struct Chain
-{
-    using Tuple = std::tuple<Decorators...>;
-};
 
 namespace detail
 {
-// Extract a std::tuple of decorators from a legacy chain head
-// (Average<StdDev<Min<Max<>>>> ...) by walking the NextType link to Empty.
-template<class T>
-struct ChainToTuple;
 
-template<>
-struct ChainToTuple<Empty>
-{
-    using type = std::tuple<>;
-};
-
-template<class T>
-struct ChainToTuple
-{
-private:
-    template<class U, class Tail>
-    struct Prepend;
-    template<class U, class... Us>
-    struct Prepend<U, std::tuple<Us...>>
-    {
-        using type = std::tuple<U, Us...>;
-    };
-
-public:
-    using type = typename Prepend<T, typename ChainToTuple<typename T::NextType>::type>::type;
-};
-
-// Accept either a Chain<...> wrapper or a legacy chain head.
-template<class T>
-struct ResolveTuple
-{
-    using type = typename ChainToTuple<T>::type;
-};
-
-template<class... Ds>
-struct ResolveTuple<Chain<Ds...>>
-{
-    using type = std::tuple<Ds...>;
-};
-
-// IsInstanceOf for template-templates with signature <class, int> (Average, Raw, StdDeviation).
 template<template<class, int> class Tmpl, class T>
 struct IsInstanceOf2 : std::false_type
 {
@@ -79,8 +30,6 @@ struct IsInstanceOf2<Tmpl, Tmpl<A, F>> : std::true_type
 {
 };
 
-// Find first index of a decorator in a tuple that is an instance of Tmpl.
-// Returns -1 if not found.
 template<template<class, int> class Tmpl, class Tuple>
 struct FindFirstInstance;
 
@@ -109,23 +58,16 @@ template<class FirstDecoratorT = Empty,
 class Results;
 
 using StandardAllYearsDecorators
-  = R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>;
+  = std::tuple<R::AllYears::Average, R::AllYears::StdDeviation, R::AllYears::Min, R::AllYears::Max>;
 
 template<template<class, int> class DecoratorForSpatialAggregateT = R::AllYears::Raw>
 using StandardResults = Results<StandardAllYearsDecorators, DecoratorForSpatialAggregateT>;
 
-/*!
-** \brief Aggregated results, composed of a tuple of decorators.
-**
-** The first template parameter is either a Chain<D1, D2, ...> typelist or the
-** head of the legacy nested chain (Average<StdDev<Min<Max<>>>>); both forms
-** resolve to std::tuple<D1, D2, ...> and are dispatched via std::apply.
-*/
 template<class FirstDecoratorT, template<class, int> class DecoratorForSpatialAggregateT>
 class Results
 {
 public:
-    using DecoratorTuple = typename detail::ResolveTuple<FirstDecoratorT>::type;
+    using DecoratorTuple = FirstDecoratorT;
 
     static constexpr std::size_t count = std::tuple_size_v<DecoratorTuple>;
 
@@ -159,10 +101,10 @@ public:
 
     template<class S, class VCardT>
     void buildSurveyReport(SurveyResults& report,
-                           const S& results,
-                           int dataLevel,
-                           int fileLevel,
-                           int precision) const
+                       const S& results,
+                       int dataLevel,
+                       int fileLevel,
+                       int precision) const
     {
         std::apply(
           [&](const auto&... d)
@@ -208,8 +150,6 @@ public:
         }
     }
 
-    // Convenience accessors for external code that previously relied on the
-    // inheritance-exposed sibling member.
     auto& avgdata()
     {
         constexpr int idx = detail::FindFirstInstance<R::AllYears::Average, DecoratorTuple>::value;
