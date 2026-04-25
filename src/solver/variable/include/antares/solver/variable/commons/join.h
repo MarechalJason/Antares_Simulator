@@ -29,12 +29,7 @@ struct VCardJoin
     }
 
     //! Expected results configuration
-    typedef Results<R::AllYears::Average< // The average values throughout all years
-      R::AllYears::StdDeviation<          // The standard deviation values throughout all years
-        R::AllYears::Min<                 // The minimum values throughout all years
-          R::AllYears::Max<               // The maximum values throughout all years
-            >>>>>
-      ResultsType;
+    using ResultsType = StandardResults<>;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;

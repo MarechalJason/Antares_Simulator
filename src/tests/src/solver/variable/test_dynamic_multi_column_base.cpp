@@ -33,7 +33,7 @@ struct StubDynamicTraits
         return "Stub for testing";
     }
 
-    using ResultsType = Results<R::AllYears::Average<>>;
+    using ResultsType = Results<std::tuple<R::AllYears::Average>>;
 
     static constexpr uint8_t decimal = 0;
 

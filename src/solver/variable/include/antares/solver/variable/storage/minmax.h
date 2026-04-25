@@ -104,10 +104,10 @@ private:
     template<uint Size, class VCardT>
     void InternalExportIndices(SurveyResults& report,
                                 const MinMaxData::Data* array,
-                                int fileLevel);
+                                int fileLevel) const;
 
     template<uint Size, class VCardT>
-    void InternalExportValues(SurveyResults& report, const MinMaxData::Data* array);
+    void InternalExportValues(SurveyResults& report, const MinMaxData::Data* array) const;
 
 }; // class MinMaxBase
 

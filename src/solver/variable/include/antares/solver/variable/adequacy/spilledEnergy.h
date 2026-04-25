@@ -29,12 +29,7 @@ struct VCardSpilledEnergy
     }
 
     //! Expected results configuration
-    typedef Results<R::AllYears::Average< // The average values throughout all years
-      R::AllYears::StdDeviation<          // The standard deviation values throughout all years
-        R::AllYears::Min<                 // The minimum values throughout all years
-          R::AllYears::Max<               // The maximum values throughout all years
-            >>>>>
-      ResultsType;
+    using ResultsType = StandardResults<>;
 
     //! The VCard to look for for calculating spatial aggregates
     typedef VCardSpilledEnergy VCardForSpatialAggregate;

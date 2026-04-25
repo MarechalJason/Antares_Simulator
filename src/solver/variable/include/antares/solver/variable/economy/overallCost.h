@@ -25,10 +25,7 @@ struct OverallCostTraits
         return "Overall Cost throughout all MC years";
     }
 
-    using ResultsProfile = Results<R::AllYears::Average< // The average values throughout all years
-                                   >,
-                                 R::AllYears::Average // Use these values for spatial cluster
-                                 >;
+    using ResultsProfile = Results<std::tuple<R::AllYears::Average>, R::AllYears::Average>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

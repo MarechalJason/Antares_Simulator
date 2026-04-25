@@ -38,7 +38,7 @@ inline void MinMaxBase::merge(uint year, const IntermediateValues& rhs)
 template<uint Size, class VCardT>
 void MinMaxBase::InternalExportIndices(SurveyResults& report,
                                       const MinMaxData::Data* array,
-                                      int fileLevel)
+                                      int fileLevel) const
 {
     assert(array);
     assert(report.data.columnIndex < report.maxVariables && "Column index out of bounds");
@@ -67,7 +67,7 @@ void MinMaxBase::InternalExportIndices(SurveyResults& report,
 
 template<uint Size, class VCardT>
 inline void MinMaxBase::InternalExportValues(SurveyResults& report,
-                                              const MinMaxData::Data* array)
+                                              const MinMaxData::Data* array) const
 {
     assert(array);
     assert(report.data.columnIndex < report.maxVariables && "Column index out of bounds");
