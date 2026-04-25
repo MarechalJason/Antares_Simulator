@@ -25,7 +25,7 @@ struct UnsuppliedEnergyTrait
         return "Unsuplied Energy (demand that cannot be satisfied)";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

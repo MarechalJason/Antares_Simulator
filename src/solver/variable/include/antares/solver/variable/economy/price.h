@@ -25,7 +25,7 @@ struct PriceTraits
         return "Marginal Price, throughout all MC years";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 4;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateAverage;

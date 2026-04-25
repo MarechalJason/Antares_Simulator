@@ -37,7 +37,8 @@ struct STSbyGroupTraits
         return "STS injections, withdrawals and levels";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
+    using ResultsType = ResultsProfile;
 
     static constexpr uint8_t decimal = 0;
 

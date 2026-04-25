@@ -13,7 +13,7 @@ struct LOLP_Base_Traits
         return "%";
     }
 
-    using ResultsType = Results<R::AllYears::Average<>>;
+    using ResultsProfile = Results<R::AllYears::Average<>>;
 
     static constexpr uint8_t decimal = 2;
 

@@ -28,9 +28,8 @@ struct LoopFlowTraits
         return "Loop flow";
     }
 
-    typedef Results<R::AllYears::Raw< // Raw values
-      >>
-      ResultsType;
+    using ResultsProfile = Results<R::AllYears::Raw< // Raw values
+                                   >>;
 
     // Data is loaded once from the link parameters when the link is initialized.
     // No per-year processing needed: simulationEnd will compute stats + merge.

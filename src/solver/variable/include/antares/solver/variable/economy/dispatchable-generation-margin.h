@@ -26,7 +26,8 @@ struct DispatchableGenMarginTraits
         return "Dispatchable Generation Margin";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
+    using ResultsType = ResultsProfile;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

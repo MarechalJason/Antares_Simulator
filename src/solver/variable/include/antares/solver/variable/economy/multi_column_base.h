@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : type alias for results template
+**   - \c ResultsProfile : type alias for results template
 **   - \c decimal : uint8_t
 **   - \c columnCaption(uint) -> std::string (for GUI display)
 **
@@ -54,7 +54,7 @@ struct VCardMultiColumn
         return Traits::Description();
     }
 
-    using ResultsType = typename Traits::ResultsType;
+    using ResultsType = typename Traits::ResultsProfile;
     using VCardForSpatialAggregate = VCardMultiColumn;
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;

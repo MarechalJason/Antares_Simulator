@@ -25,7 +25,7 @@ struct OperatingCostTraits
         return "Operating Cost throughout all MC years, of all the thermal dispatchable clusters";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

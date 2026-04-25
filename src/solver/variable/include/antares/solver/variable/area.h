@@ -28,7 +28,7 @@ struct VCardAllAreas
         return "";
     }
 
-    //! The expecte results
+    //! Expected results configuration
     typedef Results<> ResultsType;
 
     //! Data Level
@@ -38,7 +38,7 @@ struct VCardAllAreas
                                                  & Category::FileLevel::de;
     //! Indentation (GUI)
     static constexpr uint8_t nodeDepthForGUI = +1;
-    //! Number of columns used by the variable (One ResultsType per column)
+    //! Number of columns used by the variable (one results configuration per column)
     static constexpr int columnCount = 0;
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Category::noSpatialAggregate;

@@ -33,7 +33,7 @@ struct VCardCongestionProbability
         return "Probability for the line to be congested in the upstream-downstream way";
     }
 
-    //! The expecte results
+    //! Expected results configuration
     typedef Results<R::AllYears::Raw< // The raw values throughout all years
       >>
       ResultsType;
@@ -49,7 +49,7 @@ struct VCardCongestionProbability
     static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 2;
-    //! Number of columns used by the variable (One ResultsType per column)
+    //! Number of columns used by the variable (one results configuration per column)
     static constexpr int columnCount = 2;
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

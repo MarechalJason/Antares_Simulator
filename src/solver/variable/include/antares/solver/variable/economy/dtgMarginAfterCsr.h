@@ -25,7 +25,7 @@ struct DtgMarginCsrTraits
         return "Dispatchable Generation Margin (after CSR optimization)";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

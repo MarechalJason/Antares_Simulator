@@ -26,7 +26,7 @@ struct DispatchableGenerationTraits
         return "Value of all the dispatchable generation throughout all MC years";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
 

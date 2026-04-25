@@ -28,7 +28,7 @@ struct NearPriceCapTraits
         return "Near Price Cap Hours";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 4;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSumThen1IfPositive;

@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : type alias for results template
+**   - Results profile is provided by the base class (no trait alias required)
 **   - \c clusterCount(const Data::Area*) -> size_t
 **   - \c computeStats(IntermediateValues&) -> void
 **   - \c buildSurveyReport(const std::vector<IntermediateValues>&, SurveyResults&, int, int) ->

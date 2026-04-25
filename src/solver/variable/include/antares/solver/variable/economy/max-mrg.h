@@ -26,7 +26,7 @@ struct MaxMargeTraits
         return "Maximum margin throughout all MC years";
     }
 
-    using ResultsType = StandardResults<>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

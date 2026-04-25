@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : type alias for results template
+**   - Results profile is provided by the base class (no trait alias required)
 **
 ** - Optional hooks (dispatched via \c if constexpr):
 **   - \c AuxiliaryDataType : type alias
