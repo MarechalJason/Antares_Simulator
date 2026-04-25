@@ -10,8 +10,6 @@ template<class NextT, int FileFilter>
 inline void Raw<NextT, FileFilter>::initializeFromStudy(Antares::Data::Study& study)
 {
     rawdata.initializeFromStudy(study);
-    // Next
-    NextType::initializeFromStudy(study);
 }
 
 } // namespace Antares::Solver::Variable::R::AllYears

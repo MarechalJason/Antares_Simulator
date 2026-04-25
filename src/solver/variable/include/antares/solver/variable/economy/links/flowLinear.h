@@ -56,10 +56,10 @@ struct FlowLinearTraits
             {
                 results.data.matrix
                   .entry[results.data.link->from->index][results.data.link->with->index]
-                  = pResults.avgdata.year;
+                  = pResults.avgdata().year;
                 results.data.matrix
                   .entry[results.data.link->with->index][results.data.link->from->index]
-                  = -pResults.avgdata.year;
+                  = -pResults.avgdata().year;
             }
         }
     }

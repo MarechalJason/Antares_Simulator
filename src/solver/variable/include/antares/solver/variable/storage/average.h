@@ -17,19 +17,14 @@
 namespace Antares::Solver::Variable::R::AllYears
 {
 template<class NextT = Empty, int FileFilter = Variable::Category::FileLevel::allFile>
-struct Average: public NextT
+struct Average
 {
 public:
-    //! Type of the net item in the list
-    typedef NextT NextType;
+    // Typelist link: kept so the legacy nested-chain syntax (Average<StdDev<...>>)
+    // still encodes a typelist that Results can flatten into a std::tuple.
+    using NextType = NextT;
 
-    enum
-    {
-        //! The count if item in the list
-        count = 1 + NextT::count,
-
-        categoryFile = NextT::categoryFile | Variable::Category::FileLevel::allFile,
-    };
+    static constexpr int categoryFile = Variable::Category::FileLevel::allFile;
 
     struct Data
     {
@@ -37,37 +32,26 @@ public:
         uint32_t indice;
     };
 
-    //! Name of the filter
     static const char* Name()
     {
         return "average";
     }
 
-public:
-    Average()
-    {
-    }
+    Average() = default;
 
     void initializeFromStudy(Antares::Data::Study& study)
     {
         avgdata.initializeFromStudy(study);
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     void reset()
     {
-        // Reset
         avgdata.reset();
-        // Next
-        NextType::reset();
     }
 
     void merge(uint year, const IntermediateValues& rhs)
     {
         avgdata.merge(year, rhs);
-        // Next
-        NextType::merge(year, rhs);
     }
 
     template<class S, class VCardT>
@@ -101,12 +85,6 @@ public:
                 break;
             }
         }
-        // Next
-        NextType::template buildSurveyReport<S, VCardT>(report,
-                                                        results,
-                                                        dataLevel,
-                                                        fileLevel,
-                                                        precision);
     }
 
     template<class VCardT>
@@ -127,19 +105,14 @@ public:
                                                             ? "values"
                                                             : "EXP";
 
-            // Precision
             report.precision[report.data.columnIndex] = PrecisionToPrintfFormat<
               VCardT::decimal>::Value();
-            // Value
             report.values[report.data.columnIndex][report.data.rowIndex] = avgdata.year;
-            // Non applicability
             report.digestNonApplicableStatus[report.data.rowIndex][report.data.columnIndex]
               = *report.isCurrentVarNA;
 
             ++(report.data.columnIndex);
         }
-        // Next
-        NextType::template buildDigest<VCardT>(report, digestLevel, dataLevel);
     }
 
 public:
@@ -151,18 +124,14 @@ private:
     {
         assert(report.data.columnIndex < report.maxVariables && "Column index out of bounds");
 
-        // Caption
         report.captions[0][report.data.columnIndex] = report.variableCaption;
         report.captions[1][report.data.columnIndex] = report.variableUnit;
         report.captions[2][report.data.columnIndex] = (report.variableCaption == "LOLP") ? "values"
                                                                                          : "EXP";
-        // Precision
         report.precision[report.data.columnIndex] = PrecisionToPrintfFormat<
           VCardT::decimal>::Value();
-        // Non applicability
         report.nonApplicableStatus[report.data.columnIndex] = *report.isCurrentVarNA;
 
-        // Values
         switch (PrecisionT)
         {
         case Category::hourly:
@@ -210,7 +179,6 @@ private:
             break;
         }
 
-        // Next column index
         ++report.data.columnIndex;
     }
 

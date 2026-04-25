@@ -6,57 +6,13 @@
 
 namespace Antares::Solver::Variable
 {
+// Sentinel used as the legacy chain terminator for the decorator typelist.
+// Decorators no longer inherit from one another; this type only marks the
+// end of the chain so the typelist extractor in Results can stop.
 struct Empty
 {
-public:
-    //! Name of the filter
-    const char* Name()
-    {
-        return NULL;
-    }
-
-    enum
-    {
-        //! The count if item in the list
-        count = 0,
-        categoryFile = 0,
-    };
-
-protected:
-    static void initializeFromStudy(const Data::Study&)
-    {
-        // Does nothing
-    }
-
-    static void reset()
-    {
-        // Does nothing
-    }
-
-    static void merge(unsigned int /*year*/, const IntermediateValues& /*rhs*/)
-    {
-        // Does nothing
-    }
-
-    template<class S, class VCardT>
-    static void buildSurveyReport(SurveyResults&, const S&, int, int, int)
-    {
-        // Does nothing
-    }
-
-    template<class VCardT>
-    static void buildDigest(SurveyResults&, int, int)
-    {
-        // Does nothing
-    }
-
-    template<template<class, int> class DecoratorT>
-    static Antares::Memory::Stored<double>::ConstReturnType hourlyValuesForSpatialAggregate()
-    {
-        return Antares::Memory::Stored<double>::NullValue();
-    }
-
-}; // class Empty
+    using NextType = void;
+};
 
 } // namespace Antares::Solver::Variable
 

@@ -14,33 +14,20 @@ template<class NextT = Empty>
 class Max;
 
 template<bool OpInferior, class NextT = Empty>
-struct MinMaxBase: public NextT
+struct MinMaxBase
 {
 public:
-    //! Type of the net item in the list
-    typedef NextT NextType;
+    using NextType = NextT;
 
-    enum
-    {
-        //! The count if item in the list
-        count = 1 + NextT::count,
+    static constexpr int categoryFile = Variable::Category::FileLevel::allFile;
 
-        categoryFile = NextT::categoryFile | Variable::Category::FileLevel::allFile,
-    };
-
-    //! Name of the filter
     static const char* Name()
     {
         return "minmaxbase";
     }
 
-    MinMaxBase()
-    {
-    }
-
-    ~MinMaxBase()
-    {
-    }
+    MinMaxBase() = default;
+    ~MinMaxBase() = default;
 
     void initializeFromStudy(Data::Study& study);
 
@@ -104,23 +91,17 @@ public:
                 break;
             }
         }
-        // Next
-        NextType::template buildSurveyReport<S, VCardT>(report,
-                                                        results,
-                                                        dataLevel,
-                                                        fileLevel,
-                                                        precision);
+    }
+
+    template<class VCardT>
+    void buildDigest(SurveyResults& /*report*/, int /*digestLevel*/, int /*dataLevel*/) const
+    {
+        // No digest output for min/max.
     }
 
     void reset();
 
     void merge(uint year, const IntermediateValues& rhs);
-
-    template<template<class> class DecoratorT>
-    Antares::Memory::Stored<double>::ConstReturnType hourlyValuesForSpatialAggregate() const
-    {
-        return NextType::template hourlyValuesForSpatialAggregate<DecoratorT>();
-    }
 
 protected:
     MinMaxData minmax;
