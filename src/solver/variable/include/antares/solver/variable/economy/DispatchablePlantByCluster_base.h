@@ -61,9 +61,7 @@ struct VCardDispatchablePlantByClusterBase
     }
 
     //! The expected results
-    using ResultsType = Results<R::AllYears::Average< // The average values throughout all years
-      >>
-      ;
+    using ResultsType = Results<std::tuple<R::AllYears::Average>>;
 
     //! The VCard to look for for calculating spatial aggregates
     using VCardForSpatialAggregate = VCardDispatchablePlantByClusterBase;

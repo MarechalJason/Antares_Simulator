@@ -25,7 +25,7 @@ struct LMRViolationsTraits
         return "Local Matching Rule is violated more than the provided threshold";
     }
 
-    using ResultsProfile = Results<R::AllYears::Average<>>;
+    using ResultsProfile = Results<std::tuple<R::AllYears::Average>>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

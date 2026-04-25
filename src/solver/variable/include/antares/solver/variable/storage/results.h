@@ -14,60 +14,52 @@
 #include "fwd.h"
 #include "intermediate.h"
 
+#include "average.h"
+#include "empty.h"
+#include "minmax.h"
+#include "raw.h"
+#include "stdDeviation.h"
+
 namespace Antares::Solver::Variable
 {
 
 namespace detail
 {
+template<class T, class Tuple>
+struct TupleContains;
 
-template<template<class, int> class Tmpl, class T>
-struct IsInstanceOf2 : std::false_type
+template<class T>
+struct TupleContains<T, std::tuple<>> : std::false_type
 {
 };
 
-template<template<class, int> class Tmpl, class A, int F>
-struct IsInstanceOf2<Tmpl, Tmpl<A, F>> : std::true_type
+template<class T, class Head, class... Tail>
+struct TupleContains<T, std::tuple<Head, Tail...>>
+  : std::conditional_t<std::is_same_v<T, Head>,
+                       std::true_type,
+                       TupleContains<T, std::tuple<Tail...>>>
 {
 };
 
-template<template<class, int> class Tmpl, class Tuple>
-struct FindFirstInstance;
-
-template<template<class, int> class Tmpl>
-struct FindFirstInstance<Tmpl, std::tuple<>>
-{
-    static constexpr int value = -1;
-};
-
-template<template<class, int> class Tmpl, class Head, class... Tail>
-struct FindFirstInstance<Tmpl, std::tuple<Head, Tail...>>
-{
-private:
-    static constexpr int tail_index = FindFirstInstance<Tmpl, std::tuple<Tail...>>::value;
-
-public:
-    static constexpr int value = IsInstanceOf2<Tmpl, Head>::value
-                                   ? 0
-                                   : (tail_index < 0 ? -1 : tail_index + 1);
-};
+template<class T, class Tuple>
+inline constexpr bool tuple_contains_v = TupleContains<T, Tuple>::value;
 
 } // namespace detail
 
-template<class FirstDecoratorT = Empty,
-         template<class, int> class DecoratorForSpatialAggregateT = R::AllYears::Raw>
+template<class DecoratorTupleT = std::tuple<>, class SpatialAggT = R::AllYears::Raw>
 class Results;
 
-using StandardAllYearsDecorators
-  = std::tuple<R::AllYears::Average, R::AllYears::StdDeviation, R::AllYears::Min, R::AllYears::Max>;
+using StandardAllYearsDecorators = std::
+  tuple<R::AllYears::Average, R::AllYears::StdDeviation, R::AllYears::Min, R::AllYears::Max>;
 
-template<template<class, int> class DecoratorForSpatialAggregateT = R::AllYears::Raw>
-using StandardResults = Results<StandardAllYearsDecorators, DecoratorForSpatialAggregateT>;
+template<class SpatialAggT = R::AllYears::Raw>
+using StandardResults = Results<StandardAllYearsDecorators, SpatialAggT>;
 
-template<class FirstDecoratorT, template<class, int> class DecoratorForSpatialAggregateT>
+template<class DecoratorTupleT, class SpatialAggT>
 class Results
 {
 public:
-    using DecoratorTuple = FirstDecoratorT;
+    using DecoratorTuple = DecoratorTupleT;
 
     static constexpr std::size_t count = std::tuple_size_v<DecoratorTuple>;
 
@@ -101,10 +93,10 @@ public:
 
     template<class S, class VCardT>
     void buildSurveyReport(SurveyResults& report,
-                       const S& results,
-                       int dataLevel,
-                       int fileLevel,
-                       int precision) const
+                           const S& results,
+                           int dataLevel,
+                           int fileLevel,
+                           int precision) const
     {
         std::apply(
           [&](const auto&... d)
@@ -130,11 +122,9 @@ public:
 
     Antares::Memory::Stored<double>::ConstReturnType hourlyValuesForSpatialAggregate() const
     {
-        constexpr int idx = detail::
-          FindFirstInstance<DecoratorForSpatialAggregateT, DecoratorTuple>::value;
-        if constexpr (idx >= 0)
+        if constexpr (detail::tuple_contains_v<SpatialAggT, DecoratorTuple>)
         {
-            const auto& d = std::get<idx>(decorators_);
+            const auto& d = std::get<SpatialAggT>(decorators_);
             if constexpr (requires { d.hourlyForSpatialAggregate(); })
             {
                 return d.hourlyForSpatialAggregate();
@@ -152,30 +142,30 @@ public:
 
     auto& avgdata()
     {
-        constexpr int idx = detail::FindFirstInstance<R::AllYears::Average, DecoratorTuple>::value;
-        static_assert(idx >= 0, "avgdata() requires an R::AllYears::Average decorator");
-        return std::get<idx>(decorators_).avgdata;
+        static_assert(detail::tuple_contains_v<R::AllYears::Average, DecoratorTuple>,
+                      "avgdata() requires an R::AllYears::Average decorator");
+        return std::get<R::AllYears::Average>(decorators_).avgdata;
     }
 
     const auto& avgdata() const
     {
-        constexpr int idx = detail::FindFirstInstance<R::AllYears::Average, DecoratorTuple>::value;
-        static_assert(idx >= 0, "avgdata() requires an R::AllYears::Average decorator");
-        return std::get<idx>(decorators_).avgdata;
+        static_assert(detail::tuple_contains_v<R::AllYears::Average, DecoratorTuple>,
+                      "avgdata() requires an R::AllYears::Average decorator");
+        return std::get<R::AllYears::Average>(decorators_).avgdata;
     }
 
     auto& rawdata()
     {
-        constexpr int idx = detail::FindFirstInstance<R::AllYears::Raw, DecoratorTuple>::value;
-        static_assert(idx >= 0, "rawdata() requires an R::AllYears::Raw decorator");
-        return std::get<idx>(decorators_).rawdata;
+        static_assert(detail::tuple_contains_v<R::AllYears::Raw, DecoratorTuple>,
+                      "rawdata() requires an R::AllYears::Raw decorator");
+        return std::get<R::AllYears::Raw>(decorators_).rawdata;
     }
 
     const auto& rawdata() const
     {
-        constexpr int idx = detail::FindFirstInstance<R::AllYears::Raw, DecoratorTuple>::value;
-        static_assert(idx >= 0, "rawdata() requires an R::AllYears::Raw decorator");
-        return std::get<idx>(decorators_).rawdata;
+        static_assert(detail::tuple_contains_v<R::AllYears::Raw, DecoratorTuple>,
+                      "rawdata() requires an R::AllYears::Raw decorator");
+        return std::get<R::AllYears::Raw>(decorators_).rawdata;
     }
 
 private:
@@ -183,11 +173,5 @@ private:
 }; // class Results
 
 } // namespace Antares::Solver::Variable
-
-#include "average.h"
-#include "empty.h"
-#include "minmax.h"
-#include "raw.h"
-#include "stdDeviation.h"
 
 #endif // __SOLVER_VARIABLE_STORAGE_RESULTS_H__

@@ -36,8 +36,7 @@ struct FlowQuadTraits
         return "Flow (quad.)";
     }
 
-    using ResultsProfile = Results<R::AllYears::Raw< // Raw values
-                                   >>;
+    using ResultsProfile = Results<std::tuple<R::AllYears::Raw>>;
 
     using AuxiliaryDataType = FlowQuadAuxData;
 

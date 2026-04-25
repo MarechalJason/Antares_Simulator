@@ -34,9 +34,7 @@ struct VCardCongestionProbability
     }
 
     //! Expected results configuration
-    typedef Results<R::AllYears::Raw< // The raw values throughout all years
-      >>
-      ResultsType;
+    using ResultsType = Results<std::tuple<R::AllYears::Raw>>;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;

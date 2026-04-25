@@ -30,9 +30,7 @@ struct VCardPSP
     }
 
     //! Expected results configuration
-    typedef Results<R::AllYears::Average< // The average values throughout all years
-      >>
-      ResultsType;
+    using ResultsType = Results<std::tuple<R::AllYears::Average>>;
 
     //! The VCard to look for for calculating spatial aggregates
     typedef VCardPSP VCardForSpatialAggregate;
