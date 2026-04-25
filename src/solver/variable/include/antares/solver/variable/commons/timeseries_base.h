@@ -189,7 +189,6 @@ struct VCardTimeSeriesBase: public TimeSeriesTraits<TraitsType>
  * polymorphism without virtual function overhead.
  *
  * @tparam Derived The derived class (CRTP)
- * @tparam NextT The next variable in the chain (for variable composition)
  * @tparam VCardType The VCard describing this variable
  *
  * ## Derived Class Requirements:
@@ -222,11 +221,10 @@ struct VCardTimeSeriesBase: public TimeSeriesTraits<TraitsType>
  * - `areaPtr`: Non-owning pointer to area (managed externally)
  * - `nbYearsParallel`: Cached for performance
  */
-template<typename Derived, typename VCardType, typename NextT = void>
+template<typename Derived, typename VCardType>
 class TimeSeriesValuesBase: public Variable::IVariable<Derived, VCardType>
 {
 public:
-    using NextType = NextT;
     using AncestorType = Variable::IVariable<Derived, VCardType>;
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;

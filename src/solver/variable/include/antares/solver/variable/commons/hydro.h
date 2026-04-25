@@ -75,9 +75,6 @@ using VCardTimeSeriesValuesHydro = VCardTimeSeriesBase<HydroTraits>;
  * * This class implements the processing of hydro run-of-river time series data.
  * It handles the dynamic selection of time series and hourly data extraction
  * specific to hydro modeling requirements.
- *
- * @tparam NextT The next variable in the processing chain
- *
  */
 class TimeSeriesValuesHydro
     : public TimeSeriesValuesBase<TimeSeriesValuesHydro, VCardTimeSeriesValuesHydro>
