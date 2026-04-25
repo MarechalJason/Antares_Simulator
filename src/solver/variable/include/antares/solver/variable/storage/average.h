@@ -16,14 +16,9 @@
 
 namespace Antares::Solver::Variable::R::AllYears
 {
-template<class NextT = Empty, int FileFilter = Variable::Category::FileLevel::allFile>
 struct Average
 {
 public:
-    // Typelist link: kept so the legacy nested-chain syntax (Average<StdDev<...>>)
-    // still encodes a typelist that Results can flatten into a std::tuple.
-    using NextType = NextT;
-
     static constexpr int categoryFile = Variable::Category::FileLevel::allFile;
 
     struct Data

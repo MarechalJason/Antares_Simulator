@@ -8,17 +8,12 @@
 
 namespace Antares::Solver::Variable::R::AllYears
 {
-template<class NextT = Empty>
 class Min;
-template<class NextT = Empty>
 class Max;
 
-template<bool OpInferior, class NextT = Empty>
 struct MinMaxBase
 {
 public:
-    using NextType = NextT;
-
     static constexpr int categoryFile = Variable::Category::FileLevel::allFile;
 
     static const char* Name()
@@ -117,8 +112,12 @@ private:
 
 }; // class MinMaxBase
 
-template<class NextT>
-class Min: public MinMaxBase<true, NextT>
+template<bool OpInferior>
+class MinMaxBaseT : public MinMaxBase
+{
+};
+
+class Min: public MinMaxBaseT<true>
 {
 public:
     static const char* Name()
@@ -127,8 +126,7 @@ public:
     }
 };
 
-template<class NextT>
-class Max: public MinMaxBase<false, NextT>
+class Max: public MinMaxBaseT<false>
 {
 public:
     static const char* Name()

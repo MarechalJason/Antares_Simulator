@@ -13,12 +13,9 @@ using HighPrecision = long double;
 
 namespace Antares::Solver::Variable::R::AllYears
 {
-template<class NextT = Empty, int FileFilter = Variable::Category::FileLevel::allFile>
 struct StdDeviation
 {
 public:
-    using NextType = NextT;
-
     static constexpr int categoryFile = Variable::Category::FileLevel::allFile;
 
     static const char* Name()
