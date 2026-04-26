@@ -6,8 +6,8 @@
 
 namespace Antares::Solver::Variable
 {
-template<class NextT>
-void SetsOfAreas<NextT>::initializeFromStudy(Data::Study& study)
+template<class VariableList>
+void SetsOfAreas<VariableList>::initializeFromStudy(Data::Study& study)
 {
     using namespace Antares;
 
@@ -38,7 +38,7 @@ void SetsOfAreas<NextT>::initializeFromStudy(Data::Study& study)
             continue;
         }
 
-        auto n = std::make_unique<NextT>();
+        auto n = std::make_unique<VariableList>();
 
         // Initialize the variables
         // From the study
@@ -65,107 +65,107 @@ void SetsOfAreas<NextT>::initializeFromStudy(Data::Study& study)
     }
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::initializeFromArea(Data::Study*, Data::Area*)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::initializeFromArea(Data::Study*, Data::Area*)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::initializeFromLink(Data::Study*, Data::AreaLink*)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::initializeFromLink(Data::Study*, Data::AreaLink*)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::initializeFromThermalCluster(Data::Study*,
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::initializeFromThermalCluster(Data::Study*,
                                                              Data::Area*,
                                                              Data::ThermalCluster*)
 {
     // This method should not be called at this stage
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::simulationBegin()
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::simulationBegin()
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::simulationEnd()
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::simulationEnd()
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::yearBegin(uint /*year*/, uint /* numSpace */)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::yearBegin(uint /*year*/, uint /* numSpace */)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::yearEndBuild(State& /*state*/, uint /*year*/, uint /*numSpace*/)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::yearEndBuild(State& /*state*/, uint /*year*/, uint /*numSpace*/)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::yearEnd(uint /*year*/, uint /*numSpace*/)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::yearEnd(uint /*year*/, uint /*numSpace*/)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::computeSummary(unsigned int /* year */, unsigned int /* numSpace */)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::computeSummary(unsigned int /* year */, unsigned int /* numSpace */)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::hourBegin(uint /*hourInTheYear*/)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::hourBegin(uint /*hourInTheYear*/)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::weekBegin(State&)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::weekBegin(State&)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::weekForEachArea(State&, unsigned int /*numSpace*/)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::weekForEachArea(State&, unsigned int /*numSpace*/)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::weekEnd(State&)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::weekEnd(State&)
 {
     // Nothing to do here
 }
 
-template<class NextT>
-void SetsOfAreas<NextT>::hourForEachArea(State& state, unsigned int)
+template<class VariableList>
+void SetsOfAreas<VariableList>::hourForEachArea(State& state, unsigned int)
 {
     (void)state;
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::hourForEachLink(State& state)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::hourForEachLink(State& state)
 {
     (void)state;
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::hourEnd(State& state, uint hourInTheYear)
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::hourEnd(State& state, uint hourInTheYear)
 {
     (void)state;
     (void)hourInTheYear;
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::buildSurveyReport(SurveyResults& results,
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::buildSurveyReport(SurveyResults& results,
                                                   int dataLevel,
                                                   int fileLevel,
                                                   int precision) const
@@ -181,8 +181,8 @@ inline void SetsOfAreas<NextT>::buildSurveyReport(SurveyResults& results,
     }
 }
 
-template<class NextT>
-inline void SetsOfAreas<NextT>::buildAnnualSurveyReport(SurveyResults& results,
+template<class VariableList>
+inline void SetsOfAreas<VariableList>::buildAnnualSurveyReport(SurveyResults& results,
                                                         int dataLevel,
                                                         int fileLevel,
                                                         int precision,
@@ -199,8 +199,8 @@ inline void SetsOfAreas<NextT>::buildAnnualSurveyReport(SurveyResults& results,
     }
 }
 
-template<class NextT>
-const typename SetsOfAreas<NextT>::NextType* SetsOfAreas<NextT>::findSetById(
+template<class VariableList>
+const VariableList* SetsOfAreas<VariableList>::findSetById(
   const Data::Study::SetsOfAreas::IDType& setId) const
 {
     for (uint i = 0; i != pNames.size(); ++i)
@@ -213,8 +213,8 @@ const typename SetsOfAreas<NextT>::NextType* SetsOfAreas<NextT>::findSetById(
     return nullptr;
 }
 
-template<class NextT>
-void SetsOfAreas<NextT>::buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
+template<class VariableList>
+void SetsOfAreas<VariableList>::buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
 {
     int count_int = count;
     bool setOfAreasDataLevel = dataLevel & Category::DataLevel::setOfAreas;
@@ -237,16 +237,16 @@ void SetsOfAreas<NextT>::buildDigest(SurveyResults& results, int digestLevel, in
     }
 }
 
-template<class NextT>
+template<class VariableList>
 template<class I>
-inline void SetsOfAreas<NextT>::provideInformations(I& infos)
+inline void SetsOfAreas<VariableList>::provideInformations(I& infos)
 {
     // Begining of the node
     if (VCardType::nodeDepthForGUI)
     {
         infos.template beginNode<VCardType>();
         // Next variable in the list
-        NextType::template provideInformations<I>(infos);
+        VariableList::template provideInformations<I>(infos);
         // End of the node
         infos.endNode();
     }
@@ -255,13 +255,13 @@ inline void SetsOfAreas<NextT>::provideInformations(I& infos)
         // Giving our VCard
         infos.template addVCard<VCardType>();
         // Next variable in the list
-        NextType::template provideInformations<I>(infos);
+        VariableList::template provideInformations<I>(infos);
     }
 }
 
-template<class NextT>
+template<class VariableList>
 template<class V>
-void SetsOfAreas<NextT>::yearEndSpatialAggregates(V& allVars, uint year, uint numSpace)
+void SetsOfAreas<VariableList>::yearEndSpatialAggregates(V& allVars, uint year, uint numSpace)
 {
     for (uint setindex = 0; setindex != pSetsOfAreas.size(); ++setindex)
     {
@@ -273,9 +273,9 @@ void SetsOfAreas<NextT>::yearEndSpatialAggregates(V& allVars, uint year, uint nu
     }
 }
 
-template<class NextT>
+template<class VariableList>
 template<class V>
-void SetsOfAreas<NextT>::computeSpatialAggregatesSummary(V& allVars,
+void SetsOfAreas<VariableList>::computeSpatialAggregatesSummary(V& allVars,
                                                          unsigned int year,
                                                          unsigned int numSpace)
 {
@@ -286,9 +286,9 @@ void SetsOfAreas<NextT>::computeSpatialAggregatesSummary(V& allVars,
     }
 }
 
-template<class NextT>
+template<class VariableList>
 template<class V>
-void SetsOfAreas<NextT>::simulationEndSpatialAggregates(V& allVars)
+void SetsOfAreas<VariableList>::simulationEndSpatialAggregates(V& allVars)
 {
     for (uint i = 0; i != pSetsOfAreas.size(); ++i)
     {
@@ -296,8 +296,8 @@ void SetsOfAreas<NextT>::simulationEndSpatialAggregates(V& allVars)
     }
 }
 
-template<class NextT>
-void SetsOfAreas<NextT>::beforeYearByYearExport(uint year, uint numSpace)
+template<class VariableList>
+void SetsOfAreas<VariableList>::beforeYearByYearExport(uint year, uint numSpace)
 {
     for (uint i = 0; i != pSetsOfAreas.size(); ++i)
     {
@@ -305,16 +305,16 @@ void SetsOfAreas<NextT>::beforeYearByYearExport(uint year, uint numSpace)
     }
 }
 
-template<class NextT>
+template<class VariableList>
 template<class SearchVCardT, class O>
-inline void SetsOfAreas<NextT>::computeSpatialAggregateWith(O&)
+inline void SetsOfAreas<VariableList>::computeSpatialAggregateWith(O&)
 {
     // Do nothing
 }
 
-template<class NextT>
+template<class VariableList>
 template<class SearchVCardT, class O>
-inline void SetsOfAreas<NextT>::computeSpatialAggregateWith(O& out,
+inline void SetsOfAreas<VariableList>::computeSpatialAggregateWith(O& out,
                                                             const Data::Area* area,
                                                             uint numSpace)
 {
@@ -324,16 +324,16 @@ inline void SetsOfAreas<NextT>::computeSpatialAggregateWith(O& out,
     // pSetsOfAreas[area->index]->computeSpatialAggregateWith<SearchVCardT,O>(out);
 }
 
-template<class NextT>
+template<class VariableList>
 template<class VCardToFindT>
-inline const double* SetsOfAreas<NextT>::retrieveHourlyResultsForCurrentYear() const
+inline const double* SetsOfAreas<VariableList>::retrieveHourlyResultsForCurrentYear() const
 {
     return nullptr;
 }
 
-template<class NextT>
+template<class VariableList>
 template<class VCardToFindT>
-inline void SetsOfAreas<NextT>::retrieveResultsForArea(
+inline void SetsOfAreas<VariableList>::retrieveResultsForArea(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::Area* area)
 {
@@ -341,9 +341,9 @@ inline void SetsOfAreas<NextT>::retrieveResultsForArea(
     (void)area;
 }
 
-template<class NextT>
+template<class VariableList>
 template<class VCardToFindT>
-inline void SetsOfAreas<NextT>::retrieveResultsForThermalCluster(
+inline void SetsOfAreas<VariableList>::retrieveResultsForThermalCluster(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::ThermalCluster* cluster)
 {
@@ -351,9 +351,9 @@ inline void SetsOfAreas<NextT>::retrieveResultsForThermalCluster(
     (void)cluster;
 }
 
-template<class NextT>
+template<class VariableList>
 template<class VCardToFindT>
-inline void SetsOfAreas<NextT>::retrieveResultsForLink(
+inline void SetsOfAreas<VariableList>::retrieveResultsForLink(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::AreaLink* link)
 {
@@ -361,9 +361,9 @@ inline void SetsOfAreas<NextT>::retrieveResultsForLink(
     (void)link;
 }
 
-template<class NextT>
+template<class VariableList>
 template<class PredicateT>
-inline void SetsOfAreas<NextT>::RetrieveVariableList(PredicateT& /*predicate*/)
+inline void SetsOfAreas<VariableList>::RetrieveVariableList(PredicateT& /*predicate*/)
 {
 }
 

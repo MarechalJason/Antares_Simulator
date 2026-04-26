@@ -46,12 +46,10 @@ struct VCardAllBindingConstraints
 
 }; // class VCardAllBindingConstraints
 
-template<class NextT>
+template<class VariableList>
 class BindingConstraints
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
     //! VCard
     typedef VCardAllBindingConstraints VCardType;
 
@@ -61,7 +59,7 @@ public:
     enum
     {
         //! How many items have we got
-        count = NextT::count,
+        count = VariableList::count,
     };
 
     template<int CDataLevel, int CFile>
@@ -69,7 +67,7 @@ public:
     {
         enum
         {
-            count = NextType::template Statistics < CDataLevel,
+            count = VariableList::template Statistics < CDataLevel,
             CFile > ::count
         };
     };
@@ -163,7 +161,7 @@ public:
 
 private:
     // For each binding constraint, output variable static list associated.
-    std::vector<NextType> pBindConstraints;
+    std::vector<VariableList> pBindConstraints;
     // The number of counted binding constraints
     uint pBCcount;
 

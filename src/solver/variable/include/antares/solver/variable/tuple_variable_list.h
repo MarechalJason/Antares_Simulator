@@ -4,21 +4,15 @@
 #ifndef SOLVER_VARIABLE_TUPLE_VARIABLE_LIST_H__
 #define SOLVER_VARIABLE_TUPLE_VARIABLE_LIST_H__
 
-// Phase A.1 prototype — NOT yet wired into ComposeAll / Container::List.
-// Drop-in replacement for the CRTP-chain type produced by ComposeAll<V1,...,VN>::type
-// (= V1<V2<...VN<Container::EndOfList>>>). A TupleVariableList<V1<EL>,...,VN<EL>>
-// stores each leaf standalone (NextT = EndOfList, so internal NextType:: calls no-op)
-// and aggregates by folding std::apply over the tuple.
+// Flat variable list. Stores each leaf standalone and aggregates by folding
+// `std::apply` over the tuple. Used as the per-element list inside scope
+// wrappers (`Areas`, `SetsOfAreas`, `BindingConstraints`).
 //
 // Hook semantics fall into four classes:
 //   (1) broadcast            — unconditional fold:  (v.hook(a...), ...);
 //   (2) first-match short-ckt — find-and-stop:       ((Match<V> ? (do(v), true) : false) || ...);
 //   (3) templated broadcast   — static hooks taking a predicate/collector
 //   (4) compile-time fold     — Statistics<CD,CF>::count via constexpr (+ ...)
-//
-// Every method here mirrors the signature that the current chain exposes from its
-// head node, so Container::List<ItemList> (where ItemList = TupleVariableList<...>)
-// continues to compile unchanged.
 
 #include <cstddef>
 #include <tuple>
@@ -46,19 +40,13 @@ inline constexpr bool isSameVCard = std::is_same_v<VCardT, TargetT>;
 /*!
 ** \brief Flat storage + fold dispatch for a list of output variables.
 **
-** Replaces the nested-template chain `V1<V2<...<VN<EndOfList>>>>`. Each Vi is
-** instantiated standalone (`Vi<EndOfList>`), so its internal `NextType::hook(...)`
-** calls terminate at EndOfList's no-op and the per-leaf work stays identical.
-**
-** The CRTP chain is gone; aggregation happens here via fold expressions.
+** Each variable is held as an independent member; aggregation happens here
+** via fold expressions over `std::apply`.
 */
 template<class... Vars>
 class TupleVariableList
 {
 public:
-    //! Kept for source-level compat with legacy sites that read `::NextType`.
-    using NextType = EndOfList;
-
     //! Number of variables in this list (== chain length).
     static constexpr std::size_t count = sizeof...(Vars);
 
@@ -389,13 +377,10 @@ private:
 
     // Per-variable search helpers. Each returns `true` to short-circuit the fold.
     //
-    // We perform the aggregation directly via SpatialAggregateOperation::Perform
-    // rather than re-dispatching through v.computeSpatialAggregateWith(...). The
-    // re-dispatch would enter IVariable::computeSpatialAggregateWith (variable.hxx:366)
-    // whose else-branch calls NextType::computeSpatialAggregateWith(out, numSpace)
-    // — a signature EndOfList does not expose. The legacy chain tolerated that
-    // because only the matching leaf was instantiated; the fold here would force
-    // instantiation on every leaf and hit the broken else-branch.
+    // tryAggregate calls SpatialAggregateOperation::Perform directly rather than
+    // re-dispatching through v.computeSpatialAggregateWith(...): the re-dispatch
+    // path expects a successor signature that no longer exists, and we'd
+    // otherwise force instantiation on every leaf.
     template<class Search, class V, class O>
     static bool tryAggregate(V& v, O& out, unsigned int numSpace)
     {

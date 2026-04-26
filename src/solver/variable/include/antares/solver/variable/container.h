@@ -31,8 +31,6 @@ template<class NextT = Container::EndOfList>
 class List
 {
 public:
-    //! Type of the inner aggregator
-    using NextType = NextT;
     //! The full type of the class
     using ListType = List<NextT>;
 
