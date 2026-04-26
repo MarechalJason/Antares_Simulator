@@ -10,8 +10,8 @@ namespace Antares::Solver::Variable::Common
 
 // Variadic composition of output variables.
 //
-// Post-A refactor: variables are standalone classes (no NextT parameter).
-// ComposeAll flattens them into a tuple-based dispatcher.
+// Each variable is a standalone class; ComposeAll flattens them into a
+// tuple-based dispatcher.
 template<class... Vs>
 struct ComposeAll
 {

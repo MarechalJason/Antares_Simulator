@@ -15,7 +15,7 @@
  *        ↑
  * VCardTimeSeriesBase<T>       ← VCard implementation
  *        ↑
- * TimeSeriesValuesBase<D,N,V>  ← Base behavior implementation
+ * TimeSeriesValuesBase<D,V>    ← Base behavior implementation
  *        ↑
  * Derived Classes              ← Specific implementations (Load, Solar, etc.)
  * ```
@@ -33,8 +33,7 @@
  * using VCardMyTimeSeries = VCardTimeSeriesBase<MyTimeSeriesTraits>;
  *
  * // 3. Implement your time series class
- * template<>
- * class MyTimeSeries : public TimeSeriesValuesBase<MyTimeSeries<NextT>, NextT, VCardMyTimeSeries> {
+ * class MyTimeSeries : public TimeSeriesValuesBase<MyTimeSeries, VCardMyTimeSeries> {
  * public:
  *     void initializeDerivedFromStudy(Data::Study& study) { ... }
  *     void yearBeginImpl(unsigned int year, unsigned int space) { ... }

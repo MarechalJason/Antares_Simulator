@@ -229,8 +229,7 @@ struct EconomyVariableCard
 /*!
 ** \brief Base class for area-level economy variables like LOLP and LOLD
 **
-** Post-A refactor: variables are standalone (no NextT propagation).
-** Each variable inherits directly from the 2-parameter IVariable.
+** Each variable is standalone and inherits directly from the 2-parameter IVariable.
 */
 template<class Traits>
 class EconomyVariableBase
