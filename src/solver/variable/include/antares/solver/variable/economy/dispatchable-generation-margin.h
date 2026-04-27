@@ -4,6 +4,7 @@
 #pragma once
 
 #include <antares/study/area/scratchpad.h>
+
 #include "economy_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -25,8 +26,8 @@ struct DispatchableGenMarginTraits
         return "Dispatchable Generation Margin";
     }
 
-    using ResultsType = Results<R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<
-      R::AllYears::Max<>>>>>;
+    using ResultsType = Results<
+      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
@@ -36,8 +37,8 @@ struct DispatchableGenMarginTraits
                                State& state,
                                unsigned int)
     {
-        yearlyValues[state.hourInTheYear] +=
-          state.scratchpad->dispatchableGenerationMargin[state.hourInTheWeek];
+        yearlyValues[state.hourInTheYear] += state.scratchpad
+                                               ->dispatchableGenerationMargin[state.hourInTheWeek];
     }
 
     static bool checkCondition(const State&)
@@ -65,4 +66,3 @@ template<class NextT = Container::EndOfList>
 using DispatchableGenMargin = Economy_Base<DispatchableGenMarginTraits, NextT>;
 
 } // namespace Antares::Solver::Variable::Economy
-
