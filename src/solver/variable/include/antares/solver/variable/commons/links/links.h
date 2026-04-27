@@ -4,6 +4,8 @@
 #ifndef __SOLVER_VARIABLE_INC_LINK_H__
 #define __SOLVER_VARIABLE_INC_LINK_H__
 
+#include <vector>
+
 #include "antares/solver/variable/info.h"
 #include "antares/solver/variable/storage/results.h"
 #include "antares/solver/variable/tuple_variable_list.h"
@@ -63,9 +65,6 @@ public:
     {
         VariablePerLink::RetrieveVariableList(predicate);
     }
-
-    Links();
-    ~Links();
 
     void initializeFromStudy(Data::Study& study);
     void initializeFromArea(Data::Study*, Data::Area*);
@@ -151,8 +150,7 @@ public:
     }
 
 public:
-    VariablePerLink* pLinks;
-    uint pLinkCount;
+    std::vector<VariablePerLink> pLinks;
 
 }; // class Links
 

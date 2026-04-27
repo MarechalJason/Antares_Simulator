@@ -10,12 +10,6 @@
 namespace Antares::Solver::Variable
 {
 template<class VariableList>
-inline Areas<VariableList>::Areas()
-{
-    // Do nothing
-}
-
-template<class VariableList>
 inline void Areas<VariableList>::initializeFromArea(Data::Study*, Data::Area*)
 {
     // Nothing to do here
@@ -172,15 +166,14 @@ void Areas<VariableList>::buildDigest(SurveyResults& results, int digestLevel, i
     {
         if (dataLevel & Category::DataLevel::area)
         {
-            assert(pAreaCount == results.data.study.areas.size());
+            assert(pAreas.size() == results.data.study.areas.size());
 
             // Reset captions
             results.data.rowCaptions.clear();
-            results.data.rowCaptions.resize(pAreaCount);
+            results.data.rowCaptions.resize(pAreas.size());
 
             // For each area
-            // for (uint i = 0; i != results.data.study.areas.byIndex.size(); ++i)
-            for (uint i = 0; i != pAreaCount; ++i)
+            for (uint i = 0; i != pAreas.size(); ++i)
             {
                 results.data.area = results.data.study.areas[i];
                 uint index = results.data.area->index;
@@ -274,27 +267,16 @@ inline void Areas<VariableList>::retrieveResultsForLink(
 }
 
 template<class VariableList>
-Areas<VariableList>::~Areas()
-{
-    // Releasing the memory occupied by the areas
-    delete[] pAreas;
-}
-
-template<class VariableList>
 void Areas<VariableList>::initializeFromStudy(Data::Study& study)
 {
-    // The total number of areas
-    pAreaCount = study.areas.size();
+    const uint pAreaCount = study.areas.size();
 
-    // Reserving the memory
-    pAreas = new VariableList[pAreaCount];
+    pAreas.resize(pAreaCount);
 
-    // For each area...
     uint tick = 6;
     uint oldPercent = 0;
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
-        // Instancing a new set of variables of the area
         auto* currentArea = study.areas.byIndex[i];
         if (!(--tick))
         {
@@ -304,7 +286,6 @@ void Areas<VariableList>::initializeFromStudy(Data::Study& study)
                 logs.info() << "Allocating resources " << ((i * 100u) / pAreaCount) << "%";
                 oldPercent = newPercent;
             }
-            // Reset the tick
             tick = 6;
         }
 
@@ -328,7 +309,7 @@ void Areas<VariableList>::initializeFromStudy(Data::Study& study)
 template<class VariableList>
 void Areas<VariableList>::simulationBegin()
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].simulationBegin();
     }
@@ -337,7 +318,7 @@ void Areas<VariableList>::simulationBegin()
 template<class VariableList>
 void Areas<VariableList>::simulationEnd()
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].simulationEnd();
     }
@@ -405,7 +386,7 @@ void Areas<VariableList>::weekForEachArea(State& state, uint numSpace)
 template<class VariableList>
 void Areas<VariableList>::yearBegin(uint year, uint numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].yearBegin(year, numSpace);
     }
@@ -446,7 +427,7 @@ void Areas<VariableList>::yearEndBuild(State& state, uint year, uint numSpace)
 template<class VariableList>
 void Areas<VariableList>::yearEnd(uint year, uint numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         // Broadcast to all areas
         pAreas[i].yearEnd(year, numSpace);
@@ -456,7 +437,7 @@ void Areas<VariableList>::yearEnd(uint year, uint numSpace)
 template<class VariableList>
 void Areas<VariableList>::computeSummary(unsigned int year, unsigned int numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         // Broadcast to all areas
         pAreas[i].computeSummary(year, numSpace);
@@ -466,7 +447,7 @@ void Areas<VariableList>::computeSummary(unsigned int year, unsigned int numSpac
 template<class VariableList>
 void Areas<VariableList>::weekBegin(State& state)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].weekBegin(state);
     }
@@ -475,7 +456,7 @@ void Areas<VariableList>::weekBegin(State& state)
 template<class VariableList>
 void Areas<VariableList>::weekEnd(State& state)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].weekEnd(state);
     }
@@ -484,7 +465,7 @@ void Areas<VariableList>::weekEnd(State& state)
 template<class VariableList>
 void Areas<VariableList>::hourBegin(uint hourInTheYear)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].hourBegin(hourInTheYear);
     }
@@ -493,7 +474,7 @@ void Areas<VariableList>::hourBegin(uint hourInTheYear)
 template<class VariableList>
 void Areas<VariableList>::hourForEachLink(State& state, uint numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].hourForEachLink(state, numSpace);
     }
@@ -502,7 +483,7 @@ void Areas<VariableList>::hourForEachLink(State& state, uint numSpace)
 template<class VariableList>
 void Areas<VariableList>::hourEnd(State& state, uint hourInTheYear)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].hourEnd(state, hourInTheYear);
     }
@@ -511,7 +492,7 @@ void Areas<VariableList>::hourEnd(State& state, uint hourInTheYear)
 template<class VariableList>
 void Areas<VariableList>::beforeYearByYearExport(uint year, uint numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].beforeYearByYearExport(year, numSpace);
     }

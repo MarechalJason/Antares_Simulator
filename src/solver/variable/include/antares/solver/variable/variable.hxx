@@ -14,21 +14,12 @@ namespace Antares::Solver::Variable
 template<class ChildT, class VCardT>
 inline IVariable<ChildT, VCardT>::IVariable()
 {
-    // Initialization
-    // You should prefer the methods initializeFromStudy() or similiar
-    // to initialize the internal variables
-
     // Number of column, where dimension -1 (dynamic) is avoided
     pColumnCount = VCardType::columnCount > 1 ? VCardType::columnCount : 1;
 
-    // Allocation
-    // Does current output variable appear non applicable in all output reports (of any kind :
-    // area or district reports, annual or over all years reports, digest, ...) ?
     isNonApplicable = new bool[pColumnCount];
-    // Does current output variable column(s) appear in all reports ?
     isPrinted = new bool[pColumnCount];
 
-    // Initializing default print to true
     for (uint i = 0; i < pColumnCount; i++)
     {
         isPrinted[i] = true;

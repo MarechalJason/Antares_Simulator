@@ -4,6 +4,8 @@
 #ifndef __SOLVER_VARIABLE_AREA_H__
 #define __SOLVER_VARIABLE_AREA_H__
 
+#include <vector>
+
 #include "state.h"
 
 namespace Antares::Solver::Variable
@@ -83,16 +85,6 @@ public:
     static void RetrieveVariableList(PredicateT& predicate);
 
 public:
-    //! \name Constructor & Destructor
-    //@{
-    /*!
-    ** \brief Default Constructor
-    */
-    Areas();
-    //! Destructor
-    ~Areas();
-    //@}
-
     void initializeFromStudy(Data::Study& study);
     void initializeFromArea(Data::Study*, Data::Area*);
     void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*);
@@ -181,9 +173,7 @@ public:
 
 private:
     //! Area list
-    VariableList* pAreas;
-    //! The number of areas
-    uint pAreaCount;
+    std::vector<VariableList> pAreas;
 
 }; // class Areas
 
