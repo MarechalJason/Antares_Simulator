@@ -52,8 +52,7 @@ using VCardNonProportionalCostByDispatchablePlant = VCardDispatchablePlantByClus
   NonProportionalCostByDispatchablePlantTraits>;
 
 /*!
-** \brief C02 Average value of the overrall OperatingCost emissions expected from all
-**   the thermal dispatchable clusters
+** \brief NP cost expected from all the thermal dispatchable clusters
 */
 template<class NextT = Container::EndOfList>
 using NonProportionalCostByDispatchablePlant = DispatchablePlantByClusterBase<
