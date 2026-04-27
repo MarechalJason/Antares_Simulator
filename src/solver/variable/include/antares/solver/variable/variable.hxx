@@ -4,7 +4,7 @@
 #ifndef __SOLVER_VARIABLE_VARIABLE_HXX__
 #define __SOLVER_VARIABLE_VARIABLE_HXX__
 
-#include <yuni/core/static/types.h>
+#include <type_traits>
 
 #include <antares/study/variable-print-info.h>
 
@@ -282,10 +282,10 @@ inline void IVariable<ChildT, VCardT>::computeSpatialAggregateWith(O& out, uint 
     // then we will add our results
     // In the most cases, the variable `out` is intermediate results.
 
-    if (Yuni::Static::Type::StrictlyEqual<VCardT, SearchVCardT>::Yes)
+    if constexpr (std::is_same_v<VCardT, SearchVCardT>)
     {
         SpatialAggregateOperation<
-          Yuni::Static::Type::StrictlyEqual<VCardT, SearchVCardT>::Yes, // To avoid instanciation
+          std::is_same_v<VCardT, SearchVCardT>, // To avoid instanciation
           VCardT::spatialAggregate, // The spatial cluster operation to perform
           VCardType                 // The VCard
           >::Perform(out, *(static_cast<ChildT*>(this)), numSpace);
@@ -299,53 +299,11 @@ inline void IVariable<ChildT, VCardT>::computeSpatialAggregateWith(O&, const Dat
 {
 }
 
-namespace
-{
-template<int Match>
-struct RetrieveResultsAssignment
-{
-    enum
-    {
-        Yes = 1
-    };
-
-    template<class ResultsT, class O>
-    static void Do(ResultsT& varResults, O** result)
-    {
-        *result = &varResults;
-    }
-};
-
-template<>
-struct RetrieveResultsAssignment<0>
-{
-    enum
-    {
-        Yes = 0
-    };
-
-    template<class ResultsT, class O>
-    static void Do(ResultsT&, O**)
-    {
-    }
-};
-
-} // namespace
-
 template<class ChildT, class VCardT>
 template<class VCardToFindT>
 inline const double* IVariable<ChildT, VCardT>::retrieveHourlyResultsForCurrentYear(uint) const
 {
-    using AssignT = RetrieveResultsAssignment<
-      Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
-    if constexpr (AssignT::Yes)
-    {
-        return nullptr;
-    }
-    else
-    {
-        return nullptr;
-    }
+    return nullptr;
 }
 
 template<class ChildT, class VCardT>
@@ -354,9 +312,14 @@ inline void IVariable<ChildT, VCardT>::retrieveResultsForArea(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::Area*)
 {
-    using AssignT = RetrieveResultsAssignment<
-      Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
-    AssignT::Do(pResults, result);
+    if constexpr (std::is_same_v<VCardT, VCardToFindT>)
+    {
+        *result = &pResults;
+    }
+    else
+    {
+        *result = nullptr;
+    }
 }
 
 template<class ChildT, class VCardT>
@@ -365,9 +328,14 @@ inline void IVariable<ChildT, VCardT>::retrieveResultsForThermalCluster(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::ThermalCluster*)
 {
-    using AssignT = RetrieveResultsAssignment<
-      Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
-    AssignT::Do(pResults, result);
+    if constexpr (std::is_same_v<VCardT, VCardToFindT>)
+    {
+        *result = &pResults;
+    }
+    else
+    {
+        *result = nullptr;
+    }
 }
 
 template<class ChildT, class VCardT>
@@ -376,50 +344,32 @@ inline void IVariable<ChildT, VCardT>::retrieveResultsForLink(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::AreaLink*)
 {
-    using AssignT = RetrieveResultsAssignment<
-      Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
-    AssignT::Do(pResults, result);
+    if constexpr (std::is_same_v<VCardT, VCardToFindT>)
+    {
+        *result = &pResults;
+    }
+    else
+    {
+        *result = nullptr;
+    }
 }
-
-namespace
-{
-template<int ColumnT>
-struct HourlyResultsForCurrentYear
-{
-    template<class R>
-    static Antares::Memory::Stored<double>::ConstReturnType Get(const R& results, uint column)
-    {
-        return results[column].hourlyValuesForSpatialAggregate();
-    }
-};
-
-template<>
-struct HourlyResultsForCurrentYear<Category::singleColumn>
-{
-    template<class R>
-    static Antares::Memory::Stored<double>::ConstReturnType Get(const R& results, uint)
-    {
-        return results.hourlyValuesForSpatialAggregate();
-    }
-};
-
-template<>
-struct HourlyResultsForCurrentYear<Category::noColumn>
-{
-    template<class R>
-    static Antares::Memory::Stored<double>::ConstReturnType Get(const R&, uint)
-    {
-        return Antares::Memory::Stored<double>::NullValue();
-    }
-};
-
-} // anonymous namespace
 
 template<class ChildT, class VCardT>
 inline Antares::Memory::Stored<double>::ConstReturnType
 IVariable<ChildT, VCardT>::retrieveRawHourlyValuesForCurrentYear(uint column, uint) const
 {
-    return HourlyResultsForCurrentYear<VCardType::columnCount>::Get(pResults, column);
+    if constexpr (VCardType::columnCount > 1)
+    {
+        return pResults[column].hourlyValuesForSpatialAggregate();
+    }
+    else if constexpr (VCardType::columnCount == 1)
+    {
+        return pResults.hourlyValuesForSpatialAggregate();
+    }
+    else
+    {
+        return Antares::Memory::Stored<double>::NullValue();
+    }
 }
 
 template<class ChildT, class VCardT>
