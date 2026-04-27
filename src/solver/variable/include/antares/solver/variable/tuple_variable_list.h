@@ -47,15 +47,14 @@ template<class... Vars>
 class TupleVariableList
 {
 public:
-    //! Number of variables in this list (== chain length).
+    //! Number of variables in this list
     static constexpr std::size_t count = sizeof...(Vars);
 
     /*!
     ** \brief Compile-time column count filtered by (dataLevel, fileLevel).
     **
     ** Each Vi exposes `Statistics<CD, CF>::count` (nested struct). We fold over
-    ** the pack to sum — this replaces the current recursive definition in
-    ** IVariable that walks the chain.
+    ** the pack to sum.
     */
     template<int CDataLevel, int CFile>
     struct Statistics
@@ -118,9 +117,6 @@ public:
         std::apply([](auto&... v) { (v.simulationEnd(), ...); }, vars_);
     }
 
-    // Legacy chain uses the 2-arg (year, numSpace) signature in the leaf bases
-    // (economy_base.h:341) but the outermost IVariable exposes (year) only.
-    // We forward both to be safe during migration.
     void yearBegin(unsigned int year, unsigned int numSpace)
     {
         std::apply([&](auto&... v) { (v.yearBegin(year, numSpace), ...); }, vars_);
@@ -247,7 +243,6 @@ public:
     template<class SearchVCardT, class O>
     void computeSpatialAggregateWith(O& out, const Data::Area* area)
     {
-        // Legacy chain's non-numSpace overload only propagates (variable.hxx:390);
         // EndOfList terminates without asserting in this overload path.
         // We preserve that no-op-at-leaf semantic: nothing to do in the tuple.
         (void)out;
@@ -257,9 +252,7 @@ public:
     template<class VCardToFindT>
     const double* retrieveHourlyResultsForCurrentYear(unsigned int /*numSpace*/) const
     {
-        // Legacy chain returns nullptr at the match point and only recurses when not
-        // matched (variable.hxx:434-436). We reproduce: walk tuple, return nullptr
-        // on first match; otherwise keep walking and return nullptr at the end.
+        // Walk tuple, return nullptr on first match; otherwise keep walking and return nullptr at the end.
         const double* r = nullptr;
         std::apply(
           [&](const auto&... v)
@@ -318,8 +311,6 @@ public:
         (Vars::template provideInformations<I>(infos), ...);
     }
 
-    // Spatial-aggregate templates: the legacy chain simply forwards these to the
-    // next variable (variable.hxx:142-185). In the tuple we broadcast.
     template<class V>
     void yearEndSpatialAggregates(V& allVars, unsigned int year, unsigned int numSpace)
     {

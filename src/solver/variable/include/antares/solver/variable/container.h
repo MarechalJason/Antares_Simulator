@@ -27,31 +27,31 @@ namespace Antares::Solver::Variable::Container
 ** and forwards every hook to it. Adds dynamic-aggregation bookkeeping that
 ** isn't part of the inner aggregator's responsibilities.
 */
-template<class NextT = Container::EndOfList>
+template<class Inner = Container::EndOfList>
 class List
 {
 public:
     //! The full type of the class
-    using ListType = List<NextT>;
+    using ListType = List<Inner>;
 
-    static constexpr std::size_t count = NextT::count;
+    static constexpr std::size_t count = Inner::count;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count = NextT::template Statistics<CDataLevel, CFile>::count;
+        static constexpr int count = Inner::template Statistics<CDataLevel, CFile>::count;
     };
 
     template<class PredicateT>
     static void RetrieveVariableList(PredicateT& predicate)
     {
-        NextT::RetrieveVariableList(predicate);
+        Inner::RetrieveVariableList(predicate);
     }
 
     template<class I>
     static void provideInformations(I& infos)
     {
-        NextT::template provideInformations<I>(infos);
+        Inner::template provideInformations<I>(infos);
     }
 
 public:
@@ -158,8 +158,8 @@ public:
     //@}
 
 private:
-    //! Inner aggregator (held by composition; replaces the legacy `: public NextT`).
-    NextT next_;
+    //! Inner aggregator (held by composition).
+    Inner next_;
 
     //! Pointer to the current study
     Data::Study* pStudy;

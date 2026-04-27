@@ -11,8 +11,8 @@
 
 namespace Antares::Solver::Variable::Container
 {
-template<class NextT>
-inline void List<NextT>::initializeFromStudy(Data::Study& study)
+template<class Inner>
+inline void List<Inner>::initializeFromStudy(Data::Study& study)
 {
     // Store a pointer to the current study
     pStudy = &study;
@@ -25,82 +25,82 @@ inline void List<NextT>::initializeFromStudy(Data::Study& study)
     next_.initializeFromStudy(study);
 }
 
-template<class NextT>
-inline void List<NextT>::initializeFromArea(Data::Study* study, Data::Area* area)
+template<class Inner>
+inline void List<Inner>::initializeFromArea(Data::Study* study, Data::Area* area)
 {
     next_.initializeFromArea(study, area);
 }
 
-template<class NextT>
-inline void List<NextT>::initializeFromLink(Data::Study* study, Data::AreaLink* link)
+template<class Inner>
+inline void List<Inner>::initializeFromLink(Data::Study* study, Data::AreaLink* link)
 {
     next_.initializeFromLink(study, link);
 }
 
-template<class NextT>
-inline void List<NextT>::initializeFromThermalCluster(Data::Study* study,
+template<class Inner>
+inline void List<Inner>::initializeFromThermalCluster(Data::Study* study,
                                                       Data::Area* area,
                                                       Data::ThermalCluster* cluster)
 {
     next_.initializeFromThermalCluster(study, area, cluster);
 }
 
-template<class NextT>
-inline void List<NextT>::simulationBegin()
+template<class Inner>
+inline void List<Inner>::simulationBegin()
 {
     next_.simulationBegin();
 }
 
-template<class NextT>
-inline void List<NextT>::simulationEnd()
+template<class Inner>
+inline void List<Inner>::simulationEnd()
 {
     next_.simulationEnd();
 }
 
-template<class NextT>
-inline void List<NextT>::yearBegin(unsigned int year, unsigned int numSpace)
+template<class Inner>
+inline void List<Inner>::yearBegin(unsigned int year, unsigned int numSpace)
 {
     dynamicAggregationSingleYear_[numSpace].reset();
     next_.yearBegin(year, numSpace);
 }
 
-template<class NextT>
-inline void List<NextT>::yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+template<class Inner>
+inline void List<Inner>::yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
 {
     next_.yearEndBuild(state, year, numSpace);
 }
 
-template<class NextT>
-inline void List<NextT>::yearEnd(unsigned int year, unsigned int numSpace)
+template<class Inner>
+inline void List<Inner>::yearEnd(unsigned int year, unsigned int numSpace)
 {
     next_.yearEnd(year, numSpace);
 }
 
-template<class NextT>
-inline void List<NextT>::computeSummary(unsigned int year, unsigned int numSpace)
+template<class Inner>
+inline void List<Inner>::computeSummary(unsigned int year, unsigned int numSpace)
 {
     next_.computeSummary(year, numSpace);
 }
 
-template<class NextT>
+template<class Inner>
 template<class V>
-inline void List<NextT>::yearEndSpatialAggregates(V& allVars,
+inline void List<Inner>::yearEndSpatialAggregates(V& allVars,
                                                   unsigned int year,
                                                   unsigned int numSpace)
 {
     next_.yearEndSpatialAggregates(allVars, year, numSpace);
 }
 
-template<class NextT>
+template<class Inner>
 template<class V, class SetT>
-inline void List<NextT>::yearEndSpatialAggregates(V& allVars, unsigned int year, const SetT& set)
+inline void List<Inner>::yearEndSpatialAggregates(V& allVars, unsigned int year, const SetT& set)
 {
     next_.yearEndSpatialAggregates(allVars, year, set);
 }
 
-template<class NextT>
+template<class Inner>
 template<class V>
-inline void List<NextT>::computeSpatialAggregatesSummary(V& allVars,
+inline void List<Inner>::computeSpatialAggregatesSummary(V& allVars,
                                                          unsigned int year,
                                                          unsigned int numSpace)
 {
@@ -108,114 +108,114 @@ inline void List<NextT>::computeSpatialAggregatesSummary(V& allVars,
     next_.computeSpatialAggregatesSummary(allVars, year, numSpace);
 }
 
-template<class NextT>
+template<class Inner>
 template<class V>
-inline void List<NextT>::simulationEndSpatialAggregates(V& allVars)
+inline void List<Inner>::simulationEndSpatialAggregates(V& allVars)
 {
     next_.simulationEndSpatialAggregates(allVars);
 }
 
-template<class NextT>
+template<class Inner>
 template<class V, class SetT>
-inline void List<NextT>::simulationEndSpatialAggregates(V& allVars, const SetT& set)
+inline void List<Inner>::simulationEndSpatialAggregates(V& allVars, const SetT& set)
 {
     next_.simulationEndSpatialAggregates(allVars, set);
 }
 
-template<class NextT>
-inline void List<NextT>::beforeYearByYearExport(unsigned int year, unsigned int numSpace)
+template<class Inner>
+inline void List<Inner>::beforeYearByYearExport(unsigned int year, unsigned int numSpace)
 {
     next_.beforeYearByYearExport(year, numSpace);
 }
 
-template<class NextT>
-inline void List<NextT>::hourBegin(unsigned int hourInTheYear)
+template<class Inner>
+inline void List<Inner>::hourBegin(unsigned int hourInTheYear)
 {
     next_.hourBegin(hourInTheYear);
 }
 
-template<class NextT>
-inline void List<NextT>::weekBegin(State& state)
+template<class Inner>
+inline void List<Inner>::weekBegin(State& state)
 {
     dynamicAggregationSingleYear_[state.numSpace].addResultsToSets(*state.problemeHebdo);
     next_.weekBegin(state);
 }
 
-template<class NextT>
-inline void List<NextT>::weekForEachArea(State& state, unsigned int numSpace)
+template<class Inner>
+inline void List<Inner>::weekForEachArea(State& state, unsigned int numSpace)
 {
     next_.weekForEachArea(state, numSpace);
 }
 
-template<class NextT>
-inline void List<NextT>::weekEnd(State& state)
+template<class Inner>
+inline void List<Inner>::weekEnd(State& state)
 {
     next_.weekEnd(state);
 }
 
-template<class NextT>
-inline void List<NextT>::hourForEachArea(State& state, unsigned int numSpace)
+template<class Inner>
+inline void List<Inner>::hourForEachArea(State& state, unsigned int numSpace)
 {
     next_.hourForEachArea(state, numSpace);
 }
 
-template<class NextT>
-inline void List<NextT>::hourForEachLink(State& state)
+template<class Inner>
+inline void List<Inner>::hourForEachLink(State& state)
 {
     next_.hourForEachLink(state);
 }
 
-template<class NextT>
-inline void List<NextT>::hourEnd(State& state, unsigned int hourInTheYear)
+template<class Inner>
+inline void List<Inner>::hourEnd(State& state, unsigned int hourInTheYear)
 {
     next_.hourEnd(state, hourInTheYear);
 }
 
-template<class NextT>
+template<class Inner>
 template<class SearchVCardT, class O>
-inline void List<NextT>::computeSpatialAggregateWith(O& out)
+inline void List<Inner>::computeSpatialAggregateWith(O& out)
 {
     next_.template computeSpatialAggregateWith<SearchVCardT, O>(out);
 }
 
-template<class NextT>
+template<class Inner>
 template<class SearchVCardT, class O>
-inline void List<NextT>::computeSpatialAggregateWith(O& out,
+inline void List<Inner>::computeSpatialAggregateWith(O& out,
                                                      const Data::Area* area,
                                                      unsigned int numSpace)
 {
     next_.template computeSpatialAggregateWith<SearchVCardT, O>(out, area, numSpace);
 }
 
-template<class NextT>
+template<class Inner>
 template<class VCardToFindT>
-inline void List<NextT>::retrieveResultsForArea(
+inline void List<Inner>::retrieveResultsForArea(
   typename Variable::Storage<VCardToFindT>::ResultsType** result,
   const Data::Area* area)
 {
     next_.template retrieveResultsForArea<VCardToFindT>(result, area);
 }
 
-template<class NextT>
+template<class Inner>
 template<class VCardToFindT>
-inline void List<NextT>::retrieveResultsForThermalCluster(
+inline void List<Inner>::retrieveResultsForThermalCluster(
   typename Variable::Storage<VCardToFindT>::ResultsType** result,
   const Data::ThermalCluster* cluster)
 {
     next_.template retrieveResultsForThermalCluster<VCardToFindT>(result, cluster);
 }
 
-template<class NextT>
+template<class Inner>
 template<class VCardToFindT>
-inline void List<NextT>::retrieveResultsForLink(
+inline void List<Inner>::retrieveResultsForLink(
   typename Variable::Storage<VCardToFindT>::ResultsType** result,
   const Data::AreaLink* link)
 {
     next_.template retrieveResultsForLink<VCardToFindT>(result, link);
 }
 
-template<class NextT>
-void List<NextT>::buildSurveyReport(SurveyResults& results,
+template<class Inner>
+void List<Inner>::buildSurveyReport(SurveyResults& results,
                                     int dataLevel,
                                     int fileLevel,
                                     int precision) const
@@ -253,8 +253,8 @@ void List<NextT>::buildSurveyReport(SurveyResults& results,
     }
 }
 
-template<class NextT>
-void List<NextT>::buildAnnualSurveyReport(SurveyResults& results,
+template<class Inner>
+void List<Inner>::buildAnnualSurveyReport(SurveyResults& results,
                                           int dataLevel,
                                           int fileLevel,
                                           int precision,
@@ -292,8 +292,8 @@ void List<NextT>::buildAnnualSurveyReport(SurveyResults& results,
     }
 }
 
-template<class NextT>
-void List<NextT>::buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
+template<class Inner>
+void List<Inner>::buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
 {
     // Reset
     results.data.columnIndex = 0;
@@ -306,8 +306,8 @@ void List<NextT>::buildDigest(SurveyResults& results, int digestLevel, int dataL
     next_.buildDigest(results, digestLevel, dataLevel);
 }
 
-template<class NextT>
-void List<NextT>::exportSurveyResults(bool global,
+template<class Inner>
+void List<Inner>::exportSurveyResults(bool global,
                                       const Yuni::String& output,
                                       unsigned int numSpace,
                                       IResultWriter& writer)

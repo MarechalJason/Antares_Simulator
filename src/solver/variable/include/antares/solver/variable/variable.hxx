@@ -20,7 +20,7 @@ inline IVariable<ChildT, VCardT>::IVariable()
     isNonApplicable = new bool[pColumnCount];
     isPrinted = new bool[pColumnCount];
 
-    for (uint i = 0; i < pColumnCount; i++)
+for (uint i = 0; i < pColumnCount; i++)
     {
         isPrinted[i] = true;
     }
