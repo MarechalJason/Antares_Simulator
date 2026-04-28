@@ -29,7 +29,8 @@ struct CongestionFeeAbsTraits
 
     static double computeHourlyValue(State& state, double upstreamPrice, double downstreamPrice)
     {
-        return std::abs(state.ntc.ValeurDuFlux[state.link->index] * (upstreamPrice - downstreamPrice));
+        return std::abs(state.ntc.ValeurDuFlux[state.link->index]
+                        * (upstreamPrice - downstreamPrice));
     }
 };
 
