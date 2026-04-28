@@ -50,7 +50,7 @@ ENV PATH="/usr/lib/ccache:$PATH"
 
 ARG RUN_TESTS=OFF
 
-RUN  source /opt/rh/devtoolset-11/enable && \
+RUN  source /opt/rh/devtoolset-13/enable && \
      source /opt/rh/rh-git227/enable && \
      export VCPKG_BINARY_SOURCES="clear;files,/workspace/vcpkg_cache,readwrite" && \
      cmake -B _build -S src \
@@ -65,7 +65,7 @@ RUN  source /opt/rh/devtoolset-11/enable && \
     -DCMAKE_PREFIX_PATH=/ortools/install
 
 ARG NPROC=2
-RUN  source /opt/rh/devtoolset-11/enable && \
+RUN  source /opt/rh/devtoolset-13/enable && \
      source /opt/rh/rh-git227/enable && \
      export VCPKG_BINARY_SOURCES="clear;files,/workspace/vcpkg_cache,readwrite" && \
      cmake --build _build --config Release -j${NPROC} &&\

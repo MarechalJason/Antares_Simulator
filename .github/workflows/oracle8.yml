@@ -8,8 +8,9 @@ on:
       - develop
       - dependabot/*
       - release/*
+      - feature/*
   schedule:
-    - cron: '21 2 * * *'
+  - cron: '21 2 * * *'
   workflow_call:
     inputs:
       run-tests:
@@ -49,7 +50,7 @@ jobs:
       - name: Install libraries
         run: |
           dnf install -y epel-release git cmake wget rpm-build redhat-lsb-core
-          dnf install -y unzip libuuid-devel gcc-toolset-11 zlib-devel
+          dnf install -y unzip libuuid-devel gcc-toolset-13 zlib-devel
 
       - name: Checkout
         run: |
@@ -100,7 +101,7 @@ jobs:
 
       - name: Configure
         run: |
-          source /opt/rh/gcc-toolset-11/enable
+          source /opt/rh/gcc-toolset-13/enable
           cmake -B _build -S src \
             -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake \
             -DVCPKG_TARGET_TRIPLET=x64-linux-release \
@@ -112,7 +113,7 @@ jobs:
 
       - name: Build
         run: |
-          source /opt/rh/gcc-toolset-11/enable
+          source /opt/rh/gcc-toolset-13/enable
           cmake --build _build --config Release -j$(nproc)
 
       - name: Run unit and end-to-end tests

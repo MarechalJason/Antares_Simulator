@@ -8,6 +8,7 @@ on:
     - develop
     - dependabot/**
     - release/*
+    - feature/*
   schedule:
   - cron: '21 2 * * *'
   workflow_call:

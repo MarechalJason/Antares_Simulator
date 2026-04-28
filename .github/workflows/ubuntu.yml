@@ -90,6 +90,14 @@ jobs:
         sudo apt-get install uuid-dev
         sudo apt-get install xsltproc
 
+    - name: cpp23 support
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+        sudo apt-get update
+        sudo apt-get install g++-13 -y
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+        g++ --version
+
     - name: Config OR-Tools URL
       run: |
         echo "ORTOOLS_URL=https://github.com/rte-france/or-tools-rte/releases/download/$(cat ortools_tag)/ortools_cxx_ubuntu-22.04_static_sirius.zip" >> $GITHUB_ENV

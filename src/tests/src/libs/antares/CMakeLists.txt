@@ -9,6 +9,7 @@ add_subdirectory(scenarioBuilderExpression)
 
 add_subdirectory(yaml-parser)
 add_subdirectory(antlr4-interface)
+add_subdirectory(cpp23)
 
 set(src_libs_antares "${CMAKE_SOURCE_DIR}/libs/antares")
 
@@ -86,9 +87,9 @@ add_boost_test(test-utils
 
 add_boost_test(logs-accumulation
         SRC
-	logs/logs-test.cpp
+        logs/logs-test.cpp
         LIBS
         yuni-static-core
-	Antares::logs
-	test_utils_unit
+        Antares::logs
+        test_utils_unit
 )
