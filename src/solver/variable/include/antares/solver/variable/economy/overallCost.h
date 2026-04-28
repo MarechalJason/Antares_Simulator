@@ -42,11 +42,11 @@ struct OverallCostTraits
     template<class Aux>
     static void setHourlyValue(IntermediateValues& iv, Aux&, State& state, unsigned int)
     {
-        const double costForSpilledOrUnsuppliedEnergy =
-          (state.hourlyResults->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek]
-           * state.area->thermal.unsuppliedEnergyCost)
-          + (state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
-             * state.area->thermal.spilledEnergyCost);
+        const double costForSpilledOrUnsuppliedEnergy
+          = (state.hourlyResults->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek]
+             * state.area->thermal.unsuppliedEnergyCost)
+            + (state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
+               * state.area->thermal.spilledEnergyCost);
 
         iv[state.hourInTheYear] += costForSpilledOrUnsuppliedEnergy;
         state.annualSystemCost += costForSpilledOrUnsuppliedEnergy;

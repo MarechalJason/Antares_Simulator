@@ -47,26 +47,29 @@ struct OverallCostTraits
         auto area = state.area;
         auto& thermal = state.thermal;
 
-        iv[state.hourInTheYear] +=
-          (state.hourlyResults->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek]
-           * area->thermal.unsuppliedEnergyCost)
-          + ((state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
-              + state.resSpilled.entry[area->index][state.hourInTheWeek])
-             * area->thermal.spilledEnergyCost);
+        iv[state.hourInTheYear] += (state.hourlyResults
+                                      ->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek]
+                                    * area->thermal.unsuppliedEnergyCost)
+                                   + ((state.hourlyResults
+                                         ->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
+                                       + state.resSpilled.entry[area->index][state.hourInTheWeek])
+                                      * area->thermal.spilledEnergyCost);
 
         // Hydro costs : water value and pumping
-        iv.hour[state.hourInTheYear]
-          += state.problemeHebdo->CaracteristiquesHydrauliques[state.area->index]
-               .WeeklyWaterValueStateRegular
-             * (state.hourlyResults->TurbinageHoraire[state.hourInTheWeek]
-                - area->hydro.pumpingEfficiency
-                    * state.hourlyResults->PompageHoraire[state.hourInTheWeek]);
+        iv.hour[state.hourInTheYear] += state.problemeHebdo
+                                          ->CaracteristiquesHydrauliques[state.area->index]
+                                          .WeeklyWaterValueStateRegular
+                                        * (state.hourlyResults
+                                             ->TurbinageHoraire[state.hourInTheWeek]
+                                           - area->hydro.pumpingEfficiency
+                                               * state.hourlyResults
+                                                   ->PompageHoraire[state.hourInTheWeek]);
 
         // Thermal costs
         for (auto& cluster: area->thermal.list.each_enabled())
         {
-            iv[state.hourInTheYear]
-              += thermal[area->index].thermalClustersOperatingCost[cluster->enabledIndex];
+            iv[state.hourInTheYear] += thermal[area->index]
+                                         .thermalClustersOperatingCost[cluster->enabledIndex];
         }
     }
 

@@ -48,13 +48,16 @@ struct STStorageLevelsByClusterTraits
             results.variableCaption = sts.properties.name;
             results.variableUnit = Unit();
             clusterValues[clusterIndex]
-              .template buildAnnualSurveyReport<VCardSTStorageByClusterBase<
-                STStorageLevelsByClusterTraits>>(results, fileLevel, precision);
+              .template buildAnnualSurveyReport<
+                VCardSTStorageByClusterBase<STStorageLevelsByClusterTraits>>(results,
+                                                                             fileLevel,
+                                                                             precision);
             clusterIndex++;
         }
     }
 
-    static void setHourlyValue(const std::vector<IntermediateValues>& clusterValues, const State& state)
+    static void setHourlyValue(const std::vector<IntermediateValues>& clusterValues,
+                               const State& state)
     {
         for (uint clusterIndex = 0; clusterIndex != state.area->shortTermStorage.count();
              ++clusterIndex)
