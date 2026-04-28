@@ -18,6 +18,7 @@
 #include "antares/solver/optimisation/ComponentToAreaConnectionFiller.h"
 #include "antares/solver/optimisation/LegacyFiller.h"
 #include "antares/solver/optimisation/LegacyOrtoolsLinearProblem.h"
+#include "antares/solver/optimisation/ThermalCapacityFiller.h"
 #include "antares/solver/optimisation/opt_structure_probleme_a_resoudre.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 #include "antares/solver/utils/filename.h"
@@ -67,6 +68,7 @@ static void fillModelerComponents(
     {
         fillersCollection.push_back(
           std::make_unique<ComponentFiller>(component,
+                                            modelerData->dataSeries.get(),
                                             optimEntityContainer,
                                             modelerData->scenarioGroupRepository,
                                             Solver::Config::Location::SUBPROBLEMS,
@@ -102,7 +104,7 @@ FillContext buildFillContext(const PROBLEME_HEBDO* problemeHebdo, int NumInterva
 
 // Returns a shared_ptr to the solver
 void fillLinearProblem(FillContext& fillCtx,
-                       const PROBLEME_HEBDO* problemeHebdo,
+                       PROBLEME_HEBDO* problemeHebdo,
                        OptimEntityContainer& optimEntityContainer,
                        bool namedProblems,
                        Optimisation::BendersDecomposition* bendersDecomposition)
@@ -124,6 +126,13 @@ void fillLinearProblem(FillContext& fillCtx,
         fillersCollection.push_back(std::make_unique<ComponentToAreaConnectionFiller>(
           problemeHebdo,
           optimEntityContainer,
+          problemeHebdo->modelerData->dataSeries.get(),
+          problemeHebdo->modelerData->scenarioGroupRepository));
+
+        fillersCollection.push_back(std::make_unique<ThermalCapacityFiller>(
+          problemeHebdo,
+          optimEntityContainer,
+          problemeHebdo->modelerData->dataSeries.get(),
           problemeHebdo->modelerData->scenarioGroupRepository));
     }
 
@@ -156,11 +165,12 @@ static SimplexResult OPT_TryToCallSimplex(const SingleOptimOptions& options,
     OptimizationStatistics& optimizationStatistics = problemeHebdo->optimizationStatistics[opt];
     TIME_MEASURE timeMeasure;
 
-    LegacyOrtoolsLinearProblem ortoolsProblem(problemeHebdo->ProblemeAResoudre->isMIP(),
-                                              options.solverName);
-    FillContext fillCtx = buildFillContext(problemeHebdo, NumIntervalle);
     const auto& modelerData = problemeHebdo->modelerData;
     bool hasModelerData = modelerData != nullptr;
+    const bool isMip = problemeHebdo->OptimisationAvecVariablesEntieres;
+
+    LegacyOrtoolsLinearProblem ortoolsProblem(isMip, options.solverName);
+    FillContext fillCtx = buildFillContext(problemeHebdo, NumIntervalle);
     const ILinearProblemData* modelerDataSeries = hasModelerData ? modelerData->dataSeries.get()
                                                                  : nullptr;
     const ScenarioGroupRepository* modelerScenarioGroupRepository = hasModelerData
@@ -168,9 +178,7 @@ static SimplexResult OPT_TryToCallSimplex(const SingleOptimOptions& options,
                                                                            ->scenarioGroupRepository
                                                                       : nullptr;
 
-    OptimEntityContainer optimEntityContainer(ortoolsProblem,
-                                              modelerDataSeries,
-                                              modelerScenarioGroupRepository);
+    OptimEntityContainer optimEntityContainer(ortoolsProblem);
 
     Optimisation::BendersDecomposition* bendersDecomposition = hasModelerData
                                                                  ? &modelerData
@@ -243,7 +251,6 @@ static SimplexResult OPT_TryToCallSimplex(const SingleOptimOptions& options,
         FillSimulationTable(*simulationTable,
                             ortoolsProblem,
                             ::getObjectiveValue(solver.get()),
-
                             *modelerData,
                             optimEntityContainer,
                             fillCtx,
@@ -325,25 +332,25 @@ bool OPT_AppelDuSimplexe(const SingleOptimOptions& options,
     }
     else
     {
-        LegacyOrtoolsLinearProblem infeasibleProblem(problemeHebdo->ProblemeAResoudre->isMIP(),
-                                                     options.solverName);
-        FillContext fillCtx = buildFillContext(problemeHebdo, NumIntervalle);
         const auto& modelerData = problemeHebdo->modelerData;
         bool hasModelerData = modelerData != nullptr;
+        const bool isMip = problemeHebdo->OptimisationAvecVariablesEntieres;
+
+        LegacyOrtoolsLinearProblem infeasibleProblem(isMip, options.solverName);
+        FillContext fillCtx = buildFillContext(problemeHebdo, NumIntervalle);
         const ILinearProblemData* modelerDataSeries = hasModelerData ? modelerData->dataSeries.get()
                                                                      : nullptr;
         const ScenarioGroupRepository* modelerScenarioGroupRepository
           = hasModelerData ? &modelerData->scenarioGroupRepository : nullptr;
 
-        OptimEntityContainer optimEntityContainer(infeasibleProblem,
-                                                  modelerDataSeries,
-                                                  modelerScenarioGroupRepository);
+        OptimEntityContainer optimEntityContainer(infeasibleProblem);
         Optimisation::BendersDecomposition* bendersDecomposition = hasModelerData
                                                                      ? &modelerData
                                                                           ->bendersDecomposition
                                                                      : nullptr;
 
         fillLinearProblem(fillCtx, problemeHebdo, optimEntityContainer, true, bendersDecomposition);
+
         auto MPproblem = infeasibleProblem.getMpSolver();
         auto analyzer = makeUnfeasiblePbAnalyzer();
         analyzer->run(MPproblem.get());

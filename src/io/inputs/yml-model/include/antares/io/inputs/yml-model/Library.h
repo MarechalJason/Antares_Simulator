@@ -9,6 +9,7 @@
 
 namespace Antares::IO::Inputs::YmlModel
 {
+
 // Define structures
 struct Parameter
 {
@@ -69,6 +70,7 @@ struct Constraint
     std::string id;
     std::string expression;
     std::string location;
+    std::string out_of_bounds_processing_mode;
 };
 
 struct ExtraOutput
@@ -100,7 +102,7 @@ struct Model
 
 struct AreaConnection
 {
-    std::string injection;
+    std::string inject_to_balance;
     std::string spillage_bound;
     std::string unsupplied_energy_bound;
 };
@@ -110,6 +112,7 @@ struct PortType
     std::string id;
     std::string description;
     std::vector<std::string> fields;
+    std::string thermal_capacity_connection_field;
     AreaConnection area_connection;
 };
 

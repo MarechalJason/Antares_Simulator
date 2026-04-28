@@ -29,6 +29,7 @@ public:
     ComponentFiller(ComponentFiller& other) = delete;
 
     explicit ComponentFiller(const ModelerStudy::SystemModel::Component& component,
+                             const LinearProblemApi::ILinearProblemData* data,
                              OptimEntityContainer& optimEntityContainer,
                              const ScenarioGroupRepository& scenarioGroupRepository,
                              Solver::Config::Location targetLocation,
@@ -45,7 +46,8 @@ private:
 
     void addTimeDependentConstraints(const LinearConstraint& linear_constraints,
                                      const std::string& constraint_id,
-                                     const LinearProblemApi::FillContext& ctx) const;
+                                     const LinearProblemApi::FillContext& ctx,
+                                     const ModelerStudy::SystemModel::Constraint& constraint) const;
 
     void addStaticObjective(const Optimization::LinearExpression& expression) const;
 
@@ -54,7 +56,9 @@ private:
 
     const ModelerStudy::SystemModel::Component& component_;
     OptimEntityContainer& optimEntityContainer_;
-    const ScenarioGroupRepository& scenarioGroupRepository_;
+    LinearProblemApi::ILinearProblem& pb_;
+    const Optimisation::LinearProblemApi::ILinearProblemData* data_;
+    const Optimisation::ScenarioGroupRepository& scenarioGroupRepo_;
     const Solver::Config::Location targetLocation_;
     BendersDecomposition* bendersDecomposition_ = nullptr;
 

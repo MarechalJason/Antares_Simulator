@@ -11,7 +11,6 @@
 #include <antares/optimisation/linear-problem-api/linearProblem.h>
 #include <antares/optimisation/linear-problem-api/linearProblemBuilder.h>
 #include <antares/optimisation/linear-problem-mpsolver-impl/linearProblem.h>
-#include <antares/solver/modeler/loadFiles/loadFiles.h>
 #include <antares/solver/modeler/parameters/parseModelerParameters.h>
 #include <antares/solver/optim-model-filler/ComponentFiller.h>
 #include "antares/io/outputs/MPSGenerator.h"
@@ -31,26 +30,28 @@ Modeler::Modeler(ILoader& loader, IWriter& writer):
     loader_{loader},
     writer_{writer}
 {
-    try
-    {
-        parameters_ = loader_.loadParameters();
-        logs.info() << "Parameters loaded";
-        data_ = loader_.loadAll();
-    }
-    catch (const LoadFiles::ErrorLoadingYaml&)
+    parameters_ = loader_.loadParameters();
+    logs.info() << "Parameters loaded";
+    auto data = loader_.loadAll();
+    if (!data.has_value())
     {
         throw ModelerError("Error while loading files, exiting");
     }
+    // Move the loaded ModelerData out of the optional to avoid copying
+    // (ModelerData contains unique_ptr members and is move-only).
+    data_ = std::move(*data);
 }
 
 class SystemLinearProblemBuilder final
 {
 public:
     explicit SystemLinearProblemBuilder(const ModelerStudy::SystemModel::System* system,
+                                        const ILinearProblemData* data,
                                         const ScenarioGroupRepository& scenarioGroupRepository,
                                         BendersDecomposition* bendersDecomposition,
                                         OptimEntityContainer& optimEntityContainer):
         system_(system),
+        data_(data),
         scenarioGroupRepository_(scenarioGroupRepository),
         bendersDecomposition_(bendersDecomposition),
         optimEntityContainer_(optimEntityContainer)
@@ -68,6 +69,7 @@ public:
         for (const auto& component: components)
         {
             auto cf = std::make_unique<ComponentFiller>(component,
+                                                        data_,
                                                         optimEntityContainer_,
                                                         scenarioGroupRepository_,
                                                         location,
@@ -81,6 +83,7 @@ public:
 
 private:
     const ModelerStudy::SystemModel::System* system_;
+    const ILinearProblemData* data_;
     const ScenarioGroupRepository& scenarioGroupRepository_;
     BendersDecomposition* bendersDecomposition_ = nullptr;
     OptimEntityContainer& optimEntityContainer_;
@@ -148,11 +151,10 @@ ProblemEntity buildProblem(const ModelerData& data,
         return {nullptr, nullptr};
     }
     auto problem = getProblem(isMip, resolutionMode, solver);
-    auto optimEntityContainer = std::make_unique<OptimEntityContainer>(
-      *problem,
-      data.dataSeries.get(),
-      &data.scenarioGroupRepository);
+    auto optimEntityContainer = std::make_unique<OptimEntityContainer>(*problem);
+
     SystemLinearProblemBuilder builder(data.system.get(),
+                                       data.dataSeries.get(),
                                        data.scenarioGroupRepository,
                                        bendersDecomposition,
                                        *optimEntityContainer);

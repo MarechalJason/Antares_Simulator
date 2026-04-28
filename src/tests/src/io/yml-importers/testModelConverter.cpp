@@ -54,8 +54,8 @@ BOOST_FIXTURE_TEST_CASE(port_type_with_empty_fields_exception, Fixture)
 // Test library with port types and fields
 BOOST_FIXTURE_TEST_CASE(portType_with_fields_properly_translated, Fixture)
 {
-    YmlModel::PortType portType1{"port1", "flow port", {"field1", "field2"}, ""};
-    YmlModel::PortType portType2{"port2", "impedance port", {"field3", "field4"}, ""};
+    YmlModel::PortType portType1{"port1", "flow port", {"field1", "field2"}, "", {}};
+    YmlModel::PortType portType2{"port2", "impedance port", {"field3", "field4"}, "", {}};
     library.port_types = {portType1, portType2};
     SystemModel::Library lib = ModelConverter::convert(library);
     BOOST_REQUIRE_EQUAL(lib.PortTypes().at("port1").Fields().size(), 2);
@@ -81,15 +81,15 @@ bool portTypeAlreadyExists(const ModelConverter::PortTypeWithThisIdAlreadyExists
 // Test port types for exceptions
 BOOST_FIXTURE_TEST_CASE(port_type_error_cases, Fixture)
 {
-    YmlModel::PortType portType1{"port1", "empty port", {}, ""};
+    YmlModel::PortType portType1{"port1", "empty port", {}, "", {}};
     library.port_types = {portType1};
     BOOST_CHECK_EXCEPTION(ModelConverter::convert(library),
                           ModelConverter::PortTypeDoesntContainsFields,
                           emptyFields);
 
     // same name
-    YmlModel::PortType portType2{"port2", "flow port", {"field1", "field2"}, ""};
-    YmlModel::PortType portType3{"port2", "impedance port", {"field3", "field4"}, ""};
+    YmlModel::PortType portType2{"port2", "flow port", {"field1", "field2"}, "", {}};
+    YmlModel::PortType portType3{"port2", "impedance port", {"field3", "field4"}, "", {}};
     library.port_types = {portType2, portType3};
     BOOST_CHECK_EXCEPTION(ModelConverter::convert(library),
                           ModelConverter::PortTypeWithThisIdAlreadyExists,
@@ -198,7 +198,7 @@ BOOST_FIXTURE_TEST_CASE(wrong_value_type, Fixture)
 // Test library with models and ports
 BOOST_FIXTURE_TEST_CASE(model_ports_properly_translated, Fixture)
 {
-    YmlModel::PortType portType1{"flow", "description", {"abc"}, ""};
+    YmlModel::PortType portType1{"flow", "description", {"abc"}, "", {}};
     library.port_types = {portType1};
 
     YmlModel::Model model1{.id = "model1",
@@ -238,7 +238,7 @@ bool typeNotFound(const ModelConverter::PortTypeNotFound& ex)
 BOOST_FIXTURE_TEST_CASE(ports_errors_cases, Fixture)
 {
     // test port already exists
-    YmlModel::PortType portType1{"flow", "description", {"abc"}, ""};
+    YmlModel::PortType portType1{"flow", "description", {"abc"}, "", {}};
     library.port_types = {portType1};
 
     // test port type not found
@@ -357,7 +357,7 @@ BOOST_FIXTURE_TEST_CASE(multiple_models_properly_translated, Fixture)
 // Test library with ports field definitions
 BOOST_FIXTURE_TEST_CASE(model_port_field_definitions_properly_translated, Fixture)
 {
-    YmlModel::PortType portType1{"flow", "description", {"field1"}, ""};
+    YmlModel::PortType portType1{"flow", "description", {"field1"}, "", {}};
     library.port_types = {portType1};
 
     YmlModel::Model model1{.id = "model1",
@@ -378,6 +378,56 @@ BOOST_FIXTURE_TEST_CASE(model_port_field_definitions_properly_translated, Fixtur
     BOOST_CHECK_EQUAL(pfd1.port().Id(), "port1");
     BOOST_CHECK_EQUAL(pfd1.field().Id(), "field1");
     BOOST_CHECK_EQUAL(pfd1.Definition().Value(), "param1");
+}
+
+BOOST_FIXTURE_TEST_CASE(port_fields_definitions_forbid_usage_of_sum_connections, Fixture)
+{
+    YmlModel::PortType portType{"my-port-type", "description", {"field"}, "", {}};
+    library.port_types = {portType};
+
+    YmlModel::Model model{
+      .id = "my-model",
+      .description = "description",
+      .parameters = {},
+      .variables = {},
+      .ports = {{"port", "my-port-type"}},
+      .port_field_definitions = {{"port", "field", "sum_connections(port.field)"}},
+      .constraints = {},
+      .binding_constraints = {},
+      .objectives = {},
+      .extra_outputs = {}};
+    library.models = {model};
+
+    std::string err_msg = "'PortFieldSumNode' is not allowed in expression "
+                          "'sum_connections(port.field)'";
+    BOOST_CHECK_EXCEPTION(ModelConverter::convert(library),
+                          std::invalid_argument,
+                          checkMessage(err_msg));
+}
+
+BOOST_FIXTURE_TEST_CASE(in_port_fields_definitions__min_operator_accepts_a_variable, Fixture)
+{
+    YmlModel::PortType portType{"my-port-type", "description", {"field"}, "", {}};
+    library.port_types = {portType};
+
+    std::string location = "master-and-subproblems";
+
+    Variable spillage = {"spillage", "0", "100", ValueType::CONTINUOUS, true, true, location};
+    Variable ens = {"ens", "0", "100", ValueType::CONTINUOUS, true, true, location};
+
+    YmlModel::Model model{.id = "my-model",
+                          .description = "description",
+                          .parameters = {},
+                          .variables = {spillage, ens},
+                          .ports = {{"port", "my-port-type"}},
+                          .port_field_definitions = {{"port", "field", "min(spillage, ens)"}},
+                          .constraints = {},
+                          .binding_constraints = {},
+                          .objectives = {},
+                          .extra_outputs = {}};
+    library.models = {model};
+
+    BOOST_CHECK_NO_THROW(ModelConverter::convert(library));
 }
 
 bool portNotFoundForDef(const ModelConverter::PortNotFoundForDefinition& ex)
@@ -404,7 +454,7 @@ bool portInDef(const ModelConverter::PortInDefinition& ex)
 // Test library ports field definitions errors
 BOOST_FIXTURE_TEST_CASE(port_field_definition_error_cases, Fixture)
 {
-    YmlModel::PortType portType1{"flow", "description", {"field1"}, ""};
+    YmlModel::PortType portType1{"flow", "description", {"field1"}, "", {}};
     library.port_types = {portType1};
 
     YmlModel::Model model1{.id = "model1",

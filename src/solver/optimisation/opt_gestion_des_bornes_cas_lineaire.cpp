@@ -4,11 +4,9 @@
 #include <cmath>
 #include <spx_constantes_externes.h>
 
+#include "antares/solver/optimisation/variables/VariableManagerUtils.h"
 #include "antares/solver/simulation/adequacy_patch_runtime_data.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
-
-#include "variables/VariableManagement.h"
-#include "variables/VariableManagerUtils.h"
 
 void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaireCoutsDeDemarrage(PROBLEME_HEBDO*,
                                                                             const int,
@@ -169,6 +167,7 @@ static void setBoundsForShortTermStorage(PROBLEME_HEBDO* problemeHebdo,
                     int var = variableManager.ShortTermStorageOverflow(clusterGlobalIndex, pdtJour);
                     Xmin[var] = 0;
                     Xmax[var] = LINFINI_ANTARES;
+                    AddressForVars[var] = &STSResult.overflow[pdtHebdo];
                 }
             }
         }
@@ -203,7 +202,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaire(PROBLEME_HEBDO* prob
 
         for (uint32_t interco = 0; interco < problemeHebdo->NombreDInterconnexions; interco++)
         {
-            int var = variableManager.NTCDirect(interco, pdtJour);
+            int var = variableManager.DirectFlow(interco, pdtJour);
             const COUTS_DE_TRANSPORT& CoutDeTransport = problemeHebdo->CoutDeTransport[interco];
 
             Xmax[var] = ValeursDeNTC.ValeurDeNTCOrigineVersExtremite[interco];
@@ -242,7 +241,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaire(PROBLEME_HEBDO* prob
 
             if (CoutDeTransport.IntercoGereeAvecDesCouts)
             {
-                var = variableManager.IntercoDirectCost(interco, pdtJour);
+                var = variableManager.PositiveDirectFlow(interco, pdtJour);
 
                 if (CoutDeTransport.IntercoGereeAvecLoopFlow)
                 {
@@ -264,7 +263,7 @@ void OPT_InitialiserLesBornesDesVariablesDuProblemeLineaire(PROBLEME_HEBDO* prob
                 AdresseOuPlacerLaValeurDesCoutsReduits[var] = nullptr;
                 AdresseOuPlacerLaValeurDesVariablesOptimisees[var] = nullptr;
 
-                var = variableManager.IntercoIndirectCost(interco, pdtJour);
+                var = variableManager.PositiveIndirectFlow(interco, pdtJour);
                 if (CoutDeTransport.IntercoGereeAvecLoopFlow)
                 {
                     Xmax[var] = ValeursDeNTC.ValeurDeNTCExtremiteVersOrigine[interco]

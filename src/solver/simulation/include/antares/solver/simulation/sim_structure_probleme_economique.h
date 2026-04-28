@@ -22,9 +22,9 @@ struct CORRESPONDANCES_DES_VARIABLES
     CORRESPONDANCES_DES_VARIABLES(const CORRESPONDANCES_DES_VARIABLES&) = delete;
     CORRESPONDANCES_DES_VARIABLES(CORRESPONDANCES_DES_VARIABLES&&) = default;
 
-    std::vector<int> NumeroDeVariableDeLInterconnexion;
-    std::vector<int> NumeroDeVariableCoutOrigineVersExtremiteDeLInterconnexion;
-    std::vector<int> NumeroDeVariableCoutExtremiteVersOrigineDeLInterconnexion;
+    std::vector<int> NumeroDeVariableDuFluxDirect;
+    std::vector<int> NumeroDeVariableDuFluxDirectPositif;
+    std::vector<int> NumeroDeVariableDuFluxIndirectPositif;
 
     std::vector<int> NumeroDeVariableDuPalierThermique;
 
@@ -179,6 +179,7 @@ struct RESULTS
     std::vector<double> level;      // MWh
     std::vector<double> injection;  // MWh
     std::vector<double> withdrawal; // MWh
+    std::vector<double> overflow;   // MWh
 };
 
 struct DEMAND_MARKET_POOL

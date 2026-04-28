@@ -30,10 +30,14 @@ namespace Antares::Optimization
 ComponentToAreaConnectionFiller::ComponentToAreaConnectionFiller(
   const PROBLEME_HEBDO* problemeHebdo,
   OptimEntityContainer& optimEntityContainer,
-  const Optimisation::ScenarioGroupRepository& scenarioGroupRepository):
+  const ILinearProblemData* data,
+  const ScenarioGroupRepository& scenarioGroupRepo):
     problemeHebdo_(problemeHebdo),
     modelerSystem_(problemeHebdo->modelerData->system.get()),
-    optimEntityContainer_(optimEntityContainer)
+    optimEntityContainer_(optimEntityContainer),
+    pb_(optimEntityContainer_.Problem()),
+    data_(data),
+    scenarioGroupRepo_(scenarioGroupRepo)
 {
     areaIndices_ = associateIndicesToAreas(problemeHebdo_);
     checkAreasFromConnexionsExist();
@@ -43,7 +47,7 @@ void ComponentToAreaConnectionFiller::checkAreasFromConnexionsExist()
 {
     for (const auto& component: modelerSystem_->Components())
     {
-        for (auto [portId, areaId]: component.portToAreaConnections())
+        for (const auto& areaId: component.portToAreaConnections() | std::views::values)
         {
             if (const auto it = areaIndices_.find(areaId); it == areaIndices_.end())
             {
@@ -55,45 +59,44 @@ void ComponentToAreaConnectionFiller::checkAreasFromConnexionsExist()
     }
 }
 
-void ComponentToAreaConnectionFiller::addVariables(const FillContext& ctx)
+void ComponentToAreaConnectionFiller::addVariables([[maybe_unused]] const FillContext& ctx)
 {
-    (void)ctx;
 }
 
-std::vector<unsigned> ComponentToAreaConnectionFiller::balanceConstraintIndices(
-  const FillContext& ctx,
-  const unsigned& areaIndex) const
+std::vector<unsigned> balanceConstraintIndices(const PROBLEME_HEBDO* problemeHebdo,
+                                               const FillContext& ctx,
+                                               const unsigned& areaIndex)
 {
     std::vector<unsigned> indices(ctx.getLocalNumberOfTimeSteps());
     for (unsigned h(0); h <= ctx.getLocalLastTimeStep(); ++h)
     {
-        indices[h] = problemeHebdo_->CorrespondanceCntNativesCntOptim[h]
+        indices[h] = problemeHebdo->CorrespondanceCntNativesCntOptim[h]
                        .NumeroDeContrainteDesBilansPays[areaIndex];
     }
     return indices;
 }
 
-std::vector<unsigned> ComponentToAreaConnectionFiller::fictitiousLoadConstraintIndices(
-  const FillContext& ctx,
-  const unsigned& areaIndex) const
+std::vector<unsigned> fictitiousLoadConstraintIndices(const PROBLEME_HEBDO* problemeHebdo,
+                                                      const FillContext& ctx,
+                                                      const unsigned& areaIndex)
 {
     std::vector<unsigned> indices(ctx.getLocalNumberOfTimeSteps());
     for (unsigned h(0); h <= ctx.getLocalLastTimeStep(); ++h)
     {
-        indices[h] = problemeHebdo_->CorrespondanceCntNativesCntOptim[h]
+        indices[h] = problemeHebdo->CorrespondanceCntNativesCntOptim[h]
                        .NumeroDeContraintePourEviterLesChargesFictives[areaIndex];
     }
     return indices;
 }
 
-std::vector<unsigned> ComponentToAreaConnectionFiller::maxUnsupEnergyConstraintIndices(
-  const FillContext& ctx,
-  const unsigned& areaIndex) const
+std::vector<unsigned> maxUnsupEnergyConstraintIndices(const PROBLEME_HEBDO* problemeHebdo,
+                                                      const FillContext& ctx,
+                                                      const unsigned& areaIndex)
 {
     std::vector<unsigned> indices(ctx.getLocalNumberOfTimeSteps());
-    for (auto h(0); h <= ctx.getLocalLastTimeStep(); ++h)
+    for (unsigned h(0); h <= ctx.getLocalLastTimeStep(); ++h)
     {
-        indices[h] = problemeHebdo_->CorrespondanceCntNativesCntOptim[h]
+        indices[h] = problemeHebdo->CorrespondanceCntNativesCntOptim[h]
                        .NumeroDeContraintePourBornerLaDefaillance[areaIndex];
     }
     return indices;
@@ -104,9 +107,9 @@ void ComponentToAreaConnectionFiller::addExpressionToConstraint(
   const FillContext& ctx,
   const std::vector<IMipConstraint*>& constraints) const
 {
-    const auto& solverVariables = optimEntityContainer_.getVariables();
+    const auto& solverVariables = pb_.getVariables();
 
-    for (auto h(0); h <= ctx.getLocalLastTimeStep(); ++h)
+    for (unsigned h(0); h <= ctx.getLocalLastTimeStep(); ++h)
     {
         IMipConstraint* constraint = constraints[h];
         for (const auto& [index, coef]: linearExpression[h])
@@ -123,11 +126,10 @@ std::vector<IMipConstraint*> ComponentToAreaConnectionFiller::fetchConstraints(
   const FillContext& ctx,
   const std::vector<unsigned>& constraintsIndices)
 {
-    auto& pb = optimEntityContainer_.Problem();
     std::vector<IMipConstraint*> constraints(ctx.getLocalNumberOfTimeSteps());
-    for (auto h(0); h <= ctx.getLocalLastTimeStep(); ++h)
+    for (unsigned h(0); h <= ctx.getLocalLastTimeStep(); ++h)
     {
-        constraints[h] = pb.getConstraint(constraintsIndices[h]);
+        constraints[h] = pb_.getConstraint(constraintsIndices[h]);
     }
     return constraints;
 }
@@ -138,18 +140,24 @@ TimeDependentLinearExpression ComponentToAreaConnectionFiller::linearExpressionA
   const Component& component,
   const FillContext& ctx)
 {
-    ReadLinearExpressionVisitor visitor(optimEntityContainer_, ctx, component);
+    ReadLinearExpressionVisitor visitor(optimEntityContainer_,
+                                        ctx,
+                                        component,
+                                        data_,
+                                        scenarioGroupRepo_);
 
     Nodes::Node* expression = component.nodeAtPortField(portId, fieldId);
     return visitor.visitMergeDuplicates(expression).expandToSize(ctx.getLocalNumberOfTimeSteps());
 }
 
-void ComponentToAreaConnectionFiller::addInjectionPortToLinearPb(const FillContext& ctx,
-                                                                 const Component& component,
-                                                                 const std::string& portId,
-                                                                 const unsigned& areaIndex)
+void ComponentToAreaConnectionFiller::addPortContributionToLinearPb(
+  const FillContext& ctx,
+  const Component& component,
+  const std::string& portId,
+  const std::string& portField,
+  const unsigned& areaIndex,
+  const ConstraintIndicesHelper& helper)
 {
-    std::string portField = component.areaConnectionAtPort(portId)->injection;
     if (portField.empty())
     {
         // area connection does not specify this port field
@@ -159,51 +167,9 @@ void ComponentToAreaConnectionFiller::addInjectionPortToLinearPb(const FillConte
     // 1. GEMS side : get time-dependent linear expression at a component port field
     auto linearExpression = linearExpressionAtPortField(portId, portField, component, ctx);
     // 2. Legacy LP side : get the set of LP constraints to be modified
-    std::vector<unsigned> constaintsIndices = balanceConstraintIndices(ctx, areaIndex);
-    auto constraints = fetchConstraints(ctx, constaintsIndices);
+    std::vector<unsigned> constraintsIndices = helper(problemeHebdo_, ctx, areaIndex);
+    auto constraints = fetchConstraints(ctx, constraintsIndices);
     // 3. Add the linear expression to LP constraints
-    addExpressionToConstraint(linearExpression, ctx, constraints);
-}
-
-void ComponentToAreaConnectionFiller::addSpillageBoundToLinearPb(const FillContext& ctx,
-                                                                 const Component& component,
-                                                                 const std::string& portId,
-                                                                 const unsigned& areaIndex)
-{
-    std::string portField = component.areaConnectionAtPort(portId)->spillage_bound;
-    if (portField.empty())
-    {
-        // area connection does not specify this port field
-        return;
-    }
-
-    // 1. GEMS side : get time-dependent linear expression at a component port field
-    auto linearExpression = linearExpressionAtPortField(portId, portField, component, ctx);
-    // 2. Legacy LP side : get the set of LP constraints to be modified
-    std::vector<unsigned> constaintsIndices = fictitiousLoadConstraintIndices(ctx, areaIndex);
-    auto constraints = fetchConstraints(ctx, constaintsIndices);
-    // 3. Add the linear expression to LP constraints
-    addExpressionToConstraint(linearExpression, ctx, constraints);
-}
-
-void ComponentToAreaConnectionFiller::addUnsupEnergyBoundToLinearPb(const FillContext& ctx,
-                                                                    const Component& component,
-                                                                    const std::string& portId,
-                                                                    const unsigned& areaIndex)
-{
-    std::string portField = component.areaConnectionAtPort(portId)->unsupplied_energy_bound;
-    if (portField.empty())
-    {
-        // area connection does not specify this port field
-        return;
-    }
-
-    // 1. GEMS side : get time-dependent linear expression at a component port field
-    auto linearExpression = linearExpressionAtPortField(portId, portField, component, ctx);
-    // 2. Legacy LP side : get the set of LP constraints to be modified
-    std::vector<unsigned> constaintsIndices = maxUnsupEnergyConstraintIndices(ctx, areaIndex);
-    auto constraints = fetchConstraints(ctx, constaintsIndices);
-    // 3. Add the linear expression to Legacy LP constraints
     addExpressionToConstraint(linearExpression, ctx, constraints);
 }
 
@@ -221,9 +187,32 @@ void ComponentToAreaConnectionFiller::addConstraints(const FillContext& ctx)
         for (auto [portId, areaId]: component.portToAreaConnections())
         {
             auto areaIndex = areaIndices_.at(areaId);
-            addInjectionPortToLinearPb(ctx, component, portId, areaIndex);
-            addSpillageBoundToLinearPb(ctx, component, portId, areaIndex);
-            addUnsupEnergyBoundToLinearPb(ctx, component, portId, areaIndex);
+            const auto& areaConnection = component.areaConnectionAtPort(portId);
+            const auto& port = component.findPort(portId, "");
+            const auto& portType = port.Type();
+            const auto& portAreaConnection = portType.areaConnection();
+
+            if (areaConnection)
+            {
+                addPortContributionToLinearPb(ctx,
+                                              component,
+                                              portId,
+                                              portAreaConnection->inject_to_balance,
+                                              areaIndex,
+                                              balanceConstraintIndices);
+                addPortContributionToLinearPb(ctx,
+                                              component,
+                                              portId,
+                                              portAreaConnection->spillage_bound,
+                                              areaIndex,
+                                              fictitiousLoadConstraintIndices);
+                addPortContributionToLinearPb(ctx,
+                                              component,
+                                              portId,
+                                              portAreaConnection->unsupplied_energy_bound,
+                                              areaIndex,
+                                              maxUnsupEnergyConstraintIndices);
+            }
         }
     }
 }
