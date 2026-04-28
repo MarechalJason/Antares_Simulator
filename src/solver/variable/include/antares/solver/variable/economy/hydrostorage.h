@@ -1,8 +1,7 @@
 // Copyright 2007-2026, RTE (https://www.rte-france.com)
 // SPDX-License-Identifier: MPL-2.0
 
-#ifndef __SOLVER_VARIABLE_ECONOMY_HydroStorage_H__
-#define __SOLVER_VARIABLE_ECONOMY_HydroStorage_H__
+#pragma once
 
 #include "antares/solver/variable/variable.h"
 
@@ -28,13 +27,8 @@ struct VCardHydroStorage
         return "Hydro Storage Generation";
     }
 
-    //! The expecte results
-    typedef Results<R::AllYears::Average< // The average values throughout all years
-      R::AllYears::StdDeviation<          // The standard deviation values throughout all years
-        R::AllYears::Min<                 // The minimum values throughout all years
-          R::AllYears::Max<               // The maximum values throughout all years
-            >>>>>
-      ResultsType;
+    using ResultsType = Results<
+      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
 
     //! The VCard to look for for calculating spatial aggregates
     typedef VCardHydroStorage VCardForSpatialAggregate;
@@ -241,5 +235,3 @@ private:
 }; // class HydroStorage
 
 } // namespace Antares::Solver::Variable::Economy
-
-#endif // __SOLVER_VARIABLE_ECONOMY_HydroStorage_H__

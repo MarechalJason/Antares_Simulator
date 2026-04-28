@@ -40,8 +40,9 @@ struct ProductionByRenewablePlantTraits
     {
         for (const auto& renewableCluster: state.area->renewable.list.each_enabled())
         {
-            double renewableClusterProduction = renewableCluster->valueAtTimeStep(state.year,
-                                                                                  state.hourInTheYear);
+            double renewableClusterProduction = renewableCluster->valueAtTimeStep(
+              state.year,
+              state.hourInTheYear);
 
             clusterValues[renewableCluster->enabledIndex].hour[state.hourInTheYear]
               += renewableClusterProduction;
@@ -73,4 +74,3 @@ template<class NextT = Container::EndOfList>
 using ProductionByRenewablePlant = STStorageByClusterBase<ProductionByRenewablePlantTraits, NextT>;
 
 } // namespace Antares::Solver::Variable::Economy
-

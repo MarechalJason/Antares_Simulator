@@ -20,6 +20,15 @@
 namespace Antares::Solver::Variable::Economy
 {
 
+// The `detail` namespace contains implementation details and helper
+// utilities for the Economy variable system. Symbols placed in this
+// namespace are internal implementation artifacts (traits, fallbacks,
+// SFINAE helpers) and are not part of the public API. Using a dedicated
+// `detail` namespace makes the intent explicit: these types help detect
+// optional nested types or member functions in `Traits` (for example
+// `AuxiliaryDataType`) and provide safe defaults when those optional
+// members are absent. This enables generic code to compile whether or
+// not a particular `Traits` class provides extra auxiliary data.
 namespace detail
 {
 struct EmptyAuxiliaryData
@@ -249,7 +258,10 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace], auxiliaryData_, state, numSpace);
+        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace],
+                                  auxiliaryData_,
+                                  state,
+                                  numSpace);
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
@@ -296,9 +308,7 @@ private:
                                      unsigned int year,
                                      unsigned int numSpace)
     {
-        if constexpr (requires {
-                        Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
-                    })
+        if constexpr (requires { Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace); })
         {
             Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
         }
@@ -310,8 +320,8 @@ private:
                                           unsigned int numSpace)
     {
         if constexpr (requires {
-                        Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
-                    })
+                          Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
+                      })
         {
             Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
         }
