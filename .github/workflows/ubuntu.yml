@@ -236,11 +236,6 @@ jobs:
         path: ${{ github.workspace }}/.ccache_ubuntu
         key: ${{ steps.cache.outputs.cache-primary-key }}
 
-    - name: Clean build directory
-      run: |
-        cd _build
-        make clean
-
     - name: Upload build directory for test jobs
       uses: actions/upload-artifact@v7
       with:
@@ -271,8 +266,8 @@ jobs:
 
     - name: Extract solver exe
       run: |
-        cd _build
-        tar xzf antares-solver_ubuntu22.04.tar.gz
+        mkdir -p _build/solver
+        tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
 
     - name: Extract simtest version
       id: simtest
@@ -304,6 +299,17 @@ jobs:
       with:
         name: ubuntu-build-dir
         path: _build/
+
+    - name: Download build archives
+      uses: actions/download-artifact@v7
+      with:
+        name: ubuntu-targz
+        path: _build/
+
+    - name: Extract solver exe
+      run: |
+        mkdir -p _build/solver
+        tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
 
     - name: Extract simtest version
       id: simtest
