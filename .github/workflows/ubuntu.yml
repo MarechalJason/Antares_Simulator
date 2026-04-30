@@ -280,7 +280,7 @@ jobs:
         mkdir -p _build/api
         tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
         cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
-        echo "LD_LIBRARY_PATH=${GITHUB_WORKSPACE}/_build/solver:${LD_LIBRARY_PATH}" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${GITHUB_WORKSPACE}/_build/solver" >> $GITHUB_ENV
 
     - name: Extract simtest version
       id: simtest
