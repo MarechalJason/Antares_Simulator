@@ -134,7 +134,7 @@ jobs:
         cd _build
         cpack -G TGZ -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
 
-    - name: Creation of solver only .tar.gz archive
+    - name: Creation of executables .tar.gz archive
       if: ${{ success() }}
       run: |
         cd _build
@@ -278,16 +278,10 @@ jobs:
       run: |
         mkdir -p _build/solver
         mkdir -p _build/api
-        tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
-        cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
-        cp _build/solver/antares-solver _build/antares-solver
-        cp _build/solver/antares-modeler _build/antares-modeler
-        cp _build/solver/*.so _build
-        cp _build/solver/*.so _build/api
-        chmod +x _build/api/antares-problem-generator
-        chmod +x _build/solver/antares-solver
-        chmod +x _build/solver/antares-modeler
-        ls -la _build/api
+        tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build
+        cp _build/antares-problem-generator _build/api/antares-problem-generator
+        cp _build/*.so _build/api/
+        cp _build/*.so* _build/api/
 
     - name: Extract simtest version
       id: simtest
