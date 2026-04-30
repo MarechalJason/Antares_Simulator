@@ -245,10 +245,15 @@ jobs:
         ref: ${{ env.REF }}
 
     - name: Download build directory
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v7
       with:
-        name: ubuntu-build-dir
-        path: _build
+        name: ubuntu-targz
+        path: _build/
+
+    - name: Extract solver exe
+      run: |
+        cd _build
+        tar xzf antares-solver_ubuntu22.04.tar.gz
 
     - name: Extract simtest version
       id: simtest
