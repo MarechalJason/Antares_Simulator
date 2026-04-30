@@ -146,6 +146,14 @@ jobs:
         popd
         rm -rf install
 
+    - name: Extract solver into _build/solver
+      if: ${{ success() }}
+      run: |
+        mkdir -p _build/solver
+        tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver || true
+        chmod +x _build/solver/antares-solver || true
+        chmod +x _build/solver/antares-modeler || true
+
     - name: Both previous archives upload
       if: ${{ success() }}
       uses: actions/upload-artifact@v7
@@ -228,10 +236,6 @@ jobs:
         path: ${{ github.workspace }}/.ccache_ubuntu
         key: ${{ steps.cache.outputs.cache-primary-key }}
 
-    - name: Clean build directory
-      run: |
-        cd _build
-        make clean
 
     - name: Upload build directory for test jobs
       uses: actions/upload-artifact@v7
@@ -313,7 +317,7 @@ jobs:
 
   publish:
     name: Publish
-    needs: build
+    needs: [build, test-latest, test-version]
     runs-on: ubuntu-22.04
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
