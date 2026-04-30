@@ -36,26 +36,20 @@ env:
 
 jobs:
 
-  build:
-    name: Build
-    env:
+  build-version:
+    name: Build (versionTestNR)
+    env: &build_env
       ORTOOLS_DIR: ${{ github.workspace }}/or-tools
       os: ubuntu-22.04
+      TEST_NR_TARGET: versionTestNR
+      IS_UPLOAD_TARGET: "true"
       # Caching strategy of VCPKG dependencies
       VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/vcpkg_cache,readwrite"
 
     runs-on: ubuntu-22.04
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        - testNRTarget: versionTestNR
-          isUploadTarget: true
-        - testNRTarget: latestTestNR
-          isUploadTarget: false
-    steps:
+    steps: &build_steps
     - uses: actions/checkout@v6
       with:
         ref: ${{ env.REF }}
@@ -139,13 +133,13 @@ jobs:
         cmake --build _build -j$(nproc)
 
     - name: Creation of complete .tar.gz archive
-      if: ${{ success() && matrix.isUploadTarget }}
+      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
       run: |
         cd _build
         cpack -G TGZ -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
 
     - name: Creation of solver only .tar.gz archive
-      if: ${{ success() && matrix.isUploadTarget }}
+      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
       run: |
         cd _build
         cmake --install . --prefix install
@@ -157,7 +151,7 @@ jobs:
         rm -rf install
 
     - name: Both previous archives upload
-      if: ${{ success() && matrix.isUploadTarget }}
+      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
       uses: actions/upload-artifact@v7
       with:
         name: ubuntu-targz
@@ -190,12 +184,12 @@ jobs:
         echo "SIMTEST=${{ fromJson(env.SIMTEST_JSON).version }}" >> $GITHUB_ENV
 
     - name: Init submodule Antares_Simulator_Tests_NR (commited submodule)
-      if: ${{ matrix.testNRTarget == 'versionTestNR' }}
+      if: ${{ env.TEST_NR_TARGET == 'versionTestNR' }}
       run: |
         git submodule update --init --depth 1 --recursive src/tests/resources/Antares_Simulator_Tests_NR
 
     - name: Init submodule Antares_Simulator_Tests_NR (latest)
-      if: ${{ matrix.testNRTarget == 'latestTestNR' }}
+      if: ${{ env.TEST_NR_TARGET == 'latestTestNR' }}
       run: |
         git submodule update --init --remote --recursive src/tests/resources/Antares_Simulator_Tests_NR
 
@@ -244,7 +238,7 @@ jobs:
       if: ${{ failure() }}
       uses: actions/upload-artifact@v7
       with:
-        name: test-log-${{ matrix.testNRTarget }}
+        name: test-log-${{ env.TEST_NR_TARGET }}
         path: ${{ github.workspace }}/_build/Testing/Temporary/LastTest.log
 
     - name: Run tests about infinity on BCs RHS
@@ -400,13 +394,13 @@ jobs:
       run: exit 1
 
     - name: Installer .deb creation
-      if: ${{ success() && matrix.isUploadTarget }}
+      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
       run: |
         cd _build
         cpack -G DEB -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
 
     - name: Installer deb upload push
-      if: ${{ matrix.isUploadTarget }}
+      if: ${{ env.IS_UPLOAD_TARGET == 'true' }}
       uses: actions/upload-artifact@v7
       with:
         name: deb
@@ -414,7 +408,7 @@ jobs:
 
 
     - name: Publish assets
-      if: ${{ env.IS_RELEASE == 'true' && matrix.isUploadTarget }}
+      if: ${{ env.IS_RELEASE == 'true' && env.IS_UPLOAD_TARGET == 'true' }}
       env:
         GITHUB_TOKEN: ${{ github.token }}
         tag: ${{ github.event.inputs.release_tag }}
@@ -423,7 +417,7 @@ jobs:
 
 
     - name: Update continuous-delivery release
-      if: ${{ github.ref == 'refs/heads/develop' && matrix.isUploadTarget }}
+      if: ${{ github.ref == 'refs/heads/develop' && env.IS_UPLOAD_TARGET == 'true' }}
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
@@ -463,3 +457,14 @@ jobs:
       with:
         path: ${{ github.workspace }}/.ccache_ubuntu
         key: ${{ steps.cache.outputs.cache-primary-key }}
+
+  build-latest:
+    name: Build (latestTestNR)
+    env:
+      <<: *build_env
+      TEST_NR_TARGET: latestTestNR
+      IS_UPLOAD_TARGET: "false"
+    runs-on: ubuntu-22.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps: *build_steps
+
