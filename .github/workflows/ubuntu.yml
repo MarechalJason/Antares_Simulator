@@ -238,8 +238,8 @@ jobs:
 
     - name: Clean object files from build directory
       run: |
-        find _build -type f -name "*.o" -name "*.so" -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch"
-        find _build -type f -name "*.o" -name "*.so" -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" -delete
+        find _build -name "*.o" -name "*.so" -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch"
+        find _build -name "*.o" -name "*.so" -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" -delete
         rm -rf _build/vcpkg_installed
 
     - name: Upload build directory for test jobs
@@ -316,6 +316,10 @@ jobs:
       run: |
         mkdir -p _build/solver
         tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
+        cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
+        chmod +x _build/solver/antares-problem-generator
+        chmod +x _build/solver/antares-solver
+        chmod +x _build/solver/antares-modeler
 
     - name: Extract simtest version
       id: simtest
