@@ -24,6 +24,7 @@ runs:
            curl -Ls -o batch.zip https://github.com/AntaresSimulatorTeam/SimTest/releases/download/${{ inputs.simtest-tag }}/${{ inputs.batch-name }}-${{ inputs.os }}.zip
            unzip -q batch.zip
            rm batch.zip
+           ls *
            ls **
 
   - name: Run tests
