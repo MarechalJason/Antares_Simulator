@@ -49,7 +49,7 @@ class checksRetriever:
 
     def json_file_exists(self) -> bool:
         if not os.path.isfile(self.json_file):
-            self.errors.append(error("json file does not exist"))
+            self.errors.append(error(f"json file {self.json_file} does not exist"))
             return False
         return True
 
