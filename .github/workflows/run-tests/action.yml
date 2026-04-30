@@ -28,6 +28,9 @@ runs:
            ls -la
            echo "First two levels (directories only):"
            find . -maxdepth 2 -type d | sort
+           pwd
+           ls ./valid-named-mps/reservoir-MaxPumping
+           file ./valid-named-mps/reservoir-MaxPumping
 
   - name: Run tests
     # Disable "fail fast" behavior

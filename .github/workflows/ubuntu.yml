@@ -238,7 +238,7 @@ jobs:
 
     - name: Clean object files from build directory
       run: |
-        find _build -type f \( -name "*.o" -name "*.so" -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" \) -delete
+        find _build -type f -name "*.o" -name "*.so" -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" -delete
         rm -rf _build/vcpkg_installed
 
     - name: Upload build directory for test jobs
