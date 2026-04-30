@@ -236,6 +236,10 @@ jobs:
         path: ${{ github.workspace }}/.ccache_ubuntu
         key: ${{ steps.cache.outputs.cache-primary-key }}
 
+    - name: Clean object files from build directory
+      run: |
+        find _build -type f \( -name "*.o" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" \) -delete
+
     - name: Upload build directory for test jobs
       uses: actions/upload-artifact@v7
       with:
