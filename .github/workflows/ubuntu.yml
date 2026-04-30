@@ -175,6 +175,26 @@ jobs:
          cd _build
          ctest -C Release --output-on-failure
 
+    - name: Run unit and end-to-end tests
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      run: |
+        cd _build
+        ctest -C Release --output-on-failure -L "unit|end-to-end"
+
+    - name: Merge XML reports into single HTML
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      run: |
+        cd _build/tests
+        ${{github.workspace}}/src/tests/merge_all.sh ${{github.workspace}}/src/tests/format_xml_report.xsl
+
+    - name: Rename report
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      run: |
+        mkdir testing-report
+        mv ${{ github.workspace }}/_build/tests/report.html testing-report/$PAGE
+      env:
+        PAGE: ${{ github.sha }}.html
+
     - name: Installer .deb creation
       if: ${{ success() }}
       run: |
@@ -300,26 +320,6 @@ jobs:
       uses: ./.github/workflows/cucumber-tests
       with:
         feature: "features/modeler-features"
-
-    - name: Run unit and end-to-end tests
-      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
-      run: |
-        cd _build
-        ctest -C Release --output-on-failure -L "unit|end-to-end"
-
-    - name: Merge XML reports into single HTML
-      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
-      run: |
-        cd _build/tests
-        ${{github.workspace}}/src/tests/merge_all.sh ${{github.workspace}}/src/tests/format_xml_report.xsl
-
-    - name: Rename report
-      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
-      run: |
-        mkdir testing-report
-        mv ${{ github.workspace }}/_build/tests/report.html testing-report/$PAGE
-      env:
-        PAGE: ${{ github.sha }}.html
 
     - name: Upload logs for failed tests
       if: ${{ failure() }}
