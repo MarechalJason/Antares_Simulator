@@ -278,10 +278,10 @@ jobs:
       run: |
         mkdir -p _build/solver
         mkdir -p _build/api
-        tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build
-        cp _build/antares-problem-generator _build/api/antares-problem-generator
-        cp _build/*.so _build/api/
-        cp _build/*.so* _build/api/
+        tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
+        cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
+        cp _build/solver/*.so _build/api/
+        cp _build/solver/*.so* _build/api/
 
     - name: Extract simtest version
       id: simtest
