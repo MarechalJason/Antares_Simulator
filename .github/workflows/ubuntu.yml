@@ -36,76 +36,227 @@ env:
 
 jobs:
 
-  build-version:
-    name: Build (versionTestNR)
+  build:
+    name: Build
     env:
       ORTOOLS_DIR: ${{ github.workspace }}/or-tools
+      os: ubuntu-22.04
+      # Caching strategy of VCPKG dependencies
+      VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/vcpkg_cache,readwrite"
+
+    runs-on: ubuntu-22.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ env.REF }}
+
+    - name: Install VCPKG
+      run: git submodule update --init vcpkg && ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+    - name: Restore vcpkg binary dir from cache
+      id: cache-vcpkg-binary
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ github.workspace }}/vcpkg_cache
+        key: vcpkg-cache-ubuntu-${{ hashFiles('src/vcpkg.json', '.git/modules/vcpkg/HEAD') }}
+        restore-keys: vcpkg-cache-ubuntu-
+
+    - name: Install ccache
+      run: sudo apt-get install -y ccache
+
+    - name: Restore ccache cache
+      id: cache
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ github.workspace }}/.ccache_ubuntu
+        key: ${{ env.os }}-${{ github.ref_name }}
+        restore-keys: |
+          ${{ env.os }}-
+
+    - name: Configure ccache
+      run: |
+        ccache --set-config=cache_dir=${{ github.workspace }}/.ccache_ubuntu
+        ccache --set-config=max_size=500M
+        ccache --set-config=compression=true
+        ccache -p
+        ccache -z
+
+    - name: Install libraries
+      run: |
+        sudo apt-get update
+        sudo apt-get install uuid-dev
+        sudo apt-get install xsltproc
+
+    - name: Config OR-Tools URL
+      run: |
+        echo "ORTOOLS_URL=https://github.com/rte-france/or-tools-rte/releases/download/$(cat ortools_tag)/ortools_cxx_ubuntu-22.04_static_sirius.zip" >> $GITHUB_ENV
+
+    - name: Download pre-compiled librairies
+      uses: ./.github/workflows/download-extract-precompiled-libraries-tgz
+      with:
+        os: ${{env.os}}
+        ortools-url: ${{env.ORTOOLS_URL}}
+        ortools-dir: ${{env.ORTOOLS_DIR}}
+
+    - name: Set up Python
+      id: setup-python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{env.PYTHON_VERSION}}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip3 install -r src/tests/examples/requirements.txt
+
+    - name: Configure
+      run: |
+        cmake -B _build -S src \
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
+        -DVCPKG_TARGET_TRIPLET=x64-linux-release \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_TESTING=ON \
+        -DBUILD_TOOLS=ON \
+        -DCMAKE_PREFIX_PATH=${{ env.ORTOOLS_DIR }}/install \
+        -DPython3_EXECUTABLE="${{ env.Python3_ROOT_DIR }}/bin/python"
+
+    - name: Build
+      run: |
+        cmake --build _build -j$(nproc)
+
+    - name: Upload build directory for test jobs
+      uses: actions/upload-artifact@v7
+      with:
+        name: ubuntu-build-dir
+        path: _build
+
+    - name: Creation of complete .tar.gz archive
+      if: ${{ success() }}
+      run: |
+        cd _build
+        cpack -G TGZ -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
+
+    - name: Creation of solver only .tar.gz archive
+      if: ${{ success() }}
+      run: |
+        cd _build
+        cmake --install . --prefix install
+        pushd .
+        cd install/bin
+        cp ${{ env.ORTOOLS_DIR }}/install/lib/*.so* .
+        tar czf ../../antares-solver_ubuntu22.04.tar.gz antares-solver libsirius_solver.so *.so*
+        popd
+        rm -rf install
+
+    - name: Both previous archives upload
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: ubuntu-targz
+        path: _build/*.tar.gz
+
+    - name: Run API tests
+      run: |
+        cmake --install _build --prefix antares_install
+        cd src/api_client_example
+         cmake -B _build -S . \
+         -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+         -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+         -DCMAKE_BUILD_TYPE=Release \
+         -DBUILD_TESTING=ON \
+         -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake \
+         -DVCPKG_TARGET_TRIPLET=x64-linux-release \
+         -DCMAKE_PREFIX_PATH="${{github.workspace}}/_build/vcpkg_installed/x64-linux-release;${{github.workspace}}/install;${{ env.ORTOOLS_DIR }}/install;${{github.workspace}}/antares_install"
+         cmake --build _build -j$(nproc)
+         cd _build
+         ctest -C Release --output-on-failure
+
+    - name: Installer .deb creation
+      if: ${{ success() }}
+      run: |
+        cd _build
+        cpack -G DEB -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
+
+    - name: Installer deb upload push
+      uses: actions/upload-artifact@v7
+      with:
+        name: deb
+        path: _build/*.deb
+
+    - name: Publish assets
+      if: ${{ env.IS_RELEASE == 'true' }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        tag: ${{ github.event.inputs.release_tag }}
+      run: |
+        gh release upload "$tag" _build/*.tar.gz _build/*.deb
+
+    - name: Update continuous-delivery release
+      if: ${{ github.ref == 'refs/heads/develop' }}
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        mv _build/antares-*-Ubuntu-22.04.tar.gz _build/antares-cd-Ubuntu-22.04.tar.gz
+        mv _build/antares-*-Ubuntu-22.04.deb _build/antares-cd-Ubuntu-22.04.deb
+        gh release upload --clobber continuous-delivery _build/*.tar.gz _build/*.deb
+        gh release edit continuous-delivery --title "continuous delivery (generated $(date +'%Y-%m-%d %H:%M'))"
+        gh api repos/${{ github.repository }}/git/refs/tags/continuous-delivery -X PATCH -f sha=$(git rev-parse HEAD)
+
+    - name: Cache vcpkg binary dir
+      if: always()
+      id: save-cache-vcpkg-binary
+      uses: actions/cache/save@v5
+      with:
+        path: ${{ github.workspace }}/vcpkg_cache
+        key: vcpkg-cache-ubuntu-${{ hashFiles('src/vcpkg.json', '.git/modules/vcpkg/HEAD') }}
+
+    - name: Display ccache statistics
+      run: ccache -s
+
+    - name: Delete old cache
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_DEBUG: api gh cache delete
+      if: ${{ !cancelled() && steps.cache.outputs.cache-hit }}
+      run: gh cache delete --repo ${{ github.repository }} ${{ steps.cache.outputs.cache-primary-key }}
+
+    - name: Save ccache cache
+      if: ${{ !cancelled() }}
+      uses: actions/cache/save@v5
+      with:
+        path: ${{ github.workspace }}/.ccache_ubuntu
+        key: ${{ steps.cache.outputs.cache-primary-key }}
+
+  test-version:
+    name: Test (versionTestNR)
+    needs: build
+    runs-on: ubuntu-22.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    env:
       os: ubuntu-22.04
       TEST_NR_TARGET: versionTestNR
-      IS_UPLOAD_TARGET: "true"
-      # Caching strategy of VCPKG dependencies
-      VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/vcpkg_cache,readwrite"
-
-    runs-on: ubuntu-22.04
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-
     steps:
     - uses: actions/checkout@v6
       with:
         ref: ${{ env.REF }}
 
-    - name: Install VCPKG
-      run: git submodule update --init vcpkg && ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
-
-    - name: Restore vcpkg binary dir from cache
-      id: cache-vcpkg-binary
-      uses: actions/cache/restore@v5
+    - name: Download build directory
+      uses: actions/download-artifact@v5
       with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-cache-ubuntu-${{ hashFiles('src/vcpkg.json', '.git/modules/vcpkg/HEAD') }}
-        # Allows to restore a cache when deps have only partially changed (like adding a dependency)
-        restore-keys: vcpkg-cache-ubuntu-
-
-
-    - name: Install ccache
-      run: sudo apt-get install -y ccache
-
-    - name: Restore ccache cache
-      id: cache
-      uses: actions/cache/restore@v5
-      with:
-        path: ${{ github.workspace }}/.ccache_ubuntu
-        key: ${{ env.os }}-${{ github.ref_name }}
-        restore-keys: |
-          ${{ env.os }}-  
-
-    - name: Configure ccache
-      run: |
-        ccache --set-config=cache_dir=${{ github.workspace }}/.ccache_ubuntu
-        ccache --set-config=max_size=500M
-        ccache --set-config=compression=true
-        ccache -p
-        ccache -z
+        name: ubuntu-build-dir
+        path: _build
 
     - name: Install libraries
       run: |
         sudo apt-get update
-        sudo apt-get install uuid-dev
         sudo apt-get install xsltproc
 
-    - name: Config OR-Tools URL
-      run: |
-        echo "ORTOOLS_URL=https://github.com/rte-france/or-tools-rte/releases/download/$(cat ortools_tag)/ortools_cxx_ubuntu-22.04_static_sirius.zip" >> $GITHUB_ENV
-
-    - name: Download pre-compiled librairies
-      uses: ./.github/workflows/download-extract-precompiled-libraries-tgz
-      with:
-        os: ${{env.os}}
-        ortools-url: ${{env.ORTOOLS_URL}}
-        ortools-dir: ${{env.ORTOOLS_DIR}}
-
     - name: Set up Python
-      id: setup-python
       uses: actions/setup-python@v6
       with:
         python-version: ${{env.PYTHON_VERSION}}
@@ -114,64 +265,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip3 install -r src/tests/examples/requirements.txt
-
-    - name: Configure
-      run: |
-        cmake -B _build -S src \
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-        -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
-        -DVCPKG_TARGET_TRIPLET=x64-linux-release \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DBUILD_TESTING=ON \
-        -DBUILD_TOOLS=ON \
-        -DCMAKE_PREFIX_PATH=${{ env.ORTOOLS_DIR }}/install \
-        -DPython3_EXECUTABLE="${{ env.Python3_ROOT_DIR }}/bin/python"
-
-    - name: Build
-      run: |
-        cmake --build _build -j$(nproc)
-
-    - name: Creation of complete .tar.gz archive
-      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
-      run: |
-        cd _build
-        cpack -G TGZ -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
-
-    - name: Creation of solver only .tar.gz archive
-      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
-      run: |
-        cd _build
-        cmake --install . --prefix install
-        pushd .
-        cd install/bin
-        cp ${{ env.ORTOOLS_DIR }}/install/lib/*.so* .
-        tar czf ../../antares-solver_ubuntu22.04.tar.gz antares-solver libsirius_solver.so *.so*
-        popd
-        rm -rf install
-
-    - name: Both previous archives upload
-      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
-      uses: actions/upload-artifact@v7
-      with:
-        name: ubuntu-targz
-        path: _build/*.tar.gz
-
-    - name: Run API tests
-      run: |
-        cmake --install _build --prefix antares_install
-        cd src/api_client_example
-         cmake -B _build -S . \
-         -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-         -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-         -DCMAKE_BUILD_TYPE=Release \
-         -DBUILD_TESTING=ON \
-         -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake \
-         -DVCPKG_TARGET_TRIPLET=x64-linux-release \
-         -DCMAKE_PREFIX_PATH="${{github.workspace}}/_build/vcpkg_installed/x64-linux-release;${{github.workspace}}/install;${{ env.ORTOOLS_DIR }}/install;${{github.workspace}}/antares_install"
-         cmake --build _build -j$(nproc)
-         cd _build
-         ctest -C Release --output-on-failure
 
     - name: Read simtest version
       run: |
@@ -184,14 +277,8 @@ jobs:
         echo "SIMTEST=${{ fromJson(env.SIMTEST_JSON).version }}" >> $GITHUB_ENV
 
     - name: Init submodule Antares_Simulator_Tests_NR (commited submodule)
-      if: ${{ env.TEST_NR_TARGET == 'versionTestNR' }}
       run: |
         git submodule update --init --depth 1 --recursive src/tests/resources/Antares_Simulator_Tests_NR
-
-    - name: Init submodule Antares_Simulator_Tests_NR (latest)
-      if: ${{ env.TEST_NR_TARGET == 'latestTestNR' }}
-      run: |
-        git submodule update --init --remote --recursive src/tests/resources/Antares_Simulator_Tests_NR
 
     - name: Run named mps tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
@@ -314,7 +401,6 @@ jobs:
         batch-name: short-tests
         os: ${{ env.os }}
 
-
     - name: Run cucumber on v9.2 tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/cucumber-tests
@@ -382,7 +468,6 @@ jobs:
         batch-name: long-tests-3
         os: ${{ env.os }}
 
-
     - name: Run cucumber on hybrid studies
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/cucumber-tests
@@ -393,139 +478,31 @@ jobs:
       if: ${{ !success() }}
       run: exit 1
 
-    - name: Installer .deb creation
-      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
-      run: |
-        cd _build
-        cpack -G DEB -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
-
-    - name: Installer deb upload push
-      if: ${{ env.IS_UPLOAD_TARGET == 'true' }}
-      uses: actions/upload-artifact@v7
-      with:
-        name: deb
-        path: _build/*.deb
-
-
-    - name: Publish assets
-      if: ${{ env.IS_RELEASE == 'true' && env.IS_UPLOAD_TARGET == 'true' }}
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-        tag: ${{ github.event.inputs.release_tag }}
-      run: |
-        gh release upload "$tag" _build/*.tar.gz _build/*.deb
-
-
-    - name: Update continuous-delivery release
-      if: ${{ github.ref == 'refs/heads/develop' && env.IS_UPLOAD_TARGET == 'true' }}
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        mv _build/antares-*-Ubuntu-22.04.tar.gz _build/antares-cd-Ubuntu-22.04.tar.gz
-        mv _build/antares-*-Ubuntu-22.04.deb _build/antares-cd-Ubuntu-22.04.deb
-        gh release upload --clobber continuous-delivery _build/*.tar.gz _build/*.deb
-        gh release edit continuous-delivery --title "continuous delivery (generated $(date +'%Y-%m-%d %H:%M'))"
-        #update continuous delivery tag to point to the latest develop commit
-        gh api repos/${{ github.repository }}/git/refs/tags/continuous-delivery -X PATCH -f sha=$(git rev-parse HEAD)
-
-    - name: Cache vcpkg binary dir
-      if: always()
-      id: save-cache-vcpkg-binary
-      uses: actions/cache/save@v5
-      with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-cache-ubuntu-${{ hashFiles('src/vcpkg.json', '.git/modules/vcpkg/HEAD') }}
-
-    - name: Display ccache statistics
-      run: ccache -s
-
-    # Delete the old cache on hit to emulate a cache update. See
-    # https://github.com/actions/cache/issues/342.
-    - name: Delete old cache
-      continue-on-error: true
-      env:
-        GH_TOKEN: ${{ github.token }}
-        GH_DEBUG: api gh cache delete
-      if: ${{ !cancelled() && steps.cache.outputs.cache-hit }}
-      # Using `--repo` makes it so that this step doesn't require checking out the
-      # repo first.
-      run: gh cache delete --repo ${{ github.repository }} ${{ steps.cache.outputs.cache-primary-key }}
-
-    - name: Save ccache cache
-      if: ${{ !cancelled() }}
-      uses: actions/cache/save@v5
-      with:
-        path: ${{ github.workspace }}/.ccache_ubuntu
-        key: ${{ steps.cache.outputs.cache-primary-key }}
-
-  build-latest:
-    name: Build (latestTestNR)
+  test-latest:
+    name: Test (latestTestNR)
+    needs: build
+    runs-on: ubuntu-22.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     env:
-      ORTOOLS_DIR: ${{ github.workspace }}/or-tools
       os: ubuntu-22.04
       TEST_NR_TARGET: latestTestNR
-      IS_UPLOAD_TARGET: "false"
-      # Caching strategy of VCPKG dependencies
-      VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/vcpkg_cache,readwrite"
-    runs-on: ubuntu-22.04
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
     - uses: actions/checkout@v6
       with:
         ref: ${{ env.REF }}
 
-    - name: Install VCPKG
-      run: git submodule update --init vcpkg && ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
-
-    - name: Restore vcpkg binary dir from cache
-      id: cache-vcpkg-binary
-      uses: actions/cache/restore@v5
+    - name: Download build directory
+      uses: actions/download-artifact@v5
       with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-cache-ubuntu-${{ hashFiles('src/vcpkg.json', '.git/modules/vcpkg/HEAD') }}
-        # Allows to restore a cache when deps have only partially changed (like adding a dependency)
-        restore-keys: vcpkg-cache-ubuntu-
-
-
-    - name: Install ccache
-      run: sudo apt-get install -y ccache
-
-    - name: Restore ccache cache
-      id: cache
-      uses: actions/cache/restore@v5
-      with:
-        path: ${{ github.workspace }}/.ccache_ubuntu
-        key: ${{ env.os }}-${{ github.ref_name }}
-        restore-keys: |
-          ${{ env.os }}-  
-
-    - name: Configure ccache
-      run: |
-        ccache --set-config=cache_dir=${{ github.workspace }}/.ccache_ubuntu
-        ccache --set-config=max_size=500M
-        ccache --set-config=compression=true
-        ccache -p
-        ccache -z
+        name: ubuntu-build-dir
+        path: _build
 
     - name: Install libraries
       run: |
         sudo apt-get update
-        sudo apt-get install uuid-dev
         sudo apt-get install xsltproc
 
-    - name: Config OR-Tools URL
-      run: |
-        echo "ORTOOLS_URL=https://github.com/rte-france/or-tools-rte/releases/download/$(cat ortools_tag)/ortools_cxx_ubuntu-22.04_static_sirius.zip" >> $GITHUB_ENV
-
-    - name: Download pre-compiled librairies
-      uses: ./.github/workflows/download-extract-precompiled-libraries-tgz
-      with:
-        os: ${{env.os}}
-        ortools-url: ${{env.ORTOOLS_URL}}
-        ortools-dir: ${{env.ORTOOLS_DIR}}
-
     - name: Set up Python
-      id: setup-python
       uses: actions/setup-python@v6
       with:
         python-version: ${{env.PYTHON_VERSION}}
@@ -534,64 +511,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip3 install -r src/tests/examples/requirements.txt
-
-    - name: Configure
-      run: |
-        cmake -B _build -S src \
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-        -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
-        -DVCPKG_TARGET_TRIPLET=x64-linux-release \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DBUILD_TESTING=ON \
-        -DBUILD_TOOLS=ON \
-        -DCMAKE_PREFIX_PATH=${{ env.ORTOOLS_DIR }}/install \
-        -DPython3_EXECUTABLE="${{ env.Python3_ROOT_DIR }}/bin/python"
-
-    - name: Build
-      run: |
-        cmake --build _build -j$(nproc)
-
-    - name: Creation of complete .tar.gz archive
-      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
-      run: |
-        cd _build
-        cpack -G TGZ -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
-
-    - name: Creation of solver only .tar.gz archive
-      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
-      run: |
-        cd _build
-        cmake --install . --prefix install
-        pushd .
-        cd install/bin
-        cp ${{ env.ORTOOLS_DIR }}/install/lib/*.so* .
-        tar czf ../../antares-solver_ubuntu22.04.tar.gz antares-solver libsirius_solver.so *.so*
-        popd
-        rm -rf install
-
-    - name: Both previous archives upload
-      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
-      uses: actions/upload-artifact@v7
-      with:
-        name: ubuntu-targz
-        path: _build/*.tar.gz
-
-    - name: Run API tests
-      run: |
-        cmake --install _build --prefix antares_install
-        cd src/api_client_example
-         cmake -B _build -S . \
-         -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-         -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-         -DCMAKE_BUILD_TYPE=Release \
-         -DBUILD_TESTING=ON \
-         -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake \
-         -DVCPKG_TARGET_TRIPLET=x64-linux-release \
-         -DCMAKE_PREFIX_PATH="${{github.workspace}}/_build/vcpkg_installed/x64-linux-release;${{github.workspace}}/install;${{ env.ORTOOLS_DIR }}/install;${{github.workspace}}/antares_install"
-         cmake --build _build -j$(nproc)
-         cd _build
-         ctest -C Release --output-on-failure
 
     - name: Read simtest version
       run: |
@@ -603,13 +522,7 @@ jobs:
       run: |
         echo "SIMTEST=${{ fromJson(env.SIMTEST_JSON).version }}" >> $GITHUB_ENV
 
-    - name: Init submodule Antares_Simulator_Tests_NR (commited submodule)
-      if: ${{ env.TEST_NR_TARGET == 'versionTestNR' }}
-      run: |
-        git submodule update --init --depth 1 --recursive src/tests/resources/Antares_Simulator_Tests_NR
-
     - name: Init submodule Antares_Simulator_Tests_NR (latest)
-      if: ${{ env.TEST_NR_TARGET == 'latestTestNR' }}
       run: |
         git submodule update --init --remote --recursive src/tests/resources/Antares_Simulator_Tests_NR
 
@@ -734,7 +647,6 @@ jobs:
         batch-name: short-tests
         os: ${{ env.os }}
 
-
     - name: Run cucumber on v9.2 tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/cucumber-tests
@@ -802,7 +714,6 @@ jobs:
         batch-name: long-tests-3
         os: ${{ env.os }}
 
-
     - name: Run cucumber on hybrid studies
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/cucumber-tests
@@ -813,67 +724,3 @@ jobs:
       if: ${{ !success() }}
       run: exit 1
 
-    - name: Installer .deb creation
-      if: ${{ success() && env.IS_UPLOAD_TARGET == 'true' }}
-      run: |
-        cd _build
-        cpack -G DEB -D CPACK_INSTALLED_DIRECTORIES="${{ env.ORTOOLS_DIR }}/install/lib;bin"
-
-    - name: Installer deb upload push
-      if: ${{ env.IS_UPLOAD_TARGET == 'true' }}
-      uses: actions/upload-artifact@v7
-      with:
-        name: deb
-        path: _build/*.deb
-
-
-    - name: Publish assets
-      if: ${{ env.IS_RELEASE == 'true' && env.IS_UPLOAD_TARGET == 'true' }}
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-        tag: ${{ github.event.inputs.release_tag }}
-      run: |
-        gh release upload "$tag" _build/*.tar.gz _build/*.deb
-
-
-    - name: Update continuous-delivery release
-      if: ${{ github.ref == 'refs/heads/develop' && env.IS_UPLOAD_TARGET == 'true' }}
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        mv _build/antares-*-Ubuntu-22.04.tar.gz _build/antares-cd-Ubuntu-22.04.tar.gz
-        mv _build/antares-*-Ubuntu-22.04.deb _build/antares-cd-Ubuntu-22.04.deb
-        gh release upload --clobber continuous-delivery _build/*.tar.gz _build/*.deb
-        gh release edit continuous-delivery --title "continuous delivery (generated $(date +'%Y-%m-%d %H:%M'))"
-        #update continuous delivery tag to point to the latest develop commit
-        gh api repos/${{ github.repository }}/git/refs/tags/continuous-delivery -X PATCH -f sha=$(git rev-parse HEAD)
-
-    - name: Cache vcpkg binary dir
-      if: always()
-      id: save-cache-vcpkg-binary
-      uses: actions/cache/save@v5
-      with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-cache-ubuntu-${{ hashFiles('src/vcpkg.json', '.git/modules/vcpkg/HEAD') }}
-
-    - name: Display ccache statistics
-      run: ccache -s
-
-    # Delete the old cache on hit to emulate a cache update. See
-    # https://github.com/actions/cache/issues/342.
-    - name: Delete old cache
-      continue-on-error: true
-      env:
-        GH_TOKEN: ${{ github.token }}
-        GH_DEBUG: api gh cache delete
-      if: ${{ !cancelled() && steps.cache.outputs.cache-hit }}
-      # Using `--repo` makes it so that this step doesn't require checking out the
-      # repo first.
-      run: gh cache delete --repo ${{ github.repository }} ${{ steps.cache.outputs.cache-primary-key }}
-
-    - name: Save ccache cache
-      if: ${{ !cancelled() }}
-      uses: actions/cache/save@v5
-      with:
-        path: ${{ github.workspace }}/.ccache_ubuntu
-        key: ${{ steps.cache.outputs.cache-primary-key }}
