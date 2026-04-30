@@ -317,7 +317,7 @@ jobs:
         mkdir -p _build/solver
         tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
         cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
-        chmod +x _build/solver/antares-problem-generator
+        chmod +x _build/api/antares-problem-generator
         chmod +x _build/solver/antares-solver
         chmod +x _build/solver/antares-modeler
 
