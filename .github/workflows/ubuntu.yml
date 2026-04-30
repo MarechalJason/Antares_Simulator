@@ -142,7 +142,7 @@ jobs:
         pushd .
         cd install/bin
         cp ${{ env.ORTOOLS_DIR }}/install/lib/*.so* .
-        tar czf ../../antares-solver_ubuntu22.04.tar.gz antares-solver antares-modeler libsirius_solver.so *.so*
+        tar czf ../../antares-solver_ubuntu22.04.tar.gz antares-solver antares-modeler antares-problem-generator libsirius_solver.so *.so*
         popd
         rm -rf install
 
@@ -238,6 +238,7 @@ jobs:
 
     - name: Clean object files from build directory
       run: |
+        find _build -type f -name "*.o" -name "*.so" -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch"
         find _build -type f -name "*.o" -name "*.so" -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" -delete
         rm -rf _build/vcpkg_installed
 
