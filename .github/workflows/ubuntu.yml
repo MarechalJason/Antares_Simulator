@@ -207,24 +207,6 @@ jobs:
         name: deb
         path: _build/*.deb
 
-    - name: Publish assets
-      if: ${{ env.IS_RELEASE == 'true' }}
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-        tag: ${{ github.event.inputs.release_tag }}
-      run: |
-        gh release upload "$tag" _build/*.tar.gz _build/*.deb
-
-    - name: Update continuous-delivery release
-      if: ${{ github.ref == 'refs/heads/develop' }}
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        mv _build/antares-*-Ubuntu-22.04.tar.gz _build/antares-cd-Ubuntu-22.04.tar.gz
-        mv _build/antares-*-Ubuntu-22.04.deb _build/antares-cd-Ubuntu-22.04.deb
-        gh release upload --clobber continuous-delivery _build/*.tar.gz _build/*.deb
-        gh release edit continuous-delivery --title "continuous delivery (generated $(date +'%Y-%m-%d %H:%M'))"
-        gh api repos/${{ github.repository }}/git/refs/tags/continuous-delivery -X PATCH -f sha=$(git rev-parse HEAD)
 
     - name: Cache vcpkg binary dir
       if: always()
@@ -312,5 +294,46 @@ jobs:
         test-registry-mode: latest
         simtest-version: ${{ steps.simtest.outputs.version }}
         python-version: ${{ env.PYTHON_VERSION }}
+
+  publish:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-22.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ env.REF }}
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v5
+      with:
+        name: ubuntu-targz
+        path: _build
+
+    - name: Download deb artifacts
+      uses: actions/download-artifact@v5
+      with:
+        name: deb
+        path: _build
+
+    - name: Publish assets
+      if: ${{ env.IS_RELEASE == 'true' }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        tag: ${{ github.event.inputs.release_tag }}
+      run: |
+        gh release upload "$tag" _build/*.tar.gz _build/*.deb
+
+    - name: Update continuous-delivery release
+      if: ${{ github.ref == 'refs/heads/develop' }}
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        mv _build/antares-*-Ubuntu-22.04.tar.gz _build/antares-cd-Ubuntu-22.04.tar.gz
+        mv _build/antares-*-Ubuntu-22.04.deb _build/antares-cd-Ubuntu-22.04.deb
+        gh release upload --clobber continuous-delivery _build/*.tar.gz _build/*.deb
+        gh release edit continuous-delivery --title "continuous delivery (generated $(date +'%Y-%m-%d %H:%M'))"
+        gh api repos/${{ github.repository }}/git/refs/tags/continuous-delivery -X PATCH -f sha=$(git rev-parse HEAD)
 
 
