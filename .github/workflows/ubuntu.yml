@@ -242,7 +242,9 @@ jobs:
         ls _build/solver
         find _build \( -name "*.o" -o -name "*.so" -o -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" \)
         find _build \( -name "*.o" -o -name "*.so" -o -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" \) -delete
+        find _build -type f -executable -delete
         rm -rf _build/vcpkg_installed
+        rm -rf _build/tools
 
     - name: Upload build directory for test jobs
       uses: actions/upload-artifact@v7
@@ -278,6 +280,10 @@ jobs:
         mkdir -p _build/api
         tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
         cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
+        cp _build/solver/antares-solver _build/antares-solver
+        cp _build/solver/antares-modeler _build/antares-modeler
+        cp _build/solver/*.so _build
+        cp _build/solver/*.so _build/api
         chmod +x _build/api/antares-problem-generator
         chmod +x _build/solver/antares-solver
         chmod +x _build/solver/antares-modeler
