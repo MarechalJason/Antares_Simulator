@@ -128,12 +128,6 @@ jobs:
       run: |
         cmake --build _build -j$(nproc)
 
-    - name: Upload build directory for test jobs
-      uses: actions/upload-artifact@v7
-      with:
-        name: ubuntu-build-dir
-        path: _build
-
     - name: Creation of complete .tar.gz archive
       if: ${{ success() }}
       run: |
@@ -234,6 +228,17 @@ jobs:
         path: ${{ github.workspace }}/.ccache_ubuntu
         key: ${{ steps.cache.outputs.cache-primary-key }}
 
+    - name: Clean build directory
+      run: |
+        cd _build
+        make clean
+
+    - name: Upload build directory for test jobs
+      uses: actions/upload-artifact@v7
+      with:
+        name: ubuntu-build-dir
+        path: _build
+
   test-version:
     name: Test (versionTestNR)
     needs: build
@@ -243,6 +248,12 @@ jobs:
     - uses: actions/checkout@v6
       with:
         ref: ${{ env.REF }}
+
+    - name: Download build directory
+      uses: actions/download-artifact@v7
+      with:
+        name: ubuntu-build-dir
+        path: _build/
 
     - name: Download build directory
       uses: actions/download-artifact@v7
