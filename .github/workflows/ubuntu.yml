@@ -236,6 +236,10 @@ jobs:
         path: ${{ github.workspace }}/.ccache_ubuntu
         key: ${{ steps.cache.outputs.cache-primary-key }}
 
+    - name: Clean build directory
+      run: |
+        cd _build
+        make clean
 
     - name: Upload build directory for test jobs
       uses: actions/upload-artifact@v7
