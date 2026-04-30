@@ -19,6 +19,9 @@ runs:
     - name: Run tests
       shell: bash
       run: |
+        echo "=================="
+        echo "= Running Test: cucumber (${{ inputs.feature }})"
+        echo "=================="
         cd src/tests/cucumber
         behave \
           -D antares-solver="${{ github.workspace }}/_build/antares-solver" \

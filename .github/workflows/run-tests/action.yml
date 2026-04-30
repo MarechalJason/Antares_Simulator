@@ -29,6 +29,9 @@ runs:
     # Disable "fail fast" behavior
     shell: bash {0}
     run: |
+           echo "=================="
+           echo "= Running Test: ${{ inputs.batch-name }} (${{ inputs.variant }})"
+           echo "=================="
            cd _build
            ctest -C Release --output-on-failure -R ${{inputs.variant}}
            echo "RET_CODE=$?" >> $GITHUB_ENV

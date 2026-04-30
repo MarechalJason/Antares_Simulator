@@ -70,6 +70,14 @@ runs:
           ln -sf "${GITHUB_WORKSPACE}/_build/modeler/antares-modeler" "_build/antares-modeler"
         fi
 
+    - name: Log test valid-named-mps
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-named-mps"
+        echo "=================="
+
     - name: Run named mps tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -79,17 +87,41 @@ runs:
         os: ubuntu-22.04
         variant: "named-mps"
 
+    - name: Log test cucumber-fast
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: cucumber-fast"
+        echo "=================="
+
     - name: Run fast cucumber
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/cucumber-tests
       with:
         tags: "fast"
 
+    - name: Log test cucumber-modeler-features
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: cucumber-modeler-features"
+        echo "=================="
+
     - name: Run cucumber on modeler
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/cucumber-tests
       with:
         feature: "features/modeler-features"
+
+    - name: Log test unit|end-to-end
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: unit|end-to-end"
+        echo "=================="
 
     - name: Run unit and end-to-end tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
@@ -121,6 +153,14 @@ runs:
         name: test-log-${{ inputs.test-nr-target }}
         path: ${{ github.workspace }}/_build/Testing/Temporary/LastTest.log
 
+    - name: Log test valid-v830
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-v830"
+        echo "=================="
+
     - name: Run tests about infinity on BCs RHS
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -128,6 +168,14 @@ runs:
         simtest-tag: ${{ env.SIMTEST }}
         batch-name: valid-v830
         os: ubuntu-22.04
+
+    - name: Log test valid-milp (cbc)
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-milp (cbc)"
+        echo "=================="
 
     - name: Run MILP with CBC
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
@@ -138,6 +186,14 @@ runs:
         variant: "milp-cbc"
         os: ubuntu-22.04
 
+    - name: Log test adequacy-patch-CSR
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: adequacy-patch-CSR"
+        echo "=================="
+
     - name: Run tests on adequacy patch (CSR)
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -145,6 +201,14 @@ runs:
         simtest-tag: ${{ env.SIMTEST }}
         batch-name: adequacy-patch-CSR
         os: ubuntu-22.04
+
+    - name: Log test valid-v860
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-v860"
+        echo "=================="
 
     - name: Run tests introduced in 8.6.0
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
@@ -154,6 +218,14 @@ runs:
         batch-name: valid-v860
         os: ubuntu-22.04
 
+    - name: Log test valid-v870
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-v870"
+        echo "=================="
+
     - name: Run tests introduced in 8.7.0
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -161,6 +233,14 @@ runs:
         simtest-tag: ${{ env.SIMTEST }}
         batch-name: valid-v870
         os: ubuntu-22.04
+
+    - name: Log test valid-v910
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-v910"
+        echo "=================="
 
     - name: Run tests introduced in 9.1.0
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
@@ -170,6 +250,14 @@ runs:
         batch-name: valid-v910
         os: ubuntu-22.04
 
+    - name: Log test valid-v920
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-v920"
+        echo "=================="
+
     - name: Run tests introduced in 9.2.0
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -177,6 +265,14 @@ runs:
         simtest-tag: ${{ env.SIMTEST }}
         batch-name: valid-v920
         os: ubuntu-22.04
+
+    - name: Log test valid-v930
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-v930"
+        echo "=================="
 
     - name: Run tests introduced in 9.3.0
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
@@ -186,6 +282,14 @@ runs:
         batch-name: valid-v930
         os: ubuntu-22.04
 
+    - name: Log test short-tests
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: short-tests"
+        echo "=================="
+
     - name: Run short-tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -194,11 +298,27 @@ runs:
         batch-name: short-tests
         os: ubuntu-22.04
 
+    - name: Log test cucumber-tests_for_v9.2
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: cucumber-tests_for_v9.2"
+        echo "=================="
+
     - name: Run cucumber on v9.2 tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/cucumber-tests
       with:
         feature: "features/solver-features/tests_for_v9.2.feature"
+
+    - name: Log test valid-mps
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-mps"
+        echo "=================="
 
     - name: Run mps tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
@@ -208,12 +328,28 @@ runs:
         batch-name: valid-mps
         os: ubuntu-22.04
 
+    - name: Log test unfeasible
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: unfeasible"
+        echo "=================="
+
     - name: Run unfeasibility-related tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       shell: bash
       run: |
         cd _build
         ctest -C Release --output-on-failure -R "^unfeasible$"
+
+    - name: Log test valid-parallel
+      if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: valid-parallel"
+        echo "=================="
 
     - name: Run parallel tests
       if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
@@ -224,6 +360,14 @@ runs:
         os: ubuntu-22.04
         variant: "parallel"
 
+    - name: Log test medium-tests
+      if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: medium-tests"
+        echo "=================="
+
     - name: Run medium-tests
       if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -232,11 +376,27 @@ runs:
         batch-name: medium-tests
         os: ubuntu-22.04
 
+    - name: Log test cucumber-medium_tests
+      if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: cucumber-medium_tests"
+        echo "=================="
+
     - name: Run cucumber on medium-tests
       if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/cucumber-tests
       with:
         feature: "features/solver-features/medium_tests.feature"
+
+    - name: Log test long-tests-1
+      if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: long-tests-1"
+        echo "=================="
 
     - name: Run long-tests-1
       if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
@@ -246,6 +406,14 @@ runs:
         batch-name: long-tests-1
         os: ubuntu-22.04
 
+    - name: Log test long-tests-2
+      if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: long-tests-2"
+        echo "=================="
+
     - name: Run long-tests-2
       if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -254,6 +422,14 @@ runs:
         batch-name: long-tests-2
         os: ubuntu-22.04
 
+    - name: Log test long-tests-3
+      if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: long-tests-3"
+        echo "=================="
+
     - name: Run long-tests-3
       if: ${{ env.RUN_EXTENDED_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests
@@ -261,6 +437,14 @@ runs:
         simtest-tag: ${{ env.SIMTEST }}
         batch-name: long-tests-3
         os: ubuntu-22.04
+
+    - name: Log test cucumber-hybrid_studies
+      if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
+      shell: bash
+      run: |
+        echo "=================="
+        echo "= Running Test: cucumber-hybrid_studies"
+        echo "=================="
 
     - name: Run cucumber on hybrid studies
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
