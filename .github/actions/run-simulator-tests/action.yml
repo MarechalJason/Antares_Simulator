@@ -59,6 +59,17 @@ runs:
       run: |
         git submodule update --init --remote --recursive src/tests/resources/Antares_Simulator_Tests_NR
 
+    - name: Normalize solver/modeler paths for cucumber
+      shell: bash
+      run: |
+        if [ ! -x "_build/antares-solver" ] && [ -x "_build/solver/antares-solver" ]; then
+          ln -sf "${GITHUB_WORKSPACE}/_build/solver/antares-solver" "_build/antares-solver"
+        fi
+
+        if [ ! -x "_build/antares-modeler" ] && [ -x "_build/modeler/antares-modeler" ]; then
+          ln -sf "${GITHUB_WORKSPACE}/_build/modeler/antares-modeler" "_build/antares-modeler"
+        fi
+
     - name: Run named mps tests
       if: ${{ env.RUN_SIMPLE_TESTS == 'true' && !cancelled() }}
       uses: ./.github/workflows/run-tests

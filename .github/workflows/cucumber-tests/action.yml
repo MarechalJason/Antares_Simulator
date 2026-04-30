@@ -20,4 +20,8 @@ runs:
       shell: bash
       run: |
         cd src/tests/cucumber
-        behave --tags ${{ inputs.tags }} ${{ inputs.feature }}
+        behave \
+          -D antares-solver="${{ github.workspace }}/_build/antares-solver" \
+          -D antares-modeler="${{ github.workspace }}/_build/antares-modeler" \
+          -D resources-path="${{ github.workspace }}/src/tests/resources" \
+          --tags ${{ inputs.tags }} ${{ inputs.feature }}
