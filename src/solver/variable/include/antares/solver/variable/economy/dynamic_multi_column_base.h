@@ -233,6 +233,27 @@ public:
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
+        if (!AncestorType::isPrinted[0])
+        {
+            return;
+        }
+
+        if (!(dataLevel & VCardType::categoryDataLevel))
+        {
+            return;
+        }
+
+        results.isPrinted = AncestorType::isPrinted;
+        results.isCurrentVarNA = AncestorType::isNonApplicable;
+
+        for (size_t column = 0; column < nbColumns_; ++column)
+        {
+            results.variableCaption = descriptors_[column].caption;
+            results.variableUnit = descriptors_[column].unit;
+            AncestorType::pResults[column].template buildDigest<VCardType>(results,
+                                                                           digestLevel,
+                                                                           dataLevel);
+        }
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
@@ -268,6 +289,9 @@ public:
                            int fileLevel,
                            int precision) const
     {
+        results.isPrinted = AncestorType::isPrinted;
+        results.isCurrentVarNA = AncestorType::isNonApplicable;
+
         if (!AncestorType::isPrinted[0])
         {
             return;
@@ -276,7 +300,6 @@ public:
         if ((dataLevel & VCardType::categoryDataLevel) && (fileLevel & VCardType::categoryFileLevel)
             && (precision & VCardType::precision))
         {
-            results.isCurrentVarNA[0] = AncestorType::isNonApplicable[0];
 
             for (size_t column = 0; column < nbColumns_; ++column)
             {

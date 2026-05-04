@@ -11,6 +11,7 @@
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 #include "antares/solver/variable/categories.h"
 #include "antares/solver/variable/container.h"
+#include "antares/solver/variable/economy/dynamic_multi_column_base.h"
 #include "antares/solver/variable/economy/residual.h"
 #include "antares/solver/variable/surveyresults.h"
 #include "antares/solver/variable/variable.h"
@@ -69,6 +70,46 @@ struct StudyFixtureWithTwoAreas
 
 using ResidualDigestVariables = Container::List<Areas<Economy::ResidualLoad>>;
 
+struct OneColumnDynamicDigestTraits
+{
+    static std::string Caption()
+    {
+        return "DYN ONE COL";
+    }
+
+    static std::string Unit()
+    {
+        return "MWh";
+    }
+
+    static std::string Description()
+    {
+        return "Dynamic variable with one digest column";
+    }
+
+    using ResultsProfile = StandardResults<>;
+    static constexpr uint8_t decimal = 0;
+
+    static std::vector<Economy::ColumnDescriptor> buildColumnDescriptors(Data::Area*)
+    {
+        return {{"DYN_COL_1", "MWh"}};
+    }
+
+    static void setHourlyValue(
+      Economy::VCardDynamicMultiColumn<OneColumnDynamicDigestTraits>::IntermediateValuesBaseType& pValues,
+      State& state,
+      unsigned int,
+      const std::vector<Economy::ColumnDescriptor>&)
+    {
+        pValues[0][state.hourInTheYear]
+          += state.problemeHebdo->ConsommationsAbattues[state.hourInTheWeek]
+               .ConsommationAbattueDuPays[state.area->index];
+    }
+};
+
+using OneColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<OneColumnDynamicDigestTraits>;
+using OneColumnDynamicDigestVariables = Container::List<Areas<OneColumnDynamicDigestVariable>>;
+
 std::unique_ptr<Data::Study> makeStudyForResidualDigest()
 {
     auto study = std::make_unique<Data::Study>();
@@ -122,6 +163,44 @@ PROBLEME_HEBDO makeWeeklyResidualProblem(double value)
     }
 
     return weeklyProblem;
+}
+
+std::unique_ptr<Data::Study> makeStudyForOneColumnDynamicDigest()
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    auto* area = study->areaAdd("area1");
+    area->index = 0;
+
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
+    dynamicInfo.setMaxColumns(4);
+    study->parameters.variablesPrintInfo.add(OneColumnDynamicDigestTraits::Caption(), dynamicInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
 }
 
 } // namespace
@@ -410,6 +489,54 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_residual_load_variable_tree)
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tRES LOAD\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_one_column)
+{
+    auto study = makeStudyForOneColumnDynamicDigest();
+
+    Benchmarking::DurationCollector dc;
+    Solver::InMemoryWriter writer(dc);
+    OneColumnDynamicDigestVariables variables;
+
+    variables.initializeFromStudy(*study);
+    variables.simulationBegin();
+
+    State state(*study);
+    state.year = 0;
+    state.numSpace = 0;
+    state.startANewYear();
+
+    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(5.0);
+    state.problemeHebdo = &weeklyProblem;
+
+    variables.yearBegin(0, 0);
+
+    for (unsigned int h = 0; h < HOURS_PER_YEAR; ++h)
+    {
+        state.hourInTheYear = h;
+        state.hourInTheWeek = h % Antares::Constants::nbHoursInAWeek;
+        variables.hourForEachArea(state, 0);
+    }
+
+    variables.yearEndBuild(state, 0, 0);
+    variables.yearEnd(0, 0);
+    variables.computeSummary(0, 0);
+    variables.simulationEnd();
+
+    variables.exportSurveyResults(true, "out", 0, writer);
+
+    const auto& files = writer.getMap();
+    const auto fileIt = files.find("out/grid/digest.txt");
+    BOOST_REQUIRE(fileIt != files.end());
+
+    const auto& digest = fileIt->second;
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
