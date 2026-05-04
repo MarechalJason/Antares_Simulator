@@ -663,7 +663,7 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns)
     BOOST_REQUIRE(fileIt != files.end());
 
     const auto& digest = fileIt->second;
-    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t1\t0\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\tDYN_COL_2\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
