@@ -9,13 +9,13 @@
 
 #include "antares/antares/constants.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
+#include "antares/solver/variable/variable.h"
 #include "antares/solver/variable/area.h"
 #include "antares/solver/variable/categories.h"
 #include "antares/solver/variable/container.h"
 #include "antares/solver/variable/economy/dynamic_multi_column_base.h"
 #include "antares/solver/variable/economy/residual.h"
 #include "antares/solver/variable/surveyresults.h"
-#include "antares/solver/variable/variable.h"
 #include "antares/writer/in_memory_writer.h"
 
 using namespace Antares::Solver::Variable;
@@ -222,6 +222,46 @@ inline std::unique_ptr<Data::Study> makeStudyForTwoColumnDynamicDigest()
 {
     return makeStudyWithVariable(TwoColumnDynamicDigestTraits::Caption(),
                                  2 * TwoColumnDynamicDigestTraits::ResultsProfile::count);
+}
+
+std::unique_ptr<Data::Study> makeStudyForMixedResidualAndOneColumnDynamicDigest()
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    study->areaAdd("area1")->index = 0;
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
+    residualInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
+
+    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
+    dynamicInfo.setMaxColumns(OneColumnDynamicDigestTraits::ResultsProfile::count);
+    study->parameters.variablesPrintInfo.add(OneColumnDynamicDigestTraits::Caption(), dynamicInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
 }
 
 template<typename VariablesT>
@@ -552,6 +592,29 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_one_column)
     BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(exports_digest_for_static_and_dynamic_one_column_variables)
+{
+    auto study = makeStudyForMixedResidualAndOneColumnDynamicDigest();
+    ResidualDigestVariables residualVariables;
+    const auto& residualDigest = runSimulationAndExportDigest(*study, residualVariables, 5.0);
+    OneColumnDynamicDigestVariables dynamicVariables;
+    const auto& dynamicDigest = runSimulationAndExportDigest(*study, dynamicVariables, 5.0);
+
+    BOOST_CHECK_NE(residualDigest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\t\tRES LOAD\n"), std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\t\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\t\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\tarea1\t840\n"), std::string::npos);
+
+    BOOST_CHECK_NE(dynamicDigest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\t\tDYN_COL_1\n"), std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\t\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\t\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\tarea1\t840\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns)
