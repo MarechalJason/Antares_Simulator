@@ -271,13 +271,14 @@ jobs:
         name: ubuntu-targz
         path: _build/
 
-    #- name: Extract solver exe
-    #  run: |
-    #    mkdir -p _build/solver
-    #    mkdir -p _build/api
-    #    tar xzf _build/antares-solver_ubuntu22.04.tar.gz -C _build/solver
-    #    cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
-    #    echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${GITHUB_WORKSPACE}/_build/solver" >> $GITHUB_ENV
+    - name: Extract solver exe
+      run: |
+        mkdir -p _build/solver
+        mkdir -p _build/api
+        cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
+        cp _build/solver/antares-solver _build/
+        cp _build/solver/antares-modeler _build/
+        echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${GITHUB_WORKSPACE}/_build/solver" >> $GITHUB_ENV
 
     - name: Extract simtest version
       id: simtest
