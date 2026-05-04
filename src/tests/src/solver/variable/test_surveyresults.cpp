@@ -110,6 +110,48 @@ struct OneColumnDynamicDigestTraits
 using OneColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<OneColumnDynamicDigestTraits>;
 using OneColumnDynamicDigestVariables = Container::List<Areas<OneColumnDynamicDigestVariable>>;
 
+struct TwoColumnDynamicDigestTraits
+{
+    static std::string Caption()
+    {
+        return "DYN TWO COL";
+    }
+
+    static std::string Unit()
+    {
+        return "MWh";
+    }
+
+    static std::string Description()
+    {
+        return "Dynamic variable with two digest columns";
+    }
+
+    using ResultsProfile = StandardResults<>;
+    static constexpr uint8_t decimal = 0;
+
+    static std::vector<Economy::ColumnDescriptor> buildColumnDescriptors(Data::Area*)
+    {
+        return {{"DYN_COL_1", "MWh"}, {"DYN_COL_2", "MWh"}};
+    }
+
+    static void setHourlyValue(
+      Economy::VCardDynamicMultiColumn<TwoColumnDynamicDigestTraits>::IntermediateValuesBaseType& pValues,
+      State& state,
+      unsigned int,
+      const std::vector<Economy::ColumnDescriptor>&)
+    {
+        double value = state.problemeHebdo->ConsommationsAbattues[state.hourInTheWeek]
+                         .ConsommationAbattueDuPays[state.area->index];
+
+        pValues[0][state.hourInTheYear] += value;
+        pValues[1][state.hourInTheYear] += value * 2.0;
+    }
+};
+
+using TwoColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<TwoColumnDynamicDigestTraits>;
+using TwoColumnDynamicDigestVariables = Container::List<Areas<TwoColumnDynamicDigestVariable>>;
+
 std::unique_ptr<Data::Study> makeStudyForResidualDigest()
 {
     auto study = std::make_unique<Data::Study>();
@@ -183,8 +225,46 @@ std::unique_ptr<Data::Study> makeStudyForOneColumnDynamicDigest()
     study->initializeRuntimeInfos();
 
     Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
-    dynamicInfo.setMaxColumns(4);
+    dynamicInfo.setMaxColumns(OneColumnDynamicDigestTraits::ResultsProfile::count);
     study->parameters.variablesPrintInfo.add(OneColumnDynamicDigestTraits::Caption(), dynamicInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
+}
+
+std::unique_ptr<Data::Study> makeStudyForTwoColumnDynamicDigest()
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    auto* area = study->areaAdd("area1");
+    area->index = 0;
+
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
+    dynamicInfo.setMaxColumns(2 * TwoColumnDynamicDigestTraits::ResultsProfile::count);
+    study->parameters.variablesPrintInfo.add(TwoColumnDynamicDigestTraits::Caption(), dynamicInfo);
 
     Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
     flowLinInfo.enablePrint(false);
@@ -541,6 +621,56 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_one_column)
     BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
     // 7d * 24h * 5.0 = 840
     BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns)
+{
+    auto study = makeStudyForTwoColumnDynamicDigest();
+
+    Benchmarking::DurationCollector dc;
+    Solver::InMemoryWriter writer(dc);
+    TwoColumnDynamicDigestVariables variables;
+
+    variables.initializeFromStudy(*study);
+    variables.simulationBegin();
+
+    State state(*study);
+    state.year = 0;
+    state.numSpace = 0;
+    state.startANewYear();
+
+    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(5.0);
+    state.problemeHebdo = &weeklyProblem;
+
+    variables.yearBegin(0, 0);
+
+    for (unsigned int h = 0; h < HOURS_PER_YEAR; ++h)
+    {
+        state.hourInTheYear = h;
+        state.hourInTheWeek = h % Antares::Constants::nbHoursInAWeek;
+        variables.hourForEachArea(state, 0);
+    }
+
+    variables.yearEndBuild(state, 0, 0);
+    variables.yearEnd(0, 0);
+    variables.computeSummary(0, 0);
+    variables.simulationEnd();
+
+    variables.exportSurveyResults(true, "out", 0, writer);
+
+    const auto& files = writer.getMap();
+    const auto fileIt = files.find("out/grid/digest.txt");
+    BOOST_REQUIRE(fileIt != files.end());
+
+    const auto& digest = fileIt->second;
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\tDYN_COL_2\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
+    // First column: 7d * 24h * 5.0 = 840
+    // Second column: 7d * 24h * 5.0 * 2.0 = 1680
+    BOOST_CHECK_NE(digest.find("\tarea1\t840\t1680\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
