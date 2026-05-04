@@ -32,18 +32,16 @@ struct DispatchableGenerationTraits
 
     static std::vector<ColumnDescriptor> buildColumnDescriptors(Data::Area* area)
     {
-        std::vector<ColumnDescriptor> descriptors;
-        std::map<std::string, size_t> groupNumbers;
-
+        std::set<std::string> uniqueGroups;
         for (auto& cluster: area->thermal.list.each_enabled())
         {
-            const std::string& group = cluster->getGroup();
-            if (groupNumbers.find(group) == groupNumbers.end())
-            {
-                size_t idx = descriptors.size();
-                groupNumbers[group] = idx;
-                descriptors.push_back({group, "MWh"});
-            }
+            uniqueGroups.insert(cluster->getGroup());
+        }
+
+        std::vector<ColumnDescriptor> descriptors;
+        for (const auto& group: uniqueGroups)
+        {
+            descriptors.push_back({group, "MWh"});
         }
         return descriptors;
     }
