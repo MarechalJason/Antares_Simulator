@@ -238,7 +238,7 @@ jobs:
 
     - name: Clean object files from build directory
       run: |
-        find _build \( -name "*.o" -o -o -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" \) -delete
+        find _build \( -name "*.o" -o -name "*.a" -o -name "*.obj" -o -name "*.lo" -o -name "*.pch" \) -delete
         find _build/tests -type f -executable -delete
         rm -rf _build/vcpkg_installed
         rm -rf _build/tools
