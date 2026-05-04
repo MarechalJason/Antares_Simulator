@@ -65,15 +65,21 @@ struct STSbyGroupTraits
       VCardDynamicMultiColumn<STSbyGroupTraits>::IntermediateValuesBaseType& pValues,
       State& state,
       unsigned int,
-      const std::vector<ColumnDescriptor>& descriptors)
+      [[maybe_unused]] const std::vector<ColumnDescriptor>& descriptors)
     {
         using namespace Antares::Data::ShortTermStorage;
         const auto& shortTermStorage = state.area->shortTermStorage;
 
-        std::map<std::string, size_t> groupToNumbers;
-        for (size_t i = 0; i < descriptors.size(); ++i)
+        std::set<std::string> uniqueGroups;
+        for (const auto& sts: shortTermStorage.storagesByIndex)
         {
-            groupToNumbers[descriptors[i].caption] = i / STS::NB_COLS_PER_GROUP;
+            uniqueGroups.insert(sts.properties.groupName);
+        }
+        std::map<std::string, size_t> groupToNumbers;
+        size_t groupIndex = 0;
+        for (const auto& groupName: uniqueGroups)
+        {
+            groupToNumbers[groupName] = groupIndex++;
         }
 
         uint clusterIndex = 0;
