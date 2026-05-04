@@ -9,13 +9,13 @@
 
 #include "antares/antares/constants.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
+#include "antares/solver/variable/area.h"
 #include "antares/solver/variable/categories.h"
 #include "antares/solver/variable/container.h"
 #include "antares/solver/variable/economy/dynamic_multi_column_base.h"
 #include "antares/solver/variable/economy/residual.h"
 #include "antares/solver/variable/surveyresults.h"
 #include "antares/solver/variable/variable.h"
-#include "antares/solver/variable/area.h"
 #include "antares/writer/in_memory_writer.h"
 
 using namespace Antares::Solver::Variable;
@@ -23,14 +23,25 @@ using namespace Antares::Solver::Variable;
 namespace
 {
 
+std::unique_ptr<Data::Study> makeStudyWithAreas(unsigned int areaCount)
+{
+    auto study = std::make_unique<Data::Study>();
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
+    study->initializeRuntimeInfos();
+    return study;
+}
+
 struct StudyFixture
 {
     StudyFixture():
-        study(std::make_unique<Data::Study>())
+        study(makeStudyWithAreas(0))
     {
-        study->parameters.simulationDays.first = 0;
-        study->parameters.simulationDays.end = 7;
-        study->initializeRuntimeInfos();
     }
 
     std::unique_ptr<Data::Study> study;
@@ -39,13 +50,8 @@ struct StudyFixture
 struct StudyFixtureWithArea
 {
     StudyFixtureWithArea():
-        study(std::make_unique<Data::Study>())
+        study(makeStudyWithAreas(1))
     {
-        study->parameters.simulationDays.first = 0;
-        study->parameters.simulationDays.end = 7;
-        auto* area = study->areaAdd("area1");
-        area->index = 0;
-        study->initializeRuntimeInfos();
     }
 
     std::unique_ptr<Data::Study> study;
@@ -54,15 +60,8 @@ struct StudyFixtureWithArea
 struct StudyFixtureWithTwoAreas
 {
     StudyFixtureWithTwoAreas():
-        study(std::make_unique<Data::Study>())
+        study(makeStudyWithAreas(2))
     {
-        study->parameters.simulationDays.first = 0;
-        study->parameters.simulationDays.end = 7;
-        auto* area1 = study->areaAdd("area1");
-        area1->index = 0;
-        auto* area2 = study->areaAdd("area2");
-        area2->index = 1;
-        study->initializeRuntimeInfos();
     }
 
     std::unique_ptr<Data::Study> study;
@@ -95,19 +94,20 @@ struct OneColumnDynamicDigestTraits
         return {{"DYN_COL_1", "MWh"}};
     }
 
-    static void setHourlyValue(
-      Economy::VCardDynamicMultiColumn<OneColumnDynamicDigestTraits>::IntermediateValuesBaseType& pValues,
-      State& state,
-      unsigned int,
-      const std::vector<Economy::ColumnDescriptor>&)
+    static void setHourlyValue(Economy::VCardDynamicMultiColumn<
+                                 OneColumnDynamicDigestTraits>::IntermediateValuesBaseType& pValues,
+                               State& state,
+                               unsigned int,
+                               const std::vector<Economy::ColumnDescriptor>&)
     {
-        pValues[0][state.hourInTheYear]
-          += state.problemeHebdo->ConsommationsAbattues[state.hourInTheWeek]
-               .ConsommationAbattueDuPays[state.area->index];
+        pValues[0][state.hourInTheYear] += state.problemeHebdo
+                                             ->ConsommationsAbattues[state.hourInTheWeek]
+                                             .ConsommationAbattueDuPays[state.area->index];
     }
 };
 
-using OneColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<OneColumnDynamicDigestTraits>;
+using OneColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<
+  OneColumnDynamicDigestTraits>;
 using OneColumnDynamicDigestVariables = Container::List<Areas<OneColumnDynamicDigestVariable>>;
 
 struct TwoColumnDynamicDigestTraits
@@ -135,11 +135,11 @@ struct TwoColumnDynamicDigestTraits
         return {{"DYN_COL_1", "MWh"}, {"DYN_COL_2", "MWh"}};
     }
 
-    static void setHourlyValue(
-      Economy::VCardDynamicMultiColumn<TwoColumnDynamicDigestTraits>::IntermediateValuesBaseType& pValues,
-      State& state,
-      unsigned int,
-      const std::vector<Economy::ColumnDescriptor>&)
+    static void setHourlyValue(Economy::VCardDynamicMultiColumn<
+                                 TwoColumnDynamicDigestTraits>::IntermediateValuesBaseType& pValues,
+                               State& state,
+                               unsigned int,
+                               const std::vector<Economy::ColumnDescriptor>&)
     {
         double value = state.problemeHebdo->ConsommationsAbattues[state.hourInTheWeek]
                          .ConsommationAbattueDuPays[state.area->index];
@@ -149,10 +149,12 @@ struct TwoColumnDynamicDigestTraits
     }
 };
 
-using TwoColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<TwoColumnDynamicDigestTraits>;
+using TwoColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<
+  TwoColumnDynamicDigestTraits>;
 using TwoColumnDynamicDigestVariables = Container::List<Areas<TwoColumnDynamicDigestVariable>>;
 
-std::unique_ptr<Data::Study> makeStudyForResidualDigest()
+std::unique_ptr<Data::Study> makeStudyWithVariable(std::string_view caption,
+                                                   unsigned int maxColumns)
 {
     auto study = std::make_unique<Data::Study>();
 
@@ -164,14 +166,12 @@ std::unique_ptr<Data::Study> makeStudyForResidualDigest()
     study->parameters.resetPlaylist(study->parameters.nbYears);
     study->parameters.resetYearsWeigth();
 
-    auto* area = study->areaAdd("area1");
-    area->index = 0;
-
+    study->areaAdd("area1")->index = 0;
     study->initializeRuntimeInfos();
 
-    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
-    residualInfo.setMaxColumns(4);
-    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
+    Data::VariablePrintInfo varInfo(Category::FileLevel::va, Category::DataLevel::area);
+    varInfo.setMaxColumns(maxColumns);
+    study->parameters.variablesPrintInfo.add(std::string(caption), varInfo);
 
     Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
     flowLinInfo.enablePrint(false);
@@ -188,6 +188,11 @@ std::unique_ptr<Data::Study> makeStudyForResidualDigest()
     study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
 
     return study;
+}
+
+inline std::unique_ptr<Data::Study> makeStudyForResidualDigest()
+{
+    return makeStudyWithVariable("RES LOAD", 4);
 }
 
 PROBLEME_HEBDO makeWeeklyResidualProblem(double value)
@@ -207,80 +212,16 @@ PROBLEME_HEBDO makeWeeklyResidualProblem(double value)
     return weeklyProblem;
 }
 
-std::unique_ptr<Data::Study> makeStudyForOneColumnDynamicDigest()
+inline std::unique_ptr<Data::Study> makeStudyForOneColumnDynamicDigest()
 {
-    auto study = std::make_unique<Data::Study>();
-
-    study->parameters.simulationDays.first = 0;
-    study->parameters.simulationDays.end = 7;
-    study->parameters.nbYears = 1;
-    study->maxNbYearsInParallel = 1;
-    study->parameters.userPlaylist = false;
-    study->parameters.resetPlaylist(study->parameters.nbYears);
-    study->parameters.resetYearsWeigth();
-
-    auto* area = study->areaAdd("area1");
-    area->index = 0;
-
-    study->initializeRuntimeInfos();
-
-    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
-    dynamicInfo.setMaxColumns(OneColumnDynamicDigestTraits::ResultsProfile::count);
-    study->parameters.variablesPrintInfo.add(OneColumnDynamicDigestTraits::Caption(), dynamicInfo);
-
-    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
-    flowLinInfo.enablePrint(false);
-    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
-
-    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
-    flowQuadInfo.enablePrint(false);
-    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
-
-    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
-    study->parameters.variablesPrintInfo.prepareForSimulation(false);
-    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
-    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
-    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
-
-    return study;
+    return makeStudyWithVariable(OneColumnDynamicDigestTraits::Caption(),
+                                 OneColumnDynamicDigestTraits::ResultsProfile::count);
 }
 
-std::unique_ptr<Data::Study> makeStudyForTwoColumnDynamicDigest()
+inline std::unique_ptr<Data::Study> makeStudyForTwoColumnDynamicDigest()
 {
-    auto study = std::make_unique<Data::Study>();
-
-    study->parameters.simulationDays.first = 0;
-    study->parameters.simulationDays.end = 7;
-    study->parameters.nbYears = 1;
-    study->maxNbYearsInParallel = 1;
-    study->parameters.userPlaylist = false;
-    study->parameters.resetPlaylist(study->parameters.nbYears);
-    study->parameters.resetYearsWeigth();
-
-    auto* area = study->areaAdd("area1");
-    area->index = 0;
-
-    study->initializeRuntimeInfos();
-
-    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
-    dynamicInfo.setMaxColumns(2 * TwoColumnDynamicDigestTraits::ResultsProfile::count);
-    study->parameters.variablesPrintInfo.add(TwoColumnDynamicDigestTraits::Caption(), dynamicInfo);
-
-    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
-    flowLinInfo.enablePrint(false);
-    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
-
-    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
-    flowQuadInfo.enablePrint(false);
-    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
-
-    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
-    study->parameters.variablesPrintInfo.prepareForSimulation(false);
-    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
-    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
-    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
-
-    return study;
+    return makeStudyWithVariable(TwoColumnDynamicDigestTraits::Caption(),
+                                 2 * TwoColumnDynamicDigestTraits::ResultsProfile::count);
 }
 
 } // namespace
@@ -322,9 +263,11 @@ BOOST_FIXTURE_TEST_CASE(survey_result_hourly, StudyFixture)
     BOOST_REQUIRE(writer.getMap().contains(filename));
     const auto& content = writer.getMap().at(filename);
     // Header
-    BOOST_CHECK_NE(content.find("system	hourly				hello	world\n"), std::string::npos);
+    BOOST_CHECK_NE(content.find("system	hourly				hello	world\n"),
+                   std::string::npos);
     // Some values
-    BOOST_CHECK_NE(content.find("	9	01	JAN	08:00	9	67\n"), std::string::npos);
+    BOOST_CHECK_NE(content.find("	9	01	JAN	08:00	9	67\n"),
+                   std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -342,8 +285,10 @@ BOOST_FIXTURE_TEST_CASE(header_contains_digest_label_and_counts_section, StudyFi
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (auto & caption : survey.captions)
+    for (auto& caption: survey.captions)
+    {
         caption[0] = "V";
+    }
 
     std::string buffer;
     survey.exportDigestAllYears(buffer);
@@ -359,8 +304,10 @@ BOOST_FIXTURE_TEST_CASE(header_counts_3_variables_0_areas_0_links, StudyFixture)
 
     SurveyResults survey(*study, 3u, "out", writer);
     survey.data.columnIndex = 3;
-    for (auto & caption : survey.captions)
+    for (auto& caption: survey.captions)
+    {
         caption[0] = caption[1] = caption[2] = "x";
+    }
 
     std::string buffer;
     survey.exportDigestAllYears(buffer);
@@ -375,16 +322,19 @@ BOOST_FIXTURE_TEST_CASE(three_caption_rows_are_written_for_each_column, StudyFix
 
     SurveyResults survey(*study, 2u, "out", writer);
     survey.data.columnIndex = 2;
-    survey.captions[0][0] = "LOAD";  survey.captions[0][1] = "WIND";
-    survey.captions[1][0] = "MW";    survey.captions[1][1] = "MW";
-    survey.captions[2][0] = "EXP";   survey.captions[2][1] = "std";
+    survey.captions[0][0] = "LOAD";
+    survey.captions[0][1] = "WIND";
+    survey.captions[1][0] = "MW";
+    survey.captions[1][1] = "MW";
+    survey.captions[2][0] = "EXP";
+    survey.captions[2][1] = "std";
 
     std::string buffer;
     survey.exportDigestAllYears(buffer);
 
     BOOST_CHECK_NE(buffer.find("\t\tLOAD\tWIND\n"), std::string::npos);
-    BOOST_CHECK_NE(buffer.find("\t\tMW\tMW\n"),     std::string::npos);
-    BOOST_CHECK_NE(buffer.find("\t\tEXP\tstd\n"),   std::string::npos);
+    BOOST_CHECK_NE(buffer.find("\t\tMW\tMW\n"), std::string::npos);
+    BOOST_CHECK_NE(buffer.find("\t\tEXP\tstd\n"), std::string::npos);
 }
 
 BOOST_FIXTURE_TEST_CASE(row_with_zero_value_writes_tab_zero, StudyFixtureWithArea)
@@ -394,8 +344,10 @@ BOOST_FIXTURE_TEST_CASE(row_with_zero_value_writes_tab_zero, StudyFixtureWithAre
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (auto & caption : survey.captions)
+    for (auto& caption: survey.captions)
+    {
         caption[0] = "V";
+    }
 
     survey.data.rowCaptions.emplace_back("area1");
     survey.values[0][0] = 0.0;
@@ -413,8 +365,10 @@ BOOST_FIXTURE_TEST_CASE(row_with_nonzero_value_writes_formatted_value, StudyFixt
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (auto & caption : survey.captions)
+    for (auto& caption: survey.captions)
+    {
         caption[0] = "V";
+    }
     survey.precision[0] = "%.0f";
 
     survey.data.rowCaptions.emplace_back("area1");
@@ -433,8 +387,10 @@ BOOST_FIXTURE_TEST_CASE(non_applicable_column_writes_NA, StudyFixtureWithArea)
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (auto & caption : survey.captions)
+    for (auto& caption: survey.captions)
+    {
         caption[0] = "V";
+    }
 
     survey.data.rowCaptions.emplace_back("area1");
     survey.values[0][0] = 99.0;
@@ -453,8 +409,10 @@ BOOST_FIXTURE_TEST_CASE(multiple_areas_write_one_row_each, StudyFixtureWithTwoAr
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (auto & caption : survey.captions)
+    for (auto& caption: survey.captions)
+    {
         caption[0] = "V";
+    }
     survey.precision[0] = "%.0f";
 
     survey.data.rowCaptions.emplace_back("area1");
@@ -476,7 +434,7 @@ BOOST_FIXTURE_TEST_CASE(mixed_zero_nonzero_na_columns_in_same_row, StudyFixtureW
 
     SurveyResults survey(*study, 3u, "out", writer);
     survey.data.columnIndex = 3;
-    for (auto & caption : survey.captions)
+    for (auto& caption: survey.captions)
     {
         caption[0] = "A";
         caption[1] = "B";
@@ -505,8 +463,10 @@ BOOST_FIXTURE_TEST_CASE(header_area_count_matches_row_captions_size, StudyFixtur
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (auto & caption : survey.captions)
+    for (auto& caption: survey.captions)
+    {
         caption[0] = "V";
+    }
 
     survey.data.rowCaptions.emplace_back("area1");
     survey.data.rowCaptions.emplace_back("area2");
@@ -689,12 +649,16 @@ BOOST_FIXTURE_TEST_CASE(zeroes_all_columns_at_given_line, StudyFixture)
     const unsigned int nbVariables = 3;
     SurveyResults survey(*study, nbVariables, "out", writer);
     for (unsigned int col = 0; col < nbVariables; ++col)
+    {
         survey.values[col][5] = 100.0 + col;
+    }
 
     survey.resetValuesAtLine(5);
 
     for (unsigned int col = 0; col < nbVariables; ++col)
+    {
         BOOST_CHECK_EQUAL(survey.values[col][5], 0.0);
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(does_not_affect_other_lines, StudyFixture)
