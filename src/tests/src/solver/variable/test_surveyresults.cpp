@@ -8,8 +8,13 @@
 #include <boost/test/unit_test.hpp>
 
 #include "antares/antares/constants.h"
+#include "antares/solver/simulation/sim_structure_probleme_economique.h"
 #include "antares/solver/variable/categories.h"
+#include "antares/solver/variable/container.h"
+#include "antares/solver/variable/economy/residual.h"
 #include "antares/solver/variable/surveyresults.h"
+#include "antares/solver/variable/variable.h"
+#include "antares/solver/variable/area.h"
 #include "antares/writer/in_memory_writer.h"
 
 using namespace Antares::Solver::Variable;
@@ -61,6 +66,63 @@ struct StudyFixtureWithTwoAreas
 
     std::unique_ptr<Data::Study> study;
 };
+
+using ResidualDigestVariables = Container::List<Areas<Economy::ResidualLoad>>;
+
+std::unique_ptr<Data::Study> makeStudyForResidualDigest()
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    auto* area = study->areaAdd("area1");
+    area->index = 0;
+
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
+    residualInfo.setMaxColumns(4);
+    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
+}
+
+PROBLEME_HEBDO makeWeeklyResidualProblem(double value)
+{
+    PROBLEME_HEBDO weeklyProblem;
+    weeklyProblem.NombreDePays = 1;
+    weeklyProblem.NombreDePasDeTemps = Antares::Constants::nbHoursInAWeek;
+    weeklyProblem.ResultatsHoraires.resize(1);
+    weeklyProblem.ConsommationsAbattues.resize(Antares::Constants::nbHoursInAWeek);
+
+    for (unsigned int h = 0; h < Antares::Constants::nbHoursInAWeek; ++h)
+    {
+        weeklyProblem.ConsommationsAbattues[h].ConsommationAbattueDuPays.resize(1);
+        weeklyProblem.ConsommationsAbattues[h].ConsommationAbattueDuPays[0] = value;
+    }
+
+    return weeklyProblem;
+}
 
 } // namespace
 
@@ -196,7 +258,7 @@ BOOST_FIXTURE_TEST_CASE(row_with_nonzero_value_writes_formatted_value, StudyFixt
         caption[0] = "V";
     survey.precision[0] = "%.0f";
 
-    survey.data.rowCaptions.push_back("area1");
+    survey.data.rowCaptions.emplace_back("area1");
     survey.values[0][0] = 123.0;
 
     std::string buffer;
@@ -295,6 +357,62 @@ BOOST_FIXTURE_TEST_CASE(header_area_count_matches_row_captions_size, StudyFixtur
 
     // \t<columnIndex>\t<rowCaptions.size()>\t<links>
     BOOST_CHECK_NE(buffer.find("\t1\t2\t0\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+// ---------------------------------------------------------------------------
+// digest export from variables tree
+// ---------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE(digest_with_variables)
+
+BOOST_AUTO_TEST_CASE(exports_digest_from_residual_load_variable_tree)
+{
+    auto study = makeStudyForResidualDigest();
+
+    Benchmarking::DurationCollector dc;
+    Solver::InMemoryWriter writer(dc);
+    ResidualDigestVariables variables;
+
+    variables.initializeFromStudy(*study);
+    variables.simulationBegin();
+
+    State state(*study);
+    state.year = 0;
+    state.numSpace = 0;
+    state.startANewYear();
+
+    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(5.0);
+    state.problemeHebdo = &weeklyProblem;
+
+    variables.yearBegin(0, 0);
+
+    for (unsigned int h = 0; h < HOURS_PER_YEAR; ++h)
+    {
+        state.hourInTheYear = h;
+        state.hourInTheWeek = h % Antares::Constants::nbHoursInAWeek;
+        variables.hourForEachArea(state, 0);
+    }
+
+    variables.yearEndBuild(state, 0, 0);
+    variables.yearEnd(0, 0);
+    variables.computeSummary(0, 0);
+    variables.simulationEnd();
+
+    variables.exportSurveyResults(true, "out", 0, writer);
+
+    const auto& files = writer.getMap();
+    const auto fileIt = files.find("out/grid/digest.txt");
+    BOOST_REQUIRE(fileIt != files.end());
+
+    const auto& digest = fileIt->second;
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tRES LOAD\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
