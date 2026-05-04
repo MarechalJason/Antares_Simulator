@@ -20,20 +20,20 @@ namespace
 struct StudyFixture
 {
     StudyFixture():
-        study(std::make_unique<Antares::Data::Study>())
+        study(std::make_unique<Data::Study>())
     {
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
         study->initializeRuntimeInfos();
     }
 
-    std::unique_ptr<Antares::Data::Study> study;
+    std::unique_ptr<Data::Study> study;
 };
 
 struct StudyFixtureWithArea
 {
     StudyFixtureWithArea():
-        study(std::make_unique<Antares::Data::Study>())
+        study(std::make_unique<Data::Study>())
     {
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
@@ -42,13 +42,13 @@ struct StudyFixtureWithArea
         study->initializeRuntimeInfos();
     }
 
-    std::unique_ptr<Antares::Data::Study> study;
+    std::unique_ptr<Data::Study> study;
 };
 
 struct StudyFixtureWithTwoAreas
 {
     StudyFixtureWithTwoAreas():
-        study(std::make_unique<Antares::Data::Study>())
+        study(std::make_unique<Data::Study>())
     {
         study->parameters.simulationDays.first = 0;
         study->parameters.simulationDays.end = 7;
@@ -59,7 +59,7 @@ struct StudyFixtureWithTwoAreas
         study->initializeRuntimeInfos();
     }
 
-    std::unique_ptr<Antares::Data::Study> study;
+    std::unique_ptr<Data::Study> study;
 };
 
 } // namespace
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_SUITE(surveyresults)
 BOOST_FIXTURE_TEST_CASE(survey_result_hourly, StudyFixture)
 {
     Benchmarking::DurationCollector durationCollector;
-    Antares::Solver::InMemoryWriter writer(durationCollector);
+    Solver::InMemoryWriter writer(durationCollector);
 
     unsigned int nbVariables = 2;
     SurveyResults survey(*study, nbVariables, "out", writer);
@@ -117,12 +117,12 @@ BOOST_AUTO_TEST_SUITE(digest)
 BOOST_FIXTURE_TEST_CASE(header_contains_digest_label_and_counts_section, StudyFixture)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (int r = 0; r < SurveyResults::captionCount; ++r)
-        survey.captions[r][0] = "V";
+    for (auto & caption : survey.captions)
+        caption[0] = "V";
 
     std::string buffer;
     survey.exportDigestAllYears(buffer);
@@ -131,27 +131,26 @@ BOOST_FIXTURE_TEST_CASE(header_contains_digest_label_and_counts_section, StudyFi
     BOOST_CHECK_NE(buffer.find("\tVARIABLES\tAREAS\tLINKS\n"), std::string::npos);
 }
 
-BOOST_FIXTURE_TEST_CASE(header_counts_variables_zero_areas_zero_links, StudyFixture)
+BOOST_FIXTURE_TEST_CASE(header_counts_3_variables_0_areas_0_links, StudyFixture)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 3u, "out", writer);
     survey.data.columnIndex = 3;
-    for (int r = 0; r < SurveyResults::captionCount; ++r)
-        survey.captions[r][0] = survey.captions[r][1] = survey.captions[r][2] = "x";
+    for (auto & caption : survey.captions)
+        caption[0] = caption[1] = caption[2] = "x";
 
     std::string buffer;
     survey.exportDigestAllYears(buffer);
 
-    // \t<columnIndex>\t<rowCaptions.size()>\t<interconnectionsCount>
     BOOST_CHECK_NE(buffer.find("\t3\t0\t0\n"), std::string::npos);
 }
 
 BOOST_FIXTURE_TEST_CASE(three_caption_rows_are_written_for_each_column, StudyFixture)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 2u, "out", writer);
     survey.data.columnIndex = 2;
@@ -170,14 +169,14 @@ BOOST_FIXTURE_TEST_CASE(three_caption_rows_are_written_for_each_column, StudyFix
 BOOST_FIXTURE_TEST_CASE(row_with_zero_value_writes_tab_zero, StudyFixtureWithArea)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (int r = 0; r < SurveyResults::captionCount; ++r)
-        survey.captions[r][0] = "V";
+    for (auto & caption : survey.captions)
+        caption[0] = "V";
 
-    survey.data.rowCaptions.push_back("area1");
+    survey.data.rowCaptions.emplace_back("area1");
     survey.values[0][0] = 0.0;
 
     std::string buffer;
@@ -189,12 +188,12 @@ BOOST_FIXTURE_TEST_CASE(row_with_zero_value_writes_tab_zero, StudyFixtureWithAre
 BOOST_FIXTURE_TEST_CASE(row_with_nonzero_value_writes_formatted_value, StudyFixtureWithArea)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (int r = 0; r < SurveyResults::captionCount; ++r)
-        survey.captions[r][0] = "V";
+    for (auto & caption : survey.captions)
+        caption[0] = "V";
     survey.precision[0] = "%.0f";
 
     survey.data.rowCaptions.push_back("area1");
@@ -209,14 +208,14 @@ BOOST_FIXTURE_TEST_CASE(row_with_nonzero_value_writes_formatted_value, StudyFixt
 BOOST_FIXTURE_TEST_CASE(non_applicable_column_writes_NA, StudyFixtureWithArea)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (int r = 0; r < SurveyResults::captionCount; ++r)
-        survey.captions[r][0] = "V";
+    for (auto & caption : survey.captions)
+        caption[0] = "V";
 
-    survey.data.rowCaptions.push_back("area1");
+    survey.data.rowCaptions.emplace_back("area1");
     survey.values[0][0] = 99.0;
     survey.digestNonApplicableStatus[0][0] = true;
 
@@ -229,16 +228,16 @@ BOOST_FIXTURE_TEST_CASE(non_applicable_column_writes_NA, StudyFixtureWithArea)
 BOOST_FIXTURE_TEST_CASE(multiple_areas_write_one_row_each, StudyFixtureWithTwoAreas)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (int r = 0; r < SurveyResults::captionCount; ++r)
-        survey.captions[r][0] = "V";
+    for (auto & caption : survey.captions)
+        caption[0] = "V";
     survey.precision[0] = "%.0f";
 
-    survey.data.rowCaptions.push_back("area1");
-    survey.data.rowCaptions.push_back("area2");
+    survey.data.rowCaptions.emplace_back("area1");
+    survey.data.rowCaptions.emplace_back("area2");
     survey.values[0][0] = 10.0;
     survey.values[0][1] = 20.0;
 
@@ -252,21 +251,21 @@ BOOST_FIXTURE_TEST_CASE(multiple_areas_write_one_row_each, StudyFixtureWithTwoAr
 BOOST_FIXTURE_TEST_CASE(mixed_zero_nonzero_na_columns_in_same_row, StudyFixtureWithArea)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 3u, "out", writer);
     survey.data.columnIndex = 3;
-    for (int r = 0; r < SurveyResults::captionCount; ++r)
+    for (auto & caption : survey.captions)
     {
-        survey.captions[r][0] = "A";
-        survey.captions[r][1] = "B";
-        survey.captions[r][2] = "C";
+        caption[0] = "A";
+        caption[1] = "B";
+        caption[2] = "C";
     }
     survey.precision[0] = "%.0f";
     survey.precision[1] = "%.0f";
     survey.precision[2] = "%.0f";
 
-    survey.data.rowCaptions.push_back("area1");
+    survey.data.rowCaptions.emplace_back("area1");
     survey.values[0][0] = 0.0;
     survey.values[1][0] = 42.0;
     survey.values[2][0] = 9.0;
@@ -281,15 +280,15 @@ BOOST_FIXTURE_TEST_CASE(mixed_zero_nonzero_na_columns_in_same_row, StudyFixtureW
 BOOST_FIXTURE_TEST_CASE(header_area_count_matches_row_captions_size, StudyFixtureWithTwoAreas)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 1u, "out", writer);
     survey.data.columnIndex = 1;
-    for (int r = 0; r < SurveyResults::captionCount; ++r)
-        survey.captions[r][0] = "V";
+    for (auto & caption : survey.captions)
+        caption[0] = "V";
 
-    survey.data.rowCaptions.push_back("area1");
-    survey.data.rowCaptions.push_back("area2");
+    survey.data.rowCaptions.emplace_back("area1");
+    survey.data.rowCaptions.emplace_back("area2");
 
     std::string buffer;
     survey.exportDigestAllYears(buffer);
@@ -309,7 +308,7 @@ BOOST_AUTO_TEST_SUITE(reset_values)
 BOOST_FIXTURE_TEST_CASE(zeroes_all_columns_at_given_line, StudyFixture)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     const unsigned int nbVariables = 3;
     SurveyResults survey(*study, nbVariables, "out", writer);
@@ -325,7 +324,7 @@ BOOST_FIXTURE_TEST_CASE(zeroes_all_columns_at_given_line, StudyFixture)
 BOOST_FIXTURE_TEST_CASE(does_not_affect_other_lines, StudyFixture)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 2u, "out", writer);
     survey.values[0][3] = 42.0;
@@ -344,7 +343,7 @@ BOOST_FIXTURE_TEST_CASE(does_not_affect_other_lines, StudyFixture)
 BOOST_FIXTURE_TEST_CASE(zeroes_first_line, StudyFixture)
 {
     Benchmarking::DurationCollector dc;
-    Antares::Solver::InMemoryWriter writer(dc);
+    Solver::InMemoryWriter writer(dc);
 
     SurveyResults survey(*study, 2u, "out", writer);
     survey.values[0][0] = 7.0;
