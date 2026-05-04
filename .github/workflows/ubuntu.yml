@@ -278,7 +278,6 @@ jobs:
         cp _build/solver/antares-problem-generator _build/api/antares-problem-generator
         cp _build/solver/antares-solver _build/
         cp _build/solver/antares-modeler _build/
-        echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${GITHUB_WORKSPACE}/_build/solver" >> $GITHUB_ENV
 
     - name: Extract simtest version
       id: simtest
