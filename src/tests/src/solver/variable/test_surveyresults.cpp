@@ -224,6 +224,46 @@ inline std::unique_ptr<Data::Study> makeStudyForTwoColumnDynamicDigest()
                                  2 * TwoColumnDynamicDigestTraits::ResultsProfile::count);
 }
 
+template<typename VariablesT>
+std::string runSimulationAndExportDigest(Data::Study& study,
+                                         VariablesT& variables,
+                                         double weeklyValue)
+{
+    variables.initializeFromStudy(study);
+    variables.simulationBegin();
+
+    State state(study);
+    state.year = 0;
+    state.numSpace = 0;
+    state.startANewYear();
+
+    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(weeklyValue);
+    state.problemeHebdo = &weeklyProblem;
+
+    variables.yearBegin(0, 0);
+
+    for (unsigned int h = 0; h < HOURS_PER_YEAR; ++h)
+    {
+        state.hourInTheYear = h;
+        state.hourInTheWeek = h % Antares::Constants::nbHoursInAWeek;
+        variables.hourForEachArea(state, 0);
+    }
+
+    variables.yearEndBuild(state, 0, 0);
+    variables.yearEnd(0, 0);
+    variables.computeSummary(0, 0);
+    variables.simulationEnd();
+
+    Benchmarking::DurationCollector dc;
+    Solver::InMemoryWriter writer(dc);
+    variables.exportSurveyResults(true, "out", 0, writer);
+
+    const auto& files = writer.getMap();
+    const auto fileIt = files.find("out/grid/digest.txt");
+    BOOST_REQUIRE(fileIt != files.end());
+    return fileIt->second;
+}
+
 } // namespace
 
 // ---------------------------------------------------------------------------
@@ -489,43 +529,9 @@ BOOST_AUTO_TEST_SUITE(digest_with_variables)
 BOOST_AUTO_TEST_CASE(exports_digest_from_residual_load_variable_tree)
 {
     auto study = makeStudyForResidualDigest();
-
-    Benchmarking::DurationCollector dc;
-    Solver::InMemoryWriter writer(dc);
     ResidualDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
 
-    variables.initializeFromStudy(*study);
-    variables.simulationBegin();
-
-    State state(*study);
-    state.year = 0;
-    state.numSpace = 0;
-    state.startANewYear();
-
-    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(5.0);
-    state.problemeHebdo = &weeklyProblem;
-
-    variables.yearBegin(0, 0);
-
-    for (unsigned int h = 0; h < HOURS_PER_YEAR; ++h)
-    {
-        state.hourInTheYear = h;
-        state.hourInTheWeek = h % Antares::Constants::nbHoursInAWeek;
-        variables.hourForEachArea(state, 0);
-    }
-
-    variables.yearEndBuild(state, 0, 0);
-    variables.yearEnd(0, 0);
-    variables.computeSummary(0, 0);
-    variables.simulationEnd();
-
-    variables.exportSurveyResults(true, "out", 0, writer);
-
-    const auto& files = writer.getMap();
-    const auto fileIt = files.find("out/grid/digest.txt");
-    BOOST_REQUIRE(fileIt != files.end());
-
-    const auto& digest = fileIt->second;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tRES LOAD\n"), std::string::npos);
@@ -537,99 +543,28 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_residual_load_variable_tree)
 BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_one_column)
 {
     auto study = makeStudyForOneColumnDynamicDigest();
-
-    Benchmarking::DurationCollector dc;
-    Solver::InMemoryWriter writer(dc);
     OneColumnDynamicDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
 
-    variables.initializeFromStudy(*study);
-    variables.simulationBegin();
-
-    State state(*study);
-    state.year = 0;
-    state.numSpace = 0;
-    state.startANewYear();
-
-    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(5.0);
-    state.problemeHebdo = &weeklyProblem;
-
-    variables.yearBegin(0, 0);
-
-    for (unsigned int h = 0; h < HOURS_PER_YEAR; ++h)
-    {
-        state.hourInTheYear = h;
-        state.hourInTheWeek = h % Antares::Constants::nbHoursInAWeek;
-        variables.hourForEachArea(state, 0);
-    }
-
-    variables.yearEndBuild(state, 0, 0);
-    variables.yearEnd(0, 0);
-    variables.computeSummary(0, 0);
-    variables.simulationEnd();
-
-    variables.exportSurveyResults(true, "out", 0, writer);
-
-    const auto& files = writer.getMap();
-    const auto fileIt = files.find("out/grid/digest.txt");
-    BOOST_REQUIRE(fileIt != files.end());
-
-    const auto& digest = fileIt->second;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t1\t0\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
-    // 7d * 24h * 5.0 = 840
     BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns)
 {
     auto study = makeStudyForTwoColumnDynamicDigest();
-
-    Benchmarking::DurationCollector dc;
-    Solver::InMemoryWriter writer(dc);
     TwoColumnDynamicDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
 
-    variables.initializeFromStudy(*study);
-    variables.simulationBegin();
-
-    State state(*study);
-    state.year = 0;
-    state.numSpace = 0;
-    state.startANewYear();
-
-    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(5.0);
-    state.problemeHebdo = &weeklyProblem;
-
-    variables.yearBegin(0, 0);
-
-    for (unsigned int h = 0; h < HOURS_PER_YEAR; ++h)
-    {
-        state.hourInTheYear = h;
-        state.hourInTheWeek = h % Antares::Constants::nbHoursInAWeek;
-        variables.hourForEachArea(state, 0);
-    }
-
-    variables.yearEndBuild(state, 0, 0);
-    variables.yearEnd(0, 0);
-    variables.computeSummary(0, 0);
-    variables.simulationEnd();
-
-    variables.exportSurveyResults(true, "out", 0, writer);
-
-    const auto& files = writer.getMap();
-    const auto fileIt = files.find("out/grid/digest.txt");
-    BOOST_REQUIRE(fileIt != files.end());
-
-    const auto& digest = fileIt->second;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t1\t0\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\tDYN_COL_2\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
-    // First column: 7d * 24h * 5.0 = 840
-    // Second column: 7d * 24h * 5.0 * 2.0 = 1680
     BOOST_CHECK_NE(digest.find("\tarea1\t840\t1680\n"), std::string::npos);
 }
 
