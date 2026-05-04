@@ -539,6 +539,7 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_one_column)
     BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
+    // 7d * 24h * 5.0 = 840
     BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
 }
 
