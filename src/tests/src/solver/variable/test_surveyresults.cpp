@@ -17,6 +17,7 @@
 #include "antares/solver/variable/economy/avail-dispatchable-generation.h"
 #include "antares/solver/variable/economy/dynamic_multi_column_base.h"
 #include "antares/solver/variable/economy/residual.h"
+#include "antares/solver/variable/economy/thermalAirPollutantEmissions.h"
 #include "antares/solver/variable/surveyresults.h"
 #include "antares/writer/in_memory_writer.h"
 
@@ -352,7 +353,7 @@ std::unique_ptr<Data::Study> makeStudyForTwoStaticAndTwoColumnDynamicDigest(unsi
     return study;
 }
 
-std::unique_ptr<Data::Study> makeStudyWithVariablesBetweenAvlDtgAndResLoad(unsigned int areaCount = 1)
+std::unique_ptr<Data::Study> makeStudyWithThermalAvlDtgAndResLoad(unsigned int areaCount = 1)
 {
     auto study = std::make_unique<Data::Study>();
 
@@ -371,17 +372,9 @@ std::unique_ptr<Data::Study> makeStudyWithVariablesBetweenAvlDtgAndResLoad(unsig
     }
     study->initializeRuntimeInfos();
 
-    Data::VariablePrintInfo co2Info(Category::FileLevel::va, Category::DataLevel::area);
-    co2Info.setMaxColumns(1u);
-    study->parameters.variablesPrintInfo.add("CO2 EMIS.", co2Info);
-
-    Data::VariablePrintInfo gasInfo(Category::FileLevel::va, Category::DataLevel::area);
-    gasInfo.setMaxColumns(1u);
-    study->parameters.variablesPrintInfo.add("GAS", gasInfo);
-
-    Data::VariablePrintInfo ligniteInfo(Category::FileLevel::va, Category::DataLevel::area);
-    ligniteInfo.setMaxColumns(1u);
-    study->parameters.variablesPrintInfo.add("LIGNITE", ligniteInfo);
+    Data::VariablePrintInfo thermalInfo(Category::FileLevel::va, Category::DataLevel::area);
+    thermalInfo.setMaxColumns(12u);
+    study->parameters.variablesPrintInfo.add("CO2 EMIS.", thermalInfo);
 
     Data::VariablePrintInfo availableDispatchInfo(Category::FileLevel::va, Category::DataLevel::area);
     availableDispatchInfo.setMaxColumns(4u);
@@ -408,7 +401,8 @@ std::unique_ptr<Data::Study> makeStudyWithVariablesBetweenAvlDtgAndResLoad(unsig
     return study;
 }
 
-using AvlDtgAndResLoadWithIntermediateVariables = Container::List<Areas<Container::TupleVariableList<
+using ThermalAvlDtgResLoadVariables = Container::List<Areas<Container::TupleVariableList<
+  Economy::ThermalAirPollutantEmissions,
   Economy::AvailableDispatchGen,
   Economy::ResidualLoad>>>;
 
@@ -930,35 +924,32 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_two_static_and_one_dynamic_two_columns_
     BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\t840\t1680\n"), std::string::npos);
 }
 
-BOOST_AUTO_TEST_CASE(digest_values_correct_when_variables_between_avl_dtg_and_res_load)
+BOOST_AUTO_TEST_CASE(digest_values_correct_with_thermal_avl_dtg_and_res_load)
 {
-    auto study = makeStudyWithVariablesBetweenAvlDtgAndResLoad();
-    AvlDtgAndResLoadWithIntermediateVariables variables;
+    auto study = makeStudyWithThermalAvlDtgAndResLoad();
+    ThermalAvlDtgResLoadVariables variables;
     const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
 
-    if (digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t5\t1\t0\n") == std::string::npos)
-    {
-        std::cerr << "Digest content:\n" << digest << std::endl;
-    }
-    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t1\t0\n"),
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t14\t1\t0\n"),
                    std::string::npos);
-    BOOST_CHECK_NE(digest.find("\t\tAVL DTG\tRES LOAD\n"),
+    BOOST_CHECK_NE(digest.find("\t\tCO2 EMIS.\tNH3 EMIS.\tSO2 EMIS.\tNOX EMIS.\tPM2_5 EMIS.\tPM5 EMIS.\tPM10 EMIS.\tNMVOC EMIS.\tOP1 EMIS.\tOP2 EMIS.\tOP3 EMIS.\tOP4 EMIS.\tAVL DTG\tRES LOAD\n"),
                    std::string::npos);
-    BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
-    BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
-    BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t840\n"),
+                   std::string::npos);
 }
 
-BOOST_AUTO_TEST_CASE(digest_values_correct_with_two_areas)
+BOOST_AUTO_TEST_CASE(digest_values_correct_with_thermal_avl_dtg_and_res_load_two_areas)
 {
-    auto study = makeStudyWithVariablesBetweenAvlDtgAndResLoad(2);
-    AvlDtgAndResLoadWithIntermediateVariables variables;
+    auto study = makeStudyWithThermalAvlDtgAndResLoad(2);
+    ThermalAvlDtgResLoadVariables variables;
     const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
 
-    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t2\t0\n"),
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t14\t2\t0\n"),
                    std::string::npos);
-    BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\n"), std::string::npos);
-    BOOST_CHECK_NE(digest.find("\tarea2\t0\t840\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t840\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea2\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t840\n"),
+                   std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
