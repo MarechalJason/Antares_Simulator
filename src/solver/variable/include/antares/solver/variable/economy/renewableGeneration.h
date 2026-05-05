@@ -46,6 +46,27 @@ struct RenewableGenerationTraits
         return descriptors;
     }
 
+    static std::vector<ColumnDescriptor> buildColumnDescriptors(Data::Study& study,
+                                                                Data::Area* /*area*/)
+    {
+        std::set<std::string> uniqueGroups;
+        study.areas.each(
+          [&uniqueGroups](Data::Area& currentArea)
+          {
+              for (auto& cluster: currentArea.renewable.list.each_enabled())
+              {
+                  uniqueGroups.insert(cluster->getGroup());
+              }
+          });
+
+        std::vector<ColumnDescriptor> descriptors;
+        for (const auto& group: uniqueGroups)
+        {
+            descriptors.push_back({group, "MWh"});
+        }
+        return descriptors;
+    }
+
     static void setHourlyValue(
       VCardDynamicMultiColumn<RenewableGenerationTraits>::IntermediateValuesBaseType& pValues,
       State& state,

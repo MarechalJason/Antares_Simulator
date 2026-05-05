@@ -20,6 +20,7 @@
 **   - \c buildColumnDescriptors(Data::Area*) -> std::vector<ColumnDescriptor>
 **
 ** - Optional hooks:
+**   - \c buildColumnDescriptors(Data::Study&, Data::Area*) -> std::vector<ColumnDescriptor>
 **   - \c onSimulationBegin(IntermediateValuesBaseType&, uint) -> void
 **   - \c perColumnComputeStats(IntermediateValues&, size_t columnIndex) -> void
 **   - \c setHourlyValue(IntermediateValuesBaseType&, State&, uint, const
@@ -133,7 +134,16 @@ public:
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        auto descriptors = Traits::buildColumnDescriptors(area);
+        std::vector<ColumnDescriptor> descriptors;
+        if constexpr (requires { Traits::buildColumnDescriptors(*study, area); })
+        {
+            descriptors = Traits::buildColumnDescriptors(*study, area);
+        }
+        else
+        {
+            descriptors = Traits::buildColumnDescriptors(area);
+        }
+
         nbColumns_ = descriptors.size();
         descriptors_ = std::move(descriptors);
 
