@@ -165,8 +165,8 @@ using TwoStaticOneDynamicTwoColumnsDigestVariables
   = Container::List<Areas<TwoStaticOneDynamicTwoColumnsPerAreaVariables>>;
 
 using AvlDtgWithCo2ResLoadPerAreaVariables = Container::TupleVariableList<
-  Economy::AvailableDispatchGen,
   Economy::ThermalAirPollutantEmissions,
+  Economy::AvailableDispatchGen,
   Economy::ResidualLoad>;
 using AvlDtgWithCo2ResLoadVariables
   = Container::List<Areas<AvlDtgWithCo2ResLoadPerAreaVariables>>;
@@ -1022,16 +1022,16 @@ BOOST_AUTO_TEST_CASE(digest_column_order_with_thermal_pollutant_co2)
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t3\t1\t0\n"),
                    std::string::npos);
 
-    auto avlDtgPos = digest.find("\tAVL DTG\t");
     auto co2Pos = digest.find("\tCO2 EMIS.\t");
+    auto avlDtgPos = digest.find("\tAVL DTG\t");
     auto resLoadPos = digest.find("\tRES LOAD\n");
 
     BOOST_REQUIRE(avlDtgPos != std::string::npos);
     BOOST_REQUIRE(co2Pos != std::string::npos);
     BOOST_REQUIRE(resLoadPos != std::string::npos);
 
-    BOOST_CHECK(avlDtgPos < co2Pos);
-    BOOST_CHECK(co2Pos < resLoadPos);
+    BOOST_CHECK(co2Pos < avlDtgPos);
+    BOOST_CHECK(avlDtgPos < resLoadPos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
