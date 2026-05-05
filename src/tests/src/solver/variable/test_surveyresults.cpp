@@ -32,6 +32,7 @@ namespace
 void addThermalClusterToArea(Data::Area* area, const std::string& clusterName, double nominalCapacity, unsigned int unitCount, double co2EmissionsFactor)
 {
     auto cluster = std::make_shared<Data::ThermalCluster>(area);
+    cluster->reset();
     cluster->setName(clusterName);
     cluster->nominalCapacity = nominalCapacity;
     cluster->unitCount = unitCount;
@@ -55,6 +56,7 @@ void addThermalClusterToArea(Data::Area* area, const std::string& clusterName, d
     {
         cluster->series.timeSeries[0][h] = nominalCapacity * unitCount;
     }
+    cluster->series.timeseriesNumbers.reset(1);
 
     area->thermal.list.addToCompleteList(cluster);
 }
@@ -1149,6 +1151,7 @@ BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_d
     AllVariablesDigestVariables variables;
     const auto& digest = runSimulationAndExportDigest(*study, variables, 3.0);
 
+    std::cout << digest << std::endl;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t5\t1\t0\n"),
                    std::string::npos);
 
@@ -1169,7 +1172,7 @@ BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_d
     BOOST_CHECK(dynCol1Pos < dynCol2Pos);
     BOOST_CHECK(dynCol2Pos < resLoadPos);
 
-    BOOST_CHECK_NE(digest.find("\tarea1\t0\t0\t672\t1344\t504\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t16800\t33600\t672\t1344\t504\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_dynamic_two_areas)
@@ -1182,7 +1185,7 @@ BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_d
                    std::string::npos);
 
 
-    BOOST_CHECK_NE(digest.find("\tarea1\t0\t0\t672\t1344\t504\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t16800\t33600\t672\t1344\t504\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
