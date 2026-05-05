@@ -13,6 +13,8 @@
 #include "antares/solver/variable/area.h"
 #include "antares/solver/variable/categories.h"
 #include "antares/solver/variable/container.h"
+#include "antares/solver/variable/tuple_variable_list.h"
+#include "antares/solver/variable/economy/avail-dispatchable-generation.h"
 #include "antares/solver/variable/economy/dynamic_multi_column_base.h"
 #include "antares/solver/variable/economy/residual.h"
 #include "antares/solver/variable/surveyresults.h"
@@ -152,6 +154,12 @@ struct TwoColumnDynamicDigestTraits
 using TwoColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<
   TwoColumnDynamicDigestTraits>;
 using TwoColumnDynamicDigestVariables = Container::List<Areas<TwoColumnDynamicDigestVariable>>;
+using TwoStaticOneDynamicTwoColumnsPerAreaVariables = Container::TupleVariableList<
+  Economy::AvailableDispatchGen,
+  Economy::ResidualLoad,
+  TwoColumnDynamicDigestVariable>;
+using TwoStaticOneDynamicTwoColumnsDigestVariables
+  = Container::List<Areas<TwoStaticOneDynamicTwoColumnsPerAreaVariables>>;
 
 std::unique_ptr<Data::Study> makeStudyWithVariable(std::string_view caption,
                                                    unsigned int maxColumns,
@@ -296,6 +304,54 @@ std::unique_ptr<Data::Study> makeStudyForMixedResidualAndOneColumnDynamicDigest(
     return study;
 }
 
+std::unique_ptr<Data::Study> makeStudyForTwoStaticAndTwoColumnDynamicDigest(unsigned int areaCount = 1)
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo availableDispatchInfo(Category::FileLevel::va, Category::DataLevel::area);
+    availableDispatchInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("AVL DTG", availableDispatchInfo);
+
+    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
+    residualInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
+
+    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
+    dynamicInfo.setMaxColumns(2u * TwoColumnDynamicDigestTraits::ResultsProfile::count);
+    study->parameters.variablesPrintInfo.add(TwoColumnDynamicDigestTraits::Caption(), dynamicInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
+}
+
 template<typename VariablesT>
 std::string runSimulationAndExportDigest(Data::Study& study,
                                          VariablesT& variables,
@@ -309,8 +365,7 @@ std::string runSimulationAndExportDigest(Data::Study& study,
     state.numSpace = 0;
     state.startANewYear();
 
-    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(weeklyValue,
-                                                              study.areas.size());
+    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(weeklyValue, study.areas.size());
     state.problemeHebdo = &weeklyProblem;
 
     variables.yearBegin(0, 0);
@@ -798,6 +853,21 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns_with_
     BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\tarea1\t840\t1680\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\tarea2\t840\t1680\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(exports_digest_from_two_static_and_one_dynamic_two_columns_variables)
+{
+    auto study = makeStudyForTwoStaticAndTwoColumnDynamicDigest();
+    TwoStaticOneDynamicTwoColumnsDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t4\t1\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tAVL DTG\tRES LOAD\tDYN_COL_1\tDYN_COL_2\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\tMWh\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\tEXP\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\t840\t1680\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
