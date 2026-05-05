@@ -352,6 +352,66 @@ std::unique_ptr<Data::Study> makeStudyForTwoStaticAndTwoColumnDynamicDigest(unsi
     return study;
 }
 
+std::unique_ptr<Data::Study> makeStudyWithVariablesBetweenAvlDtgAndResLoad(unsigned int areaCount = 1)
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo co2Info(Category::FileLevel::va, Category::DataLevel::area);
+    co2Info.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("CO2 EMIS.", co2Info);
+
+    Data::VariablePrintInfo gasInfo(Category::FileLevel::va, Category::DataLevel::area);
+    gasInfo.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("GAS", gasInfo);
+
+    Data::VariablePrintInfo ligniteInfo(Category::FileLevel::va, Category::DataLevel::area);
+    ligniteInfo.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("LIGNITE", ligniteInfo);
+
+    Data::VariablePrintInfo availableDispatchInfo(Category::FileLevel::va, Category::DataLevel::area);
+    availableDispatchInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("AVL DTG", availableDispatchInfo);
+
+    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
+    residualInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
+}
+
+using AvlDtgAndResLoadWithIntermediateVariables = Container::List<Areas<Container::TupleVariableList<
+  Economy::AvailableDispatchGen,
+  Economy::ResidualLoad>>>;
+
 template<typename VariablesT>
 std::string runSimulationAndExportDigest(Data::Study& study,
                                          VariablesT& variables,
@@ -868,6 +928,37 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_two_static_and_one_dynamic_two_columns_
     BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\tMWh\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\tEXP\tEXP\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\t840\t1680\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(digest_values_correct_when_variables_between_avl_dtg_and_res_load)
+{
+    auto study = makeStudyWithVariablesBetweenAvlDtgAndResLoad();
+    AvlDtgAndResLoadWithIntermediateVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    if (digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t5\t1\t0\n") == std::string::npos)
+    {
+        std::cerr << "Digest content:\n" << digest << std::endl;
+    }
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t1\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tAVL DTG\tRES LOAD\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(digest_values_correct_with_two_areas)
+{
+    auto study = makeStudyWithVariablesBetweenAvlDtgAndResLoad(2);
+    AvlDtgAndResLoadWithIntermediateVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t2\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea2\t0\t840\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
