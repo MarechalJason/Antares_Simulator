@@ -389,6 +389,59 @@ std::unique_ptr<Data::Study> makeStudyWithAvlDtgCo2AndResLoad(unsigned int areaC
     co2Info.setMaxColumns(1u);
     study->parameters.variablesPrintInfo.add("CO2 EMIS.", co2Info);
 
+    Data::VariablePrintInfo nh2Info(Category::FileLevel::va, Category::DataLevel::area);
+    co2Info.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("NH3 EMIS.", co2Info);
+
+    Data::VariablePrintInfo so2Info(Category::FileLevel::va, Category::DataLevel::area);
+    so2Info.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("SO2 EMIS.", so2Info);
+
+    Data::VariablePrintInfo noxInfo(Category::FileLevel::va, Category::DataLevel::area);
+    noxInfo.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("NOX EMIS.", noxInfo);
+
+    Data::VariablePrintInfo pm2(Category::FileLevel::va, Category::DataLevel::area);
+    pm2.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("PM2_5 EMIS.", pm2);
+
+    Data::VariablePrintInfo pm5(Category::FileLevel::va, Category::DataLevel::area);
+    pm5.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("PM5 EMIS.", pm5);
+
+    Data::VariablePrintInfo pm10(Category::FileLevel::va, Category::DataLevel::area);
+    pm10.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("PM10 EMIS.", pm10);
+
+    Data::VariablePrintInfo op1(Category::FileLevel::va, Category::DataLevel::area);
+    op1.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("OP1 EMIS.", op1);
+
+    Data::VariablePrintInfo op2(Category::FileLevel::va, Category::DataLevel::area);
+    op2.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("OP2 EMIS.", op2);
+
+    Data::VariablePrintInfo op3(Category::FileLevel::va, Category::DataLevel::area);
+    op3.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("OP3 EMIS.", op3);
+
+    Data::VariablePrintInfo op4(Category::FileLevel::va, Category::DataLevel::area);
+    op4.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("OP4 EMIS.", op4);
+
+    Data::VariablePrintInfo op5(Category::FileLevel::va, Category::DataLevel::area);
+    op5.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("OP5 EMIS.", op5);
+
+    Data::VariablePrintInfo op6(Category::FileLevel::va, Category::DataLevel::area);
+    op6.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("OP6 EMIS.", op6);
+
+    Data::VariablePrintInfo nvoc(Category::FileLevel::va, Category::DataLevel::area);
+    nvoc.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("NMVOC EMIS.", nvoc);
+
+
     Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
     residualInfo.setMaxColumns(1u);
     study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
