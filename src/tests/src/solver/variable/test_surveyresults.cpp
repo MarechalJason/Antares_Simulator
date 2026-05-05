@@ -22,10 +22,42 @@
 #include "antares/solver/variable/surveyresults.h"
 #include "antares/writer/in_memory_writer.h"
 
+#include "antares/study/parts/thermal/cluster.h"
+
 using namespace Antares::Solver::Variable;
 
 namespace
 {
+
+void addThermalClusterToArea(Data::Area* area, const std::string& clusterName, double nominalCapacity, unsigned int unitCount, double co2EmissionsFactor)
+{
+    auto cluster = std::make_shared<Data::ThermalCluster>(area);
+    cluster->setName(clusterName);
+    cluster->nominalCapacity = nominalCapacity;
+    cluster->unitCount = unitCount;
+    cluster->mustrun = true;
+    cluster->emissions.factors[Data::Pollutant::CO2] = co2EmissionsFactor;
+    cluster->emissions.factors[Data::Pollutant::NH3] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::SO2] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::NOX] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::PM2_5] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::PM5] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::PM10] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::NMVOC] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::OP1] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::OP2] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::OP3] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::OP4] = 0.0;
+    cluster->emissions.factors[Data::Pollutant::OP5] = 0.0;
+
+    cluster->series.timeSeries.resize(1, HOURS_PER_YEAR);
+    for (unsigned int h = 0; h < HOURS_PER_YEAR; ++h)
+    {
+        cluster->series.timeSeries[0][h] = nominalCapacity * unitCount;
+    }
+
+    area->thermal.list.addToCompleteList(cluster);
+}
 
 std::unique_ptr<Data::Study> makeStudyWithAreas(unsigned int areaCount)
 {
@@ -501,6 +533,7 @@ std::unique_ptr<Data::Study> makeStudyWithAllVariables(unsigned int areaCount = 
     {
         auto* area = study->areaAdd("area" + std::to_string(i + 1));
         area->index = i;
+        addThermalClusterToArea(area, "coal", 100.0, 2, 0.5);
     }
     study->initializeRuntimeInfos();
 
@@ -1116,7 +1149,6 @@ BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_d
     AllVariablesDigestVariables variables;
     const auto& digest = runSimulationAndExportDigest(*study, variables, 3.0);
 
-    std::cout << digest;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t5\t1\t0\n"),
                    std::string::npos);
 
@@ -1146,7 +1178,6 @@ BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_d
     AllVariablesDigestVariables variables;
     const auto& digest = runSimulationAndExportDigest(*study, variables, 3.0);
 
-    std::cout << digest;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t5\t2\t0\n"),
                    std::string::npos);
 
