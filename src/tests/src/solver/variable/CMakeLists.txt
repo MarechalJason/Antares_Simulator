@@ -26,6 +26,12 @@ add_boost_test(test-dynamic-aggregation
     antares-solver-variable
     in-memory-study)
 
+add_boost_test(test-dynamic-economy-traits
+    SRC test_dynamic_economy_traits.cpp
+    LIBS
+    antares-solver-variable
+    in-memory-study)
+
 add_boost_test(test-setofareas-reports
     SRC test_setofareas_reports.cpp
     LIBS
