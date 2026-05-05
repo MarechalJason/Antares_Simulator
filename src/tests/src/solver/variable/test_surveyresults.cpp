@@ -386,55 +386,55 @@ std::unique_ptr<Data::Study> makeStudyWithAvlDtgCo2AndResLoad(unsigned int areaC
     study->parameters.variablesPrintInfo.add("AVL DTG", availableDispatchInfo);
 
     Data::VariablePrintInfo co2Info(Category::FileLevel::va, Category::DataLevel::area);
-    co2Info.setMaxColumns(1u);
+    co2Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("CO2 EMIS.", co2Info);
 
     Data::VariablePrintInfo nh3Info(Category::FileLevel::va, Category::DataLevel::area);
-    nh3Info.setMaxColumns(1u);
+    nh3Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("NH3 EMIS.", nh3Info);
 
     Data::VariablePrintInfo so2Info(Category::FileLevel::va, Category::DataLevel::area);
-    so2Info.setMaxColumns(1u);
+    so2Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("SO2 EMIS.", so2Info);
 
     Data::VariablePrintInfo noxInfo(Category::FileLevel::va, Category::DataLevel::area);
-    noxInfo.setMaxColumns(1u);
+    noxInfo.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("NOX EMIS.", noxInfo);
 
     Data::VariablePrintInfo pm25Info(Category::FileLevel::va, Category::DataLevel::area);
-    pm25Info.setMaxColumns(1u);
+    pm25Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("PM2_5 EMIS.", pm25Info);
 
     Data::VariablePrintInfo pm5Info(Category::FileLevel::va, Category::DataLevel::area);
-    pm5Info.setMaxColumns(1u);
+    pm5Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("PM5 EMIS.", pm5Info);
 
     Data::VariablePrintInfo pm10Info(Category::FileLevel::va, Category::DataLevel::area);
-    pm10Info.setMaxColumns(1u);
+    pm10Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("PM10 EMIS.", pm10Info);
 
     Data::VariablePrintInfo nmvocInfo(Category::FileLevel::va, Category::DataLevel::area);
-    nmvocInfo.setMaxColumns(1u);
+    nmvocInfo.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("NMVOC EMIS.", nmvocInfo);
 
     Data::VariablePrintInfo op1Info(Category::FileLevel::va, Category::DataLevel::area);
-    op1Info.setMaxColumns(1u);
+    op1Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("OP1 EMIS.", op1Info);
 
     Data::VariablePrintInfo op2Info(Category::FileLevel::va, Category::DataLevel::area);
-    op2Info.setMaxColumns(1u);
+    op2Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("OP2 EMIS.", op2Info);
 
     Data::VariablePrintInfo op3Info(Category::FileLevel::va, Category::DataLevel::area);
-    op3Info.setMaxColumns(1u);
+    op3Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("OP3 EMIS.", op3Info);
 
     Data::VariablePrintInfo op4Info(Category::FileLevel::va, Category::DataLevel::area);
-    op4Info.setMaxColumns(1u);
+    op4Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("OP4 EMIS.", op4Info);
 
     Data::VariablePrintInfo op5Info(Category::FileLevel::va, Category::DataLevel::area);
-    op5Info.setMaxColumns(1u);
+    op5Info.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("OP5 EMIS.", op5Info);
 
     Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
@@ -1000,6 +1000,7 @@ BOOST_AUTO_TEST_CASE(digest_column_order_with_thermal_pollutant_co2)
     AvlDtgWithCo2ResLoadVariables variables;
     const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
 
+    std::cout << digest;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t21\t1\t0\n"),
                    std::string::npos);
 
