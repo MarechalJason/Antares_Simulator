@@ -10,6 +10,7 @@
 #include "antares/antares/constants.h"
 #include "antares/solver/simulation/sim_structure_probleme_economique.h"
 #include "antares/solver/variable/variable.h"
+#include "antares/solver/variable/storage/results.h"
 #include "antares/solver/variable/area.h"
 #include "antares/solver/variable/categories.h"
 #include "antares/solver/variable/container.h"
@@ -149,8 +150,8 @@ struct TwoColumnDynamicDigestTraits
         double value = state.problemeHebdo->ConsommationsAbattues[state.hourInTheWeek]
                          .ConsommationAbattueDuPays[state.area->index];
 
-        pValues[0][state.hourInTheYear] += value;
-        pValues[1][state.hourInTheYear] += value * 2.0;
+        pValues[0][state.hourInTheYear] += value + 1;
+        pValues[1][state.hourInTheYear] += (value + 1) * 2.0;
     }
 };
 
@@ -170,6 +171,14 @@ using AvlDtgWithCo2ResLoadPerAreaVariables = Container::TupleVariableList<
   Economy::ResidualLoad>;
 using AvlDtgWithCo2ResLoadVariables
   = Container::List<Areas<AvlDtgWithCo2ResLoadPerAreaVariables>>;
+
+using AllVariablesPerAreaVariables = Container::TupleVariableList<
+  Economy::ThermalAirPollutantEmissions,
+  Economy::AvailableDispatchGen,
+    TwoColumnDynamicDigestVariable,
+    Economy::ResidualLoad>;
+using AllVariablesDigestVariables
+  = Container::List<Areas<AllVariablesPerAreaVariables>>;
 
 std::unique_ptr<Data::Study> makeStudyWithVariable(std::string_view caption,
                                                    unsigned int maxColumns,
@@ -448,6 +457,74 @@ std::unique_ptr<Data::Study> makeStudyWithAvlDtgCo2AndResLoad(unsigned int areaC
     op5Info.setMaxColumns(4u);
     op5Info.enablePrint(false);
     study->parameters.variablesPrintInfo.add("OP5 EMIS.", op5Info);
+
+    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
+    residualInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    for (const char* name: {"NH3 EMIS.", "SO2 EMIS.", "NOX EMIS.", "PM2_5 EMIS.",
+                            "PM5 EMIS.", "PM10 EMIS.", "NMVOC EMIS.", "OP1 EMIS.",
+                            "OP2 EMIS.", "OP3 EMIS.", "OP4 EMIS.", "OP5 EMIS."})
+    {
+        study->parameters.variablesPrintInfo.setPrintStatus(name, false);
+    }
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
+}
+
+std::unique_ptr<Data::Study> makeStudyWithAllVariables(unsigned int areaCount = 1)
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo co2Info(Category::FileLevel::va, Category::DataLevel::area);
+    co2Info.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("CO2 EMIS.", co2Info);
+
+    for (const char* name: {"NH3 EMIS.", "SO2 EMIS.", "NOX EMIS.", "PM2_5 EMIS.",
+                            "PM5 EMIS.", "PM10 EMIS.", "NMVOC EMIS.", "OP1 EMIS.",
+                            "OP2 EMIS.", "OP3 EMIS.", "OP4 EMIS.", "OP5 EMIS."})
+    {
+        Data::VariablePrintInfo info(Category::FileLevel::va, Category::DataLevel::area);
+        info.setMaxColumns(4u);
+        info.enablePrint(false);
+        study->parameters.variablesPrintInfo.add(name, info);
+    }
+
+    Data::VariablePrintInfo availableDispatchInfo(Category::FileLevel::va, Category::DataLevel::area);
+    availableDispatchInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("AVL DTG", availableDispatchInfo);
+
+    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
+    dynamicInfo.setMaxColumns(2u * TwoColumnDynamicDigestTraits::ResultsProfile::count);
+    study->parameters.variablesPrintInfo.add(TwoColumnDynamicDigestTraits::Caption(), dynamicInfo);
 
     Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
     residualInfo.setMaxColumns(4u);
@@ -955,13 +1032,13 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns)
     auto study = makeStudyForTwoColumnDynamicDigest();
     TwoColumnDynamicDigestVariables variables;
     const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
-
+    std::cout << digest << std::endl;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t1\t0\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\tDYN_COL_2\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
-    BOOST_CHECK_NE(digest.find("\tarea1\t840\t1680\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t1008\t2016\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns_with_two_areas)
@@ -969,36 +1046,36 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns_with_
     auto study = makeStudyForTwoColumnDynamicDigestWithTwoAreas();
     TwoColumnDynamicDigestVariables variables;
     const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
-
+    std::cout << digest << std::endl;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t2\t0\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\tDYN_COL_2\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
-    BOOST_CHECK_NE(digest.find("\tarea1\t840\t1680\n"), std::string::npos);
-    BOOST_CHECK_NE(digest.find("\tarea2\t840\t1680\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t1008\t2016\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea2\t1008\t2016\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(exports_digest_from_two_static_and_one_dynamic_two_columns_variables)
 {
     auto study = makeStudyForTwoStaticAndTwoColumnDynamicDigest();
     TwoStaticOneDynamicTwoColumnsDigestVariables variables;
-    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
-
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 3.0);
+    std::cout << digest << std::endl;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t4\t1\t0\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tAVL DTG\tRES LOAD\tDYN_COL_1\tDYN_COL_2\n"),
                    std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\tMWh\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\tEXP\tEXP\n"), std::string::npos);
-    BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\t840\t1680\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t504\t672\t1344\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(digest_column_order_with_multiple_variables)
 {
     auto study = makeStudyForTwoStaticAndTwoColumnDynamicDigest();
     TwoStaticOneDynamicTwoColumnsDigestVariables variables;
-    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 3.0);
 
     auto avlDtgPos = digest.find("\tAVL DTG\t");
     auto resLoadPos = digest.find("\tRES LOAD\t");
@@ -1016,9 +1093,8 @@ BOOST_AUTO_TEST_CASE(digest_column_order_with_thermal_pollutant_co2)
 {
     auto study = makeStudyWithAvlDtgCo2AndResLoad();
     AvlDtgWithCo2ResLoadVariables variables;
-    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 3.0);
 
-    std::cout << digest;
     BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t3\t1\t0\n"),
                    std::string::npos);
 
@@ -1032,6 +1108,50 @@ BOOST_AUTO_TEST_CASE(digest_column_order_with_thermal_pollutant_co2)
 
     BOOST_CHECK(co2Pos < avlDtgPos);
     BOOST_CHECK(avlDtgPos < resLoadPos);
+}
+
+BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_dynamic)
+{
+    auto study = makeStudyWithAllVariables();
+    AllVariablesDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 3.0);
+
+    std::cout << digest;
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t5\t1\t0\n"),
+                   std::string::npos);
+
+    auto co2Pos = digest.find("\tCO2 EMIS.\t");
+    auto avlDtgPos = digest.find("\tAVL DTG\t");
+    auto dynCol1Pos = digest.find("\tDYN_COL_1\t");
+    auto dynCol2Pos = digest.find("\tDYN_COL_2\t");
+    auto resLoadPos = digest.find("\tRES LOAD\n");
+
+    BOOST_REQUIRE(co2Pos != std::string::npos);
+    BOOST_REQUIRE(avlDtgPos != std::string::npos);
+    BOOST_REQUIRE(dynCol1Pos != std::string::npos);
+    BOOST_REQUIRE(dynCol2Pos != std::string::npos);
+    BOOST_REQUIRE(resLoadPos != std::string::npos);
+
+    BOOST_CHECK(co2Pos < avlDtgPos);
+    BOOST_CHECK(avlDtgPos < dynCol1Pos);
+    BOOST_CHECK(dynCol1Pos < dynCol2Pos);
+    BOOST_CHECK(dynCol2Pos < resLoadPos);
+
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t0\t672\t1344\t504\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_dynamic_two_areas)
+{
+    auto study = makeStudyWithAllVariables(2);
+    AllVariablesDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 3.0);
+
+    std::cout << digest;
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t5\t2\t0\n"),
+                   std::string::npos);
+
+
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t0\t672\t1344\t504\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
