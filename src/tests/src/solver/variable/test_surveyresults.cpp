@@ -154,7 +154,8 @@ using TwoColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<
 using TwoColumnDynamicDigestVariables = Container::List<Areas<TwoColumnDynamicDigestVariable>>;
 
 std::unique_ptr<Data::Study> makeStudyWithVariable(std::string_view caption,
-                                                   unsigned int maxColumns)
+                                                   unsigned int maxColumns,
+                                                   unsigned int areaCount = 1)
 {
     auto study = std::make_unique<Data::Study>();
 
@@ -166,7 +167,11 @@ std::unique_ptr<Data::Study> makeStudyWithVariable(std::string_view caption,
     study->parameters.resetPlaylist(study->parameters.nbYears);
     study->parameters.resetYearsWeigth();
 
-    study->areaAdd("area1")->index = 0;
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
     study->initializeRuntimeInfos();
 
     Data::VariablePrintInfo varInfo(Category::FileLevel::va, Category::DataLevel::area);
@@ -195,18 +200,40 @@ inline std::unique_ptr<Data::Study> makeStudyForResidualDigest()
     return makeStudyWithVariable("RES LOAD", 4);
 }
 
-PROBLEME_HEBDO makeWeeklyResidualProblem(double value)
+inline std::unique_ptr<Data::Study> makeStudyForResidualDigestWithTwoAreas()
+{
+    return makeStudyWithVariable("RES LOAD", 4, 2);
+}
+
+inline std::unique_ptr<Data::Study> makeStudyForOneColumnDynamicDigestWithTwoAreas()
+{
+    return makeStudyWithVariable(OneColumnDynamicDigestTraits::Caption(),
+                                 OneColumnDynamicDigestTraits::ResultsProfile::count,
+                                 2);
+}
+
+inline std::unique_ptr<Data::Study> makeStudyForTwoColumnDynamicDigestWithTwoAreas()
+{
+    return makeStudyWithVariable(TwoColumnDynamicDigestTraits::Caption(),
+                                 2 * TwoColumnDynamicDigestTraits::ResultsProfile::count,
+                                 2);
+}
+
+PROBLEME_HEBDO makeWeeklyResidualProblem(double value, unsigned int nAreas = 1)
 {
     PROBLEME_HEBDO weeklyProblem;
-    weeklyProblem.NombreDePays = 1;
+    weeklyProblem.NombreDePays = nAreas;
     weeklyProblem.NombreDePasDeTemps = Antares::Constants::nbHoursInAWeek;
-    weeklyProblem.ResultatsHoraires.resize(1);
+    weeklyProblem.ResultatsHoraires.resize(nAreas);
     weeklyProblem.ConsommationsAbattues.resize(Antares::Constants::nbHoursInAWeek);
 
     for (unsigned int h = 0; h < Antares::Constants::nbHoursInAWeek; ++h)
     {
-        weeklyProblem.ConsommationsAbattues[h].ConsommationAbattueDuPays.resize(1);
-        weeklyProblem.ConsommationsAbattues[h].ConsommationAbattueDuPays[0] = value;
+        weeklyProblem.ConsommationsAbattues[h].ConsommationAbattueDuPays.resize(nAreas);
+        for (unsigned int a = 0; a < nAreas; ++a)
+        {
+            weeklyProblem.ConsommationsAbattues[h].ConsommationAbattueDuPays[a] = value;
+        }
     }
 
     return weeklyProblem;
@@ -224,7 +251,8 @@ inline std::unique_ptr<Data::Study> makeStudyForTwoColumnDynamicDigest()
                                  2 * TwoColumnDynamicDigestTraits::ResultsProfile::count);
 }
 
-std::unique_ptr<Data::Study> makeStudyForMixedResidualAndOneColumnDynamicDigest()
+std::unique_ptr<Data::Study> makeStudyForMixedResidualAndOneColumnDynamicDigest(
+  unsigned int areaCount = 1)
 {
     auto study = std::make_unique<Data::Study>();
 
@@ -236,7 +264,11 @@ std::unique_ptr<Data::Study> makeStudyForMixedResidualAndOneColumnDynamicDigest(
     study->parameters.resetPlaylist(study->parameters.nbYears);
     study->parameters.resetYearsWeigth();
 
-    study->areaAdd("area1")->index = 0;
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
     study->initializeRuntimeInfos();
 
     Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
@@ -277,7 +309,8 @@ std::string runSimulationAndExportDigest(Data::Study& study,
     state.numSpace = 0;
     state.startANewYear();
 
-    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(weeklyValue);
+    PROBLEME_HEBDO weeklyProblem = makeWeeklyResidualProblem(weeklyValue,
+                                                              study.areas.size());
     state.problemeHebdo = &weeklyProblem;
 
     variables.yearBegin(0, 0);
@@ -377,6 +410,28 @@ BOOST_FIXTURE_TEST_CASE(header_contains_digest_label_and_counts_section, StudyFi
     BOOST_CHECK_NE(buffer.find("\tVARIABLES\tAREAS\tLINKS\n"), std::string::npos);
 }
 
+BOOST_FIXTURE_TEST_CASE(header_contains_digest_label_and_counts_section_with_area,
+                        StudyFixtureWithArea)
+{
+    Benchmarking::DurationCollector dc;
+    Solver::InMemoryWriter writer(dc);
+
+    SurveyResults survey(*study, 1u, "out", writer);
+    survey.data.columnIndex = 1;
+    for (auto& caption: survey.captions)
+    {
+        caption[0] = "V";
+    }
+    survey.data.rowCaptions.emplace_back("area1");
+
+    std::string buffer;
+    survey.exportDigestAllYears(buffer);
+
+    BOOST_CHECK_NE(buffer.find("\tdigest\n"), std::string::npos);
+    BOOST_CHECK_NE(buffer.find("\tVARIABLES\tAREAS\tLINKS\n"), std::string::npos);
+    BOOST_CHECK_NE(buffer.find("\t1\t1\t0\n"), std::string::npos);
+}
+
 BOOST_FIXTURE_TEST_CASE(header_counts_3_variables_0_areas_0_links, StudyFixture)
 {
     Benchmarking::DurationCollector dc;
@@ -393,6 +448,25 @@ BOOST_FIXTURE_TEST_CASE(header_counts_3_variables_0_areas_0_links, StudyFixture)
     survey.exportDigestAllYears(buffer);
 
     BOOST_CHECK_NE(buffer.find("\t3\t0\t0\n"), std::string::npos);
+}
+
+BOOST_FIXTURE_TEST_CASE(header_counts_3_variables_1_area_0_links, StudyFixtureWithArea)
+{
+    Benchmarking::DurationCollector dc;
+    Solver::InMemoryWriter writer(dc);
+
+    SurveyResults survey(*study, 3u, "out", writer);
+    survey.data.columnIndex = 3;
+    for (auto& caption: survey.captions)
+    {
+        caption[0] = caption[1] = caption[2] = "x";
+    }
+    survey.data.rowCaptions.emplace_back("area1");
+
+    std::string buffer;
+    survey.exportDigestAllYears(buffer);
+
+    BOOST_CHECK_NE(buffer.find("\t3\t1\t0\n"), std::string::npos);
 }
 
 BOOST_FIXTURE_TEST_CASE(three_caption_rows_are_written_for_each_column, StudyFixture)
@@ -415,6 +489,31 @@ BOOST_FIXTURE_TEST_CASE(three_caption_rows_are_written_for_each_column, StudyFix
     BOOST_CHECK_NE(buffer.find("\t\tLOAD\tWIND\n"), std::string::npos);
     BOOST_CHECK_NE(buffer.find("\t\tMW\tMW\n"), std::string::npos);
     BOOST_CHECK_NE(buffer.find("\t\tEXP\tstd\n"), std::string::npos);
+}
+
+BOOST_FIXTURE_TEST_CASE(three_caption_rows_are_written_for_each_column_with_area,
+                        StudyFixtureWithArea)
+{
+    Benchmarking::DurationCollector dc;
+    Solver::InMemoryWriter writer(dc);
+
+    SurveyResults survey(*study, 2u, "out", writer);
+    survey.data.columnIndex = 2;
+    survey.captions[0][0] = "LOAD";
+    survey.captions[0][1] = "WIND";
+    survey.captions[1][0] = "MW";
+    survey.captions[1][1] = "MW";
+    survey.captions[2][0] = "EXP";
+    survey.captions[2][1] = "std";
+    survey.data.rowCaptions.emplace_back("area1");
+
+    std::string buffer;
+    survey.exportDigestAllYears(buffer);
+
+    BOOST_CHECK_NE(buffer.find("\t\tLOAD\tWIND\n"), std::string::npos);
+    BOOST_CHECK_NE(buffer.find("\t\tMW\tMW\n"), std::string::npos);
+    BOOST_CHECK_NE(buffer.find("\t\tEXP\tstd\n"), std::string::npos);
+    BOOST_CHECK_NE(buffer.find("\t2\t1\t0\n"), std::string::npos);
 }
 
 BOOST_FIXTURE_TEST_CASE(row_with_zero_value_writes_tab_zero, StudyFixtureWithArea)
@@ -580,6 +679,21 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_residual_load_variable_tree)
     BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
 }
 
+BOOST_AUTO_TEST_CASE(exports_digest_from_residual_load_variable_tree_with_two_areas)
+{
+    auto study = makeStudyForResidualDigestWithTwoAreas();
+    ResidualDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t2\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tRES LOAD\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea2\t840\n"), std::string::npos);
+}
+
 BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_one_column)
 {
     auto study = makeStudyForOneColumnDynamicDigest();
@@ -592,6 +706,21 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_one_column)
     BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_one_column_with_two_areas)
+{
+    auto study = makeStudyForOneColumnDynamicDigestWithTwoAreas();
+    OneColumnDynamicDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t2\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t840\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea2\t840\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(exports_digest_for_static_and_dynamic_one_column_variables)
@@ -617,6 +746,31 @@ BOOST_AUTO_TEST_CASE(exports_digest_for_static_and_dynamic_one_column_variables)
     BOOST_CHECK_NE(dynamicDigest.find("\tarea1\t840\n"), std::string::npos);
 }
 
+BOOST_AUTO_TEST_CASE(exports_digest_for_static_and_dynamic_one_column_variables_with_two_areas)
+{
+    auto study = makeStudyForMixedResidualAndOneColumnDynamicDigest(2);
+    ResidualDigestVariables residualVariables;
+    const auto& residualDigest = runSimulationAndExportDigest(*study, residualVariables, 5.0);
+    OneColumnDynamicDigestVariables dynamicVariables;
+    const auto& dynamicDigest = runSimulationAndExportDigest(*study, dynamicVariables, 5.0);
+
+    BOOST_CHECK_NE(residualDigest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t2\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\t\tRES LOAD\n"), std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\t\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\t\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\tarea1\t840\n"), std::string::npos);
+    BOOST_CHECK_NE(residualDigest.find("\tarea2\t840\n"), std::string::npos);
+
+    BOOST_CHECK_NE(dynamicDigest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t1\t2\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\t\tDYN_COL_1\n"), std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\t\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\t\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\tarea1\t840\n"), std::string::npos);
+    BOOST_CHECK_NE(dynamicDigest.find("\tarea2\t840\n"), std::string::npos);
+}
+
 BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns)
 {
     auto study = makeStudyForTwoColumnDynamicDigest();
@@ -629,6 +783,21 @@ BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns)
     BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\tarea1\t840\t1680\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(exports_digest_from_dynamic_variable_with_two_columns_with_two_areas)
+{
+    auto study = makeStudyForTwoColumnDynamicDigestWithTwoAreas();
+    TwoColumnDynamicDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t2\t2\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tDYN_COL_1\tDYN_COL_2\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tMWh\tMWh\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tEXP\tEXP\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t840\t1680\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea2\t840\t1680\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
