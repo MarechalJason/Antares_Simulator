@@ -5,6 +5,9 @@
 
 #define WIN32_LEAN_AND_MEAN
 
+#include <map>
+#include <set>
+
 #include <boost/test/unit_test.hpp>
 
 #include "antares/antares/constants.h"
@@ -19,6 +22,7 @@
 #include "antares/solver/variable/economy/dynamic_multi_column_base.h"
 #include "antares/solver/variable/economy/residual.h"
 #include "antares/solver/variable/economy/thermalAirPollutantEmissions.h"
+#include "antares/solver/variable/economy/productionByDispatchablePlant.h"
 #include "antares/solver/variable/surveyresults.h"
 #include "antares/writer/in_memory_writer.h"
 
@@ -192,6 +196,93 @@ struct TwoColumnDynamicDigestTraits
 using TwoColumnDynamicDigestVariable = Economy::DynamicMultiColumnBase<
   TwoColumnDynamicDigestTraits>;
 using TwoColumnDynamicDigestVariables = Container::List<Areas<TwoColumnDynamicDigestVariable>>;
+
+struct VaryingColumnsByAreaDigestTraits
+{
+    static std::string Caption()
+    {
+        return "DYN VAR COL";
+    }
+
+    static std::string Unit()
+    {
+        return "MWh";
+    }
+
+    static std::string Description()
+    {
+        return "Dynamic variable with area-dependent columns";
+    }
+
+    using ResultsProfile = StandardResults<>;
+    static constexpr uint8_t decimal = 0;
+
+    static std::vector<Economy::ColumnDescriptor> buildColumnDescriptors(Data::Area* area)
+    {
+        if (area->index == 0)
+        {
+            return {{"VAR_A", "MWh"}};
+        }
+        return {{"VAR_A", "MWh"}, {"VAR_B", "MWh"}};
+    }
+
+    static std::vector<Economy::ColumnDescriptor> buildColumnDescriptors(Data::Study& study,
+                                                                          Data::Area*)
+    {
+        std::set<std::string> captions;
+        study.areas.each(
+          [&captions](Data::Area& currentArea)
+          {
+              for (const auto& descriptor: buildColumnDescriptors(&currentArea))
+              {
+                  captions.insert(descriptor.caption);
+              }
+          });
+
+        std::vector<Economy::ColumnDescriptor> descriptors;
+        for (const auto& caption: captions)
+        {
+            descriptors.push_back({caption, "MWh"});
+        }
+        return descriptors;
+    }
+
+    static void setHourlyValue(
+      Economy::VCardDynamicMultiColumn<
+        VaryingColumnsByAreaDigestTraits>::IntermediateValuesBaseType& pValues,
+      State& state,
+      unsigned int,
+      const std::vector<Economy::ColumnDescriptor>& descriptors)
+    {
+        std::map<std::string, size_t> captionToColumn;
+        for (size_t i = 0; i < descriptors.size(); ++i)
+        {
+            captionToColumn[descriptors[i].caption] = i;
+        }
+
+        const double value = state.problemeHebdo->ConsommationsAbattues[state.hourInTheWeek]
+                               .ConsommationAbattueDuPays[state.area->index];
+        pValues[captionToColumn.at("VAR_A")][state.hourInTheYear] += value + 10.0;
+
+        if (state.area->index == 1)
+        {
+            auto colB = captionToColumn.find("VAR_B");
+            if (colB != captionToColumn.end())
+            {
+                pValues[colB->second][state.hourInTheYear] += value + 20.0;
+            }
+        }
+    }
+};
+
+using VaryingColumnsByAreaDigestVariable = Economy::DynamicMultiColumnBase<
+  VaryingColumnsByAreaDigestTraits>;
+using VaryingColumnsThenResidualPerAreaVariables = Container::TupleVariableList<
+  VaryingColumnsByAreaDigestVariable,
+  Economy::ResidualLoad>;
+using VaryingColumnsThenResidualDigestVariables
+  = Container::List<Areas<VaryingColumnsThenResidualPerAreaVariables>>;
+
 using TwoStaticOneDynamicTwoColumnsPerAreaVariables = Container::TupleVariableList<
   Economy::AvailableDispatchGen,
   Economy::ResidualLoad,
@@ -209,10 +300,18 @@ using AvlDtgWithCo2ResLoadVariables
 using AllVariablesPerAreaVariables = Container::TupleVariableList<
   Economy::ThermalAirPollutantEmissions,
   Economy::AvailableDispatchGen,
-    TwoColumnDynamicDigestVariable,
-    Economy::ResidualLoad>;
+  Economy::ResidualLoad,
+  TwoColumnDynamicDigestVariable>;
 using AllVariablesDigestVariables
   = Container::List<Areas<AllVariablesPerAreaVariables>>;
+
+using ProductionByPlantAvlDtgResLoadPerAreaVariables = Container::TupleVariableList<
+  Economy::ThermalAirPollutantEmissions,
+  Economy::ProductionByDispatchablePlant,
+  Economy::AvailableDispatchGen,
+  Economy::ResidualLoad>;
+using ProductionByPlantAvlDtgResLoadVariables
+  = Container::List<Areas<ProductionByPlantAvlDtgResLoadPerAreaVariables>>;
 
 std::unique_ptr<Data::Study> makeStudyWithVariable(std::string_view caption,
                                                    unsigned int maxColumns,
@@ -387,6 +486,50 @@ std::unique_ptr<Data::Study> makeStudyForTwoStaticAndTwoColumnDynamicDigest(unsi
     Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
     dynamicInfo.setMaxColumns(2u * TwoColumnDynamicDigestTraits::ResultsProfile::count);
     study->parameters.variablesPrintInfo.add(TwoColumnDynamicDigestTraits::Caption(), dynamicInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
+}
+
+std::unique_ptr<Data::Study> makeStudyForVaryingColumnsThenResidualDigest(unsigned int areaCount = 2)
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
+    dynamicInfo.setMaxColumns(2u * VaryingColumnsByAreaDigestTraits::ResultsProfile::count);
+    study->parameters.variablesPrintInfo.add(VaryingColumnsByAreaDigestTraits::Caption(), dynamicInfo);
+
+    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
+    residualInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
 
     Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
     flowLinInfo.enablePrint(false);
@@ -1186,6 +1329,21 @@ BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_d
 
 
     BOOST_CHECK_NE(digest.find("\tarea1\t16800\t33600\t672\t1344\t504\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(digest_stays_aligned_when_dynamic_columns_vary_by_area)
+{
+    auto study = makeStudyForVaryingColumnsThenResidualDigest(2);
+    VaryingColumnsThenResidualDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t3\t2\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tVAR_A\tVAR_B\tRES LOAD\n"), std::string::npos);
+
+    // Area 1 has no VAR_B contribution: RES LOAD must remain in the third column.
+    BOOST_CHECK_NE(digest.find("\tarea1\t2520\t0\t840\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea2\t2520\t4200\t840\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

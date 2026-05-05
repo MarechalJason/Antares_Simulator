@@ -507,6 +507,9 @@ SurveyResults::SurveyResults(const Data::Study& s,
 
     logs.debug() << "  (for " << maxVariables << " columns)";
 
+
+    logs.debug() << "DEBUG: SurveyResults constructor - maxVariables = " << maxVariables;
+
     data.initialize(maxVariables);
 
     // values
@@ -598,6 +601,9 @@ void SurveyResults::exportDigestAllYears(std::string& buffer)
           .append(std::to_string(nbLinks))
           .append("\n\n");
     }
+
+logs.debug() << "DEBUG: exportDigestAllYears - columnIndex = " << data.columnIndex << ", maxVariables = " << maxVariables;
+
     // Header - All columns
     for (uint rowIndex = 0; rowIndex != captionCount; ++rowIndex)
     {
@@ -606,6 +612,7 @@ void SurveyResults::exportDigestAllYears(std::string& buffer)
         {
             assert(i < maxVariables);
             buffer.append("\t").append(captions[rowIndex][i].c_str());
+            logs.debug() << "DEBUG: Header row " << rowIndex << " col " << i << " = " << captions[rowIndex][i];
         }
         buffer.append("\n");
     }
@@ -628,6 +635,13 @@ void SurveyResults::exportDigestAllYears(std::string& buffer)
         {
             assert(i < maxVariables && "i greater can not be greater than maxVariables");
             assert(y < HOURS_PER_YEAR && "y can not be greater than HOURS_PER_YEAR");
+
+            double val = values[i][y];
+            if (y == 0 && std::string(j->c_str()) == "al")
+            {
+                logs.debug() << "DEBUG: Row " << j->c_str() << " col " << i 
+                             << " (" << captions[0][i].c_str() << ") value = " << val;
+            }
 
             if (digestNonApplicableStatus[y][i])
             {
