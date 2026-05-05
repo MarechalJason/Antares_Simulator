@@ -17,6 +17,7 @@
 #include "antares/solver/variable/economy/avail-dispatchable-generation.h"
 #include "antares/solver/variable/economy/dynamic_multi_column_base.h"
 #include "antares/solver/variable/economy/residual.h"
+#include "antares/solver/variable/economy/thermalAirPollutantEmissions.h"
 #include "antares/solver/variable/surveyresults.h"
 #include "antares/writer/in_memory_writer.h"
 
@@ -162,6 +163,13 @@ using TwoStaticOneDynamicTwoColumnsPerAreaVariables = Container::TupleVariableLi
   TwoColumnDynamicDigestVariable>;
 using TwoStaticOneDynamicTwoColumnsDigestVariables
   = Container::List<Areas<TwoStaticOneDynamicTwoColumnsPerAreaVariables>>;
+
+using AvlDtgWithCo2ResLoadPerAreaVariables = Container::TupleVariableList<
+  Economy::AvailableDispatchGen,
+  Economy::ThermalAirPollutantEmissions,
+  Economy::ResidualLoad>;
+using AvlDtgWithCo2ResLoadVariables
+  = Container::List<Areas<AvlDtgWithCo2ResLoadPerAreaVariables>>;
 
 std::unique_ptr<Data::Study> makeStudyWithVariable(std::string_view caption,
                                                    unsigned int maxColumns,
@@ -336,6 +344,54 @@ std::unique_ptr<Data::Study> makeStudyForTwoStaticAndTwoColumnDynamicDigest(unsi
     Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
     dynamicInfo.setMaxColumns(2u * TwoColumnDynamicDigestTraits::ResultsProfile::count);
     study->parameters.variablesPrintInfo.add(TwoColumnDynamicDigestTraits::Caption(), dynamicInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
+}
+
+std::unique_ptr<Data::Study> makeStudyWithAvlDtgCo2AndResLoad(unsigned int areaCount = 1)
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo availableDispatchInfo(Category::FileLevel::va, Category::DataLevel::area);
+    availableDispatchInfo.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("AVL DTG", availableDispatchInfo);
+
+    Data::VariablePrintInfo co2Info(Category::FileLevel::va, Category::DataLevel::area);
+    co2Info.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("CO2 EMIS.", co2Info);
+
+    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
+    residualInfo.setMaxColumns(1u);
+    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
 
     Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
     flowLinInfo.enablePrint(false);
@@ -888,6 +944,42 @@ BOOST_AUTO_TEST_CASE(digest_column_order_with_multiple_variables)
 
     BOOST_CHECK(avlDtgPos < resLoadPos);
     BOOST_CHECK(resLoadPos < dynCol1Pos);
+}
+
+BOOST_AUTO_TEST_CASE(digest_column_order_with_thermal_pollutant_co2)
+{
+    auto study = makeStudyWithAvlDtgCo2AndResLoad();
+    AvlDtgWithCo2ResLoadVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    auto avlDtgPos = digest.find("\tAVL DTG\t");
+    auto co2Pos = digest.find("\tCO2 EMIS.\t");
+    auto resLoadPos = digest.find("\tRES LOAD\n");
+
+    BOOST_REQUIRE(avlDtgPos != std::string::npos);
+    BOOST_REQUIRE(co2Pos != std::string::npos);
+    BOOST_REQUIRE(resLoadPos != std::string::npos);
+
+    BOOST_CHECK(avlDtgPos < co2Pos);
+    BOOST_CHECK(co2Pos < resLoadPos);
+}
+
+BOOST_AUTO_TEST_CASE(digest_column_order_with_thermal_pollutant_co2_two_areas)
+{
+    auto study = makeStudyWithAvlDtgCo2AndResLoad(2);
+    AvlDtgWithCo2ResLoadVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    auto avlDtgPos = digest.find("\tAVL DTG\t");
+    auto co2Pos = digest.find("\tCO2 EMIS.\t");
+    auto resLoadPos = digest.find("\tRES LOAD\n");
+
+    BOOST_REQUIRE(avlDtgPos != std::string::npos);
+    BOOST_REQUIRE(co2Pos != std::string::npos);
+    BOOST_REQUIRE(resLoadPos != std::string::npos);
+
+    BOOST_CHECK(avlDtgPos < co2Pos);
+    BOOST_CHECK(co2Pos < resLoadPos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
