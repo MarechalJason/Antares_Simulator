@@ -283,6 +283,92 @@ using VaryingColumnsThenResidualPerAreaVariables = Container::TupleVariableList<
 using VaryingColumnsThenResidualDigestVariables
   = Container::List<Areas<VaryingColumnsThenResidualPerAreaVariables>>;
 
+struct DisjointGroupsByAreaDigestTraits
+{
+    static std::string Caption()
+    {
+        return "DYN GROUPS";
+    }
+
+    static std::string Unit()
+    {
+        return "MWh";
+    }
+
+    static std::string Description()
+    {
+        return "Dynamic variable with disjoint groups across areas";
+    }
+
+    using ResultsProfile = StandardResults<>;
+    static constexpr uint8_t decimal = 0;
+
+    static std::vector<Economy::ColumnDescriptor> buildColumnDescriptors(Data::Area* area)
+    {
+        if (area->index == 0)
+        {
+            return {{"GAS", "MWh"}};
+        }
+        return {{"LIGNITE", "MWh"}};
+    }
+
+    static std::vector<Economy::ColumnDescriptor> buildColumnDescriptors(Data::Study& study,
+                                                                          Data::Area*)
+    {
+        std::set<std::string> captions;
+        study.areas.each(
+          [&captions](Data::Area& currentArea)
+          {
+              for (const auto& descriptor: buildColumnDescriptors(&currentArea))
+              {
+                  captions.insert(descriptor.caption);
+              }
+          });
+
+        std::vector<Economy::ColumnDescriptor> descriptors;
+        for (const auto& caption: captions)
+        {
+            descriptors.push_back({caption, "MWh"});
+        }
+        return descriptors;
+    }
+
+    static void setHourlyValue(
+      Economy::VCardDynamicMultiColumn<
+        DisjointGroupsByAreaDigestTraits>::IntermediateValuesBaseType& pValues,
+      State& state,
+      unsigned int,
+      const std::vector<Economy::ColumnDescriptor>& descriptors)
+    {
+        std::map<std::string, size_t> captionToColumn;
+        for (size_t i = 0; i < descriptors.size(); ++i)
+        {
+            captionToColumn[descriptors[i].caption] = i;
+        }
+
+        const double value = state.problemeHebdo->ConsommationsAbattues[state.hourInTheWeek]
+                               .ConsommationAbattueDuPays[state.area->index];
+
+        if (state.area->index == 0)
+        {
+            pValues[captionToColumn.at("GAS")][state.hourInTheYear] += value + 10.0;
+        }
+        else
+        {
+            pValues[captionToColumn.at("LIGNITE")][state.hourInTheYear] += value + 20.0;
+        }
+    }
+};
+
+using DisjointGroupsByAreaDigestVariable = Economy::DynamicMultiColumnBase<
+  DisjointGroupsByAreaDigestTraits>;
+using StaticAndDisjointGroupsPerAreaVariables = Container::TupleVariableList<
+  Economy::AvailableDispatchGen,
+  Economy::ResidualLoad,
+  DisjointGroupsByAreaDigestVariable>;
+using StaticAndDisjointGroupsDigestVariables
+  = Container::List<Areas<StaticAndDisjointGroupsPerAreaVariables>>;
+
 using TwoStaticOneDynamicTwoColumnsPerAreaVariables = Container::TupleVariableList<
   Economy::AvailableDispatchGen,
   Economy::ResidualLoad,
@@ -530,6 +616,56 @@ std::unique_ptr<Data::Study> makeStudyForVaryingColumnsThenResidualDigest(unsign
     Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
     residualInfo.setMaxColumns(4u);
     study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
+
+    Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowLinInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW LIN.", flowLinInfo);
+
+    Data::VariablePrintInfo flowQuadInfo(Category::FileLevel::va, Category::DataLevel::link);
+    flowQuadInfo.enablePrint(false);
+    study->parameters.variablesPrintInfo.add("FLOW QUAD.", flowQuadInfo);
+
+    study->parameters.variablesPrintInfo.setAllPrintStatusesTo(true);
+    study->parameters.variablesPrintInfo.prepareForSimulation(false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW LIN.", false);
+    study->parameters.variablesPrintInfo.setPrintStatus("FLOW QUAD.", false);
+    study->parameters.variablesPrintInfo.computeMaxColumnsCountInReports(study->setsOfAreas);
+
+    return study;
+}
+
+std::unique_ptr<Data::Study> makeStudyForStaticAndDisjointGroupsDigest(unsigned int areaCount = 2)
+{
+    auto study = std::make_unique<Data::Study>();
+
+    study->parameters.simulationDays.first = 0;
+    study->parameters.simulationDays.end = 7;
+    study->parameters.nbYears = 1;
+    study->maxNbYearsInParallel = 1;
+    study->parameters.userPlaylist = false;
+    study->parameters.resetPlaylist(study->parameters.nbYears);
+    study->parameters.resetYearsWeigth();
+
+    for (unsigned int i = 0; i < areaCount; ++i)
+    {
+        auto* area = study->areaAdd("area" + std::to_string(i + 1));
+        area->index = i;
+    }
+    study->initializeRuntimeInfos();
+
+    Data::VariablePrintInfo availableDispatchInfo(Category::FileLevel::va,
+                                                  Category::DataLevel::area);
+    availableDispatchInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("AVL DTG", availableDispatchInfo);
+
+    Data::VariablePrintInfo residualInfo(Category::FileLevel::va, Category::DataLevel::area);
+    residualInfo.setMaxColumns(4u);
+    study->parameters.variablesPrintInfo.add("RES LOAD", residualInfo);
+
+    Data::VariablePrintInfo dynamicInfo(Category::FileLevel::va, Category::DataLevel::area);
+    dynamicInfo.setMaxColumns(2u * DisjointGroupsByAreaDigestTraits::ResultsProfile::count);
+    study->parameters.variablesPrintInfo.add(DisjointGroupsByAreaDigestTraits::Caption(),
+                                             dynamicInfo);
 
     Data::VariablePrintInfo flowLinInfo(Category::FileLevel::va, Category::DataLevel::link);
     flowLinInfo.enablePrint(false);
@@ -1300,22 +1436,22 @@ BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_d
 
     auto co2Pos = digest.find("\tCO2 EMIS.\t");
     auto avlDtgPos = digest.find("\tAVL DTG\t");
+    auto resLoadPos = digest.find("\tRES LOAD\t");
     auto dynCol1Pos = digest.find("\tDYN_COL_1\t");
-    auto dynCol2Pos = digest.find("\tDYN_COL_2\t");
-    auto resLoadPos = digest.find("\tRES LOAD\n");
+    auto dynCol2Pos = digest.find("\tDYN_COL_2\n");
 
     BOOST_REQUIRE(co2Pos != std::string::npos);
     BOOST_REQUIRE(avlDtgPos != std::string::npos);
+    BOOST_REQUIRE(resLoadPos != std::string::npos);
     BOOST_REQUIRE(dynCol1Pos != std::string::npos);
     BOOST_REQUIRE(dynCol2Pos != std::string::npos);
-    BOOST_REQUIRE(resLoadPos != std::string::npos);
 
     BOOST_CHECK(co2Pos < avlDtgPos);
-    BOOST_CHECK(avlDtgPos < dynCol1Pos);
+    BOOST_CHECK(avlDtgPos < resLoadPos);
+    BOOST_CHECK(resLoadPos < dynCol1Pos);
     BOOST_CHECK(dynCol1Pos < dynCol2Pos);
-    BOOST_CHECK(dynCol2Pos < resLoadPos);
 
-    BOOST_CHECK_NE(digest.find("\tarea1\t16800\t33600\t672\t1344\t504\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t16800\t33600\t504\t672\t1344\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_dynamic_two_areas)
@@ -1328,7 +1464,7 @@ BOOST_AUTO_TEST_CASE(digest_values_with_thermal_pollutant_avl_dtg_res_load_and_d
                    std::string::npos);
 
 
-    BOOST_CHECK_NE(digest.find("\tarea1\t16800\t33600\t672\t1344\t504\n"), std::string::npos);
+    BOOST_CHECK_NE(digest.find("\tarea1\t16800\t33600\t504\t672\t1344\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(digest_stays_aligned_when_dynamic_columns_vary_by_area)
@@ -1344,6 +1480,26 @@ BOOST_AUTO_TEST_CASE(digest_stays_aligned_when_dynamic_columns_vary_by_area)
     // Area 1 has no VAR_B contribution: RES LOAD must remain in the third column.
     BOOST_CHECK_NE(digest.find("\tarea1\t2520\t0\t840\n"), std::string::npos);
     BOOST_CHECK_NE(digest.find("\tarea2\t2520\t4200\t840\n"), std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(digest_aligned_with_static_and_disjoint_groups_across_two_areas)
+{
+    // Regression: 2 areas, 2 static variables (AVL DTG, RES LOAD), and a dynamic
+    // variable whose groups are disjoint per area (GAS only in area1, LIGNITE only
+    // in area2). Header must show the union {GAS, LIGNITE} and each area's row must
+    // place the value under its own group while leaving the other group's column at 0.
+    auto study = makeStudyForStaticAndDisjointGroupsDigest(2);
+    StaticAndDisjointGroupsDigestVariables variables;
+    const auto& digest = runSimulationAndExportDigest(*study, variables, 5.0);
+
+    BOOST_CHECK_NE(digest.find("\tdigest\n\tVARIABLES\tAREAS\tLINKS\n\t4\t2\t0\n"),
+                   std::string::npos);
+    BOOST_CHECK_NE(digest.find("\t\tAVL DTG\tRES LOAD\tGAS\tLIGNITE\n"), std::string::npos);
+
+    // area1: only GAS contributes (15 * 168 = 2520); LIGNITE column stays 0.
+    BOOST_CHECK_NE(digest.find("\tarea1\t0\t840\t2520\t0\n"), std::string::npos);
+    // area2: only LIGNITE contributes (25 * 168 = 4200); GAS column stays 0.
+    BOOST_CHECK_NE(digest.find("\tarea2\t0\t840\t0\t4200\n"), std::string::npos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
