@@ -507,9 +507,6 @@ SurveyResults::SurveyResults(const Data::Study& s,
 
     logs.debug() << "  (for " << maxVariables << " columns)";
 
-
-    logs.debug() << "DEBUG: SurveyResults constructor - maxVariables = " << maxVariables;
-
     data.initialize(maxVariables);
 
     // values
