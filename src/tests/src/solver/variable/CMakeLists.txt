@@ -5,7 +5,12 @@ add_boost_test(test-intermediate
   LIBS antares-solver-variable)
 
 add_boost_test(test-surveyresults
-  SRC test_surveyresults.cpp
+  SRC
+    test_surveyresults.cpp
+    test_digest_export.cpp
+    test_digest_with_variables.cpp
+    test_reset_values.cpp
+    surveyresults_test_helpers.h
   LIBS
   antares-solver-variable
   result_writer)
