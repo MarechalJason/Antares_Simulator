@@ -602,8 +602,6 @@ void SurveyResults::exportDigestAllYears(std::string& buffer)
           .append("\n\n");
     }
 
-logs.debug() << "DEBUG: exportDigestAllYears - columnIndex = " << data.columnIndex << ", maxVariables = " << maxVariables;
-
     // Header - All columns
     for (uint rowIndex = 0; rowIndex != captionCount; ++rowIndex)
     {
@@ -612,7 +610,6 @@ logs.debug() << "DEBUG: exportDigestAllYears - columnIndex = " << data.columnInd
         {
             assert(i < maxVariables);
             buffer.append("\t").append(captions[rowIndex][i].c_str());
-            logs.debug() << "DEBUG: Header row " << rowIndex << " col " << i << " = " << captions[rowIndex][i];
         }
         buffer.append("\n");
     }
