@@ -322,7 +322,7 @@ private:
         }
         else
         {
-            static_assert(std::false_type::value,
+            static_assert(false,
                           "Traits must provide either setHourlyValue(...), "
                           "checkCondition(auxiliaryData, state)+value(auxiliaryData, state), "
                           "or checkCondition(state)+value(state)");
