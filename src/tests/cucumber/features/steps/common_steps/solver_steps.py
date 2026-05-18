@@ -258,23 +258,11 @@ def check_annual_results(context):
 
 @then("simulation tables match the references")
 def check_simulation_tables(context):
-    # Optimization 1
-    msg1 = diff_message(
-        name="Simulation table (optimization 1)",
-        ref_lines=context.sih.get_optim1_simulation_table(),
-        out_lines=context.soh.get_optim1_simulation_table(),
-    )
-    assert msg1 is None, msg1
+    reference_dir = context.sih.reference_dir()
+    output_dir = context.soh.output_dir()
 
-    # Optimization 2 (if any)
-    ref_simulation_table2 = context.sih.get_optim2_simulation_table()
-    if ref_simulation_table2:
-        msg2 = diff_message(
-            name="Simulation table (optimization 2)",
-            ref_lines=ref_simulation_table2,
-            out_lines=context.soh.get_optim2_simulation_table(),
-        )
-        assert msg2 is None, msg2
+    dirs_match, differences = compare_folders(reference_dir, output_dir)
+    assert dirs_match, "Folders do not match:\n" + "\n".join(f"  - {diff}" for diff in differences)
 
 
 def should_check(row, key):
@@ -298,9 +286,10 @@ def run_simulation(context):
     context.return_code = process.returncode
     context.soh = solver_output_handler(context.output_path, context.mode)
     # for hybrid studies:
-    simulation_table = Path(context.output_path) / "simulation_table--optim-nb-1.csv"
-    if simulation_table.exists():
-        context.moh = modeler_output_handler(simulation_table)
+    output_dir = Path(context.output_path)
+    simulation_tables = sorted(output_dir.glob("simulation_table-*--optim-nb-1.csv"))
+    if simulation_tables:
+        context.moh = modeler_output_handler(simulation_tables)
 
 
 def init_simulation(context):
@@ -626,17 +615,26 @@ def check_area_balance_rhs(context, area, values_str, constant_str):
     mps_problem = mpu.load_problem(mps_file_path)
     balanced_constraints = [c for c in mps_problem.get_linear_constraints() if c.name.startswith(f"AreaBalance::area<{area}>")]
 
+    failures = []
+
     # Checking first balance constraints have expected bounds
     first_constraints = balanced_constraints[0:len(list_values)]
     for c, value in zip(first_constraints, list_values):
-        assert c.lower_bound == value, f"Contraint {c.name} low bound should be {str(value)}"
-        assert c.upper_bound == value, f"Contraint {c.name} up bound should be {str(value)}"
+        if c.lower_bound != value:
+            failures.append(f"Constraint {c.name} low bound should be {str(value)}, is {c.lower_bound}")
+        if c.upper_bound != value:
+            failures.append(f"Constraint {c.name} up bound should be {str(value)}, is {c.upper_bound}")
 
     # Checking remaining balance constraints have same expected bounds
     last_constraints = balanced_constraints[len(list_values):]
     for c in last_constraints:
-        assert c.lower_bound == constant, f"Contraint {c.name} low bound should be {constant_str}"
-        assert c.upper_bound == constant, f"Contraint {c.name} up bound should be {constant_str}"
+        if c.lower_bound != constant:
+            failures.append(f"Constraint {c.name} low bound should be {constant_str}, is {c.lower_bound}")
+        if c.upper_bound != constant:
+            failures.append(f"Constraint {c.name} up bound should be {constant_str}, is {c.upper_bound}")
+
+    if failures:
+        raise AssertionError("Area balance RHS check failed with the following errors:\n" + "\n".join(failures))
 
 @then(
     'enforces: DispatchableProduction {expression} < {rhs} for the thermal capacity connection between GEMS and the {cluster} thermal cluster in area {area}.')
