@@ -337,6 +337,12 @@ public:
             Hourly
         };
         HydroPmax hydroPmax = HydroPmax::Daily;
+        enum class HydroRuleCurves
+        {
+            Single,
+            Scenarized
+        };
+        HydroRuleCurves hydroRuleCurves = HydroRuleCurves::Single;
     };
 
     Compatibility compatibility;
@@ -420,6 +426,9 @@ public:
     bool noOutput = false;
     //@}
 
+    // In case we print simulation tables, do we print it in csv or parquet ?
+    bool parquetFmtForSimuTables = false;
+
     bool hydroDebug;
 
     /// Used to create debug informations for both hydro and short term storages
@@ -467,7 +476,6 @@ bool StringToSimulationMode(SimulationMode& mode, Yuni::CString<20, false> text)
 
 const char* CompatibilityHydroPmaxToCString(const Parameters::Compatibility::HydroPmax);
 bool StringToCompatibilityHydroPmax(Parameters::Compatibility::HydroPmax&, const std::string& text);
-
 } // namespace Antares::Data
 
 #endif // __ANTARES_LIBS_STUDY_PARAMETERS_H__

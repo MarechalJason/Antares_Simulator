@@ -41,6 +41,10 @@ struct AuxiliaryDataType
     using type = EmptyAuxiliaryData;
 };
 
+// Triggers static_assert only when a template fallback branch is actually instantiated.
+template<class>
+inline constexpr bool always_false_v = false;
+
 template<class TraitsT>
 struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataType>>
 {
@@ -297,7 +301,7 @@ private:
 
     static void setHourlyValueIfSupported(IntermediateValues& yearlyValues,
                                           AuxiliaryDataType& auxiliaryData,
-                                          State& state,
+                                          const State& state,
                                           unsigned int numSpace)
     {
         if constexpr (requires {
@@ -319,6 +323,13 @@ private:
             {
                 yearlyValues[state.hourInTheYear] = Traits::value(state);
             }
+        }
+        else
+        {
+            static_assert(detail::always_false_v<Traits>,
+                          "Traits must provide either setHourlyValue(...), "
+                          "checkCondition(auxiliaryData, state)+value(auxiliaryData, state), "
+                          "or checkCondition(state)+value(state)");
         }
     }
 
