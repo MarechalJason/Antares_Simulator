@@ -9,7 +9,7 @@
 #include <antares/exception/InitializationError.hpp>
 #include <antares/logs/logs.h>
 #include "antares/concurrency/concurrency.h"
-#include "antares/io/outputs/SimulationTableCsv.h"
+#include "antares/io/outputs/SimulationTable.h"
 #include "antares/solver/hydro/management/HydroInputsChecker.h"
 #include "antares/solver/hydro/management/management.h"
 #include "antares/solver/simulation/common-eco-adq.h"
@@ -154,6 +154,7 @@ public:
                                              optWriter,
                                              pDurationCollector,
                                              scratchmap);
+
         if (!study.parameters.noOutput)
         {
             auto& simTable = simulation_->getSimulationTable(numSpace);
@@ -504,13 +505,14 @@ void ISimulation<ImplementationType>::loopThroughYears(uint firstYear,
     }
 
     pQueueService->start();
-
     pQueueService->wait(Yuni::qseIdle);
     pQueueService->stop();
+
     if (!study.parameters.noOutput)
     {
         aggregateAndWriteSimulationTables();
     }
+
     results.join();
     pResultWriter.flush();
     // On regarde si au moins une année du lot n'a pas trouvé de solution
@@ -546,40 +548,28 @@ void ISimulation<ImplementationType>::storeYearBuffers(uint year,
 template<class ImplementationType>
 void ISimulation<ImplementationType>::aggregateAndWriteSimulationTables()
 {
-    std::lock_guard lock(buffersMutex_);
-    std::string globalFirstBuffer;
-    std::string globalSecondBuffer;
-    // dans l'ordre des années
-    for (uint year = 0; year < study.parameters.nbYears; ++year)
+    if (study.parameters.parquetFmtForSimuTables)
     {
-        auto it = yearSimulationBuffers_.find(year);
-        if (it != yearSimulationBuffers_.end())
+        // TODO
+    }
+    else
+    {
+        const auto header = ImplementationType::getSimulationTableHeader() + "\n";
+
+        for (const auto& [year, pair_of_buffers]: yearSimulationBuffers_)
         {
-            globalFirstBuffer += it->second.first;
-            globalSecondBuffer += it->second.second;
+            std::string writerEntry = header + pair_of_buffers.first;
+            pResultWriter.addEntryFromBuffer("simulation_table-" + std::to_string(year + 1)
+                                               + "--optim-nb-1.csv",
+                                             writerEntry);
+
+            writerEntry = header + pair_of_buffers.second;
+            pResultWriter.addEntryFromBuffer("simulation_table-" + std::to_string(year + 1)
+                                               + "--optim-nb-2.csv",
+                                             writerEntry);
         }
     }
-    const auto header = ImplementationType::getSimulationTableHeader() + "\n";
-    if (!globalFirstBuffer.empty())
-    {
-        std::string writerEntry = header + std::move(globalFirstBuffer);
-        pResultWriter.addEntryFromBuffer("simulation_table--optim-nb-1.csv", writerEntry);
-    }
-    if (!globalSecondBuffer.empty())
-    {
-        std::string writerEntry = header + std::move(globalSecondBuffer);
-        pResultWriter.addEntryFromBuffer("simulation_table--optim-nb-2.csv", writerEntry);
-    }
-
     yearSimulationBuffers_.clear();
-}
-
-template<class ImplementationType>
-OptimisationsSimulationTable& ISimulation<ImplementationType>::getSimulationTable(uint numSpace)
-{
-    // Cette méthode doit être implémentée dans la classe dérivée (Economy)
-    // pour retourner la table spécifique à l'espace numérique
-    return ImplementationType::getSimulationTable(numSpace);
 }
 } // namespace Antares::Solver::Simulation
 
