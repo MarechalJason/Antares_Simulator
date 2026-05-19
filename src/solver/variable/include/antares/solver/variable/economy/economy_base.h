@@ -20,6 +20,15 @@
 namespace Antares::Solver::Variable::Economy
 {
 
+// The `detail` namespace contains implementation details and helper
+// utilities for the Economy variable system. Symbols placed in this
+// namespace are internal implementation artifacts (traits, fallbacks,
+// SFINAE helpers) and are not part of the public API. Using a dedicated
+// `detail` namespace makes the intent explicit: these types help detect
+// optional nested types or member functions in `Traits` (for example
+// `AuxiliaryDataType`) and provide safe defaults when those optional
+// members are absent. This enables generic code to compile whether or
+// not a particular `Traits` class provides extra auxiliary data.
 namespace detail
 {
 struct EmptyAuxiliaryData
@@ -31,6 +40,10 @@ struct AuxiliaryDataType
 {
     using type = EmptyAuxiliaryData;
 };
+
+// Triggers static_assert only when a template fallback branch is actually instantiated.
+template<class>
+inline constexpr bool always_false_v = false;
 
 template<class TraitsT>
 struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataType>>
@@ -85,11 +98,16 @@ struct VCard_Base
     //! Intermediate values
     static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
-    static constexpr uint8_t isPossiblyNonApplicable = [] {
+    static constexpr uint8_t isPossiblyNonApplicable = []
+    {
         if constexpr (requires { Traits::isPossiblyNonApplicable; })
+        {
             return Traits::isPossiblyNonApplicable;
+        }
         else
+        {
             return uint8_t{0};
+        }
     }();
 
     typedef IntermediateValues IntermediateValuesBaseType;
@@ -213,11 +231,16 @@ public:
     {
         if constexpr (requires {
                           Traits::yearEndBuildForEachThermalCluster(
-                            pValuesForTheCurrentYear[numSpace], state, year, numSpace);
+                            pValuesForTheCurrentYear[numSpace],
+                            state,
+                            year,
+                            numSpace);
                       })
         {
-            Traits::yearEndBuildForEachThermalCluster(
-              pValuesForTheCurrentYear[numSpace], state, year, numSpace);
+            Traits::yearEndBuildForEachThermalCluster(pValuesForTheCurrentYear[numSpace],
+                                                      state,
+                                                      year,
+                                                      numSpace);
         }
         // Next variable
         NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
@@ -249,7 +272,10 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace], auxiliaryData_, state, numSpace);
+        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace],
+                                  auxiliaryData_,
+                                  state,
+                                  numSpace);
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
@@ -296,9 +322,7 @@ private:
                                      unsigned int year,
                                      unsigned int numSpace)
     {
-        if constexpr (requires {
-                        Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
-                    })
+        if constexpr (requires { Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace); })
         {
             Traits::yearBegin(yearlyValues, auxiliaryData, year, numSpace);
         }
@@ -306,12 +330,12 @@ private:
 
     static void setHourlyValueIfSupported(IntermediateValues& yearlyValues,
                                           AuxiliaryDataType& auxiliaryData,
-                                          State& state,
+                                          const State& state,
                                           unsigned int numSpace)
     {
         if constexpr (requires {
-                        Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
-                    })
+                          Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
+                      })
         {
             Traits::setHourlyValue(yearlyValues, auxiliaryData, state, numSpace);
         }
@@ -328,6 +352,13 @@ private:
             {
                 yearlyValues[state.hourInTheYear] = Traits::value(state);
             }
+        }
+        else
+        {
+            static_assert(detail::always_false_v<Traits>,
+                          "Traits must provide either setHourlyValue(...), "
+                          "checkCondition(auxiliaryData, state)+value(auxiliaryData, state), "
+                          "or checkCondition(state)+value(state)");
         }
     }
 
