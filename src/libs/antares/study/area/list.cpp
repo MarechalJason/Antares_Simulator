@@ -151,14 +151,6 @@ AreaList::AreaList(Study& study):
 {
 }
 
-AreaList::~AreaList()
-{
-    for (auto* area: areas | std::views::values)
-    {
-        delete area;
-    }
-}
-
 bool AreaList::empty() const
 {
     return areas.empty();
@@ -188,7 +180,7 @@ void AreaList::rebuildIndexes()
     auto end = areas.end();
     for (auto i = areas.begin(); i != end; ++i, ++indx)
     {
-        Area* area = i->second;
+        Area* area = i->second.get();
         byIndex[indx] = area;
         area->index = indx;
     }
@@ -204,7 +196,7 @@ Area* AreaList::add(Area* a)
         [[maybe_unused]] unsigned count = (uint)areas.size(); // used for assert
 
         // Adding the area in the list
-        areas[a->id] = a;
+        areas[a->id] = std::unique_ptr<Area>(a);
         rebuildIndexes();
 
         assert(areas.size() == (count + 1) and "Invalid count of areas in the map");
@@ -225,6 +217,16 @@ Area* AreaListAddFromNames(AreaList& list, const AnyString& name, const AnyStrin
 {
     if (!name || !lname)
     {
+        if (name.empty())
+        {
+            logs.warning() << "ignoring invalid area name: `" << name;
+        }
+        return nullptr;
+    }
+
+    if (CheckForbiddenCharacterInAreaName(name))
+    {
+        logs.error() << "Invalid area name: `" << name << "` contains forbidden character `*`";
         return nullptr;
     }
     // Look up
@@ -262,13 +264,10 @@ bool AreaList::loadListFromFile(const fs::path& filename)
 
     // Initialization of the strings
     AreaName name;
-    AreaName lname;
     // Each lines in the file
     std::string buffer;
-    uint line = 0;
     while (std::getline(file, buffer))
     {
-        ++line;
         // The area name
         name = buffer;
         boost::trim(name);
@@ -277,21 +276,8 @@ bool AreaList::loadListFromFile(const fs::path& filename)
             continue;
         }
 
-        lname.clear();
-        lname = transformNameIntoID(name);
-        if (lname.empty())
-        {
-            logs.warning() << "ignoring invalid area name: `" << name << "`, " << filename
-                           << ": line " << line;
-            continue;
-        }
-        if (CheckForbiddenCharacterInAreaName(name))
-        {
-            logs.error() << "character '*' is forbidden in area name: `" << name << "`";
-            continue;
-        }
         // Add the area in the list
-        AreaListAddFromNames(*this, name, lname);
+        addAreaToListOfAreas(*this, name);
     }
 
     switch (areas.size())
@@ -512,6 +498,13 @@ static bool AreaListLoadFromFolderSingleArea(Study& study,
             throw std::invalid_argument(
               "Value not supported for study.parameters.compatibility.hydroPmax");
         }
+
+        RuleCurvesLoaderService ruleCurvesLoaderService(area.hydro.series->ruleCurves);
+
+        ret = ruleCurvesLoaderService.LoadFromFolder(area.id,
+                                                     pathHydro,
+                                                     study.parameters.compatibility.hydroRuleCurves)
+              && ret;
 
         area.hydro.series->resizeTSinDeratedMode(study.parameters.derated,
                                                  studyVersion,
@@ -784,27 +777,27 @@ bool AreaList::loadFromFolder(const StudyLoadOptions& options)
 Area* AreaList::find(const AreaName& id)
 {
     auto i = this->areas.find(id);
-    return (i != this->areas.end()) ? i->second : nullptr;
+    return (i != this->areas.end()) ? i->second.get() : nullptr;
 }
 
 const Area* AreaList::find(const AreaName& id) const
 {
     auto i = this->areas.find(id);
-    return (i != this->areas.end()) ? i->second : nullptr;
+    return (i != this->areas.end()) ? i->second.get() : nullptr;
 }
 
 Area* AreaList::findFromName(const AreaName& name)
 {
     AreaName id = transformNameIntoID(name);
     auto i = this->areas.find(id);
-    return (i != this->areas.end()) ? i->second : nullptr;
+    return (i != this->areas.end()) ? i->second.get() : nullptr;
 }
 
 const Area* AreaList::findFromName(const AreaName& name) const
 {
     AreaName id = transformNameIntoID(name);
     auto i = this->areas.find(id);
-    return (i != this->areas.end()) ? i->second : nullptr;
+    return (i != this->areas.end()) ? i->second.get() : nullptr;
 }
 
 Area* AreaListLFind(AreaList* l, const char lname[])
@@ -812,7 +805,7 @@ Area* AreaListLFind(AreaList* l, const char lname[])
     if (l && !l->areas.empty() && lname)
     {
         auto i = l->areas.find(AreaName(lname));
-        return (i != l->areas.end()) ? i->second : nullptr;
+        return (i != l->areas.end()) ? i->second.get() : nullptr;
     }
     return nullptr;
 }
@@ -824,9 +817,9 @@ Area* AreaListFindPtr(AreaList* l, const Area* ptr)
         auto end = l->areas.end();
         for (auto i = l->areas.begin(); i != end; ++i)
         {
-            if (ptr == i->second)
+            if (ptr == i->second.get())
             {
-                return i->second;
+                return i->second.get();
             }
         }
     }

@@ -73,8 +73,8 @@ struct NbOfDispatchedUnitsByPlantTraits
     }
 };
 
-using VCardNbOfDispatchedUnitsByPlant =
-  VCardDispatchablePlantByClusterBase<NbOfDispatchedUnitsByPlantTraits>;
+using VCardNbOfDispatchedUnitsByPlant = VCardDispatchablePlantByClusterBase<
+  NbOfDispatchedUnitsByPlantTraits>;
 
 /*!
 ** \brief C02 Average value of the overrall OperatingCost emissions expected from all
@@ -85,4 +85,3 @@ using NbOfDispatchedUnitsByPlant = DispatchablePlantByClusterBase<NbOfDispatched
                                                                   NextT>;
 
 } // namespace Antares::Solver::Variable::Economy
-

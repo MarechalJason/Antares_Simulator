@@ -40,8 +40,9 @@ struct ProductionByRenewablePlantTraits
     {
         for (const auto& renewableCluster: state.area->renewable.list.each_enabled())
         {
-            double renewableClusterProduction = renewableCluster->valueAtTimeStep(state.year,
-                                                                                  state.hourInTheYear);
+            double renewableClusterProduction = renewableCluster->valueAtTimeStep(
+              state.year,
+              state.hourInTheYear);
 
             clusterValues[renewableCluster->enabledIndex].hour[state.hourInTheYear]
               += renewableClusterProduction;
@@ -58,8 +59,11 @@ struct ProductionByRenewablePlantTraits
         {
             results.variableCaption = cluster->name();
             results.variableUnit = Unit();
-            clusterValues[cluster->enabledIndex].template buildAnnualSurveyReport<
-              VCardSTStorageByClusterBase<ProductionByRenewablePlantTraits>>(results, fileLevel, precision);
+            clusterValues[cluster->enabledIndex]
+              .template buildAnnualSurveyReport<VCardByPlantBase<ProductionByRenewablePlantTraits>>(
+                results,
+                fileLevel,
+                precision);
         }
     }
 };
@@ -73,4 +77,3 @@ template<class NextT = Container::EndOfList>
 using ProductionByRenewablePlant = STStorageByClusterBase<ProductionByRenewablePlantTraits, NextT>;
 
 } // namespace Antares::Solver::Variable::Economy
-
