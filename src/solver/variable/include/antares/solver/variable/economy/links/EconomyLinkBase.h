@@ -3,38 +3,39 @@
 
 #pragma once
 
-#include "antares/solver/variable/variable.h"
+#include "../../variable.h"
 
 namespace Antares::Solver::Variable::Economy
 {
-struct VCardHydroStorage
+
+template<class Traits>
+struct VCardEconomyLinkBase
 {
     //! Caption
     static std::string Caption()
     {
-        return "H. STOR";
+        return Traits::Caption();
     }
 
     //! Unit
     static std::string Unit()
     {
-        return "MWh";
+        return Traits::Unit();
     }
 
     //! The short description of the variable
     static std::string Description()
     {
-        return "Hydro Storage Generation";
+        return Traits::Description();
     }
 
-    using ResultsType = Results<
-      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
+    //! The expecte results
+    typedef typename Traits::ResultsType ResultsType;
 
-    //! The VCard to look for for calculating spatial aggregates
-    typedef VCardHydroStorage VCardForSpatialAggregate;
+    typedef VCardEconomyLinkBase VCardForSpatialAggregate;
 
     //! Data Level
-    static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
+    static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;
     //! File level (provided by the type of the results)
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
                                                  & (Category::FileLevel::id
@@ -59,24 +60,20 @@ struct VCardHydroStorage
     typedef IntermediateValues IntermediateValuesBaseType;
     typedef std::vector<IntermediateValues> IntermediateValuesType;
 
-    using IntermediateValuesTypeForSpatialAg = std::unique_ptr<IntermediateValuesBaseType[]>;
+}; // class VCardEconomyLinkBase
 
-}; // class VCard
-
-/*!
-** \brief C02 Average value of the overrall HydroStorage emissions expected from all
-**   the thermal dispatchable clusters
-*/
-template<class NextT = Container::EndOfList>
-class HydroStorage: public Variable::IVariable<HydroStorage<NextT>, NextT, VCardHydroStorage>
+template<class Traits, class NextT = Container::EndOfList>
+class EconomyLinkBase: public Variable::IVariable<EconomyLinkBase<Traits, NextT>,
+                                                  NextT,
+                                                  VCardEconomyLinkBase<Traits>>
 {
 public:
     //! Type of the next static variable
     typedef NextT NextType;
     //! VCard
-    typedef VCardHydroStorage VCardType;
+    typedef VCardEconomyLinkBase<Traits> VCardType;
     //! Ancestor
-    typedef Variable::IVariable<HydroStorage<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<EconomyLinkBase<Traits, NextT>, NextT, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -107,8 +104,11 @@ public:
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
 
-        InitializeResultsFromStudy(AncestorType::pResults, study);
+        // Average on all years
+        AncestorType::pResults.initializeFromStudy(study);
+        AncestorType::pResults.reset();
 
+        // Intermediate values
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
@@ -119,19 +119,13 @@ public:
         NextType::initializeFromStudy(study);
     }
 
-    template<class R>
-    static void InitializeResultsFromStudy(R& results, Data::Study& study)
-    {
-        VariableAccessorType::InitializeAndReset(results, study);
-    }
-
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         // Next
         NextType::initializeFromArea(study, area);
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
     {
         // Next
         NextType::initializeFromAreaLink(study, link);
@@ -152,11 +146,10 @@ public:
         NextType::simulationEnd();
     }
 
-    void yearBegin(unsigned int year, unsigned int numSpace)
+    void yearBegin(uint year, unsigned int numSpace)
     {
-        // Reset the values for the current year
+        // Reset
         pValuesForTheCurrentYear[numSpace].reset();
-
         // Next variable
         NextType::yearBegin(year, numSpace);
     }
@@ -169,7 +162,7 @@ public:
 
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
-        // Compute all statistics for the current year (daily, weekly, monthly)
+        // Compute all statistics for the current year (daily,weekly,monthly)
         pValuesForTheCurrentYear[numSpace].computeStatisticsForTheCurrentYear();
 
         // Next variable
@@ -185,7 +178,7 @@ public:
         NextType::computeSummary(year, numSpace);
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin(uint hourInTheYear)
     {
         // Next variable
         NextType::hourBegin(hourInTheYear);
@@ -193,18 +186,28 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        // Total HydroStorage emissions
-        pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] =
-          // Current Hydro Storage generation
-          state.hourlyResults->TurbinageHoraire[state.hourInTheWeek];
-
         // Next variable
         NextType::hourForEachArea(state, numSpace);
     }
 
+    void hourForEachLink(State& state, unsigned int numSpace)
+    {
+        // Store the value for the current hour
+        pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] += Traits::hourValue(state);
+        // Next item in the list
+        NextType::hourForEachLink(state, numSpace);
+    }
+
+    void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
+    {
+        Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);
+        // Next
+        NextType::buildDigest(results, digestLevel, dataLevel);
+    }
+
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int,
-      unsigned int numSpace) const
+      uint,
+      uint numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace].hour;
     }
@@ -212,7 +215,7 @@ public:
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         // Initializing external pointer on current variable non applicable status
         results.isCurrentVarNA = AncestorType::isNonApplicable;
@@ -232,6 +235,6 @@ private:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     unsigned int pNbYearsParallel;
 
-}; // class HydroStorage
+}; // class EconomyLinkBase
 
 } // namespace Antares::Solver::Variable::Economy
