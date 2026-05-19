@@ -48,8 +48,10 @@ struct STStorageWithdrawalByClusterTraits
             results.variableCaption = sts.properties.name;
             results.variableUnit = Unit();
             clusterValues[clusterIndex]
-              .template buildAnnualSurveyReport<VCardSTStorageByClusterBase<
-                STStorageWithdrawalByClusterTraits>>(results, fileLevel, precision);
+              .template buildAnnualSurveyReport<
+                VCardSTStorageByClusterBase<STStorageWithdrawalByClusterTraits>>(results,
+                                                                                 fileLevel,
+                                                                                 precision);
             clusterIndex++;
         }
     }

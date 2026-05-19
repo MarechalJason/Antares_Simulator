@@ -64,15 +64,17 @@ struct STstorageCashFlowByClusterTraits
             results.variableCaption = sts.properties.name;
             results.variableUnit = Unit();
             clusterValues[clusterIndex]
-              .template buildAnnualSurveyReport<VCardSTStorageByClusterBase<
-                STstorageCashFlowByClusterTraits>>(results, fileLevel, precision);
+              .template buildAnnualSurveyReport<
+                VCardSTStorageByClusterBase<STstorageCashFlowByClusterTraits>>(results,
+                                                                               fileLevel,
+                                                                               precision);
             clusterIndex++;
         }
     }
 };
 
-using VCardSTstorageCashFlowByCluster =
-  VCardSTStorageByClusterBase<STstorageCashFlowByClusterTraits>;
+using VCardSTstorageCashFlowByCluster = VCardSTStorageByClusterBase<
+  STstorageCashFlowByClusterTraits>;
 
 /*!
 ** \brief Cash flow by short term storage clusters

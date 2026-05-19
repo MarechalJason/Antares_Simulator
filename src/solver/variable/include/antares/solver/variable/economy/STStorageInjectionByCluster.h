@@ -48,8 +48,10 @@ struct STStorageInjectionByClusterTraits
             results.variableCaption = sts.properties.name;
             results.variableUnit = Unit();
             clusterValues[clusterIndex]
-              .template buildAnnualSurveyReport<VCardSTStorageByClusterBase<
-                STStorageInjectionByClusterTraits>>(results, fileLevel, precision);
+              .template buildAnnualSurveyReport<
+                VCardSTStorageByClusterBase<STStorageInjectionByClusterTraits>>(results,
+                                                                                fileLevel,
+                                                                                precision);
             clusterIndex++;
         }
     }

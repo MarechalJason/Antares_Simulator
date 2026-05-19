@@ -48,8 +48,10 @@ struct STStorageLevelsByClusterTraits
             results.variableCaption = sts.properties.name;
             results.variableUnit = Unit();
             clusterValues[clusterIndex]
-              .template buildAnnualSurveyReport<VCardSTStorageByClusterBase<
-                STStorageLevelsByClusterTraits>>(results, fileLevel, precision);
+              .template buildAnnualSurveyReport<
+                VCardSTStorageByClusterBase<STStorageLevelsByClusterTraits>>(results,
+                                                                             fileLevel,
+                                                                             precision);
             clusterIndex++;
         }
     }
