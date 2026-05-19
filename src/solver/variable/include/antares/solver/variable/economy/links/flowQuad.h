@@ -42,13 +42,10 @@ struct FlowQuadTraits
 
     using AuxiliaryDataType = FlowQuadAuxData;
 
-    static void onInitializeFromStudy(IntermediateValues&,
-                                      FlowQuadAuxData& aux,
-                                      Data::Study& study)
+    static void onInitializeFromStudy(IntermediateValues&, FlowQuadAuxData& aux, Data::Study& study)
     {
         aux.nbHours = study.runtime.rangeLimits.hour[Data::rangeEnd] + 1;
-        aux.transitMoyenInterco
-          = &study.runtime.transitMoyenInterconnexionsRecalculQuadratique;
+        aux.transitMoyenInterco = &study.runtime.transitMoyenInterconnexionsRecalculQuadratique;
     }
 
     static void onInitializeFromAreaLink(IntermediateValues&,

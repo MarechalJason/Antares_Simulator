@@ -199,18 +199,19 @@ public:
         }
         else if constexpr (requires { Traits::hourValue(state); })
         {
-            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] += Traits::hourValue(state);
+            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] += Traits::hourValue(
+              state);
         }
         else if constexpr (requires { Traits::computeHourlyValue(state, 0.0, 0.0); })
         {
-            const double upstreamPrice
-              = state.problemeHebdo->ResultatsHoraires[state.link->from->index]
-                  .CoutsMarginauxHoraires[state.hourInTheWeek];
-            const double downstreamPrice
-              = state.problemeHebdo->ResultatsHoraires[state.link->with->index]
-                  .CoutsMarginauxHoraires[state.hourInTheWeek];
-            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear]
-              = Traits::computeHourlyValue(state, upstreamPrice, downstreamPrice);
+            const double upstreamPrice = state.problemeHebdo
+                                           ->ResultatsHoraires[state.link->from->index]
+                                           .CoutsMarginauxHoraires[state.hourInTheWeek];
+            const double downstreamPrice = state.problemeHebdo
+                                             ->ResultatsHoraires[state.link->with->index]
+                                             .CoutsMarginauxHoraires[state.hourInTheWeek];
+            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = Traits::
+              computeHourlyValue(state, upstreamPrice, downstreamPrice);
         }
         // Next item in the list
         NextType::hourForEachLink(state, numSpace);
@@ -219,7 +220,10 @@ public:
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
         if constexpr (requires {
-                          Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);
+                          Traits::buildDigest(results,
+                                              digestLevel,
+                                              dataLevel,
+                                              AncestorType::pResults);
                       })
         {
             Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);

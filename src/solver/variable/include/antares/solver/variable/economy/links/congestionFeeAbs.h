@@ -27,10 +27,10 @@ struct CongestionFeeAbsTraits
         return "Congestion fee collected throughout all MC years (Absolute value)";
     }
 
-    typedef Results<R::AllYears::Average<    // The average values throughout all years
-      R::AllYears::StdDeviation<             // The standard deviation values throughout all years
-        R::AllYears::Min<                    // The minimum values throughout all years
-          R::AllYears::Max<                  // The maximum values throughout all years
+    typedef Results<R::AllYears::Average< // The average values throughout all years
+      R::AllYears::StdDeviation<          // The standard deviation values throughout all years
+        R::AllYears::Min<                 // The minimum values throughout all years
+          R::AllYears::Max<               // The maximum values throughout all years
             >>>>>
       ResultsType;
 
@@ -43,7 +43,8 @@ struct CongestionFeeAbsTraits
 
     static double computeHourlyValue(State& state, double upstreamPrice, double downstreamPrice)
     {
-        return std::abs(state.ntc.ValeurDuFlux[state.link->index] * (upstreamPrice - downstreamPrice));
+        return std::abs(state.ntc.ValeurDuFlux[state.link->index]
+                        * (upstreamPrice - downstreamPrice));
     }
 };
 

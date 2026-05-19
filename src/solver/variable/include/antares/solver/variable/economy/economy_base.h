@@ -20,6 +20,15 @@
 namespace Antares::Solver::Variable::Economy
 {
 
+// The `detail` namespace contains implementation details and helper
+// utilities for the Economy variable system. Symbols placed in this
+// namespace are internal implementation artifacts (traits, fallbacks,
+// SFINAE helpers) and are not part of the public API. Using a dedicated
+// `detail` namespace makes the intent explicit: these types help detect
+// optional nested types or member functions in `Traits` (for example
+// `AuxiliaryDataType`) and provide safe defaults when those optional
+// members are absent. This enables generic code to compile whether or
+// not a particular `Traits` class provides extra auxiliary data.
 namespace detail
 {
 struct EmptyAuxiliaryData
@@ -31,6 +40,10 @@ struct AuxiliaryDataType
 {
     using type = EmptyAuxiliaryData;
 };
+
+// Triggers static_assert only when a template fallback branch is actually instantiated.
+template<class>
+inline constexpr bool always_false_v = false;
 
 template<class TraitsT>
 struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataType>>
@@ -345,7 +358,7 @@ private:
 
     static void setHourlyValueIfSupported(IntermediateValues& yearlyValues,
                                           AuxiliaryDataType& auxiliaryData,
-                                          State& state,
+                                          const State& state,
                                           unsigned int numSpace)
     {
         if constexpr (requires {
@@ -367,6 +380,13 @@ private:
             {
                 yearlyValues[state.hourInTheYear] = Traits::value(state);
             }
+        }
+        else
+        {
+            static_assert(detail::always_false_v<Traits>,
+                          "Traits must provide either setHourlyValue(...), "
+                          "checkCondition(auxiliaryData, state)+value(auxiliaryData, state), "
+                          "or checkCondition(state)+value(state)");
         }
     }
 

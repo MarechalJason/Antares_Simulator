@@ -8,7 +8,7 @@
 #include <antares/expressions/Registry.hxx>
 #include <antares/expressions/nodes/ExpressionsNodes.h>
 #include <antares/expressions/visitors/EvalVisitor.h>
-#include <antares/study/system-model/variabilityType.h>
+#include <antares/study/system-model-base/variabilityType.h>
 #include "antares/optimisation/linear-problem-data-impl/timeSeriesSet.h"
 
 #include "UtilMocks.h"
@@ -98,12 +98,12 @@ CreateEvalVisitor::CreateEvalVisitor():
     optimEntityContainer_->addFromSystemComponents(components_);
 
     // And finally, creation of the evaluation visitor (purpose of this fixture)
+    const auto& scenario = scenarioGroupRepo_.scenario(component_.getScenarioGroupId());
     evalVisitor = std::make_unique<EvalVisitor>(*optimEntityContainer_,
                                                 fillCtx_,
                                                 component_,
                                                 &data_,
-                                                &scenarioGroupRepo_.scenario(
-                                                  component_.getScenarioGroupId()));
+                                                scenario);
 }
 
 // =================================================
