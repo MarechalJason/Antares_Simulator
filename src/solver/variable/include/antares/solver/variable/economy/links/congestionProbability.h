@@ -4,6 +4,9 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_CongestionProbability_H__
 #define __SOLVER_VARIABLE_ECONOMY_CongestionProbability_H__
 
+#include <array>
+#include <vector>
+
 #include <antares/study/area/constants.h>
 
 #include "../../variable.h"
@@ -57,8 +60,8 @@ struct VCardCongestionProbability
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesBaseType[columnCount];
-    typedef IntermediateValuesBaseType* IntermediateValuesType;
+    using IntermediateValuesBaseType = std::array<IntermediateValues, columnCount>;
+    using IntermediateValuesType = std::vector<IntermediateValuesBaseType>;
 
     struct Multiple
     {
@@ -123,12 +126,6 @@ public:
     };
 
 public:
-    ~CongestionProbability()
-    {
-        delete[] pValuesForTheCurrentYear;
-        delete[] pValuesForYearLocalReport;
-    }
-
     void initializeFromStudy(Data::Study& study)
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
@@ -143,20 +140,13 @@ public:
             AncestorType::pResults[i].reset();
         }
 
-        pValuesForTheCurrentYear = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
+        pValuesForYearLocalReport.resize(pNbYearsParallel);
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
         {
             for (unsigned int i = 0; i != VCardType::columnCount; ++i)
             {
                 pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(study);
-            }
-        }
-
-        pValuesForYearLocalReport = new VCardType::IntermediateValuesBaseType[pNbYearsParallel];
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
-        {
-            for (unsigned int i = 0; i != VCardType::columnCount; ++i)
-            {
                 pValuesForYearLocalReport[numSpace][i].initializeFromStudy(study);
             }
         }
@@ -278,53 +268,28 @@ public:
 
     void beforeYearByYearExport(uint /*year*/, uint numSpace)
     {
+        auto binarize = [](double v) { return v > 0. ? 100. : 0.; };
         for (uint i = 0; i != VCardType::columnCount; ++i)
         {
+            const auto& src = pValuesForTheCurrentYear[numSpace][i];
+            auto& dst = pValuesForYearLocalReport[numSpace][i];
             for (uint h = 0; h != HOURS_PER_YEAR; ++h)
             {
-                pValuesForYearLocalReport[numSpace][i].hour[h] = (pValuesForTheCurrentYear[numSpace]
-                                                                                          [i]
-                                                                                            .hour[h]
-                                                                  > 0.)
-                                                                   ? 100.
-                                                                   : 0.;
+                dst.hour[h] = binarize(src.hour[h]);
             }
-
             for (uint d = 0; d != DAYS_PER_YEAR; ++d)
             {
-                pValuesForYearLocalReport[numSpace][i].day[d] = (pValuesForTheCurrentYear[numSpace]
-                                                                                         [i]
-                                                                                           .day[d]
-                                                                 > 0.)
-                                                                  ? 100.
-                                                                  : 0.;
+                dst.day[d] = binarize(src.day[d]);
             }
-
             for (uint w = 0; w != WEEKS_PER_YEAR; ++w)
             {
-                pValuesForYearLocalReport[numSpace][i].week[w] = (pValuesForTheCurrentYear[numSpace]
-                                                                                          [i]
-                                                                                            .week[w]
-                                                                  > 0.)
-                                                                   ? 100.
-                                                                   : 0.;
+                dst.week[w] = binarize(src.week[w]);
             }
-
             for (uint m = 0; m != MONTHS_PER_YEAR; ++m)
             {
-                pValuesForYearLocalReport[numSpace][i].month[m] = (pValuesForTheCurrentYear
-                                                                     [numSpace][i]
-                                                                       .month[m]
-                                                                   > 0.)
-                                                                    ? 100.
-                                                                    : 0.;
+                dst.month[m] = binarize(src.month[m]);
             }
-
-            pValuesForYearLocalReport[numSpace][i].year = (pValuesForTheCurrentYear[numSpace][i]
-                                                             .year
-                                                           > 0.)
-                                                            ? 100.
-                                                            : 0.;
+            dst.year = binarize(src.year);
         }
     }
 

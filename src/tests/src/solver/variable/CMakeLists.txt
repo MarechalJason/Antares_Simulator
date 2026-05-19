@@ -15,6 +15,11 @@ add_boost_test(test-residual-load
   LIBS
   antares-solver-variable)
 
+add_boost_test(test-migrated-variables-metadata
+  SRC test_migrated_variables_metadata.cpp
+  LIBS
+  antares-solver-variable)
+
 add_boost_test(test-dynamic-aggregation
     SRC test_dynamic.cpp
     LIBS
