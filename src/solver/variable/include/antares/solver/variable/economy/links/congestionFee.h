@@ -4,7 +4,7 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_CongestionFee_H__
 #define __SOLVER_VARIABLE_ECONOMY_CongestionFee_H__
 
-#include "congestionFee_base.h"
+#include "links_base.h"
 
 namespace Antares::Solver::Variable::Economy
 {
@@ -25,6 +25,20 @@ struct CongestionFeeTraits
         return "Congestion fee collected throughout all MC years (Alg.)";
     }
 
+    typedef Results<R::AllYears::Average< // The average values throughout all years
+      R::AllYears::StdDeviation<          // The standard deviation values throughout all years
+        R::AllYears::Min<                 // The minimum values throughout all years
+          R::AllYears::Max<               // The maximum values throughout all years
+            >>>>>
+      ResultsType;
+
+    static constexpr uint8_t decimal = 0;
+
+    static void computeStats(IntermediateValues& iv)
+    {
+        iv.computeStatisticsForTheCurrentYear();
+    }
+
     static double computeHourlyValue(State& state, double upstreamPrice, double downstreamPrice)
     {
         return state.ntc.ValeurDuFlux[state.link->index] * (upstreamPrice - downstreamPrice);
@@ -35,7 +49,7 @@ struct CongestionFeeTraits
 ** \brief Marginal CongestionFee
 */
 template<class NextT = Container::EndOfList>
-using CongestionFee = CongestionFee_Base<CongestionFeeTraits, NextT>;
+using CongestionFee = EconomyLink_Base<CongestionFeeTraits, NextT>;
 
 } // namespace Antares::Solver::Variable::Economy
 

@@ -4,7 +4,7 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_FlowLinear_H__
 #define __SOLVER_VARIABLE_ECONOMY_FlowLinear_H__
 
-#include "EconomyLinkBase.h"
+#include "links_base.h"
 
 namespace Antares::Solver::Variable::Economy
 {
@@ -31,6 +31,13 @@ struct FlowLinearTraits
           R::AllYears::Max<               // The maximum values throughout all years
             >>>>>
       ResultsType;
+
+    static constexpr uint8_t decimal = 0;
+
+    static void computeStats(IntermediateValues& iv)
+    {
+        iv.computeStatisticsForTheCurrentYear();
+    }
 
     static double hourValue(State& state)
     {
@@ -62,9 +69,9 @@ struct FlowLinearTraits
 ** \brief Marginal FlowLinear
 */
 template<class NextT = Container::EndOfList>
-using FlowLinear = EconomyLinkBase<FlowLinearTraits, NextT>;
+using FlowLinear = EconomyLink_Base<FlowLinearTraits, NextT>;
 
-using VCardFlowLinear = VCardEconomyLinkBase<FlowLinearTraits>;
+using VCardFlowLinear = VCard_LinkBase<FlowLinearTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

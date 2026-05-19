@@ -82,15 +82,53 @@ Avancement:
 
 Variables de lien avec cycles alternatifs (pas `pNbYearsParallel`, calcul en `simulationEnd`/`initializeFromAreaLink`):
 
-- [ ] `flowQuad.h` – `initializeFromAreaLink`, `simulationEnd` (data pointers, merge(0, ...))
-- [ ] `loopFlow.h` – `initializeFromAreaLink`, `simulationEnd`, template hook `InitializeResultsFromStudy`
-- [ ] `congestionProbability.h` – colonnes dynamiques, exclu
+- [x] `flowQuad.h` – migré vers `StaticLinkBase` via `FlowQuadTraits` (PR C5)
+- [x] `loopFlow.h` – migré vers `StaticLinkBase` via `LoopFlowTraits` (PR C5)
+- [ ] `congestionProbability.h` – colonnes dynamiques, exclu (standalone, nettoyage interne seulement)
 
 Ces 3 fichiers nécessitent des bases dédiées ou des hooks supplémentaires dans les bases existantes.
+flowQuad + loopFlow → nouvelle `StaticLinkBase` (PR C5 ci-dessous).
 
-### Phase 4 - Haut risque
+### Phase 4 - Consolidation des bases existantes
 
-Variables avec mémoire/agrégation spécifique (`ProductionByDispatchablePlant`, etc.) avec hooks dédiés.
+Les 7 bases ont ~95% de code identique (~1943 lignes). Objectif: 7 bases → 4+1 petite.
+
+#### Partie A – Consolider 3 bases lien → 1 (`EconomyLink_Base`)
+
+`EconomyLinkBase`, `CongestionFee_Base` ne diffèrent que par le dispatch de `hourForEachLink` et `buildDigest`.
+Stratégie: clauses `requires` dans `EconomyLink_Base` (pattern déjà utilisé dans `Economy_Base`).
+
+- [x] **PR A1** – Fusionner `EconomyLinkBase` dans `EconomyLink_Base` (~170 lignes économisées)
+  - `links_base.h`: ajouter dispatch `requires` pour `Traits::hourValue(state)` dans `hourForEachLink`
+  - `links_base.h`: ajouter hook optionnel `Traits::buildDigest` dans `buildDigest`
+  - `flowLinear.h`, `flowLinearAbs.h`: ajouter `decimal`, `computeStats`; changer base → `EconomyLink_Base`
+  - Supprimer `EconomyLinkBase.h`
+
+- [x] **PR A2** – Fusionner `CongestionFee_Base` dans `EconomyLink_Base` (~180 lignes économisées)
+  - `links_base.h`: ajouter dispatch `requires` pour `Traits::computeHourlyValue(state, up, down)`
+  - Déplacer `ResultsType` dans `CongestionFeeTraits`/`CongestionFeeAbsTraits`
+  - `congestionFee.h`, `congestionFeeAbs.h`: changer base → `EconomyLink_Base`
+  - Supprimer `congestionFee_base.h`
+
+**Résultat: 4 bases mono-valeur → 2** (`Economy_Base` area, `EconomyLink_Base` link)
+
+#### Partie B – Consolider `STStorageByCluster` + `ByPlant` → 1 (`ByClusterBase`)
+
+- [x] **PR B1** – Généraliser `STStorageByClusterBase` avec `Traits::clusterCount`, `Traits::fileLevel` et `Traits::buildSurveyReport`
+
+- [x] **PR B2** – Migrer `productionByRenewablePlant`, supprimer `ByPlant_base.h` (~170 lignes)
+
+**Résultat: 3 bases multi-cluster → 2** (`ByClusterBase`, `DispatchablePlantByClusterBase`)
+
+#### Partie C – Migrer les fichiers standalone restants
+
+- [x] **PR C1** – `STStorageCashFlowByCluster` → `STStorageByClusterBase` (~200 lignes)
+- [x] **PR C2** – `waterValue` → `Economy_Base` (~180 lignes) + étendre `VCard_Base` pour `isPossiblyNonApplicable`
+- [x] **PR C3** – `nbOfDispatchedUnits` → `Economy_Base` (~190 lignes) + hook `yearEndBuildForEachThermalCluster`
+- [x] **PR C4** – `overallCost` (economy + adequacy) → `Economy_Base` (~400 lignes)
+- [x] **PR C5** – Créer `StaticLinkBase`, migrer `flowQuad` + `loopFlow` (~350 lignes)
+
+**Total estimé: ~1870 lignes économisées sur 9 PRs.**
 
 ### Phase 5 - Optionnelle
 

@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#include "EconomyLinkBase.h"
+#include "links_base.h"
 
 namespace Antares::Solver::Variable::Economy
 {
@@ -34,14 +34,16 @@ struct FlowLinearAbsTraits
             >>>>>
       ResultsType;
 
+    static constexpr uint8_t decimal = 0;
+
+    static void computeStats(IntermediateValues& iv)
+    {
+        iv.computeStatisticsForTheCurrentYear();
+    }
+
     static double hourValue(State& state)
     {
         return std::abs(state.ntc.ValeurDuFlux[state.link->index]);
-    }
-
-    template<class R>
-    static void buildDigest(SurveyResults&, int, int, const R&)
-    {
     }
 };
 
@@ -49,7 +51,7 @@ struct FlowLinearAbsTraits
 ** \brief Marginal FlowLinearAbs
 */
 template<class NextT = Container::EndOfList>
-using FlowLinearAbs = EconomyLinkBase<FlowLinearAbsTraits, NextT>;
+using FlowLinearAbs = EconomyLink_Base<FlowLinearAbsTraits, NextT>;
 
 } // namespace Antares::Solver::Variable::Economy
 

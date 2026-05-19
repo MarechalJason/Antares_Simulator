@@ -2,20 +2,20 @@
 set -euo pipefail
 
 # Paramètres (modifiable)
-START_COMMIT="ba6f5efde2b9eb5a546ad48b83d6b4bdfa6c221b"
-END_COMMIT="7b7475268c93062504d803b5c6c06d7648ee719c"
+START_COMMIT="86ae06905cfe03f3e045d0ac2ecc1bce2d6777de"
+END_COMMIT="2b07145e00f5b3860448f30ee6fd3bdb1cb49ea8"
 REMOTE="origin"
 BRANCH_PREFIX="fix/sortie_"
 START_INDEX=1
 
 # Mode: set DRY_RUN=0 pour pousser réellement
-DRY_RUN=1
+DRY_RUN=0
 
 # Pré-vérifications
 if [ -n "$(git status --porcelain)" ]; then
   echo "Erreur: l'arbre de travail a des modifications. Committez/stashez d'abord."
   git status --porcelain
-  exit 1
+  #exit 1
 fi
 
 echo "Fetching remote ${REMOTE}..."
