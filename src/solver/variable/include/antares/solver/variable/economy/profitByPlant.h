@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "DispatchablePlantByCluster_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -59,8 +61,7 @@ struct ProfitByPlantTraits
 using VCardProfitByPlant = VCardDispatchablePlantByClusterBase<ProfitByPlantTraits>;
 
 /*!
-** \brief C02 Average value of the overrall OperatingCost emissions expected from all
-**   the thermal dispatchable clusters
+** \brief Profit by plant for thermal dispatchable clusters
 */
 template<class NextT = Container::EndOfList>
 using ProfitByPlant = DispatchablePlantByClusterBase<ProfitByPlantTraits, NextT>;
