@@ -36,6 +36,11 @@ struct DtgMarginCsrTraits
         return state.hourlyResults->ValeursHorairesDtgMrgCsr[state.hourInTheWeek];
     }
 
+    static bool checkCondition(const State&)
+    {
+        return true;
+    }
+
     static void computeStats(IntermediateValues& intermediateValues)
     {
         intermediateValues.computeStatisticsForTheCurrentYear();

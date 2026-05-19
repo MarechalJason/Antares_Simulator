@@ -36,6 +36,11 @@ struct PriceCSRTraits
         return -state.hourlyResults->CoutsMarginauxHorairesCSR[state.hourInTheWeek];
     }
 
+    static bool checkCondition(const State&)
+    {
+        return true;
+    }
+
     static void computeStats(IntermediateValues& intermediateValues)
     {
         intermediateValues.computeAveragesForCurrentYearFromHourlyResults();

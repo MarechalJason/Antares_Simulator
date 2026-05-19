@@ -4,6 +4,8 @@
 #ifndef __SOLVER_VARIABLE_ECONOMY_NbOfDispatchedUnits_H__
 #define __SOLVER_VARIABLE_ECONOMY_NbOfDispatchedUnits_H__
 
+#include <antares/logs/logs.h>
+
 #include "economy_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -44,10 +46,19 @@ struct NbOfDispatchedUnitsTraits
         iv.computeStatisticsForTheCurrentYear();
     }
 
-    // No-op: hourly values are accumulated in yearEndBuildForEachThermalCluster only.
+    // This variable produces no hourly value: its results are accumulated at
+    // year end in yearEndBuildForEachThermalCluster. We still implement an
+    // explicit no-op setHourlyValue so the economy_base contract is satisfied
+    // intentionally (rather than by a silent fallback), and we log it once.
     template<class Aux>
     static void setHourlyValue(IntermediateValues&, Aux&, const State&, unsigned int)
     {
+        [[maybe_unused]] static const bool logged = []
+        {
+            Antares::logs.info() << "Variable '" << Caption()
+                                 << "' has no hourly value (computed at year end)";
+            return true;
+        }();
     }
 
     static void yearEndBuildForEachThermalCluster(IntermediateValues& values,
