@@ -223,6 +223,20 @@ public:
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
+        if constexpr (requires {
+                          Traits::yearEndBuild(pValuesForTheCurrentYear[numSpace],
+                                               auxiliaryData_,
+                                               state,
+                                               year,
+                                               numSpace);
+                      })
+        {
+            Traits::yearEndBuild(pValuesForTheCurrentYear[numSpace],
+                                 auxiliaryData_,
+                                 state,
+                                 year,
+                                 numSpace);
+        }
         // Next variable
         NextType::yearEndBuild(state, year, numSpace);
     }
@@ -279,6 +293,20 @@ public:
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
+    }
+
+    void weekForEachArea(State& state, unsigned int numSpace)
+    {
+        if constexpr (requires {
+                          Traits::weekForEachArea(pValuesForTheCurrentYear[numSpace],
+                                                  state,
+                                                  numSpace);
+                      })
+        {
+            Traits::weekForEachArea(pValuesForTheCurrentYear[numSpace], state, numSpace);
+        }
+        // Next variable
+        NextType::weekForEachArea(state, numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(

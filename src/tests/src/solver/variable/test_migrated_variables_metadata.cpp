@@ -17,6 +17,7 @@
 #include "antares/solver/variable/economy/links/hurdleCosts.h"
 #include "antares/solver/variable/economy/links/loopFlow.h"
 #include "antares/solver/variable/economy/links/marginalCost.h"
+#include "antares/solver/variable/economy/max-mrg.h"
 #include "antares/solver/variable/economy/minDispatchableGenByPlant.h"
 #include "antares/solver/variable/economy/nearPriceCap.h"
 #include "antares/solver/variable/economy/productionByRenewablePlant.h"
@@ -46,6 +47,9 @@ BOOST_AUTO_TEST_CASE(area_variables_on_economy_base)
     BOOST_CHECK_EQUAL(VCardNearPriceCap::Caption(), "NPCAP HOURS");
     BOOST_CHECK_EQUAL(VCardNearPriceCap::Unit(), "Hours");
     BOOST_CHECK_EQUAL(VCardSpilledEnergy::Caption(), "SPIL. ENRG");
+
+    BOOST_CHECK_EQUAL(VCardMARGE::Caption(), "MAX MRG");
+    BOOST_CHECK_EQUAL(VCardMARGE::Unit(), "MWh");
 }
 
 BOOST_AUTO_TEST_CASE(sts_by_cluster_variables)
