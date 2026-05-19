@@ -3,85 +3,79 @@
 
 #pragma once
 
-#include <antares/solver/variable/variable.h>
+#include "../economy_base.h"
 
 namespace Antares::Solver::Variable::Economy
 {
 
+/*!
+** \brief Base class for link variables computed once across all MC years.
+**
+** Unlike EconomyLink_Base, these variables hold a single IntermediateValues
+** (not one per parallel year). Data is loaded during initializeFromStudy or
+** initializeFromAreaLink, and stats+merge happen once in simulationEnd.
+**
+** Traits hooks (all optional, dispatched via requires):
+**   onInitializeFromStudy(iv, aux, study)        -- store study pointers / sizes
+**   onInitializeFromAreaLink(iv, aux, study, link) -- load data from link
+**   onSimulationBegin(iv, aux)                   -- reset iv if needed
+**   loadDataForSimulationEnd(iv, aux)            -- copy data into iv before stats
+**   buildDigest(results, digestLevel, dataLevel, pResults) -- fill digest matrix
+*/
 template<class Traits>
-struct VCard_LinkBase
+struct VCardStaticLinkBase
 {
-    //! Caption
     static std::string Caption()
     {
         return Traits::Caption();
     }
 
-    //! Unit
     static std::string Unit()
     {
         return Traits::Unit();
     }
 
-    //! The short description of the variable
     static std::string Description()
     {
         return Traits::Description();
     }
 
-    //! The expecte results
     typedef typename Traits::ResultsType ResultsType;
+    typedef VCardStaticLinkBase VCardForSpatialAggregate;
 
-    typedef VCard_LinkBase VCardForSpatialAggregate;
-
-    //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;
-    //! File level (provided by the type of the results)
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
                                                  & (Category::FileLevel::id
                                                     | Category::FileLevel::va);
-    //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
     static constexpr uint8_t nodeDepthForGUI = +0;
-    //! Decimal precision
-    static constexpr uint8_t decimal = Traits::decimal;
-    //! Number of columns used by the variable (One ResultsType per column)
+    static constexpr uint8_t decimal = 0;
     static constexpr int columnCount = 1;
-    //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    //! Intermediate values
     static constexpr uint8_t hasIntermediateValues = 1;
-    //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesBaseType;
-    typedef std::vector<IntermediateValues> IntermediateValuesType;
+    typedef IntermediateValues IntermediateValuesType;
 
-}; // class VCard
+}; // struct VCardStaticLinkBase
 
 template<class Traits, class NextT = Container::EndOfList>
-class EconomyLink_Base
-    : public Variable::IVariable<EconomyLink_Base<Traits, NextT>, NextT, VCard_LinkBase<Traits>>
+class StaticLinkBase
+    : public Variable::IVariable<StaticLinkBase<Traits, NextT>, NextT, VCardStaticLinkBase<Traits>>
 {
 public:
-    //! Type of the next static variable
     typedef NextT NextType;
-    //! VCard
-    typedef VCard_LinkBase<Traits> VCardType;
-    //! Ancestor
-    typedef Variable::IVariable<EconomyLink_Base<Traits, NextT>, NextT, VCardType> AncestorType;
-
-    //! List of expected results
+    typedef VCardStaticLinkBase<Traits> VCardType;
+    typedef Variable::IVariable<StaticLinkBase<Traits, NextT>, NextT, VCardType> AncestorType;
     typedef typename VCardType::ResultsType ResultsType;
-
     typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+
+    using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 
     enum
     {
-        //! How many items have we got
         count = 1 + NextT::count,
     };
 
@@ -101,19 +95,16 @@ public:
 public:
     void initializeFromStudy(Data::Study& study)
     {
-        pNbYearsParallel = study.maxNbYearsInParallel;
-
-        // Average on all years
         AncestorType::pResults.initializeFromStudy(study);
         AncestorType::pResults.reset();
+        pValuesForTheCurrentYear.initializeFromStudy(study);
 
-        // Intermediate values
-        pValuesForTheCurrentYear.resize(pNbYearsParallel);
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        if constexpr (requires {
+                          Traits::onInitializeFromStudy(pValuesForTheCurrentYear, aux_, study);
+                      })
         {
-            pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
+            Traits::onInitializeFromStudy(pValuesForTheCurrentYear, aux_, study);
         }
-
         // Next
         NextType::initializeFromStudy(study);
     }
@@ -124,17 +115,32 @@ public:
         NextType::initializeFromArea(study, area);
     }
 
+    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    {
+        // Next
+        NextType::initializeFromAreaLink(study, link);
+    }
+
     void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
     {
+        if constexpr (requires {
+                          Traits::onInitializeFromAreaLink(pValuesForTheCurrentYear,
+                                                           aux_,
+                                                           study,
+                                                           link);
+                      })
+        {
+            Traits::onInitializeFromAreaLink(pValuesForTheCurrentYear, aux_, study, link);
+        }
         // Next
         NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
     {
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        if constexpr (requires { Traits::onSimulationBegin(pValuesForTheCurrentYear, aux_); })
         {
-            pValuesForTheCurrentYear[numSpace].reset();
+            Traits::onSimulationBegin(pValuesForTheCurrentYear, aux_);
         }
         // Next
         NextType::simulationBegin();
@@ -142,78 +148,51 @@ public:
 
     void simulationEnd()
     {
+        if constexpr (requires {
+                          Traits::loadDataForSimulationEnd(pValuesForTheCurrentYear, aux_);
+                      })
+        {
+            Traits::loadDataForSimulationEnd(pValuesForTheCurrentYear, aux_);
+        }
+        // Compute stats then merge into results (always at index 0 — single MC pass)
+        pValuesForTheCurrentYear.computeStatisticsForTheCurrentYear();
+        AncestorType::pResults.merge(0, pValuesForTheCurrentYear);
+        // Next
         NextType::simulationEnd();
     }
 
     void yearBegin(uint year, unsigned int numSpace)
     {
-        // Reset
-        pValuesForTheCurrentYear[numSpace].reset();
-        // Next variable
         NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        // Next variable
         NextType::yearEndBuild(state, year, numSpace);
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd(uint year, unsigned int numSpace)
     {
-        // Compute all statistics for the current year (daily,weekly,monthly)
-        Traits::computeStats(pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
         NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
-        // Merge all those values with the global results
-        AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
         NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(uint hourInTheYear)
     {
-        // Next variable
         NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        // Next variable
         NextType::hourForEachArea(state, numSpace);
     }
 
     void hourForEachLink(State& state, unsigned int numSpace)
     {
-        if constexpr (requires {
-                          Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
-                      })
-        {
-            Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
-        }
-        else if constexpr (requires { Traits::hourValue(state); })
-        {
-            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] += Traits::hourValue(
-              state);
-        }
-        else if constexpr (requires { Traits::computeHourlyValue(state, 0.0, 0.0); })
-        {
-            const double upstreamPrice = state.problemeHebdo
-                                           ->ResultatsHoraires[state.link->from->index]
-                                           .CoutsMarginauxHoraires[state.hourInTheWeek];
-            const double downstreamPrice = state.problemeHebdo
-                                             ->ResultatsHoraires[state.link->with->index]
-                                             .CoutsMarginauxHoraires[state.hourInTheWeek];
-            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = Traits::
-              computeHourlyValue(state, upstreamPrice, downstreamPrice);
-        }
-        // Next item in the list
         NextType::hourForEachLink(state, numSpace);
     }
 
@@ -233,35 +212,33 @@ public:
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int,
-      unsigned int numSpace) const
+      uint,
+      uint) const
     {
-        return pValuesForTheCurrentYear[numSpace].hour;
+        return pValuesForTheCurrentYear.hour;
     }
 
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint) const
     {
-        // Initializing external pointer on current variable non applicable status
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
         if (AncestorType::isPrinted[0])
         {
-            // Write the data for the current year
             results.variableCaption = VCardType::Caption();
             results.variableUnit = VCardType::Unit();
-            pValuesForTheCurrentYear[numSpace]
-              .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
+            pValuesForTheCurrentYear.template buildAnnualSurveyReport<VCardType>(results,
+                                                                                 fileLevel,
+                                                                                 precision);
         }
     }
 
 private:
-    //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    unsigned int pNbYearsParallel;
+    AuxiliaryDataType aux_{};
 
-}; // class EconomyLink_Base
+}; // class StaticLinkBase
 
 } // namespace Antares::Solver::Variable::Economy

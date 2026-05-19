@@ -98,7 +98,17 @@ struct VCard_Base
     //! Intermediate values
     static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
-    static constexpr uint8_t isPossiblyNonApplicable = 0;
+    static constexpr uint8_t isPossiblyNonApplicable = []
+    {
+        if constexpr (requires { Traits::isPossiblyNonApplicable; })
+        {
+            return Traits::isPossiblyNonApplicable;
+        }
+        else
+        {
+            return uint8_t{0};
+        }
+    }();
 
     typedef IntermediateValues IntermediateValuesBaseType;
     typedef std::vector<IntermediateValues> IntermediateValuesType;
@@ -215,6 +225,25 @@ public:
     {
         // Next variable
         NextType::yearEndBuild(state, year, numSpace);
+    }
+
+    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
+    {
+        if constexpr (requires {
+                          Traits::yearEndBuildForEachThermalCluster(
+                            pValuesForTheCurrentYear[numSpace],
+                            state,
+                            year,
+                            numSpace);
+                      })
+        {
+            Traits::yearEndBuildForEachThermalCluster(pValuesForTheCurrentYear[numSpace],
+                                                      state,
+                                                      year,
+                                                      numSpace);
+        }
+        // Next variable
+        NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)

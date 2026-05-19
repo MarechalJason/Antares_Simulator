@@ -39,8 +39,7 @@ struct VCardSTStorageByClusterBase
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
     //! File level (provided by the type of the results)
-    static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
-                                                 & (Category::FileLevel::de_sts);
+    static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile & Traits::fileLevel;
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
     //! Indentation (GUI)
@@ -110,7 +109,7 @@ public:
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         // Get the area
-        nbClusters_ = area->shortTermStorage.count();
+        nbClusters_ = Traits::clusterCount(area);
         if (nbClusters_)
         {
             AncestorType::pResults.resize(nbClusters_);
@@ -215,20 +214,10 @@ public:
         if (AncestorType::isPrinted[0])
         {
             assert(NULL != results.data.area);
-            const auto& shortTermStorage = results.data.area->shortTermStorage;
-
-            // Write the data for the current year
-            uint clusterIndex = 0;
-            for (const auto& sts: shortTermStorage.storagesByIndex)
-            {
-                // Write the data for the current year
-                results.variableCaption = sts.properties.name;
-                results.variableUnit = VCardType::Unit();
-                pValuesForTheCurrentYear[numSpace][clusterIndex]
-                  .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-
-                clusterIndex++;
-            }
+            Traits::buildSurveyReport(pValuesForTheCurrentYear[numSpace],
+                                      results,
+                                      fileLevel,
+                                      precision);
         }
     }
 
