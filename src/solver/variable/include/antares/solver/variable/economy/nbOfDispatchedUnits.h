@@ -44,6 +44,12 @@ struct NbOfDispatchedUnitsTraits
         iv.computeStatisticsForTheCurrentYear();
     }
 
+    // No-op: hourly values are accumulated in yearEndBuildForEachThermalCluster only.
+    template<class Aux>
+    static void setHourlyValue(IntermediateValues&, Aux&, const State&, unsigned int)
+    {
+    }
+
     static void yearEndBuildForEachThermalCluster(IntermediateValues& values,
                                                   State& state,
                                                   uint /*year*/,

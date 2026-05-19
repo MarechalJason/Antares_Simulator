@@ -28,8 +28,8 @@ struct NearPriceCapTraits
         return "Near Price Cap Hours";
     }
 
-    using ResultsType = Results<R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<
-      R::AllYears::Max<>>>>>;
+    using ResultsType = Results<
+      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
 
     static constexpr uint8_t decimal = 4;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSumThen1IfPositive;

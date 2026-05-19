@@ -47,24 +47,23 @@ struct HurdleCostsTraits
 
             if (state.link->useLoopFlow)
             {
-                const double loopFlow
-                  = state.problemeHebdo->ValeursDeNTC[state.hourInTheWeek]
-                      .ValeurDeLoopFlowOrigineVersExtremite[state.link->index];
+                const double loopFlow = state.problemeHebdo->ValeursDeNTC[state.hourInTheWeek]
+                                          .ValeurDeLoopFlowOrigineVersExtremite[state.link->index];
                 if (flowLinear - loopFlow > 0.)
                 {
-                    const double hurdleCostDirect
-                      = (flowLinear - loopFlow)
-                        * state.link->parameters.entry[Data::fhlHurdlesCostDirect]
-                                                      [state.hourInTheYear];
+                    const double hurdleCostDirect = (flowLinear - loopFlow)
+                                                    * state.link->parameters
+                                                        .entry[Data::fhlHurdlesCostDirect]
+                                                              [state.hourInTheYear];
                     iv.hour[state.hourInTheYear] += hurdleCostDirect;
                     state.annualSystemCost += hurdleCostDirect;
                 }
                 else
                 {
-                    const double hurdleCostIndirect
-                      = -(flowLinear - loopFlow)
-                        * state.link->parameters.entry[Data::fhlHurdlesCostIndirect]
-                                                      [state.hourInTheYear];
+                    const double hurdleCostIndirect = -(flowLinear - loopFlow)
+                                                      * state.link->parameters
+                                                          .entry[Data::fhlHurdlesCostIndirect]
+                                                                [state.hourInTheYear];
                     iv.hour[state.hourInTheYear] += hurdleCostIndirect;
                     state.annualSystemCost += hurdleCostIndirect;
                 }
@@ -73,19 +72,19 @@ struct HurdleCostsTraits
             {
                 if (flowLinear > 0.)
                 {
-                    const double hurdleCostDirect
-                      = flowLinear
-                        * state.link->parameters.entry[Data::fhlHurdlesCostDirect]
-                                                      [state.hourInTheYear];
+                    const double hurdleCostDirect = flowLinear
+                                                    * state.link->parameters
+                                                        .entry[Data::fhlHurdlesCostDirect]
+                                                              [state.hourInTheYear];
                     iv.hour[state.hourInTheYear] += hurdleCostDirect;
                     state.annualSystemCost += hurdleCostDirect;
                 }
                 else
                 {
-                    const double hurdleCostIndirect
-                      = -flowLinear
-                        * state.link->parameters.entry[Data::fhlHurdlesCostIndirect]
-                                                      [state.hourInTheYear];
+                    const double hurdleCostIndirect = -flowLinear
+                                                      * state.link->parameters
+                                                          .entry[Data::fhlHurdlesCostIndirect]
+                                                                [state.hourInTheYear];
                     iv.hour[state.hourInTheYear] += hurdleCostIndirect;
                     state.annualSystemCost += hurdleCostIndirect;
                 }

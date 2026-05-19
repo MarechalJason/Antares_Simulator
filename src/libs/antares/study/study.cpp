@@ -248,20 +248,12 @@ fs::path StudyCreateOutputPath(SimulationMode mode,
         folderOutput += '-' + transformNameIntoID(label);
     }
 
-    std::string outpath = folderOutput.string() + suffix;
-    // avoid creating the same output twice
-    if (fs::exists(outpath))
+    // avoid overwriting existing output by adding a suffix (-2, -3, etc.)
+    if (!Utils::generatePathWithSuffix(folderOutput, suffix))
     {
-        std::string newpath;
-        uint index = 1; // will start from 2
-        do
-        {
-            ++index;
-            newpath = folderOutput.string() + '-' + std::to_string(index) + suffix;
-        } while (fs::exists(newpath) and index < 2000);
-
-        folderOutput += '-' + std::to_string(index);
+        throw Error::LoadingError("Output folder already exists: " + folderOutput.string());
     }
+
     return folderOutput;
 }
 
@@ -354,51 +346,6 @@ void Study::saveAboutTheStudy(Solver::IResultWriter& resultWriter)
             resultWriter.addEntryFromBuffer(path.c_str(), content);
         }
     }
-}
-
-Area* Study::areaAdd(const AreaName& name)
-{
-    if (name.empty())
-    {
-        return nullptr;
-    }
-    if (CheckForbiddenCharacterInAreaName(name))
-    {
-        logs.error() << "character '*' is forbidden in area name: `" << name << "`";
-        return nullptr;
-    }
-
-    // Result
-    Area* area = nullptr;
-    logs.info() << "adding new area " << name;
-
-    // The new scope is mandatory to rebuild the correlation matrices
-    // and the scenario builder data
-    {
-        // Adding an area
-        AreaName newName;
-        if (not modifyAreaNameIfAlreadyTaken(newName, name) or newName.empty())
-        {
-            logs.error() << "Impossible to find a name for a new area";
-            return nullptr;
-        }
-
-        // Adding an area
-        area = addAreaToListOfAreas(areas, newName);
-        if (not area)
-        {
-            return nullptr;
-        }
-
-        // Rebuild indexes for all areas
-        areas.rebuildIndexes();
-
-        // Default values for the area
-        area->createMissingData();
-        area->resetToDefaultValues();
-    }
-
-    return area;
 }
 
 template<>
