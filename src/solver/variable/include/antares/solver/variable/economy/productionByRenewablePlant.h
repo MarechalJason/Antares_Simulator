@@ -60,10 +60,10 @@ struct ProductionByRenewablePlantTraits
             results.variableCaption = cluster->name();
             results.variableUnit = Unit();
             clusterValues[cluster->enabledIndex]
-              .template buildAnnualSurveyReport<VCardByPlantBase<ProductionByRenewablePlantTraits>>(
-                results,
-                fileLevel,
-                precision);
+              .template buildAnnualSurveyReport<
+                VCardSTStorageByClusterBase<ProductionByRenewablePlantTraits>>(results,
+                                                                               fileLevel,
+                                                                               precision);
         }
     }
 };

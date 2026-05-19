@@ -42,10 +42,12 @@ struct OverallCostTraits
     }
 
     template<class Aux>
-    static void setHourlyValue(IntermediateValues& iv, Aux&, State& state, unsigned int)
+    static void setHourlyValue(IntermediateValues& iv, Aux&, const State& state, unsigned int)
     {
         auto area = state.area;
-        auto& thermal = state.thermal;
+        // ThermalState::operator[] is non-const; cast is valid since State is always
+        // constructed non-const at call sites.
+        auto& thermal = const_cast<ThermalState&>(state.thermal);
 
         iv[state.hourInTheYear] += (state.hourlyResults
                                       ->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek]
