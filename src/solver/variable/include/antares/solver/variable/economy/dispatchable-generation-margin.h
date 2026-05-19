@@ -34,21 +34,11 @@ struct DispatchableGenMarginTraits
 
     static void setHourlyValue(IntermediateValues& yearlyValues,
                                detail::EmptyAuxiliaryData&,
-                               State& state,
+                               const State& state,
                                unsigned int)
     {
         yearlyValues[state.hourInTheYear] += state.scratchpad
                                                ->dispatchableGenerationMargin[state.hourInTheWeek];
-    }
-
-    static bool checkCondition(const State&)
-    {
-        return false;
-    }
-
-    static double value(const State&)
-    {
-        return 0.;
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
