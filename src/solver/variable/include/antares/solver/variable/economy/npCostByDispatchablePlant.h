@@ -48,15 +48,13 @@ struct NonProportionalCostByDispatchablePlantTraits
     }
 };
 
-using VCardNonProportionalCostByDispatchablePlant =
-  VCardDispatchablePlantByClusterBase<NonProportionalCostByDispatchablePlantTraits>;
+using VCardNonProportionalCostByDispatchablePlant = VCardDispatchablePlantByClusterBase<
+  NonProportionalCostByDispatchablePlantTraits>;
 
 /*!
-** \brief C02 Average value of the overrall OperatingCost emissions expected from all
-**   the thermal dispatchable clusters
+** \brief NP cost expected from all the thermal dispatchable clusters
 */
 using NonProportionalCostByDispatchablePlant =
   DispatchablePlantByClusterBase<NonProportionalCostByDispatchablePlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
-
