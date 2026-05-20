@@ -280,7 +280,8 @@ public:
         if ((dataLevel & VCardType::categoryDataLevel) && (fileLevel & VCardType::categoryFileLevel)
             && (precision & VCardType::precision))
         {
-            results.isCurrentVarNA[0] = AncestorType::isNonApplicable[0];
+            results.isPrinted = AncestorType::isPrinted;
+            results.isCurrentVarNA = AncestorType::isNonApplicable;
 
             for (size_t column = 0; column < nbColumns_; ++column)
             {
