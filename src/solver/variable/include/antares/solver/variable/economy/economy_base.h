@@ -120,23 +120,49 @@ void weekForEachAreaIfSupported(IV& iv, State& state, uint numSpace)
     }
 }
 
-template<class Traits, class IV, class Aux, class State>
-void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, uint numSpace)
-{
-    if constexpr (requires { Traits::setHourlyValue(iv, aux, state, numSpace); })
-    {
-        Traits::setHourlyValue(iv, aux, state, numSpace);
-    }
-    else if constexpr (requires { Traits::setHourlyValue(iv, state, numSpace); })
-    {
-        Traits::setHourlyValue(iv, state, numSpace);
-    }
+namespace detail {
+// Triggers static_assert only when a template fallback branch is actually instantiated.
+template<class>
+inline constexpr bool always_false_v = false;
 }
+
+struct HourlyComputationPolicy
+{
+    template<class Traits, class IV, class Aux, class State>
+    static void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numSpace)
+    {
+        if constexpr (requires { Traits::setHourlyValue(iv, aux, state, numSpace); })
+        {
+            Traits::setHourlyValue(iv, aux, state, numSpace);
+        }
+        else if constexpr (requires { Traits::setHourlyValue(iv, state, numSpace); })
+        {
+            Traits::setHourlyValue(iv, state, numSpace);
+        }
+        else
+        {
+            static_assert(detail::always_false_v<Traits>,
+                          "Traits must provide either "
+                          "setHourlyValue(IntermediateValues&, AuxiliaryDataType&, "
+                          "const State&, unsigned int) or "
+                          "setHourlyValue(IntermediateValues&, const State&, unsigned int)");
+        }
+    }
+};
 
 } // namespace Hooks_
 
-namespace detail
+// The `detail` namespace contains implementation details and helper
+// utilities for the Economy variable system. Symbols placed in this
+// namespace are internal implementation artifacts (traits, fallbacks,
+// SFINAE helpers) and are not part of the public API. Using a dedicated
+// `detail` namespace makes the intent explicit: these types help detect
+// optional nested types or member functions in `Traits` (for example
+// `AuxiliaryDataType`) and provide safe defaults when those optional
+// members are absent. This enables generic code to compile whether or
+// not a particular `Traits` class provides extra auxiliary data.
 
+namespace detail
 {
 struct EmptyAuxiliaryData
 {
@@ -203,7 +229,19 @@ struct EconomyVariableCard
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Traits::spatialAggregate;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
-    static constexpr uint8_t spatialAggregatePostProcessing = 0;
+    //! Post-processing applied during spatial aggregation (e.g. price-weighted averaging).
+    //! Traits may opt in by defining their own `spatialAggregatePostProcessing`; defaults to 0.
+    static constexpr uint8_t spatialAggregatePostProcessing = []
+    {
+        if constexpr (requires { Traits::spatialAggregatePostProcessing; })
+        {
+            return Traits::spatialAggregatePostProcessing;
+        }
+        else
+        {
+            return uint8_t{0};
+        }
+    }();
     //! Intermediate values
     static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)

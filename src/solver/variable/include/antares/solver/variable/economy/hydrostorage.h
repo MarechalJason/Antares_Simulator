@@ -33,7 +33,7 @@ struct HydroStorageTraits
 
     static void setHourlyValue(IntermediateValues& intermediateValues,
                                typename detail::AuxiliaryDataType<HydroStorageTraits>::type&,
-                               State& state,
+                               const State& state,
                                unsigned int)
     {
         intermediateValues.hour[state.hourInTheYear] = state.hourlyResults

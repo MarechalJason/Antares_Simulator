@@ -349,6 +349,18 @@ protected:
                                                                  year,
                                                                  numSpace);
         }
+        else if constexpr (requires {
+                               Traits::yearEndBuildPrepareDataForEachThermalCluster(yearlyValues,
+                                                                                    state,
+                                                                                    year,
+                                                                                    numSpace);
+                           })
+        {
+            Traits::yearEndBuildPrepareDataForEachThermalCluster(yearlyValues,
+                                                                 state,
+                                                                 year,
+                                                                 numSpace);
+        }
     }
 
     static void yearEndBuildForEachThermalClusterIfSupported(
