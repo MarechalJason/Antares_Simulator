@@ -94,7 +94,19 @@ struct VCard_Base
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Traits::spatialAggregate;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
-    static constexpr uint8_t spatialAggregatePostProcessing = 0;
+    //! Post-processing applied during spatial aggregation (e.g. price-weighted averaging).
+    //! Traits may opt in by defining their own `spatialAggregatePostProcessing`; defaults to 0.
+    static constexpr uint8_t spatialAggregatePostProcessing = []
+    {
+        if constexpr (requires { Traits::spatialAggregatePostProcessing; })
+        {
+            return Traits::spatialAggregatePostProcessing;
+        }
+        else
+        {
+            return uint8_t{0};
+        }
+    }();
     //! Intermediate values
     static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
