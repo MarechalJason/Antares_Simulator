@@ -71,15 +71,27 @@ struct STSbyGroupTraits
         const auto& shortTermStorage = state.area->shortTermStorage;
 
         std::map<std::string, size_t> groupToNumbers;
-        for (size_t i = 0; i < descriptors.size(); ++i)
+        const std::string injectionSuffix = "_INJECTION";
+        for (size_t i = 0; i < descriptors.size(); i += STS::NB_COLS_PER_GROUP)
         {
-            groupToNumbers[descriptors[i].caption] = i / STS::NB_COLS_PER_GROUP;
+            const auto& caption = descriptors[i].caption;
+            if (caption.size() > injectionSuffix.size() && caption.ends_with(injectionSuffix))
+            {
+                groupToNumbers[caption.substr(0, caption.size() - injectionSuffix.size())]
+                  = i / STS::NB_COLS_PER_GROUP;
+            }
         }
 
         uint clusterIndex = 0;
         for (const auto& sts: shortTermStorage.storagesByIndex)
         {
-            size_t groupNumber = groupToNumbers.at(sts.properties.groupName);
+            const auto groupIt = groupToNumbers.find(sts.properties.groupName);
+            if (groupIt == groupToNumbers.end())
+            {
+                ++clusterIndex;
+                continue;
+            }
+            const size_t groupNumber = groupIt->second;
             const auto& result = state.hourlyResults->ShortTermStorage[clusterIndex];
 
             pValues[STS::NB_COLS_PER_GROUP * groupNumber + STS::VariableType::injection]
