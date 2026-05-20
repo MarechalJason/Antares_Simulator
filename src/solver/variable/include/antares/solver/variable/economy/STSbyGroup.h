@@ -61,19 +61,48 @@ struct STSbyGroupTraits
         return descriptors;
     }
 
+    static std::vector<ColumnDescriptor> buildColumnDescriptors(Data::Study& study,
+                                                                Data::Area* /*area*/)
+    {
+        std::set<std::string> uniqueGroups;
+        study.areas.each(
+          [&uniqueGroups](Data::Area& currentArea)
+          {
+              for (const auto& sts: currentArea.shortTermStorage.storagesByIndex)
+              {
+                  uniqueGroups.insert(sts.properties.groupName);
+              }
+          });
+
+        std::vector<ColumnDescriptor> descriptors;
+        for (const auto& groupName: uniqueGroups)
+        {
+            descriptors.push_back({groupName + "_INJECTION", "MW"});
+            descriptors.push_back({groupName + "_WITHDRAWAL", "MW"});
+            descriptors.push_back({groupName + "_LEVEL", "MWh"});
+        }
+        return descriptors;
+    }
+
     static void setHourlyValue(
       VCardDynamicMultiColumn<STSbyGroupTraits>::IntermediateValuesBaseType& pValues,
       State& state,
       unsigned int,
-      const std::vector<ColumnDescriptor>& descriptors)
+      [[maybe_unused]] const std::vector<ColumnDescriptor>& descriptors)
     {
         using namespace Antares::Data::ShortTermStorage;
         const auto& shortTermStorage = state.area->shortTermStorage;
 
-        std::map<std::string, size_t> groupToNumbers;
-        for (size_t i = 0; i < descriptors.size(); ++i)
+        std::set<std::string> uniqueGroups;
+        for (const auto& sts: shortTermStorage.storagesByIndex)
         {
-            groupToNumbers[descriptors[i].caption] = i / STS::NB_COLS_PER_GROUP;
+            uniqueGroups.insert(sts.properties.groupName);
+        }
+        std::map<std::string, size_t> groupToNumbers;
+        size_t groupIndex = 0;
+        for (const auto& groupName: uniqueGroups)
+        {
+            groupToNumbers[groupName] = groupIndex++;
         }
 
         uint clusterIndex = 0;

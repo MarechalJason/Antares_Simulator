@@ -598,6 +598,7 @@ void SurveyResults::exportDigestAllYears(std::string& buffer)
           .append(std::to_string(nbLinks))
           .append("\n\n");
     }
+
     // Header - All columns
     for (uint rowIndex = 0; rowIndex != captionCount; ++rowIndex)
     {
@@ -628,6 +629,13 @@ void SurveyResults::exportDigestAllYears(std::string& buffer)
         {
             assert(i < maxVariables && "i greater can not be greater than maxVariables");
             assert(y < HOURS_PER_YEAR && "y can not be greater than HOURS_PER_YEAR");
+
+            double val = values[i][y];
+            if (y == 0 && std::string(j->c_str()) == "al")
+            {
+                logs.debug() << "DEBUG: Row " << j->c_str() << " col " << i 
+                             << " (" << captions[0][i].c_str() << ") value = " << val;
+            }
 
             if (digestNonApplicableStatus[y][i])
             {
