@@ -30,10 +30,17 @@ struct PriceCSRTraits
 
     static constexpr uint8_t decimal = 4;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateAverage;
+    static constexpr uint8_t spatialAggregatePostProcessing
+      = Category::spatialAggregatePostProcessingPrice;
 
     static double value(const State& state)
     {
         return -state.hourlyResults->CoutsMarginauxHorairesCSR[state.hourInTheWeek];
+    }
+
+    static bool checkCondition(const State&)
+    {
+        return true;
     }
 
     static void computeStats(IntermediateValues& intermediateValues)

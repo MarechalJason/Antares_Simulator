@@ -113,8 +113,10 @@ public:
     void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
     {
         if constexpr (requires {
-                          Traits::onInitializeFromAreaLink(
-                            pValuesForTheCurrentYear, aux_, study, link);
+                          Traits::onInitializeFromAreaLink(pValuesForTheCurrentYear,
+                                                           aux_,
+                                                           study,
+                                                           link);
                       })
         {
             Traits::onInitializeFromAreaLink(pValuesForTheCurrentYear, aux_, study, link);
@@ -172,7 +174,10 @@ public:
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
         if constexpr (requires {
-                          Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);
+                          Traits::buildDigest(results,
+                                              digestLevel,
+                                              dataLevel,
+                                              AncestorType::pResults);
                       })
         {
             Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);

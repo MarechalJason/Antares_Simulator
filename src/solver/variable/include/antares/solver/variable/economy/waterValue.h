@@ -42,7 +42,7 @@ struct WaterValueTraits
     }
 
     template<class Aux>
-    static void setHourlyValue(IntermediateValues& iv, Aux&, State& state, unsigned int)
+    static void setHourlyValue(IntermediateValues& iv, Aux&, const State& state, unsigned int)
     {
         iv.hour[state.hourInTheYear] = state.hourlyResults->valeurH2oHoraire[state.hourInTheWeek];
     }
