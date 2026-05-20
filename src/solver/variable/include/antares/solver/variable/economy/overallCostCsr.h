@@ -39,7 +39,7 @@ struct OverallCostCsrTraits
 
     static void setHourlyValue(IntermediateValues& intermediateValues,
                                AuxiliaryDataType& area,
-                               State& state,
+                               const State& state,
                                unsigned int)
     {
         const double costForSpilledOrUnsuppliedEnergyCSR

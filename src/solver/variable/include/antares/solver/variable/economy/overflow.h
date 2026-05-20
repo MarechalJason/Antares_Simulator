@@ -34,7 +34,7 @@ struct OverflowsTraits
 
     static void setHourlyValue(IntermediateValues& intermediateValues,
                                typename detail::AuxiliaryDataType<OverflowsTraits>::type&,
-                               State& state,
+                               const State& state,
                                unsigned int)
     {
         intermediateValues.hour[state.hourInTheYear] = state.hourlyResults->debordementsHoraires
