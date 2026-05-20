@@ -34,7 +34,7 @@ struct DispatchableGenMarginTraits
 
     static void setHourlyValue(IntermediateValues& yearlyValues,
                                detail::EmptyAuxiliaryData&,
-                               State& state,
+                               const State& state,
                                unsigned int)
     {
         yearlyValues[state.hourInTheYear] += state.scratchpad

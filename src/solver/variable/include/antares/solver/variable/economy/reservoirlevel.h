@@ -40,7 +40,7 @@ struct ReservoirLevelTraits
 
     static void setHourlyValue(IntermediateValues& intermediateValues,
                                AuxiliaryDataType& capacity,
-                               State& state,
+                               const State& state,
                                unsigned int)
     {
         intermediateValues[state.hourInTheYear] = state.hourlyResults

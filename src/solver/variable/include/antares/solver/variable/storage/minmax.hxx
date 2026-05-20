@@ -40,7 +40,7 @@ void MinMaxBase::InternalExportIndices(SurveyResults& report,
                                       const MinMaxData::Data* array,
                                       int fileLevel) const
 {
-    assert(array);
+    assert(indices);
     assert(report.data.columnIndex < report.maxVariables && "Column index out of bounds");
 
     report.captions[0][report.data.columnIndex] = report.variableCaption;
@@ -59,7 +59,7 @@ void MinMaxBase::InternalExportIndices(SurveyResults& report,
     double* v = report.values[report.data.columnIndex];
     for (uint i = 0; i != Size; ++i)
     {
-        v[i] = array[i].index;
+        v[i] = indices[i];
     }
 
     ++report.data.columnIndex;
@@ -69,7 +69,7 @@ template<uint Size, class VCardT>
 inline void MinMaxBase::InternalExportValues(SurveyResults& report,
                                               const MinMaxData::Data* array) const
 {
-    assert(array);
+    assert(values);
     assert(report.data.columnIndex < report.maxVariables && "Column index out of bounds");
 
     report.captions[0][report.data.columnIndex] = report.variableCaption;
@@ -83,7 +83,7 @@ inline void MinMaxBase::InternalExportValues(SurveyResults& report,
     double* v = report.values[report.data.columnIndex];
     for (uint i = 0; i != Size; ++i)
     {
-        v[i] = array[i].value;
+        v[i] = values[i];
     }
 
     ++report.data.columnIndex;

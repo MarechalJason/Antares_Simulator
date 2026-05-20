@@ -39,7 +39,7 @@ struct HydroCostTraits
 
     static void setHourlyValue(IntermediateValues& intermediateValues,
                                AuxiliaryDataType& pumpRatio,
-                               State& state,
+                               const State& state,
                                unsigned int)
     {
         intermediateValues.hour[state.hourInTheYear] += state.hourlyResults

@@ -241,6 +241,7 @@ public:
                                  uint numSpace) const;
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const;
+    bool hasColumn() const;
 
     /*!
     ** \brief Event triggered before exporting a year-by-year survey report

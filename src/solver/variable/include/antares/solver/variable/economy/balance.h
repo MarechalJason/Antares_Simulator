@@ -32,7 +32,7 @@ struct BalanceTraits
 
     static void setHourlyValue(IntermediateValues& intermediateValues,
                                typename detail::AuxiliaryDataType<BalanceTraits>::type&,
-                               State& state,
+                               const State& state,
                                unsigned int)
     {
         double bilanPays = 0.;
