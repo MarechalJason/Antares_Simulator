@@ -142,9 +142,11 @@ struct HourlyAggregationPolicy
     }
 };
 
+namespace detail {
 // Triggers static_assert only when a template fallback branch is actually instantiated.
 template<class>
 inline constexpr bool always_false_v = false;
+}
 
 struct HourlyComputationPolicy
 {
@@ -162,9 +164,10 @@ struct HourlyComputationPolicy
         else
         {
             static_assert(detail::always_false_v<Traits>,
-                          "Traits must provide either setHourlyValue(...), "
-                          "checkCondition(auxiliaryData, state)+value(auxiliaryData, state), "
-                          "or checkCondition(state)+value(state)");
+                          "Traits must provide either "
+                          "setHourlyValue(IntermediateValues&, AuxiliaryDataType&, "
+                          "const State&, unsigned int) or "
+                          "setHourlyValue(IntermediateValues&, const State&, unsigned int)");
         }
     }
 };
