@@ -249,17 +249,15 @@ public:
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
-        if (!AncestorType::isPrinted[0])
+        if (AncestorType::isPrinted[0])
         {
-            return;
-        }
-
-        for (size_t column = 0; column < nbColumns_; ++column)
-        {
-            results.variableCaption = VCardType::Multiple::Caption(column, descriptors_);
-            results.variableUnit = VCardType::Multiple::Unit(column, descriptors_);
-            pValuesForTheCurrentYear[numSpace][column]
-              .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
+            for (size_t column = 0; column < nbColumns_; ++column)
+            {
+                results.variableCaption = VCardType::Multiple::Caption(column, descriptors_);
+                results.variableUnit = VCardType::Multiple::Unit(column, descriptors_);
+                pValuesForTheCurrentYear[numSpace][column]
+                  .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
+            }
         }
     }
 
@@ -268,26 +266,25 @@ public:
                            int fileLevel,
                            int precision) const
     {
-        if (!AncestorType::isPrinted[0])
-        {
-            return;
-        }
-
         if ((dataLevel & VCardType::categoryDataLevel) && (fileLevel & VCardType::categoryFileLevel)
             && (precision & VCardType::precision))
         {
-            results.isCurrentVarNA[0] = AncestorType::isNonApplicable[0];
+            results.isPrinted = AncestorType::isPrinted;
+            results.isCurrentVarNA = AncestorType::isNonApplicable;
 
-            for (size_t column = 0; column < nbColumns_; ++column)
+            if (AncestorType::isPrinted[0])
             {
-                results.variableCaption = descriptors_[column].caption;
-                results.variableUnit = descriptors_[column].unit;
-                AncestorType::pResults[column].template buildSurveyReport<ResultsType, VCardType>(
-                  results,
-                  AncestorType::pResults[column],
-                  dataLevel,
-                  fileLevel,
-                  precision);
+                for (size_t column = 0; column < nbColumns_; ++column)
+                {
+                    results.variableCaption = descriptors_[column].caption;
+                    results.variableUnit = descriptors_[column].unit;
+                    AncestorType::pResults[column]
+                      .template buildSurveyReport<ResultsType, VCardType>(results,
+                                                                          AncestorType::pResults[column],
+                                                                          dataLevel,
+                                                                          fileLevel,
+                                                                          precision);
+                }
             }
         }
     }
