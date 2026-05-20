@@ -36,7 +36,9 @@ struct STstorageCashFlowByClusterTraits
         iv.computeStatisticsForTheCurrentYear();
     }
 
-    static void setHourlyValue(std::vector<IntermediateValues>& clusterValues, State& state)
+    static void setHourlyValue(std::vector<IntermediateValues>& clusterValues,
+                               State& state,
+                               [[maybe_unused]] unsigned int numSpace)
     {
         const unsigned int hourInYear = state.hourInTheYear;
         for (uint clusterIndex = 0; clusterIndex != state.area->shortTermStorage.count();

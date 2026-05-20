@@ -190,7 +190,18 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state);
+        if constexpr (requires {
+                          Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace],
+                                                 state,
+                                                 numSpace);
+                      })
+        {
+            Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace);
+        }
+        else
+        {
+            Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state);
+        }
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);

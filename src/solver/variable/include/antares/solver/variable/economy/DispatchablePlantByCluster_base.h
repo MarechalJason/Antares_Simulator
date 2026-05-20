@@ -256,10 +256,10 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        setHourlyValuesForCurrentYearIfSupported(pValuesForTheCurrentYear[numSpace],
-                                                 auxiliaryData_,
-                                                 state,
-                                                 numSpace);
+        setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace],
+                                  auxiliaryData_,
+                                  state,
+                                  numSpace);
 
         // Next variable
         NextType::hourForEachArea(state, numSpace);
@@ -311,26 +311,20 @@ public:
 protected:
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 
-    static void setHourlyValuesForCurrentYearIfSupported(
-      std::vector<IntermediateValues>& clusterValues,
-      AuxiliaryDataType& auxiliaryData,
-      State& state,
-      unsigned int numSpace)
+    static void setHourlyValueIfSupported(std::vector<IntermediateValues>& clusterValues,
+                                          AuxiliaryDataType& auxiliaryData,
+                                          State& state,
+                                          unsigned int numSpace)
     {
         if constexpr (requires {
-                          Traits::setHourlyValuesForCurrentYear(clusterValues,
-                                                                auxiliaryData,
-                                                                state,
-                                                                numSpace);
+                          Traits::setHourlyValue(clusterValues, auxiliaryData, state, numSpace);
                       })
         {
-            Traits::setHourlyValuesForCurrentYear(clusterValues, auxiliaryData, state, numSpace);
+            Traits::setHourlyValue(clusterValues, auxiliaryData, state, numSpace);
         }
-        else if constexpr (requires {
-                               Traits::setHourlyValuesForCurrentYear(clusterValues, state);
-                           })
+        else if constexpr (requires { Traits::setHourlyValue(clusterValues, state, numSpace); })
         {
-            Traits::setHourlyValuesForCurrentYear(clusterValues, state);
+            Traits::setHourlyValue(clusterValues, state, numSpace);
         }
     }
 

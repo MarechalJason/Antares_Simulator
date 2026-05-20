@@ -107,7 +107,6 @@ public:
     void initializeFromStudy(Data::Study& study)
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
-
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
 
         AncestorType::pResults.clear();
@@ -133,8 +132,11 @@ public:
             groupToNumbers_[descriptors_[i].caption] = i;
         }
 
-        pValuesForTheCurrentYear.assign(pNbYearsParallel,
-                                        typename VCardType::IntermediateValuesBaseType(nbColumns_));
+        pValuesForTheCurrentYear.resize(pNbYearsParallel);
+        for (auto& vec: pValuesForTheCurrentYear)
+        {
+            vec.resize(nbColumns_);
+        }
 
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
         {
@@ -161,6 +163,12 @@ public:
 
     void simulationBegin()
     {
+        if constexpr (requires {
+                          Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
+                      })
+        {
+            Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
+        }
         NextType::simulationBegin();
     }
 
@@ -218,11 +226,7 @@ public:
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        Traits::setHourlyValues(pValuesForTheCurrentYear[numSpace],
-                                state,
-                                numSpace,
-                                descriptors_,
-                                groupToNumbers_);
+        Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace, descriptors_);
         NextType::hourForEachArea(state, numSpace);
     }
 
@@ -245,16 +249,15 @@ public:
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
-        for (size_t i = 0; i < nbColumns_; ++i)
+        if (AncestorType::isPrinted[0])
         {
-            if (AncestorType::isPrinted[i])
+            for (size_t column = 0; column < nbColumns_; ++column)
             {
-                results.variableCaption = VCardType::Multiple::Caption(i, descriptors_);
-                results.variableUnit = VCardType::Multiple::Unit(i, descriptors_);
-                pValuesForTheCurrentYear[numSpace][i]
+                results.variableCaption = VCardType::Multiple::Caption(column, descriptors_);
+                results.variableUnit = VCardType::Multiple::Unit(column, descriptors_);
+                pValuesForTheCurrentYear[numSpace][column]
                   .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
             }
-            results.isCurrentVarNA++;
         }
     }
 
@@ -263,18 +266,26 @@ public:
                            int fileLevel,
                            int precision) const
     {
-        for (size_t column = 0; column < nbColumns_; ++column)
+        if ((dataLevel & VCardType::categoryDataLevel) && (fileLevel & VCardType::categoryFileLevel)
+            && (precision & VCardType::precision))
         {
-            if (!AncestorType::isPrinted[column])
+            results.isPrinted = AncestorType::isPrinted;
+            results.isCurrentVarNA = AncestorType::isNonApplicable;
+
+            if (AncestorType::isPrinted[0])
             {
-                continue;
+                for (size_t column = 0; column < nbColumns_; ++column)
+                {
+                    results.variableCaption = descriptors_[column].caption;
+                    results.variableUnit = descriptors_[column].unit;
+                    AncestorType::pResults[column]
+                      .template buildSurveyReport<ResultsType, VCardType>(results,
+                                                                          AncestorType::pResults[column],
+                                                                          dataLevel,
+                                                                          fileLevel,
+                                                                          precision);
+                }
             }
-            results.variableCaption = descriptors_[column].caption;
-            results.variableUnit = descriptors_[column].unit;
-            AncestorType::pResults[column].buildSurveyReport(&results,
-                                                             dataLevel,
-                                                             fileLevel,
-                                                             precision);
         }
         NextType::buildSurveyReport(results, dataLevel, fileLevel, precision);
     }

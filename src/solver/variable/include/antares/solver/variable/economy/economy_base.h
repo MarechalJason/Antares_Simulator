@@ -402,6 +402,16 @@ private:
         }
     }
 
+    static void setHourlyValueIfSupported(std::vector<IntermediateValues>& clusterValues,
+                                          State& state,
+                                          unsigned int numSpace)
+    {
+        if constexpr (requires { Traits::setHourlyValue(clusterValues, state, numSpace); })
+        {
+            Traits::setHourlyValue(clusterValues, state, numSpace);
+        }
+    }
+
 private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;

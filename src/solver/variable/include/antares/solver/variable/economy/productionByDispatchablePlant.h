@@ -42,10 +42,10 @@ struct ProductionByDispatchablePlantTraits
         std::fill(pMinBySpace[numSpace].begin(), pMinBySpace[numSpace].end(), 0.);
     }
 
-    static void setHourlyValuesForCurrentYear(std::vector<IntermediateValues>& clusterValues,
-                                              AuxiliaryDataType& pMinBySpace,
-                                              State& state,
-                                              unsigned int numSpace)
+    static void setHourlyValue(std::vector<IntermediateValues>& clusterValues,
+                               AuxiliaryDataType& pMinBySpace,
+                               State& state,
+                               unsigned int numSpace)
     {
         auto& area = state.area;
         auto& thermal = state.thermal;

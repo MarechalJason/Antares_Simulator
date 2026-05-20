@@ -24,8 +24,9 @@ struct MinDispatchableGenByPlantTraits
         return "Min power by cluster";
     }
 
-    static void setHourlyValuesForCurrentYear(std::vector<IntermediateValues>& clusterValues,
-                                              State& state)
+    static void setHourlyValue(std::vector<IntermediateValues>& clusterValues,
+                               State& state,
+                               [[maybe_unused]] unsigned int numSpace)
     {
         auto& area = state.area;
         auto& thermal = state.thermal;
