@@ -277,10 +277,12 @@ public:
 
             results.variableCaption = descriptors_[column].caption;
             results.variableUnit = descriptors_[column].unit;
-            AncestorType::pResults[column].buildSurveyReport(&results,
-                                                             dataLevel,
-                                                             fileLevel,
-                                                             precision);
+            AncestorType::pResults[column]
+              .template buildSurveyReport<ResultsType, VCardType>(results,
+                                                                  AncestorType::pResults[column],
+                                                                  dataLevel,
+                                                                  fileLevel,
+                                                                  precision);
         }
         NextType::buildSurveyReport(results, dataLevel, fileLevel, precision);
     }
