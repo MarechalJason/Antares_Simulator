@@ -432,18 +432,17 @@ private:
         }
     }
 
+    // Link results don't always live on a leaf whose own VCardType matches Target:
+    // the per-link variables (FlowLinear, MarginalCost, ...) sit inside the `Links`
+    // container, whose VCardType is `VCardAllLinks`. A pure VCard-equality gate would
+    // skip `Links` entirely and the lookup would silently return nullptr. Instead,
+    // dispatch unconditionally — IVariable::retrieveResultsForLink is a no-op when
+    // the leaf VCard doesn't match — and short-circuit once *result has been set.
     template<class Target, class V, class R>
     static bool tryAssignLink(V& v, R** result, const Data::AreaLink* link)
     {
-        if constexpr (detail::isSameVCard<typename V::VCardType, Target>)
-        {
-            v.template retrieveResultsForLink<Target>(result, link);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        v.template retrieveResultsForLink<Target>(result, link);
+        return *result != nullptr;
     }
 };
 
