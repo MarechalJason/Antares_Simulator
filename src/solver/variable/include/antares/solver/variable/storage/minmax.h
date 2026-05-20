@@ -137,49 +137,23 @@ private:
 }; // class MinMaxBase
 
 template<class NextT>
-class Min: public MinMaxBase<true>
+class Min: public MinMaxBase<true, NextT>
 {
 public:
-    //! Implementation
-    typedef MinMaxBase<true> MinMaxImplementationType;
-    //! Type of the net item in the list
-    typedef NextT NextType;
-
-public:
-    //! Name of the filter
     static const char* Name()
     {
         return "min";
     }
-
-    enum
-    {
-        //! The count if item in the list
-        count = MinMaxImplementationType::count,
-    };
 };
 
 template<class NextT>
-class Max: public MinMaxBase<false>
+class Max: public MinMaxBase<false, NextT>
 {
 public:
-    //! Implementation
-    typedef MinMaxBase<false> MinMaxImplementationType;
-    //! Type of the net item in the list
-    typedef NextT NextType;
-
-public:
-    //! Name of the filter
     static const char* Name()
     {
         return "max";
     }
-
-    enum
-    {
-        //! The count if item in the list
-        count = MinMaxImplementationType::count,
-    };
 };
 
 } // namespace Antares::Solver::Variable::R::AllYears
