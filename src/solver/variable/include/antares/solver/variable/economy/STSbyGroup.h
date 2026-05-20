@@ -71,13 +71,14 @@ struct STSbyGroupTraits
         const auto& shortTermStorage = state.area->shortTermStorage;
 
         std::map<std::string, size_t> groupToNumbers;
-        const std::string injectionSuffix = "_INJECTION";
+        static constexpr char injectionSuffix[] = "_INJECTION";
+        static constexpr size_t injectionSuffixSize = sizeof(injectionSuffix) - 1;
         for (size_t i = 0; i < descriptors.size(); i += STS::NB_COLS_PER_GROUP)
         {
             const auto& caption = descriptors[i].caption;
-            if (caption.size() > injectionSuffix.size() && caption.ends_with(injectionSuffix))
+            if (caption.ends_with(injectionSuffix))
             {
-                groupToNumbers[caption.substr(0, caption.size() - injectionSuffix.size())]
+                groupToNumbers[caption.substr(0, caption.size() - injectionSuffixSize)]
                   = i / STS::NB_COLS_PER_GROUP;
             }
         }
@@ -88,6 +89,7 @@ struct STSbyGroupTraits
             const auto groupIt = groupToNumbers.find(sts.properties.groupName);
             if (groupIt == groupToNumbers.end())
             {
+                // Skip clusters with no matching descriptor to avoid failing the whole simulation.
                 ++clusterIndex;
                 continue;
             }
