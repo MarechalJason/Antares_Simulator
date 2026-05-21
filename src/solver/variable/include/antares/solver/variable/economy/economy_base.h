@@ -126,29 +126,26 @@ template<class>
 inline constexpr bool always_false_v = false;
 }
 
-struct HourlyComputationPolicy
+template<class Traits, class IV, class Aux, class State>
+void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numSpace)
 {
-    template<class Traits, class IV, class Aux, class State>
-    static void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numSpace)
+    if constexpr (requires { Traits::setHourlyValue(iv, aux, state, numSpace); })
     {
-        if constexpr (requires { Traits::setHourlyValue(iv, aux, state, numSpace); })
-        {
-            Traits::setHourlyValue(iv, aux, state, numSpace);
-        }
-        else if constexpr (requires { Traits::setHourlyValue(iv, state, numSpace); })
-        {
-            Traits::setHourlyValue(iv, state, numSpace);
-        }
-        else
-        {
-            static_assert(detail::always_false_v<Traits>,
-                          "Traits must provide either "
-                          "setHourlyValue(IntermediateValues&, AuxiliaryDataType&, "
-                          "const State&, unsigned int) or "
-                          "setHourlyValue(IntermediateValues&, const State&, unsigned int)");
-        }
+        Traits::setHourlyValue(iv, aux, state, numSpace);
     }
-};
+    else if constexpr (requires { Traits::setHourlyValue(iv, state, numSpace); })
+    {
+        Traits::setHourlyValue(iv, state, numSpace);
+    }
+    else
+    {
+        static_assert(detail::always_false_v<Traits>,
+                      "Traits must provide either "
+                      "setHourlyValue(IntermediateValues&, AuxiliaryDataType&, "
+                      "const State&, unsigned int) or "
+                      "setHourlyValue(IntermediateValues&, const State&, unsigned int)");
+    }
+}
 
 } // namespace Hooks_
 

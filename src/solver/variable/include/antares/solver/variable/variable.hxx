@@ -230,8 +230,8 @@ inline void IVariable<ChildT, VCardT>::buildAnnualSurveyReport(SurveyResults& re
     }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline bool IVariable<ChildT, NextT, VCardT>::hasColumn() const
+template<class ChildT, class VCardT>
+inline bool IVariable<ChildT, VCardT>::hasColumn() const
 {
     // Leverage the fact that dynamicType has columnCount = -1
     return VCardType::columnCount > 0;
