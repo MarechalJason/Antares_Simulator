@@ -30,9 +30,7 @@ struct VCardRowBalance
     }
 
     //! The expecte results
-    typedef Results<R::AllYears::Raw< // The raw values
-      >>
-      ResultsType;
+    using ResultsType = Results<std::tuple<R::AllYears::Raw>>;
 
     //! The VCard to look for for calculating spatial aggregates
     typedef VCardRowBalance VCardForSpatialAggregate;

@@ -82,8 +82,7 @@ struct TimeSeriesTraits
     static constexpr std::string_view kUnit = "MWh";
 
     /// Results configuration: Average, StdDev, Min, Max across all years
-    using ResultsType = Results<
-      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
+    using ResultsType = StandardResults<>;
 
     /// Data aggregation level (area-based)
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;

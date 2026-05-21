@@ -29,10 +29,8 @@ struct VCardPSP
         return "PSP";
     }
 
-    //! The expecte results
-    typedef Results<R::AllYears::Average< // The average values throughout all years
-      >>
-      ResultsType;
+    //! Expected results configuration
+    using ResultsType = Results<std::tuple<R::AllYears::Average>>;
 
     //! The VCard to look for for calculating spatial aggregates
     typedef VCardPSP VCardForSpatialAggregate;
@@ -49,7 +47,7 @@ struct VCardPSP
     static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 0;
-    //! Number of columns used by the variable (One ResultsType per column)
+    //! Number of columns used by the variable (one results configuration per column)
     static constexpr int columnCount = 1;
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

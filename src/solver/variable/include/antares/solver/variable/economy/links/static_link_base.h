@@ -40,7 +40,7 @@ struct VCardStaticLinkBase
         return Traits::Description();
     }
 
-    using ResultsType = typename Traits::ResultsType;
+    using ResultsType = typename Traits::ResultsProfile;
     using VCardForSpatialAggregate = VCardStaticLinkBase;
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;

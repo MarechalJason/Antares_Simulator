@@ -31,7 +31,7 @@ struct VCardAllSetsOfAreas
         return "";
     }
 
-    //! The expecte results
+    //! Expected results configuration
     typedef Results<> ResultsType;
 
     //! Data Level
@@ -41,7 +41,7 @@ struct VCardAllSetsOfAreas
                                                  & Category::FileLevel::de;
     //! Indentation (GUI)
     static constexpr uint8_t nodeDepthForGUI = +1;
-    //! Number of columns used by the variable (One ResultsType per column)
+    //! Number of columns used by the variable (one results configuration per column)
     static constexpr int columnCount = 0;
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Category::noSpatialAggregate;
@@ -178,7 +178,7 @@ public:
     typedef std::vector<std::unique_ptr<NextType>> SetOfAreasVector;
     //! Area list
     SetOfAreasVector pSetsOfAreas;
-    //! Reference to the origina set
+    //! Reference to the original set
     std::vector<const Data::Sets::SetAreasType*> pOriginalSets;
     //! The study
     const Data::Study* pStudy;

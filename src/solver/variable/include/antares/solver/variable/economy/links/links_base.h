@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : type alias for results template
+**   - \c ResultsProfile : type alias for results template
 **   - \c decimal : uint8_t
 **   - \c spatialAggregate : uint8_t
 **   - \c computeStats(IntermediateValues&) -> void
@@ -62,7 +62,7 @@ struct VCard_LinkBase
     }
 
     //! The expected results
-    using ResultsType = typename Traits::ResultsType;
+    using ResultsType = typename Traits::ResultsProfile;
 
     using VCardForSpatialAggregate = VCard_LinkBase;
 
@@ -78,7 +78,7 @@ struct VCard_LinkBase
     static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = Traits::decimal;
-    //! Number of columns used by the variable (One ResultsType per column)
+    //! Number of columns used by the variable (one results profile per column)
     static constexpr int columnCount = 1;
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

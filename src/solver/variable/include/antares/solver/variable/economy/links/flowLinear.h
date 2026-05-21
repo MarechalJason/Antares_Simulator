@@ -25,12 +25,7 @@ struct FlowLinearTraits
         return "Flow assessed, over all MC years, through linear optimization";
     }
 
-    typedef Results<R::AllYears::Average< // The average values throughout all years
-      R::AllYears::StdDeviation<          // The standard deviation values throughout all years
-        R::AllYears::Min<                 // The minimum values throughout all years
-          R::AllYears::Max<               // The maximum values throughout all years
-            >>>>>
-      ResultsType;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
 
@@ -56,10 +51,10 @@ struct FlowLinearTraits
             {
                 results.data.matrix
                   .entry[results.data.link->from->index][results.data.link->with->index]
-                  = pResults.avgdata.year;
+                  = pResults.avgdata().year;
                 results.data.matrix
                   .entry[results.data.link->with->index][results.data.link->from->index]
-                  = -pResults.avgdata.year;
+                  = -pResults.avgdata().year;
             }
         }
     }

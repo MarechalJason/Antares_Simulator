@@ -36,9 +36,7 @@ struct FlowQuadTraits
         return "Flow (quad.)";
     }
 
-    typedef Results<R::AllYears::Raw< // Raw values
-      >>
-      ResultsType;
+    using ResultsProfile = Results<std::tuple<R::AllYears::Raw>>;
 
     using AuxiliaryDataType = FlowQuadAuxData;
 
@@ -82,10 +80,10 @@ struct FlowQuadTraits
             {
                 results.data.matrix
                   .entry[results.data.link->from->index][results.data.link->with->index]
-                  = pResults.rawdata.allYears;
+                  = pResults.rawdata().allYears;
                 results.data.matrix
                   .entry[results.data.link->with->index][results.data.link->from->index]
-                  = -pResults.rawdata.allYears;
+                  = -pResults.rawdata().allYears;
             }
         }
     }

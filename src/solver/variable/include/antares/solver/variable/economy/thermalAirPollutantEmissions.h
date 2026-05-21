@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "economy_base.h"
 #include "multi_column_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -26,8 +25,7 @@ struct ThermalAirPollutantEmissionsTraits
         return "Overall pollutant emissions expected from all the thermal clusters";
     }
 
-    using ResultsType = Results<
-      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
     static constexpr int columnCount = Antares::Data::Pollutant::POLLUTANT_MAX;
@@ -44,7 +42,7 @@ struct ThermalAirPollutantEmissionsTraits
     template<int ColCount>
     static void setHourlyValue(IntermediateValues (&values)[ColCount],
                                State& state,
-                               unsigned int numSpace)
+                               [[maybe_unused]] unsigned int numSpace)
     {
         auto& area = state.area;
         auto& thermal = state.thermal;

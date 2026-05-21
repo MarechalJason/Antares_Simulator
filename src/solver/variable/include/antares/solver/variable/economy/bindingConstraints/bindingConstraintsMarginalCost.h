@@ -30,12 +30,7 @@ struct VCardBindingConstMarginCost
     }
 
     //! The expecte results
-    typedef Results<R::AllYears::Average< // The average values thoughout all years
-      R::AllYears::StdDeviation<          // The standard deviation values throughout all years
-        R::AllYears::Min<                 // The minimum values thoughout all years
-          R::AllYears::Max<               // The maximum values thoughout all years
-            >>>>>
-      ResultsType;
+    using ResultsType = StandardResults<>;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::bindingConstraint;

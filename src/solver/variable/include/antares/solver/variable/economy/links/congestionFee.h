@@ -25,12 +25,7 @@ struct CongestionFeeTraits
         return "Congestion fee collected throughout all MC years (Alg.)";
     }
 
-    typedef Results<R::AllYears::Average< // The average values throughout all years
-      R::AllYears::StdDeviation<          // The standard deviation values throughout all years
-        R::AllYears::Min<                 // The minimum values throughout all years
-          R::AllYears::Max<               // The maximum values throughout all years
-            >>>>>
-      ResultsType;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
 

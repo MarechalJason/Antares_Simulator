@@ -26,8 +26,7 @@ struct RenewableGenerationTraits
         return "Value of all the renewable generation throughout all MC years";
     }
 
-    using ResultsType = Results<
-      R::AllYears::Average<R::AllYears::StdDeviation<R::AllYears::Min<R::AllYears::Max<>>>>>;
+    using ResultsProfile = StandardResults<>;
 
     static constexpr uint8_t decimal = 0;
 
