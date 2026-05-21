@@ -50,12 +50,10 @@ struct VCardAllSetsOfAreas
 
 }; // class VCard
 
-template<class NextT>
+template<class VariableList>
 class SetsOfAreas
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
     //! VCard
     typedef VCardAllSetsOfAreas VCardType;
 
@@ -65,7 +63,7 @@ public:
     enum
     {
         //! How many items have we got
-        count = NextT::count,
+        count = VariableList::count,
     };
 
     template<int CDataLevel, int CFile>
@@ -73,7 +71,7 @@ public:
     {
         enum
         {
-            count = NextType::template Statistics < CDataLevel,
+            count = VariableList::template Statistics < CDataLevel,
             CFile > ::count
         };
     };
@@ -171,11 +169,11 @@ public:
     void retrieveResultsForLink(typename Storage<VCardToFindT>::ResultsType** result,
                                 const Data::AreaLink* link);
 
-    const NextType* findSetById(const Data::Study::SetsOfAreas::IDType& setId) const;
+    const VariableList* findSetById(const Data::Study::SetsOfAreas::IDType& setId) const;
 
 public:
     //! Area list
-    typedef std::vector<std::unique_ptr<NextType>> SetOfAreasVector;
+    typedef std::vector<std::unique_ptr<VariableList>> SetOfAreasVector;
     //! Area list
     SetOfAreasVector pSetsOfAreas;
     //! Reference to the original set

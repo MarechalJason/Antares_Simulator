@@ -182,7 +182,6 @@ using VCardTimeSeriesValuesGeneration = VCardTimeSeriesBase<GenerationTraits<Tag
  * generation variables. It handles the specific behavior of renewable
  * generation data processing.
  * * @tparam TraitsType The traits defining the specific generation type
- * @tparam NextT The next variable in the processing chain
  * * ## Key Behaviors:
  * * ### Year Begin Processing:
  * - Checks if renewable generation aggregation is enabled
@@ -297,8 +296,7 @@ private:
  * * Provides backward compatibility for existing code using the tag-based
  * approach. Maps tags to the new traits-based implementation.
  * * @tparam Tag Generation type tag (SolarTag or WindTag)
- * @tparam NextT Next variable in the processing chain
- * * ## Usage:
+ * ## Usage:
  * ```cpp
  * // Legacy approach (maintained for compatibility)
  * TimeSeriesValuesGeneration<SolarTag> solar;
@@ -319,8 +317,7 @@ private:
  * * Modern, direct implementation for solar generation time series.
  * Recommended for new code as it provides better type safety and
  * clearer intent than the tag-based approach.
- * * @tparam NextT Next variable in the processing chain
- * * ## Features:
+ * ## Features:
  * - Type-safe access to solar data via SolarTraits::areaMember
  * - Optimized bulk data copying for renewable generation
  * - Proper integration with simulation lifecycle
@@ -340,8 +337,7 @@ using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits>;
  * * Modern, direct implementation for wind generation time series.
  * Recommended for new code as it provides better type safety and
  * clearer intent than the tag-based approach.
- * * @tparam NextT Next variable in the processing chain
- * * ## Features:
+ * ## Features:
  * - Type-safe access to wind data via WindTraits::areaMember
  * - Optimized bulk data copying for renewable generation
  * - Proper integration with simulation lifecycle

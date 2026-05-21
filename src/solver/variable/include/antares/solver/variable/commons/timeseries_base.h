@@ -15,7 +15,7 @@
  *        ↑
  * VCardTimeSeriesBase<T>       ← VCard implementation
  *        ↑
- * TimeSeriesValuesBase<D,N,V>  ← Base behavior implementation
+ * TimeSeriesValuesBase<D,V>    ← Base behavior implementation
  *        ↑
  * Derived Classes              ← Specific implementations (Load, Solar, etc.)
  * ```
@@ -33,8 +33,7 @@
  * using VCardMyTimeSeries = VCardTimeSeriesBase<MyTimeSeriesTraits>;
  *
  * // 3. Implement your time series class
- * template<>
- * class MyTimeSeries : public TimeSeriesValuesBase<MyTimeSeries<NextT>, NextT, VCardMyTimeSeries> {
+ * class MyTimeSeries : public TimeSeriesValuesBase<MyTimeSeries, VCardMyTimeSeries> {
  * public:
  *     void initializeDerivedFromStudy(Data::Study& study) { ... }
  *     void yearBeginImpl(unsigned int year, unsigned int space) { ... }
@@ -189,7 +188,6 @@ struct VCardTimeSeriesBase: public TimeSeriesTraits<TraitsType>
  * polymorphism without virtual function overhead.
  *
  * @tparam Derived The derived class (CRTP)
- * @tparam NextT The next variable in the chain (for variable composition)
  * @tparam VCardType The VCard describing this variable
  *
  * ## Derived Class Requirements:
@@ -222,11 +220,10 @@ struct VCardTimeSeriesBase: public TimeSeriesTraits<TraitsType>
  * - `areaPtr`: Non-owning pointer to area (managed externally)
  * - `nbYearsParallel`: Cached for performance
  */
-template<typename Derived, typename VCardType, typename NextT = void>
+template<typename Derived, typename VCardType>
 class TimeSeriesValuesBase: public Variable::IVariable<Derived, VCardType>
 {
 public:
-    using NextType = NextT;
     using AncestorType = Variable::IVariable<Derived, VCardType>;
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;

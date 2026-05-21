@@ -46,7 +46,6 @@ class Links
 {
 public:
     using VariablePerLink = VariablePerLinkList;
-    using NextType = VariablePerLink;
     using VCardType = VCardAllLinks;
     using ResultsType = VCardType::ResultsType;
 

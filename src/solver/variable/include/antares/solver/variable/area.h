@@ -47,16 +47,12 @@ struct VCardAllAreas
 
 }; // class VCard
 
-template<class NextT>
-class Areas //: public Variable::IVariable<Areas<NextT>, NextT, VCardAllAreas>
+template<class VariableList>
+class Areas
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
     //! VCard
     typedef VCardAllAreas VCardType;
-    //! Ancestor
-    // typedef Variable::IVariable<Areas<NextT>, NextT, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -64,7 +60,7 @@ public:
     enum
     {
         //! How many items have we got
-        count = NextT::count,
+        count = VariableList::count,
     };
 
     template<int CDataLevel, int CFile>
@@ -72,7 +68,7 @@ public:
     {
         enum
         {
-            count = NextType::template Statistics < CDataLevel,
+            count = VariableList::template Statistics < CDataLevel,
             CFile > ::count
         };
     };
@@ -185,7 +181,7 @@ public:
 
 private:
     //! Area list
-    NextType* pAreas;
+    VariableList* pAreas;
     //! The number of areas
     uint pAreaCount;
 

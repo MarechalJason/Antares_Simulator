@@ -4,10 +4,9 @@
 #ifndef __SOLVER_END_OF_LIST_END_OF_LIST_H__
 #define __SOLVER_END_OF_LIST_END_OF_LIST_H__
 
-// Terminator for the CRTP variable chain. Provides no-op implementations
-// for all hooks. Post-A.2, most hooks are not called on EndOfList anymore
-// (variables no longer propagate via NextType::), but storage decorators
-// and the legacy CRTP root still expect these methods to exist.
+// Terminator for the variable list. Provides no-op implementations for all
+// hooks. Used as the default inner type for Container::List and as a sentinel
+// for empty variable aggregations.
 
 #include <antares/study/study.h>
 #include "state.h"
@@ -18,8 +17,6 @@ namespace Antares::Solver::Variable::Container
 class EndOfList
 {
 public:
-    using NextType = void;
-
     static constexpr size_t count = 0;
 
     template<int, int>
