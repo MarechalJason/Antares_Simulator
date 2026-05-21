@@ -41,6 +41,19 @@ namespace detail
 // Yuni::Static::Type::StrictlyEqual<VCardT, Target>::Yes usage.
 template<class VCardT, class TargetT>
 inline constexpr bool isSameVCard = std::is_same_v<VCardT, TargetT>;
+
+template<class VarT>
+void initializeFromAreaLink(VarT& var, Data::Study* study, Data::AreaLink* link)
+{
+    if constexpr (requires { var.initializeFromAreaLink(study, link); })
+    {
+        var.initializeFromAreaLink(study, link);
+    }
+    else
+    {
+        var.initializeFromLink(study, link);
+    }
+}
 } // namespace detail
 
 /*!
@@ -92,7 +105,8 @@ public:
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        std::apply([&](auto&... v) { (v.initializeFromLink(study, link), ...); }, vars_);
+        std::apply([&](auto&... v) { (detail::initializeFromAreaLink(v, study, link), ...); },
+                   vars_);
     }
 
     void initializeFromThermalCluster(Data::Study* study,
