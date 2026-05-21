@@ -33,7 +33,7 @@
  * using VCardMyTimeSeries = VCardTimeSeriesBase<MyTimeSeriesTraits>;
  *
  * // 3. Implement your time series class
- * template<class NextT = Container::EndOfList>
+ * template<>
  * class MyTimeSeries : public TimeSeriesValuesBase<MyTimeSeries<NextT>, NextT, VCardMyTimeSeries> {
  * public:
  *     void initializeDerivedFromStudy(Data::Study& study) { ... }
@@ -181,24 +181,7 @@ struct VCardTimeSeriesBase: public TimeSeriesTraits<TraitsType>
 /**
  * @brief Internal helpers for template metaprogramming
  */
-namespace detail
-{
-/**
- * @brief Compile-time calculation of statistics count
- * * This helper computes the number of statistics that will be generated based on
- * the data level and file level filters.
- * * @tparam VCard The variable card type
- * @tparam Next The next variable in the chain
- * @tparam CDataLevel Data level filter
- * @tparam CFile File level filter
- */
-template<class VCard, class Next, int CDataLevel, int CFile>
-inline constexpr int StatisticsCount = ((VCard::categoryDataLevel & CDataLevel
-                                         && VCard::categoryFileLevel & CFile)
-                                          ? (Next::template Statistics<CDataLevel, CFile>::count
-                                             + VCard::columnCount * VCard::ResultsType::count)
-                                          : Next::template Statistics<CDataLevel, CFile>::count);
-} // namespace detail
+
 
 /**
  * @brief Base implementation for time series variables using CRTP pattern
@@ -240,197 +223,96 @@ inline constexpr int StatisticsCount = ((VCard::categoryDataLevel & CDataLevel
  * - `areaPtr`: Non-owning pointer to area (managed externally)
  * - `nbYearsParallel`: Cached for performance
  */
-template<typename Derived, typename NextT, typename VCardType>
+template<typename Derived, typename VCardType, typename NextT = void>
 class TimeSeriesValuesBase: public Variable::IVariable<Derived, NextT, VCardType>
 {
 public:
-    /// @name Type Definitions
-    /// @{
     using NextType = NextT;
     using AncestorType = Variable::IVariable<Derived, NextT, VCardType>;
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
-    /// @}
 
-    /// Total count of variables in the chain
-    static constexpr int count = 1 + NextT::count;
+    static constexpr std::size_t count = 1;
 
-    /**
-     * @brief Compile-time statistics calculation
-     *     * This nested template computes how many statistics will be generated
-     * for different data and file level combinations.
-     */
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count = detail::
-          StatisticsCount<VCardType, NextType, CDataLevel, CFile>;
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                      && VCardType::categoryFileLevel & CFile)
+                                      ? VCardType::columnCount * ResultsType::count
+                                      : 0);
     };
 
-    /**
-     * @brief Initialize the variable from study configuration
-     *     * This method sets up the variable based on the study parameters,
-     * allocates necessary memory, and initializes the result structures.
-     *     * @param study The study configuration containing simulation parameters
-     *     * ## Initialization Steps:
-     * 1. Cache the number of parallel years for performance
-     * 2. Initialize result storage structures
-     * 3. Resize and initialize yearly value containers
-     * 4. Call derived class initialization
-     * 5. Initialize the next variable in chain
-     */
     void initializeFromStudy(Data::Study& study)
     {
-        // Cache for performance - used frequently during simulation
         nbYearsParallel = study.maxNbYearsInParallel;
 
-        // Initialize the results storage with proper structure
         InitializeResultsFromStudy(AncestorType::pResults, study);
 
-        // Allocate intermediate values for each parallel space
         yearlyValues.resize(nbYearsParallel);
         std::for_each(yearlyValues.begin(),
                       yearlyValues.end(),
                       [&study](auto& value) { value.initializeFromStudy(study); });
 
-        // Allow derived class to perform specific initialization
         static_cast<Derived*>(this)->initializeDerivedFromStudy(study);
-        // Initialize next variable in chain
-        NextType::initializeFromStudy(study);
     }
 
-    /**
-     * @brief Static helper to initialize results from study
-     *     * @tparam R Results type
-     * @param results Results structure to initialize
-     * @param study Study configuration
-     */
     template<class R>
     static void InitializeResultsFromStudy(R& results, Data::Study& study)
     {
         VariableAccessorType::InitializeAndReset(results, study);
     }
 
-    /**
-     * @brief Associate this variable with a specific area
-     *     * @param study Study configuration (unused but kept for interface compatibility)
-     * @param area The area this variable is associated with
-     */
     void initializeFromArea(Data::Study* study, Data::Area* area) noexcept
     {
         areaPtr = area;
-        NextType::initializeFromArea(study, area);
     }
 
-    /**
-     * @brief Initialize from link (for link-based variables)
-     *     * @param study Study configuration
-     * @param link The link this variable is associated with
-     */
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        NextType::initializeFromAreaLink(study, link);
     }
 
-    /**
-     * @brief Reset state at the beginning of simulation
-     *     * Clears all intermediate values to prepare for a new simulation run.
-     */
     void simulationBegin()
     {
         std::for_each(yearlyValues.begin(), yearlyValues.end(), [](auto& value) { value.reset(); });
-        NextType::simulationBegin();
     }
 
-    /**
-     * @brief Cleanup at the end of simulation
-     */
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
-    /**
-     * @brief Setup at the beginning of each year
-     *     * @param year The year index (0-based)
-     * @param space The parallel space index
-     */
     void yearBegin(unsigned int year, unsigned int space)
     {
         static_cast<Derived*>(this)->yearBeginImpl(year, space);
-        NextType::yearBegin(year, space);
     }
 
-    /**
-     * @brief Post-processing after year end build
-     *     * @param state Current simulation state
-     * @param year The year index
-     * @param space The parallel space index
-     */
     void yearEndBuild(State& state, unsigned int year, unsigned int space)
     {
-        NextType::yearEndBuild(state, year, space);
     }
 
-    /**
-     * @brief Finalize year and compute statistics
-     *     * @param year The year index
-     * @param space The parallel space index
-     */
     void yearEnd(unsigned int year, unsigned int space)
     {
         yearlyValues[space].computeStatisticsForTheCurrentYear();
-        NextType::yearEnd(year, space);
     }
 
-    /**
-     * @brief Merge year results into global summary
-     *     * @param year The year index
-     * @param space The parallel space index
-     */
     void computeSummary(unsigned int year, unsigned int space)
     {
         AncestorType::pResults.merge(year, yearlyValues[space]);
-        NextType::computeSummary(year, space);
     }
 
-    /**
-     * @brief Setup at the beginning of each hour
-     *     * @param hourInTheYear Hour index within the year (0-8759)
-     */
     void hourBegin(unsigned int hourInTheYear)
     {
-        NextType::hourBegin(hourInTheYear);
     }
 
-    /**
-     * @brief Process data for each area during an hour
-     *     * This is where the actual time series data processing happens.
-     *     * @param state Current simulation state
-     * @param space The parallel space index
-     */
     void hourForEachArea(State& state, unsigned int space)
     {
         static_cast<Derived*>(this)->hourForEachAreaImpl(state, space);
-        NextType::hourForEachArea(state, space);
     }
 
-    /**
-     * @brief Cleanup at the end of each hour
-     *     * @param state Current simulation state
-     * @param hourInTheYear Hour index within the year
-     */
     void hourEnd(State& state, unsigned int hourInTheYear)
     {
-        NextType::hourEnd(state, hourInTheYear);
     }
 
-    /**
-     * @brief Retrieve raw hourly values for the current year
-     *     * @param unused Unused parameter (kept for interface compatibility)
-     * @param space The parallel space index
-     * @return Const reference to hourly values array
-     */
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
       unsigned int,
       unsigned int space) const noexcept
@@ -438,13 +320,6 @@ public:
         return yearlyValues[space].hour;
     }
 
-    /**
-     * @brief Build annual survey report for output
-     *     * @param results Survey results structure to populate
-     * @param fileLevel File output level filter
-     * @param precision Precision requirements
-     * @param space The parallel space index
-     */
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
@@ -462,17 +337,10 @@ public:
     }
 
 protected:
-    /// @name Protected Members
-    /// @{
-    /// Non-owning pointer to the associated area
     Data::Area* areaPtr{nullptr};
-    /// Intermediate values for each parallel space
     typename VCardType::IntermediateValuesType yearlyValues;
 
-    /// Number of parallel years (cached for performance)
     unsigned int nbYearsParallel{0};
-
-    /// @}
 };
 
 } // namespace Antares::Solver::Variable::Economy

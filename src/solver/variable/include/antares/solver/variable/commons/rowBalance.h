@@ -70,16 +70,13 @@ struct VCardRowBalance
 /*!
 ** \brief Marginal RowBalance
 */
-template<class NextT = Container::EndOfList>
-class RowBalance: public Variable::IVariable<RowBalance<NextT>, NextT, VCardRowBalance>
+class RowBalance: public Variable::IVariable<RowBalance, void, VCardRowBalance>
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
     //! VCard
     typedef VCardRowBalance VCardType;
     //! Ancestor
-    typedef Variable::IVariable<RowBalance<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<RowBalance, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -88,8 +85,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -99,9 +95,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -117,9 +112,6 @@ public:
 
         // Intermediate values
         pValuesForTheCurrentYear.initializeFromStudy(study);
-
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     template<class R>
@@ -149,62 +141,42 @@ public:
 
         // Merge all those values with the global results
         AncestorType::pResults.merge(0, pValuesForTheCurrentYear);
-
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
     {
-        // Next
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        // Next variable
-        NextType::hourForEachArea(state, numSpace);
     }
 
     void localBuildAnnualSurveyReport(SurveyResults& results,

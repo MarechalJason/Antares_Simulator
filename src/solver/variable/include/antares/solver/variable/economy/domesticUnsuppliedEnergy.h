@@ -32,14 +32,19 @@ struct DomesticUnsuppliedEnergyTraits
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
+    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
+
     static double value(const State& state)
     {
         return state.hourlyResults->ValeursHorairesDENS[state.hourInTheWeek];
     }
 
-    static bool checkCondition(const State&)
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType&,
+                               const State& state,
+                               unsigned int)
     {
-        return true;
+        iv[state.hourInTheYear] = value(state);
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -50,7 +55,6 @@ struct DomesticUnsuppliedEnergyTraits
 
 using VCardDomesticUnsuppliedEnergy = VCard_Base<DomesticUnsuppliedEnergyTraits>;
 
-template<class NextT = Container::EndOfList>
-using DomesticUnsuppliedEnergy = Economy_Base<DomesticUnsuppliedEnergyTraits, NextT>;
+using DomesticUnsuppliedEnergy = Economy_Base<DomesticUnsuppliedEnergyTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

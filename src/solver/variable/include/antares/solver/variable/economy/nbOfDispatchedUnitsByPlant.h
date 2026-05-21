@@ -81,8 +81,6 @@ using VCardNbOfDispatchedUnitsByPlant = VCardDispatchablePlantByClusterBase<
 ** \brief C02 Average value of the overrall OperatingCost emissions expected from all
 **   the thermal dispatchable clusters
 */
-template<class NextT = Container::EndOfList>
-using NbOfDispatchedUnitsByPlant = DispatchablePlantByClusterBase<NbOfDispatchedUnitsByPlantTraits,
-                                                                  NextT>;
+using NbOfDispatchedUnitsByPlant = DispatchablePlantByClusterBase<NbOfDispatchedUnitsByPlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

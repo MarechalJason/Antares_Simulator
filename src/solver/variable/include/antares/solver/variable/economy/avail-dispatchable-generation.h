@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <antares/logs/logs.h>
+
 #include "economy_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -37,6 +39,24 @@ struct AvailableDispatchGenTraits
         area = inputArea;
     }
 
+    // This variable produces no per-hour value: the full yearly profile is
+    // filled in yearBegin from the thermal cluster series. We still implement
+    // an explicit no-op setHourlyValue so the economy_base contract is
+    // satisfied intentionally (rather than by a silent fallback), and we
+    // log it once.
+    static void setHourlyValue(IntermediateValues& /*values*/,
+                               AuxiliaryDataType& /*area*/,
+                               const State& /*state*/,
+                               unsigned int /*numSpace*/)
+    {
+        [[maybe_unused]] static const bool logged = []
+        {
+            Antares::logs.info() << "Variable '" << Caption()
+                                 << "' has no hourly value (computed at year begin)";
+            return true;
+        }();
+    }
+
     static void yearBegin(IntermediateValues& yearlyValues,
                           AuxiliaryDataType area,
                           unsigned int year,
@@ -58,16 +78,6 @@ struct AvailableDispatchGenTraits
         }
     }
 
-    static bool checkCondition(const State&)
-    {
-        return false;
-    }
-
-    static double value(const State&)
-    {
-        return 0.;
-    }
-
     static void computeStats(IntermediateValues& intermediateValues)
     {
         intermediateValues.computeStatisticsForTheCurrentYear();
@@ -79,7 +89,6 @@ using VCardAvailableDispatchGen = VCard_Base<AvailableDispatchGenTraits>;
 /*!
 ** \brief Marginal AvailableDispatchGen
 */
-template<class NextT = Container::EndOfList>
-using AvailableDispatchGen = Economy_Base<AvailableDispatchGenTraits, NextT>;
+using AvailableDispatchGen = Economy_Base<AvailableDispatchGenTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

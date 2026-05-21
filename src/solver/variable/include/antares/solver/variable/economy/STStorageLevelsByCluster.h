@@ -71,7 +71,6 @@ struct STStorageLevelsByClusterTraits
 
 using VCardSTstorageLevelsByCluster = VCardSTStorageByClusterBase<STStorageLevelsByClusterTraits>;
 
-template<class NextT = Container::EndOfList>
-using STstorageLevelsByCluster = STStorageByClusterBase<STStorageLevelsByClusterTraits, NextT>;
+using STstorageLevelsByCluster = STStorageByClusterBase<STStorageLevelsByClusterTraits>;
 
 } // End namespace Antares::Solver::Variable::Economy

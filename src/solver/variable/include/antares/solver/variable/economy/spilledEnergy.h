@@ -30,15 +30,20 @@ struct SpilledEnergyTraits
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
-    static bool checkCondition(const State&)
-    {
-        return true;
-    }
+    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
 
     static double value(const State& state)
     {
         assert(state.hourlyResults && "Invalid pointer to simplex results");
         return state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek];
+    }
+
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType&,
+                               const State& state,
+                               unsigned int)
+    {
+        iv[state.hourInTheYear] = value(state);
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -53,7 +58,6 @@ using VCardSpilledEnergy = VCard_Base<SpilledEnergyTraits>;
 ** \brief C02 Average value of the overrall SpilledEnergy emissions expected from all
 **   the thermal dispatchable clusters
 */
-template<class NextT = Container::EndOfList>
-using SpilledEnergy = Economy_Base<SpilledEnergyTraits, NextT>;
+using SpilledEnergy = Economy_Base<SpilledEnergyTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

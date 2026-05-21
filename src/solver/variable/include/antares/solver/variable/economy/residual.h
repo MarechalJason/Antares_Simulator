@@ -37,15 +37,21 @@ struct ResidualLoadTraits
         area = inputArea;
     }
 
-    static bool checkCondition(AuxiliaryDataType area, const State&)
-    {
-        return area != nullptr;
-    }
-
     static double value(AuxiliaryDataType area, const State& state)
     {
         return state.problemeHebdo->ConsommationsAbattues[state.hourInTheWeek]
           .ConsommationAbattueDuPays[area->index];
+    }
+
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType area,
+                               const State& state,
+                               unsigned int)
+    {
+        if (area != nullptr)
+        {
+            iv[state.hourInTheYear] = value(area, state);
+        }
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -59,7 +65,6 @@ using VCardResidualLoad = VCard_Base<ResidualLoadTraits>;
 /*!
 ** \brief ResidualLoad
 */
-template<class NextT = Container::EndOfList>
-using ResidualLoad = Economy_Base<ResidualLoadTraits, NextT>;
+using ResidualLoad = Economy_Base<ResidualLoadTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

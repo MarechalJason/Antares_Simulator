@@ -50,7 +50,7 @@ struct VCardAllSetsOfAreas
 
 }; // class VCard
 
-template<class NextT = Container::EndOfList>
+template<class NextT>
 class SetsOfAreas
 {
 public:

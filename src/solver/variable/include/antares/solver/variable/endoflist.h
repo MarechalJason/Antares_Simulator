@@ -4,152 +4,105 @@
 #ifndef __SOLVER_END_OF_LIST_END_OF_LIST_H__
 #define __SOLVER_END_OF_LIST_END_OF_LIST_H__
 
-#include <yuni/yuni.h>
+// Terminator for the CRTP variable chain. Provides no-op implementations
+// for all hooks. Post-A.2, most hooks are not called on EndOfList anymore
+// (variables no longer propagate via NextType::), but storage decorators
+// and the legacy CRTP root still expect these methods to exist.
 
 #include <antares/study/study.h>
-
 #include "state.h"
 #include "surveyresults.h"
-
-// To remove warnings (unused variable) at compile time on linux
-#define UNUSED_VARIABLE(x) (void)(x)
 
 namespace Antares::Solver::Variable::Container
 {
 class EndOfList
 {
 public:
-    //! Type of the next static variable
-    typedef void NextType;
+    using NextType = void;
 
-    enum
-    {
-        //! How many items have we got
-        count = 0,
-    };
+    static constexpr size_t count = 0;
 
-    template<int CategoryDataLevel, int CategoryFile>
+    template<int, int>
     struct Statistics
     {
-        enum
-        {
-            count = 0
-        };
+        static constexpr int count = 0;
     };
 
-public:
-    /*!
-    ** \brief Retrieve the list of all individual variables
-    **
-    ** The predicate must implement the method `add(name, unit, comment)`.
-    */
     template<class PredicateT>
     static void RetrieveVariableList(PredicateT&)
     {
     }
 
-public:
-    //! \name Constructor & Destructor
-    //@{
-    EndOfList()
-    {
-    }
+    EndOfList() = default;
+    ~EndOfList() = default;
 
-    ~EndOfList()
-    {
-    }
-
-    //@}
-
+    // --- Lifecycle ---
     static void initializeFromStudy([[maybe_unused]] Data::Study& study)
     {
     }
-
     static void initializeFromArea(Data::Study*, Data::Area*)
     {
     }
-
-    static void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*)
+    static void initializeFromAreaLink(Data::Study*, Data::AreaLink*)
     {
     }
-
-    static void initializeFromAreaLink(Data::Study*, Data::AreaLink*)
+    static void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*)
     {
     }
 
     void broadcastNonApplicability(bool)
     {
     }
-
     void getPrintStatusFromStudy([[maybe_unused]] Data::Study& study)
     {
     }
-
     void supplyMaxNumberOfColumns([[maybe_unused]] Data::Study& study)
     {
     }
 
+    // --- Simulation ---
     static void simulationBegin()
     {
     }
-
     static void simulationEnd()
     {
     }
-
     static void yearBegin(unsigned int, unsigned int)
     {
     }
-
-    static void yearEndBuildPrepareDataForEachThermalCluster(State& state, uint year, uint numSpace)
+    static void yearEndBuildPrepareDataForEachThermalCluster(State&, uint, uint)
     {
-        UNUSED_VARIABLE(state);
-        UNUSED_VARIABLE(year);
-        UNUSED_VARIABLE(numSpace);
     }
-
-    static void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace)
+    static void yearEndBuildForEachThermalCluster(State&, uint, uint)
     {
-        UNUSED_VARIABLE(state);
-        UNUSED_VARIABLE(year);
-        UNUSED_VARIABLE(numSpace);
     }
-
     static void yearEndBuild(State&, unsigned int, unsigned int)
     {
     }
-
     static void yearEnd(unsigned int, unsigned int)
     {
     }
-
-    static void computeSummary(unsigned int year, unsigned int numSpace)
+    static void computeSummary(unsigned int, unsigned int)
     {
-        UNUSED_VARIABLE(year);
-        UNUSED_VARIABLE(numSpace);
     }
 
     template<class V>
     void yearEndSpatialAggregates(V&, unsigned int, uint)
     {
     }
-
     template<class V, class SetT>
-    void yearEndSpatialAggregates(V&, unsigned int, const SetT&, uint numSpace)
+    void yearEndSpatialAggregates(V&, unsigned int, const SetT&, uint)
     {
-        UNUSED_VARIABLE(numSpace);
     }
 
     template<class V>
     static void computeSpatialAggregatesSummary(V&, unsigned int, unsigned int)
     {
     }
-
     template<class V>
     static void simulationEndSpatialAggregates(V&)
     {
     }
-
     template<class V, class SetT>
     void simulationEndSpatialAggregates(V&, const SetT&)
     {
@@ -158,12 +111,9 @@ public:
     static void weekBegin(State&)
     {
     }
-
-    static void weekForEachArea(State&, uint numSpace)
+    static void weekForEachArea(State&, uint)
     {
-        UNUSED_VARIABLE(numSpace);
     }
-
     static void weekEnd(State&)
     {
     }
@@ -171,34 +121,27 @@ public:
     static void hourBegin(unsigned int)
     {
     }
-
-    static void hourForEachArea(State&, uint numSpace)
+    static void hourForEachArea(State&, uint)
     {
-        UNUSED_VARIABLE(numSpace);
     }
-
-    static void hourForEachLink(State&, uint numSpace)
+    static void hourForEachLink(State&, uint)
     {
-        UNUSED_VARIABLE(numSpace);
     }
-
     static void hourEnd(State&, unsigned int)
     {
     }
 
+    // --- Reporting ---
     static void buildSurveyReport(SurveyResults&, int, int, int)
     {
     }
-
     static void buildAnnualSurveyReport(SurveyResults&, int, int, int, uint)
     {
     }
-
     static void buildDigest(SurveyResults&, int, int)
     {
     }
-
-    static void beforeYearByYearExport(uint /*year*/, uint)
+    static void beforeYearByYearExport(uint, uint)
     {
     }
 
@@ -207,57 +150,43 @@ public:
     {
     }
 
+    // --- Spatial aggregates ---
     template<class SearchVCardT, class O>
     static void computeSpatialAggregateWith(O&)
     {
         assert(false);
     }
-
     template<class SearchVCardT, class O>
     static void computeSpatialAggregateWith(O&, const Data::Area*)
     {
         assert(false);
     }
-
     template<class SearchVCardT, class O>
-    static void computeSpatialAggregateWith(O&, const Data::Area*, uint numSpace)
+    static void computeSpatialAggregateWith(O&, const Data::Area*, uint)
     {
-        UNUSED_VARIABLE(numSpace);
     }
 
+    // --- Result retrieval ---
     template<class VCardToFindT>
     const double* retrieveHourlyResultsForCurrentYear(uint) const
     {
         return nullptr;
     }
-
     template<class VCardToFindT, class O>
-    static void retrieveResultsForArea(O** /*result*/, const Data::Area*)
+    static void retrieveResultsForArea(O**, const Data::Area*)
     {
-        // Does nothing - this method may be called from a leaf
-        // Consequently we can not throw an error from here if the variable `result`
-        // is not initialized.
     }
-
     template<class VCardToFindT, class O>
-    static void retrieveResultsForThermalCluster(O** /*result*/, const Data::ThermalCluster*)
+    static void retrieveResultsForThermalCluster(O**, const Data::ThermalCluster*)
     {
-        // Does nothing - this method may be called from a leaf
-        // Consequently we can not throw an error from here if the variable `result`
-        // is not initialized.
     }
-
     template<class VCardToFindT, class O>
-    static void retrieveResultsForLink(O** /*result*/, const Data::AreaLink*)
+    static void retrieveResultsForLink(O**, const Data::AreaLink*)
     {
-        // Does nothing - this method may be called from a leaf
-        // Consequently we can not throw an error from here if the variable `result`
-        // is not initialized.
     }
 
     void localBuildAnnualSurveyReport(SurveyResults&, int, int, unsigned int) const
     {
-        // Does nothing
     }
 
 }; // class EndOfList

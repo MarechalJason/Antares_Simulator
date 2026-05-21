@@ -45,8 +45,10 @@ inline IVariable<ChildT, NextT, VCardT>::~IVariable()
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::initializeFromStudy(Data::Study& study)
 {
-    // Next
-    NextType::initializeFromStudy(study);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::initializeFromStudy(study);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -61,16 +63,20 @@ template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::initializeFromArea(Data::Study* study,
                                                                  Data::Area* area)
 {
-    // Next
-    NextType::initializeFromArea(study, area);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::initializeFromArea(study, area);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::initializeFromLink(Data::Study* study,
                                                                  Data::AreaLink* link)
 {
-    // Next
-    NextType::initializeFromAreaLink(study, link);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::initializeFromAreaLink(study, link);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -79,8 +85,10 @@ inline void IVariable<ChildT, NextT, VCardT>::initializeFromThermalCluster(
   Data::Area* area,
   Data::ThermalCluster* cluster)
 {
-    // Next
-    NextType::initializeFromThermalCluster(study, area, cluster);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::initializeFromThermalCluster(study, area, cluster);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -101,20 +109,28 @@ inline void IVariable<ChildT, NextT, VCardT>::broadcastNonApplicability(bool app
         }
     }
 
-    NextType::broadcastNonApplicability(applyNonApplicable);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::broadcastNonApplicability(applyNonApplicable);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::simulationBegin()
 {
-    // Next
-    NextType::simulationBegin();
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::simulationBegin();
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::simulationEnd()
 {
-    NextType::simulationEnd();
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::simulationEnd();
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -126,15 +142,19 @@ size_t IVariable<ChildT, NextT, VCardT>::getMaxNumberColumns() const
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::yearBegin(uint year)
 {
-    // Next variable
-    NextType::yearBegin(year);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::yearBegin(year);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::yearEnd(uint year)
 {
-    // Next variable
-    NextType::yearEnd(year);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::yearEnd(year);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -143,8 +163,10 @@ inline void IVariable<ChildT, NextT, VCardT>::yearEndSpatialAggregates(V& allVar
                                                                        uint year,
                                                                        unsigned int numSpace)
 {
-    // Next variable
-    NextType::yearEndSpatialAggregates(allVars, year, numSpace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::yearEndSpatialAggregates(allVars, year, numSpace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -153,8 +175,10 @@ inline void IVariable<ChildT, NextT, VCardT>::yearEndSpatialAggregates(V& allVar
                                                                        uint year,
                                                                        const SetT& set)
 {
-    // Next variable
-    NextType::yearEndSpatialAggregates(allVars, year, set);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::yearEndSpatialAggregates(allVars, year, set);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -163,16 +187,20 @@ inline void IVariable<ChildT, NextT, VCardT>::yearEndBuildPrepareDataForEachTher
   uint year,
   uint numSpace)
 {
-    // Next variable
-    NextType::yearEndBuildPrepareDataForEachThermalCluster(state, year, numSpace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::yearEndBuildPrepareDataForEachThermalCluster(state, year, numSpace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 template<class V>
 inline void IVariable<ChildT, NextT, VCardT>::simulationEndSpatialAggregates(V& allVars)
 {
-    // Next variable
-    NextType::simulationEndSpatialAggregates(allVars);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::simulationEndSpatialAggregates(allVars);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -180,43 +208,55 @@ template<class V, class SetT>
 inline void IVariable<ChildT, NextT, VCardT>::simulationEndSpatialAggregates(V& allVars,
                                                                              const SetT& set)
 {
-    // Next variable
-    NextType::simulationEndSpatialAggregates(allVars, set);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::simulationEndSpatialAggregates(allVars, set);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::weekBegin(State& state)
 {
-    // Next variable
-    NextType::weekBegin(state);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::weekBegin(state);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::weekForEachArea(State& state, unsigned int numSpace)
 {
-    // Next variable
-    NextType::weekForEachArea(state, numSpace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::weekForEachArea(state, numSpace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::hourBegin(uint hourInTheYear)
 {
-    // Next variable
-    NextType::hourBegin(hourInTheYear);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::hourBegin(hourInTheYear);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::hourForEachArea(State& state)
 {
-    // Next variable
-    NextType::hourForEachArea(state);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::hourForEachArea(state);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::hourForEachArea(State& state, unsigned int numSpace)
 {
-    // Next variable
-    NextType::hourForEachArea(state, numSpace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::hourForEachArea(state, numSpace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -225,36 +265,44 @@ inline void IVariable<ChildT, NextT, VCardT>::yearEndBuildForEachThermalCluster(
   unsigned int year,
   unsigned int numSpace)
 {
-    // Next item in the list
-    NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::hourForEachLink(State& state, unsigned int numSpace)
 {
-    // Next item in the list
-    NextType::hourForEachLink(state, numSpace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::hourForEachLink(state, numSpace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::hourEnd(State& state, uint hourInTheYear)
 {
-    // Next
-    NextType::hourEnd(state, hourInTheYear);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::hourEnd(state, hourInTheYear);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::weekEnd(State& state)
 {
-    // Next
-    NextType::weekEnd(state);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::weekEnd(state);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::buildSurveyReport(SurveyResults& results,
-                                                                int dataLevel,
-                                                                int fileLevel,
-                                                                int precision) const
+                                                               int dataLevel,
+                                                               int fileLevel,
+                                                               int precision) const
 {
     // Generating value for the area
     // Only if there are some results to export...
@@ -278,7 +326,10 @@ inline void IVariable<ChildT, NextT, VCardT>::buildSurveyReport(SurveyResults& r
 
     // Ask to the next item in the static list to export
     // its results as well
-    NextType::buildSurveyReport(results, dataLevel, fileLevel, precision);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::buildSurveyReport(results, dataLevel, fileLevel, precision);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -306,7 +357,10 @@ inline void IVariable<ChildT, NextT, VCardT>::buildAnnualSurveyReport(SurveyResu
 
     // Ask to the next item in the static list to export
     // its results as well
-    NextType::buildAnnualSurveyReport(results, dataLevel, fileLevel, precision, numSpace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::buildAnnualSurveyReport(results, dataLevel, fileLevel, precision, numSpace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -337,13 +391,19 @@ inline void IVariable<ChildT, NextT, VCardT>::buildDigest(SurveyResults& results
                                                            dataLevel);
     }
     // Ask to build the digest to the next variable
-    NextType::buildDigest(results, digestLevel, dataLevel);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::buildDigest(results, digestLevel, dataLevel);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
 inline void IVariable<ChildT, NextT, VCardT>::beforeYearByYearExport(uint year, uint numspace)
 {
-    NextType::beforeYearByYearExport(year, numspace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::beforeYearByYearExport(year, numspace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -355,7 +415,10 @@ inline void IVariable<ChildT, NextT, VCardT>::provideInformations(I& infos)
     {
         infos.template beginNode<VCardType>();
         // Next variable in the list
-        NextType::template provideInformations<I>(infos);
+        if constexpr (!std::is_same_v<NextT, void>)
+        {
+            NextType::template provideInformations<I>(infos);
+        }
         // End of the node
         infos.endNode();
     }
@@ -364,7 +427,10 @@ inline void IVariable<ChildT, NextT, VCardT>::provideInformations(I& infos)
         // Giving our VCard
         infos.template addVCard<VCardType>();
         // Next variable in the list
-        NextType::template provideInformations<I>(infos);
+        if constexpr (!std::is_same_v<NextT, void>)
+        {
+            NextType::template provideInformations<I>(infos);
+        }
     }
 }
 
@@ -386,7 +452,10 @@ inline void IVariable<ChildT, NextT, VCardT>::computeSpatialAggregateWith(O& out
         return;
     }
     // Otherwise we keep looking
-    NextType::template computeSpatialAggregateWith<SearchVCardT, O>(out, numSpace);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::template computeSpatialAggregateWith<SearchVCardT, O>(out, numSpace);
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -394,7 +463,10 @@ template<class SearchVCardT, class O>
 inline void IVariable<ChildT, NextT, VCardT>::computeSpatialAggregateWith(O& out,
                                                                           const Data::Area* area)
 {
-    NextType::template computeSpatialAggregateWith<SearchVCardT, O>(out, area);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::template computeSpatialAggregateWith<SearchVCardT, O>(out, area);
+    }
 }
 
 namespace // anonymous
@@ -438,9 +510,18 @@ inline const double* IVariable<ChildT, NextT, VCardT>::retrieveHourlyResultsForC
 {
     using AssignT = RetrieveResultsAssignment<
       Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
-    return (AssignT::Yes)
-             ? nullptr
-             : NextType::template retrieveHourlyResultsForCurrentYear<VCardToFindT>(numSpace);
+    if constexpr (AssignT::Yes)
+    {
+        return nullptr;
+    }
+    else if constexpr (!std::is_same_v<NextT, void>)
+    {
+        return NextType::template retrieveHourlyResultsForCurrentYear<VCardToFindT>(numSpace);
+    }
+    else
+    {
+        return nullptr;
+    }
 }
 
 template<class ChildT, class NextT, class VCardT>
@@ -452,7 +533,7 @@ inline void IVariable<ChildT, NextT, VCardT>::retrieveResultsForArea(
     using AssignT = RetrieveResultsAssignment<
       Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
     AssignT::Do(pResults, result);
-    if (!AssignT::Yes)
+    if constexpr (!AssignT::Yes && !std::is_same_v<NextT, void>)
     {
         NextType::template retrieveResultsForArea<VCardToFindT>(result, area);
     }
@@ -467,7 +548,7 @@ inline void IVariable<ChildT, NextT, VCardT>::retrieveResultsForThermalCluster(
     using AssignT = RetrieveResultsAssignment<
       Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
     AssignT::Do(pResults, result);
-    if (!AssignT::Yes)
+    if constexpr (!AssignT::Yes && !std::is_same_v<NextT, void>)
     {
         NextType::template retrieveResultsForThermalCluster<VCardToFindT>(result, cluster);
     }
@@ -482,7 +563,7 @@ inline void IVariable<ChildT, NextT, VCardT>::retrieveResultsForLink(
     using AssignT = RetrieveResultsAssignment<
       Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
     AssignT::Do(pResults, result);
-    if (!AssignT::Yes)
+    if constexpr (!AssignT::Yes && !std::is_same_v<NextT, void>)
     {
         NextType::template retrieveResultsForLink<VCardToFindT>(result, link);
     }
@@ -621,7 +702,10 @@ void IVariable<ChildT, NextT, VCardT>::RetrieveVariableList(PredicateT& predicat
 {
     RetrieveVariableListHelper<VCardType::columnCount, VCardType, ChildT>::Do(predicate);
     // Go to the next variable
-    NextType::RetrieveVariableList(predicate);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::RetrieveVariableList(predicate);
+    }
 }
 
 // =============================================================================
@@ -681,7 +765,10 @@ inline void IVariable<ChildT, NextT, VCardT>::getPrintStatusFromStudy(Data::Stud
 {
     GetPrintStatusHelper<VCardType::columnCount, VCardType>::Do(study, isPrinted);
     // Go to the next variable
-    NextType::getPrintStatusFromStudy(study);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::getPrintStatusFromStudy(study);
+    }
 }
 
 // =======================================================================
@@ -738,7 +825,10 @@ inline void IVariable<ChildT, NextT, VCardT>::supplyMaxNumberOfColumns(Data::Stu
     SupplyMaxNbColumnsHelper<VCardType::columnCount, VCardType>::Do(study,
                                                                     static_cast<uint>(max_columns));
     // Go to the next variable
-    NextType::supplyMaxNumberOfColumns(study);
+    if constexpr (!std::is_same_v<NextT, void>)
+    {
+        NextType::supplyMaxNumberOfColumns(study);
+    }
 }
 
 } // namespace Antares::Solver::Variable

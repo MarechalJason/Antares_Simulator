@@ -38,14 +38,20 @@ struct PumpingTraits
         area = inputArea;
     }
 
-    static bool checkCondition(AuxiliaryDataType area, const State&)
-    {
-        return area != nullptr;
-    }
-
     static double value(AuxiliaryDataType /*area*/, const State& state)
     {
         return state.hourlyResults->PompageHoraire[state.hourInTheWeek];
+    }
+
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType area,
+                               const State& state,
+                               unsigned int)
+    {
+        if (area != nullptr)
+        {
+            iv[state.hourInTheYear] = value(area, state);
+        }
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -56,7 +62,6 @@ struct PumpingTraits
 
 using VCardPumping = VCard_Base<PumpingTraits>;
 
-template<class NextT = Container::EndOfList>
-using Pumping = Economy_Base<PumpingTraits, NextT>;
+using Pumping = Economy_Base<PumpingTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

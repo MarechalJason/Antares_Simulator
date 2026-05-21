@@ -54,9 +54,7 @@ using VCardNonProportionalCostByDispatchablePlant = VCardDispatchablePlantByClus
 /*!
 ** \brief NP cost expected from all the thermal dispatchable clusters
 */
-template<class NextT = Container::EndOfList>
-using NonProportionalCostByDispatchablePlant = DispatchablePlantByClusterBase<
-  NonProportionalCostByDispatchablePlantTraits,
-  NextT>;
+using NonProportionalCostByDispatchablePlant =
+  DispatchablePlantByClusterBase<NonProportionalCostByDispatchablePlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

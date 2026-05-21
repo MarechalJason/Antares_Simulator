@@ -14,7 +14,7 @@ namespace Antares::Solver::Variable::Economy
 
 struct FlowQuadAuxData
 {
-    uint linkGlobalIndex = 0;
+    Data::AreaLink* link = nullptr;
     uint nbHours = 0;
     std::vector<std::vector<double>>* transitMoyenInterco = nullptr;
 };
@@ -54,7 +54,7 @@ struct FlowQuadTraits
                                          Data::AreaLink* link)
     {
         assert(link && "invalid interconnection");
-        aux.linkGlobalIndex = link->index;
+        aux.link = link;
     }
 
     static void onSimulationBegin(IntermediateValues& iv, FlowQuadAuxData&)
@@ -64,8 +64,9 @@ struct FlowQuadTraits
 
     static void loadDataForSimulationEnd(IntermediateValues& iv, const FlowQuadAuxData& aux)
     {
+        assert(aux.link && "invalid interconnection");
         (void)::memcpy(iv.hour,
-                       (*aux.transitMoyenInterco)[aux.linkGlobalIndex].data(),
+                       (*aux.transitMoyenInterco)[aux.link->index].data(),
                        sizeof(double) * aux.nbHours);
     }
 
@@ -95,8 +96,7 @@ using VCardFlowQuad = VCardStaticLinkBase<FlowQuadTraits>;
 /*!
 ** \brief Flow (quad.)
 */
-template<class NextT = Container::EndOfList>
-using FlowQuad = StaticLinkBase<FlowQuadTraits, NextT>;
+using FlowQuad = StaticLinkBase<FlowQuadTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

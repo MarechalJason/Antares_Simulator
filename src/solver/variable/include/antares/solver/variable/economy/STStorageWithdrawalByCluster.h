@@ -70,8 +70,6 @@ struct STStorageWithdrawalByClusterTraits
 using VCardSTstorageWithdrawalByCluster = VCardSTStorageByClusterBase<
   STStorageWithdrawalByClusterTraits>;
 
-template<class NextT = Container::EndOfList>
-using STstorageWithdrawalByCluster = STStorageByClusterBase<STStorageWithdrawalByClusterTraits,
-                                                            NextT>;
+using STstorageWithdrawalByCluster = STStorageByClusterBase<STStorageWithdrawalByClusterTraits>;
 
 } // End namespace Antares::Solver::Variable::Economy

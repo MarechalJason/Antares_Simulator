@@ -160,11 +160,7 @@ using VariablesPerSetOfAreas = Common::SpatialAggregateAll<OverallCost,
                                                            ResidualLoad,
                                                            NbOfDispatchedUnits>::type;
 
-typedef BindingConstMarginCost< // Marginal cost for a binding constraint
-  Container::EndOfList          // End of variable list
-  >
-
-  VariablesPerBindingConstraints;
+using VariablesPerBindingConstraints = BindingConstMarginCost;
 
 typedef Variable::Join<
   // Variables for each area / links attached to the areas

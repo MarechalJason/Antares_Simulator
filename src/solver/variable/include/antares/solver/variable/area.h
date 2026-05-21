@@ -47,7 +47,7 @@ struct VCardAllAreas
 
 }; // class VCard
 
-template<class NextT = Container::EndOfList>
+template<class NextT>
 class Areas //: public Variable::IVariable<Areas<NextT>, NextT, VCardAllAreas>
 {
 public:

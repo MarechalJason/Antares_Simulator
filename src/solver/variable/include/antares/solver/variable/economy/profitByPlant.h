@@ -63,7 +63,6 @@ using VCardProfitByPlant = VCardDispatchablePlantByClusterBase<ProfitByPlantTrai
 /*!
 ** \brief Profit by plant for thermal dispatchable clusters
 */
-template<class NextT = Container::EndOfList>
-using ProfitByPlant = DispatchablePlantByClusterBase<ProfitByPlantTraits, NextT>;
+using ProfitByPlant = DispatchablePlantByClusterBase<ProfitByPlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

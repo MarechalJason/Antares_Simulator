@@ -46,7 +46,7 @@ struct VCardAllBindingConstraints
 
 }; // class VCardAllBindingConstraints
 
-template<class NextT = Container::EndOfList>
+template<class NextT>
 class BindingConstraints
 {
 public:

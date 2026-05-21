@@ -3,6 +3,31 @@
 
 #pragma once
 
+/*!
+** \file dynamic_multi_column_base.h
+**
+** \brief Base class for dynamic multi-column variables (runtime column count)
+**
+** ## Traits Contract
+**
+** A valid DynamicMultiColumn Traits must provide:
+** - Required static methods:
+**   - \c Caption() -> std::string
+**   - \c Unit() -> std::string
+**   - \c Description() -> std::string
+**   - \c ResultsType : typedef for results template
+**   - \c decimal : uint8_t
+**   - \c buildColumnDescriptors(Data::Area*) -> std::vector<ColumnDescriptor>
+**
+** - Optional hooks:
+**   - \c onSimulationBegin(IntermediateValuesBaseType&, unsigned int) -> void
+**   - \c perColumnComputeStats(IntermediateValues&, size_t columnIndex) -> void
+**   - \c setHourlyValue(IntermediateValuesBaseType&, State&, unsigned int, const
+*std::vector<ColumnDescriptor>&) -> void
+**
+** Note: The traits should rebuild groupToNumbers map internally from descriptors if needed.
+*/
+
 #include "economy_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -70,37 +95,29 @@ struct VCardDynamicMultiColumn
     };
 };
 
-template<class Traits, class NextT = Container::EndOfList>
-class DynamicMultiColumnBase: public Variable::IVariable<DynamicMultiColumnBase<Traits, NextT>,
-                                                         NextT,
+template<class Traits>
+class DynamicMultiColumnBase: public Variable::IVariable<DynamicMultiColumnBase<Traits>,
+                                                         void,
                                                          VCardDynamicMultiColumn<Traits>>
 {
 public:
-    typedef NextT NextType;
     typedef VCardDynamicMultiColumn<Traits> VCardType;
-    typedef Variable::IVariable<DynamicMultiColumnBase<Traits, NextT>, NextT, VCardType>
+    typedef Variable::IVariable<DynamicMultiColumnBase<Traits>, void, VCardType>
       AncestorType;
     typedef typename VCardType::ResultsType ResultsType;
     typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
 
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 
-    enum
-    {
-        count = 1 + NextT::count,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        enum
-        {
-            count = ((VCardType::categoryDataLevel & CDataLevel
-                      && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
-        };
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                      && VCardType::categoryFileLevel & CFile)
+                                      ? VCardType::columnCount * ResultsType::count
+                                      : 0);
     };
 
 public:
@@ -116,8 +133,6 @@ public:
             AncestorType::pResults[i].initializeFromStudy(study);
             AncestorType::pResults[i].reset();
         }
-
-        NextType::initializeFromStudy(study);
     }
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
@@ -152,8 +167,6 @@ public:
             AncestorType::pResults[i].initializeFromStudy(*study);
             AncestorType::pResults[i].reset();
         }
-
-        NextType::initializeFromArea(study, area);
     }
 
     size_t getMaxNumberColumns() const
@@ -169,12 +182,10 @@ public:
         {
             Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
         }
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
@@ -183,12 +194,10 @@ public:
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
@@ -208,7 +217,6 @@ public:
                 pValuesForTheCurrentYear[numSpace][column].computeStatisticsForTheCurrentYear();
             }
         }
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
@@ -216,23 +224,19 @@ public:
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace, descriptors_);
-        NextType::hourForEachArea(state, numSpace);
     }
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
-        NextType::buildDigest(results, digestLevel, dataLevel);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
@@ -249,15 +253,17 @@ public:
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
-        if (AncestorType::isPrinted[0])
+        if (!AncestorType::isPrinted[0])
         {
-            for (size_t column = 0; column < nbColumns_; ++column)
-            {
-                results.variableCaption = VCardType::Multiple::Caption(column, descriptors_);
-                results.variableUnit = VCardType::Multiple::Unit(column, descriptors_);
-                pValuesForTheCurrentYear[numSpace][column]
-                  .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
-            }
+            return;
+        }
+
+        for (size_t column = 0; column < nbColumns_; ++column)
+        {
+            results.variableCaption = VCardType::Multiple::Caption(column, descriptors_);
+            results.variableUnit = VCardType::Multiple::Unit(column, descriptors_);
+            pValuesForTheCurrentYear[numSpace][column]
+              .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
         }
     }
 
@@ -266,28 +272,29 @@ public:
                            int fileLevel,
                            int precision) const
     {
+        if (!AncestorType::isPrinted[0])
+        {
+            return;
+        }
+
         if ((dataLevel & VCardType::categoryDataLevel) && (fileLevel & VCardType::categoryFileLevel)
             && (precision & VCardType::precision))
         {
             results.isPrinted = AncestorType::isPrinted;
             results.isCurrentVarNA = AncestorType::isNonApplicable;
 
-            if (AncestorType::isPrinted[0])
+            for (size_t column = 0; column < nbColumns_; ++column)
             {
-                for (size_t column = 0; column < nbColumns_; ++column)
-                {
-                    results.variableCaption = descriptors_[column].caption;
-                    results.variableUnit = descriptors_[column].unit;
-                    AncestorType::pResults[column]
-                      .template buildSurveyReport<ResultsType, VCardType>(results,
-                                                                          AncestorType::pResults[column],
-                                                                          dataLevel,
-                                                                          fileLevel,
-                                                                          precision);
-                }
+                results.variableCaption = descriptors_[column].caption;
+                results.variableUnit = descriptors_[column].unit;
+                AncestorType::pResults[column].template buildSurveyReport<ResultsType, VCardType>(
+                  results,
+                  AncestorType::pResults[column],
+                  dataLevel,
+                  fileLevel,
+                  precision);
             }
         }
-        NextType::buildSurveyReport(results, dataLevel, fileLevel, precision);
     }
 
 private:

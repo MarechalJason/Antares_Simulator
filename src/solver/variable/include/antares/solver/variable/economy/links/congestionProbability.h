@@ -89,17 +89,14 @@ struct VCardCongestionProbability
 /*!
 ** \brief Marginal CongestionProbability
 */
-template<class NextT = Container::EndOfList>
 class CongestionProbability
-    : public Variable::IVariable<CongestionProbability<NextT>, NextT, VCardCongestionProbability>
+    : public Variable::IVariable<CongestionProbability, void, VCardCongestionProbability>
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
     //! VCard
     typedef VCardCongestionProbability VCardType;
     //! Ancestor
-    typedef Variable::IVariable<CongestionProbability<NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<CongestionProbability, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -108,8 +105,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -119,9 +115,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -150,21 +145,14 @@ public:
                 pValuesForYearLocalReport[numSpace][i].initializeFromStudy(study);
             }
         }
-
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
     {
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
@@ -174,15 +162,10 @@ public:
             pValuesForTheCurrentYear[numSpace][0].reset();
             pValuesForTheCurrentYear[numSpace][1].reset();
         }
-
-        // Next
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        // Next variable
-        NextType::simulationEnd();
     }
 
     void yearBegin(uint year, unsigned int numSpace)
@@ -193,15 +176,10 @@ public:
 
         pValuesForYearLocalReport[numSpace][0].reset();
         pValuesForYearLocalReport[numSpace][1].reset();
-
-        // Next variable
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(uint year, uint numSpace)
@@ -211,9 +189,6 @@ public:
             // Compute all statistics for the current year (daily,weekly,monthly)
             pValuesForTheCurrentYear[numSpace][i].computeProbabilitiesForTheCurrentYear();
         }
-
-        // Next variable
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
@@ -224,21 +199,14 @@ public:
             // Merge all those values with the global results
             AncestorType::pResults[i].merge(year, pValuesForTheCurrentYear[numSpace][i]);
         }
-
-        // Next variable
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(uint hourInTheYear)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        // Next variable
-        NextType::hourForEachArea(state, numSpace);
     }
 
     void hourForEachLink(State& state, unsigned int numSpace)
@@ -261,9 +229,6 @@ public:
         {
             pValuesForTheCurrentYear[numSpace][1].hour[state.hourInTheYear] += 100.0 * ratio;
         }
-
-        // Next item in the list
-        NextType::hourForEachLink(state, numSpace);
     }
 
     void beforeYearByYearExport(uint /*year*/, uint numSpace)

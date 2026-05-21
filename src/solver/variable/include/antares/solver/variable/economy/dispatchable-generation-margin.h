@@ -52,7 +52,6 @@ using VCardDispatchableGenMargin = VCard_Base<DispatchableGenMarginTraits>;
 /*!
 ** \brief Marginal DispatchableGenMargin
 */
-template<class NextT = Container::EndOfList>
-using DispatchableGenMargin = Economy_Base<DispatchableGenMarginTraits, NextT>;
+using DispatchableGenMargin = Economy_Base<DispatchableGenMarginTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

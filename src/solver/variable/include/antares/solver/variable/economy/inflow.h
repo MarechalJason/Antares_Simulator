@@ -38,15 +38,21 @@ struct InflowsTraits
         area = inputArea;
     }
 
-    static bool checkCondition(AuxiliaryDataType area, const State&)
-    {
-        return area != nullptr;
-    }
-
     static double value(AuxiliaryDataType area, const State& state)
     {
         return state.problemeHebdo->CaracteristiquesHydrauliques[area->index]
           .ApportNaturelHoraire[state.hourInTheWeek];
+    }
+
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType area,
+                               const State& state,
+                               unsigned int)
+    {
+        if (area != nullptr)
+        {
+            iv[state.hourInTheYear] = value(area, state);
+        }
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -57,7 +63,6 @@ struct InflowsTraits
 
 using VCardInflows = VCard_Base<InflowsTraits>;
 
-template<class NextT = Container::EndOfList>
-using Inflows = Economy_Base<InflowsTraits, NextT>;
+using Inflows = Economy_Base<InflowsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

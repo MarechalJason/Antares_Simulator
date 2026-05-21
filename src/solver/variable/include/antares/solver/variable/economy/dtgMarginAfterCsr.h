@@ -31,14 +31,19 @@ struct DtgMarginCsrTraits
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
+    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
+
     static double value(const State& state)
     {
         return state.hourlyResults->ValeursHorairesDtgMrgCsr[state.hourInTheWeek];
     }
 
-    static bool checkCondition(const State&)
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType&,
+                               const State& state,
+                               unsigned int)
     {
-        return true;
+        iv[state.hourInTheYear] = value(state);
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -49,7 +54,6 @@ struct DtgMarginCsrTraits
 
 using VCardDtgMarginCsr = VCard_Base<DtgMarginCsrTraits>;
 
-template<class NextT = Container::EndOfList>
-using DtgMarginCsr = Economy_Base<DtgMarginCsrTraits, NextT>;
+using DtgMarginCsr = Economy_Base<DtgMarginCsrTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

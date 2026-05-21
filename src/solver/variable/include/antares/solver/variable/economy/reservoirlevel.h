@@ -39,11 +39,6 @@ struct ReservoirLevelTraits
         capacity = area->hydro.reservoirCapacity;
     }
 
-    static bool checkCondition(AuxiliaryDataType capacity, const State&)
-    {
-        return capacity > 0.0;
-    }
-
     static void setHourlyValue(IntermediateValues& intermediateValues,
                                AuxiliaryDataType& capacity,
                                const State& state,
@@ -62,7 +57,6 @@ struct ReservoirLevelTraits
 
 using VCardReservoirLevel = VCard_Base<ReservoirLevelTraits>;
 
-template<class NextT = Container::EndOfList>
-using ReservoirLevel = Economy_Base<ReservoirLevelTraits, NextT>;
+using ReservoirLevel = Economy_Base<ReservoirLevelTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

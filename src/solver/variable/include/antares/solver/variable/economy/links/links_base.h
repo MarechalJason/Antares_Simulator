@@ -3,6 +3,38 @@
 
 #pragma once
 
+/*!
+** \file links_base.h
+**
+** \brief Base class for link-level economy variables
+**
+** ## Traits Contract
+**
+** A valid Links variable Traits must provide:
+** - Required static methods:
+**   - \c Caption() -> std::string
+**   - \c Unit() -> std::string
+**   - \c Description() -> std::string
+**   - \c ResultsType : typedef for results template
+**   - \c decimal : uint8_t
+**   - \c spatialAggregate : uint8_t
+**   - \c computeStats(IntermediateValues&) -> void
+**
+** - Optional hooks (dispatched via \c if constexpr):
+**   - \c hourForEachLink(IntermediateValues&, State&) -> void
+**   - \c hourValue(State&) -> double (accumulates to hourly values)
+**   - \c hourValue(State&, double upstreamPrice, double downstreamPrice) -> double (computes link
+*value)
+**   - \c buildDigest(SurveyResults&, int digestLevel, int dataLevel, AncestorType&) -> void
+**
+** ## Hook execution order
+** - initializeFromStudy() / initializeFromLink()
+** - simulationBegin() / simulationEnd()
+** - yearBegin() / yearEnd()
+** - computeSummary() / hourBegin() -> hourForEachLink() -> [hourValue hook]
+** - buildDigest() / localBuildAnnualSurveyReport()
+*/
+
 #include <antares/solver/variable/variable.h>
 
 namespace Antares::Solver::Variable::Economy
@@ -62,17 +94,15 @@ struct VCard_LinkBase
 
 }; // class VCard
 
-template<class Traits, class NextT = Container::EndOfList>
+template<class Traits>
 class EconomyLink_Base
-    : public Variable::IVariable<EconomyLink_Base<Traits, NextT>, NextT, VCard_LinkBase<Traits>>
+    : public Variable::IVariable<EconomyLink_Base<Traits>, void, VCard_LinkBase<Traits>>
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
     //! VCard
     typedef VCard_LinkBase<Traits> VCardType;
     //! Ancestor
-    typedef Variable::IVariable<EconomyLink_Base<Traits, NextT>, NextT, VCardType> AncestorType;
+    typedef Variable::IVariable<EconomyLink_Base<Traits>, void, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -81,8 +111,7 @@ public:
 
     enum
     {
-        //! How many items have we got
-        count = 1 + NextT::count,
+        count = 1,
     };
 
     template<int CDataLevel, int CFile>
@@ -92,9 +121,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
+                     ? VCardType::columnCount * ResultsType::count
+                     : 0),
         };
     };
 
@@ -103,31 +131,22 @@ public:
     {
         pNbYearsParallel = study.maxNbYearsInParallel;
 
-        // Average on all years
         AncestorType::pResults.initializeFromStudy(study);
         AncestorType::pResults.reset();
 
-        // Intermediate values
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
         }
-
-        // Next
-        NextType::initializeFromStudy(study);
     }
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        // Next
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
     {
-        // Next
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
@@ -136,62 +155,42 @@ public:
         {
             pValuesForTheCurrentYear[numSpace].reset();
         }
-        // Next
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(uint year, unsigned int numSpace)
     {
-        // Reset
         pValuesForTheCurrentYear[numSpace].reset();
-        // Next variable
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        // Next variable
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
-        // Compute all statistics for the current year (daily,weekly,monthly)
         Traits::computeStats(pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
     {
-        // Merge all those values with the global results
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-
-        // Next variable
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(uint hourInTheYear)
     {
-        // Next variable
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
-        // Next variable
-        NextType::hourForEachArea(state, numSpace);
     }
 
     void hourForEachLink(State& state, unsigned int numSpace)
     {
-        if constexpr (requires {
+if constexpr (requires {
                           Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
                       })
         {
@@ -202,24 +201,24 @@ public:
             pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] += Traits::hourValue(
               state);
         }
-        else if constexpr (requires { Traits::computeHourlyValue(state, 0.0, 0.0); })
+        else if constexpr (requires { Traits::hourValue(state, 0.0, 0.0); })
         {
             const double upstreamPrice = state.problemeHebdo
                                            ->ResultatsHoraires[state.link->from->index]
                                            .CoutsMarginauxHoraires[state.hourInTheWeek];
             const double downstreamPrice = state.problemeHebdo
-                                             ->ResultatsHoraires[state.link->with->index]
-                                             .CoutsMarginauxHoraires[state.hourInTheWeek];
-            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = Traits::
-              computeHourlyValue(state, upstreamPrice, downstreamPrice);
+                                            ->ResultatsHoraires[state.link->with->index]
+                                            .CoutsMarginauxHoraires[state.hourInTheWeek];
+            pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = Traits::hourValue(
+              state,
+              upstreamPrice,
+              downstreamPrice);
         }
-        // Next item in the list
-        NextType::hourForEachLink(state, numSpace);
     }
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
-        if constexpr (requires {
+if constexpr (requires {
                           Traits::buildDigest(results,
                                               digestLevel,
                                               dataLevel,
@@ -228,8 +227,6 @@ public:
         {
             Traits::buildDigest(results, digestLevel, dataLevel, AncestorType::pResults);
         }
-        // Next
-        NextType::buildDigest(results, digestLevel, dataLevel);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
@@ -244,12 +241,10 @@ public:
                                       int precision,
                                       unsigned int numSpace) const
     {
-        // Initializing external pointer on current variable non applicable status
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
         if (AncestorType::isPrinted[0])
         {
-            // Write the data for the current year
             results.variableCaption = VCardType::Caption();
             results.variableUnit = VCardType::Unit();
             pValuesForTheCurrentYear[numSpace]
@@ -258,7 +253,6 @@ public:
     }
 
 private:
-    //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     unsigned int pNbYearsParallel;
 

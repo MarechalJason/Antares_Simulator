@@ -41,7 +41,7 @@ struct CongestionFeeAbsTraits
         iv.computeStatisticsForTheCurrentYear();
     }
 
-    static double computeHourlyValue(State& state, double upstreamPrice, double downstreamPrice)
+    static double hourValue(State& state, double upstreamPrice, double downstreamPrice)
     {
         return std::abs(state.ntc.ValeurDuFlux[state.link->index]
                         * (upstreamPrice - downstreamPrice));
@@ -51,8 +51,7 @@ struct CongestionFeeAbsTraits
 /*!
 ** \brief Marginal CongestionFeeAbs
 */
-template<class NextT = Container::EndOfList>
-using CongestionFeeAbs = EconomyLink_Base<CongestionFeeAbsTraits, NextT>;
+using CongestionFeeAbs = EconomyLink_Base<CongestionFeeAbsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

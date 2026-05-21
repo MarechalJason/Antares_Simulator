@@ -68,7 +68,6 @@ struct MaxMargeCsrTraits
 
 using VCardMAX_MRG_CSR = VCard_Base<MaxMargeCsrTraits>;
 
-template<class NextT = Container::EndOfList>
-using MaxMrgCsr = Economy_Base<MaxMargeCsrTraits, NextT>;
+using MaxMrgCsr = Economy_Base<MaxMargeCsrTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

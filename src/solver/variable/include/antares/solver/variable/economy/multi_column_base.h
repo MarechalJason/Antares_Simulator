@@ -3,6 +3,34 @@
 
 #pragma once
 
+/*!
+** \file multi_column_base.h
+**
+** \brief Base class for static multi-column variables (fixed column count)
+**
+** ## Traits Contract
+**
+** A valid MultiColumn Traits must provide:
+** - Required static methods:
+**   - \c Caption() -> std::string
+**   - \c Unit() -> std::string
+**   - \c Description() -> std::string
+**   - \c ResultsType : typedef for results template
+**   - \c decimal : uint8_t
+**   - \c columnCaption(unsigned int) -> std::string (for GUI display)
+**
+** - Required static member constants:
+**   - \c columnCount : constexpr int (number of columns)
+**
+** - Optional hooks:
+**   - \c onInitializeFromStudy(Data::Study&) -> void
+**   - \c onInitializeFromArea(Data::Area*, Data::Study*) -> void
+**   - \c onSimulationBegin(IntermediateValuesBaseType*, unsigned int) -> void
+**   - \c setHourlyValue(IntermediateValues(&)[ColCount], State&, unsigned int numSpace) -> void
+*/
+
+#include <type_traits>
+
 #include "economy_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -62,37 +90,29 @@ struct VCardMultiColumn
     };
 };
 
-template<class Traits, int ColCount, class NextT = Container::EndOfList>
-class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCount, NextT>,
-                                                  NextT,
+template<class Traits, int ColCount>
+class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCount>,
+                                                  void,
                                                   VCardMultiColumn<Traits, ColCount>>
 {
 public:
-    typedef NextT NextType;
     typedef VCardMultiColumn<Traits, ColCount> VCardType;
-    typedef Variable::IVariable<MultiColumnBase<Traits, ColCount, NextT>, NextT, VCardType>
+    typedef Variable::IVariable<MultiColumnBase<Traits, ColCount>, void, VCardType>
       AncestorType;
     typedef typename VCardType::ResultsType ResultsType;
     typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
 
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 
-    enum
-    {
-        count = 1 + NextT::count,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        enum
-        {
-            count = ((VCardType::categoryDataLevel & CDataLevel
-                      && VCardType::categoryFileLevel & CFile)
-                       ? (NextType::template Statistics<CDataLevel, CFile>::count
-                          + VCardType::columnCount * ResultsType::count)
-                       : NextType::template Statistics<CDataLevel, CFile>::count),
-        };
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                      && VCardType::categoryFileLevel & CFile)
+                                      ? VCardType::columnCount * ResultsType::count
+                                      : 0);
     };
 
 public:
@@ -119,8 +139,6 @@ public:
         {
             Traits::onInitializeFromStudy(study);
         }
-
-        NextType::initializeFromStudy(study);
     }
 
     template<class R>
@@ -142,12 +160,10 @@ public:
         {
             Traits::onInitializeFromArea(area, study);
         }
-        NextType::initializeFromArea(study, area);
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        NextType::initializeFromAreaLink(study, link);
     }
 
     void simulationBegin()
@@ -158,12 +174,10 @@ public:
         {
             Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
         }
-        NextType::simulationBegin();
     }
 
     void simulationEnd()
     {
-        NextType::simulationEnd();
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
@@ -172,19 +186,16 @@ public:
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
-        NextType::yearBegin(year, numSpace);
     }
 
     void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
-        NextType::yearEndBuild(state, year, numSpace);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
         VariableAccessorType::template ComputeStatistics<VCardType>(
           pValuesForTheCurrentYear[numSpace]);
-        NextType::yearEnd(year, numSpace);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
@@ -192,18 +203,15 @@ public:
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
-        NextType::computeSummary(year, numSpace);
     }
 
     void hourBegin(unsigned int hourInTheYear)
     {
-        NextType::hourBegin(hourInTheYear);
     }
 
     void hourForEachArea(State& state, unsigned int numSpace)
     {
         Traits::setHourlyValue(pValuesForTheCurrentYear[numSpace], state, numSpace);
-        NextType::hourForEachArea(state, numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(

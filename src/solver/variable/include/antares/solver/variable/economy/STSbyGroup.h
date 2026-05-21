@@ -127,7 +127,6 @@ struct STSbyGroupTraits
 
 using VCardSTSbyGroup = VCardDynamicMultiColumn<STSbyGroupTraits>;
 
-template<class NextT = Container::EndOfList>
-using STSbyGroup = DynamicMultiColumnBase<STSbyGroupTraits, NextT>;
+using STSbyGroup = DynamicMultiColumnBase<STSbyGroupTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

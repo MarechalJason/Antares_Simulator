@@ -53,8 +53,7 @@ using VCardLoopFlow = VCardStaticLinkBase<LoopFlowTraits>;
 /*!
 ** \brief Loop flow
 */
-template<class NextT = Container::EndOfList>
-using LoopFlow = StaticLinkBase<LoopFlowTraits, NextT>;
+using LoopFlow = StaticLinkBase<LoopFlowTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

@@ -201,21 +201,15 @@ using VCardTimeSeriesValuesGeneration = VCardTimeSeriesBase<GenerationTraits<Tag
  * - `yearlyValues[space]` provides isolation between parallel executions
  * - No shared state between spaces during processing
  */
-template<class TraitsType, class NextT = Container::EndOfList>
+template<class TraitsType>
 class TimeSeriesValuesGenerationImpl
-    : public TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType, NextT>,
-                                  NextT,
+    : public TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType>,
                                   VCardTimeSeriesBase<TraitsType>>
 {
 public:
-    /// @name Type Definitions
-    /// @{
-    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType, NextT>,
-                                          NextT,
+    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesGenerationImpl<TraitsType>,
                                           VCardTimeSeriesBase<TraitsType>>;
     using VCardType = VCardTimeSeriesBase<TraitsType>;
-
-    /// @}
 
     /**
      * @brief Initialize generation-specific settings from study
@@ -314,12 +308,11 @@ private:
  * For new code, prefer the direct trait-based approach:
  * ```cpp
  * // Modern approach (recommended)
- * TimeSeriesValuesSolar<> solar;
- * TimeSeriesValuesWind<> wind;
+ * TimeSeriesValuesSolar solar;
+ * TimeSeriesValuesWind wind;
  * ```
  */
-template<class Tag, class NextT = Container::EndOfList>
-using TimeSeriesValuesGeneration = TimeSeriesValuesGenerationImpl<GenerationTraits<Tag>, NextT>;
+// Note: This legacy wrapper is deprecated. Use TimeSeriesValuesSolar or TimeSeriesValuesWind directly.
 
 /**
  * @brief Solar generation time series variable
@@ -335,13 +328,12 @@ using TimeSeriesValuesGeneration = TimeSeriesValuesGenerationImpl<GenerationTrai
  * * ## Usage:
  * ```cpp
  * // Standalone solar variable
- * TimeSeriesValuesSolar<> solarOnly;
+ * TimeSeriesValuesSolar solarOnly;
  * // Chained with other variables
- * TimeSeriesValuesSolar<TimeSeriesValuesWind<>> solarAndWind;
+ * TimeSeriesValuesSolar<TimeSeriesValuesWind> solarAndWind;
  * ```
  */
-template<class NextT = Container::EndOfList>
-using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits, NextT>;
+using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits>;
 
 /**
  * @brief Wind generation time series variable
@@ -357,13 +349,12 @@ using TimeSeriesValuesSolar = TimeSeriesValuesGenerationImpl<SolarTraits, NextT>
  * * ## Usage:
  * ```cpp
  * // Standalone wind variable
- * TimeSeriesValuesWind<> windOnly;
+ * TimeSeriesValuesWind windOnly;
  * * // Chained with other variables
- * TimeSeriesValuesWind<TimeSeriesValuesSolar<>> windAndSolar;
+ * TimeSeriesValuesWind<TimeSeriesValuesSolar> windAndSolar;
  * ```
  */
-template<class NextT = Container::EndOfList>
-using TimeSeriesValuesWind = TimeSeriesValuesGenerationImpl<WindTraits, NextT>;
+using TimeSeriesValuesWind = TimeSeriesValuesGenerationImpl<WindTraits>;
 
 /// @}
 

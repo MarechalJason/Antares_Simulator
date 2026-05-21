@@ -39,7 +39,7 @@ struct CongestionFeeTraits
         iv.computeStatisticsForTheCurrentYear();
     }
 
-    static double computeHourlyValue(State& state, double upstreamPrice, double downstreamPrice)
+    static double hourValue(State& state, double upstreamPrice, double downstreamPrice)
     {
         return state.ntc.ValeurDuFlux[state.link->index] * (upstreamPrice - downstreamPrice);
     }
@@ -48,8 +48,7 @@ struct CongestionFeeTraits
 /*!
 ** \brief Marginal CongestionFee
 */
-template<class NextT = Container::EndOfList>
-using CongestionFee = EconomyLink_Base<CongestionFeeTraits, NextT>;
+using CongestionFee = EconomyLink_Base<CongestionFeeTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

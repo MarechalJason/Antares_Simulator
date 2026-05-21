@@ -43,15 +43,13 @@ struct NearPriceCapTraits
         unsuppliedEnergyCost = area->thermal.unsuppliedEnergyCost;
     }
 
-    static bool checkCondition(AuxiliaryDataType unsuppliedEnergyCost, const State& state)
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType unsuppliedEnergyCost,
+                               const State& state,
+                               unsigned int)
     {
         double mrgPrice = -state.hourlyResults->CoutsMarginauxHoraires[state.hourInTheWeek];
-        return mrgPrice > unsuppliedEnergyCost - margin + eps;
-    }
-
-    static double value(AuxiliaryDataType, const State&)
-    {
-        return 1.;
+        iv[state.hourInTheYear] = (mrgPrice > unsuppliedEnergyCost - margin + eps) ? 1. : 0.;
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -65,7 +63,6 @@ using VCardNearPriceCap = VCard_Base<NearPriceCapTraits>;
 /*!
 ** \brief
 */
-template<class NextT = Container::EndOfList>
-using NearPriceCap = Economy_Base<NearPriceCapTraits, NextT>;
+using NearPriceCap = Economy_Base<NearPriceCapTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

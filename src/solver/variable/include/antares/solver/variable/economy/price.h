@@ -33,14 +33,19 @@ struct PriceTraits
     static constexpr uint8_t spatialAggregatePostProcessing
       = Category::spatialAggregatePostProcessingPrice;
 
+    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
+
     static double value(const State& state)
     {
         return -state.hourlyResults->CoutsMarginauxHoraires[state.hourInTheWeek];
     }
 
-    static bool checkCondition(const State&)
+    static void setHourlyValue(IntermediateValues& iv,
+                               AuxiliaryDataType&,
+                               const State& state,
+                               unsigned int)
     {
-        return true;
+        iv[state.hourInTheYear] = value(state);
     }
 
     static void computeStats(IntermediateValues& intermediateValues)
@@ -51,7 +56,6 @@ struct PriceTraits
 
 using VCardPrice = VCard_Base<PriceTraits>;
 
-template<class NextT = Container::EndOfList>
-using Price = Economy_Base<PriceTraits, NextT>;
+using Price = Economy_Base<PriceTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

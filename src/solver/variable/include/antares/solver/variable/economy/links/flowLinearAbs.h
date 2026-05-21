@@ -50,8 +50,7 @@ struct FlowLinearAbsTraits
 /*!
 ** \brief Marginal FlowLinearAbs
 */
-template<class NextT = Container::EndOfList>
-using FlowLinearAbs = EconomyLink_Base<FlowLinearAbsTraits, NextT>;
+using FlowLinearAbs = EconomyLink_Base<FlowLinearAbsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 
