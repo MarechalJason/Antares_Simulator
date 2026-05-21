@@ -37,8 +37,7 @@ public:
             {
             case Category::hourly:
                 InternalExportIndices<HOURS_PER_YEAR, VCardT>(report,
-                                                              Memory::RawPointer(
-                                                                minmax.hourly.indices.data()),
+                                                              minmax.hourly.indices.data(),
                                                               fileLevel);
                 break;
             case Category::daily:
@@ -67,8 +66,7 @@ public:
             {
             case Category::hourly:
                 InternalExportValues<HOURS_PER_YEAR, VCardT>(report,
-                                                             Memory::RawPointer(
-                                                               minmax.hourly.values.data()));
+                                                             minmax.hourly.values.data());
                 break;
             case Category::daily:
                 InternalExportValues<DAYS_PER_YEAR, VCardT>(report, minmax.daily.values.data());
@@ -103,11 +101,11 @@ protected:
 private:
     template<uint Size, class VCardT>
     void InternalExportIndices(SurveyResults& report,
-                                const MinMaxData::Data* array,
+                                const uint16_t* indices,
                                 int fileLevel) const;
 
     template<uint Size, class VCardT>
-    void InternalExportValues(SurveyResults& report, const MinMaxData::Data* array) const;
+    void InternalExportValues(SurveyResults& report, const double* values) const;
 
 }; // class MinMaxBase
 
