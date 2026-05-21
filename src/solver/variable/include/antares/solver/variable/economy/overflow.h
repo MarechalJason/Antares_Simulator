@@ -47,8 +47,8 @@ struct OverflowsTraits
     }
 };
 
-using VCardOverflow = VCard_Base<OverflowsTraits>;
+using VCardOverflow = EconomyVariableCard<OverflowsTraits>;
 
-using Overflows = Economy_Base<OverflowsTraits>;
+using Overflows = EconomyVariableBase<OverflowsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

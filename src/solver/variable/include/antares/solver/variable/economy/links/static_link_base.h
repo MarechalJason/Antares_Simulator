@@ -13,7 +13,7 @@ namespace Antares::Solver::Variable::Economy
 **
 ** Unlike EconomyLink_Base, these variables hold a single IntermediateValues
 ** (not one per parallel year). Data is loaded during initializeFromStudy or
-** initializeFromAreaLink, and stats+merge happen once in simulationEnd.
+** initializeFromLink, and stats+merge happen once in simulationEnd.
 **
 ** Traits hooks (all optional, dispatched via requires):
 **   onInitializeFromStudy(iv, aux, study)        -- store study pointers / sizes
@@ -40,8 +40,8 @@ struct VCardStaticLinkBase
         return Traits::Description();
     }
 
-    typedef typename Traits::ResultsType ResultsType;
-    typedef VCardStaticLinkBase VCardForSpatialAggregate;
+    using ResultsType = typename Traits::ResultsType;
+    using VCardForSpatialAggregate = VCardStaticLinkBase;
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
@@ -57,34 +57,29 @@ struct VCardStaticLinkBase
     static constexpr uint8_t hasIntermediateValues = 1;
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesType;
+    using IntermediateValuesType = IntermediateValues;
 
 }; // struct VCardStaticLinkBase
 
 template<class Traits>
 class StaticLinkBase
-    : public Variable::IVariable<StaticLinkBase<Traits>, void, VCardStaticLinkBase<Traits>>
+    : public Variable::IVariable<StaticLinkBase<Traits>, VCardStaticLinkBase<Traits>>
 {
 public:
-    typedef VCardStaticLinkBase<Traits> VCardType;
-    typedef Variable::IVariable<StaticLinkBase<Traits>, void, VCardType> AncestorType;
-    typedef typename VCardType::ResultsType ResultsType;
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VCardType = VCardStaticLinkBase<Traits>;
+    using AncestorType = Variable::IVariable<StaticLinkBase<Traits>, VCardType>;
+    using ResultsType = typename VCardType::ResultsType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
     using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
 
-    enum
-    {
-        count = 1,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
-                                       && VCardType::categoryFileLevel & CFile)
-                                      ? VCardType::columnCount * ResultsType::count
-                                      : 0);
+        static constexpr int count =
+          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -102,15 +97,11 @@ public:
         }
     }
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
+    void initializeFromArea([[maybe_unused]] Data::Study* study, [[maybe_unused]] Data::Area* area)
     {
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
-    void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
     {
         if constexpr (requires {
                           Traits::onInitializeFromAreaLink(pValuesForTheCurrentYear,
@@ -143,31 +134,33 @@ public:
         AncestorType::pResults.merge(0, pValuesForTheCurrentYear);
     }
 
-    void yearBegin(uint year, unsigned int numSpace)
+    void yearBegin([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild([[maybe_unused]] State& state,
+                      [[maybe_unused]] uint year,
+                      [[maybe_unused]] uint numSpace)
     {
     }
 
-    void yearEnd(uint year, unsigned int numSpace)
+    void yearEnd([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void hourBegin(uint hourInTheYear)
+    void hourBegin([[maybe_unused]] uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void hourForEachLink(State& state, unsigned int numSpace)
+    void hourForEachLink([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
     {
     }
 

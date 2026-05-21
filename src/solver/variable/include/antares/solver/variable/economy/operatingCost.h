@@ -70,8 +70,8 @@ struct OperatingCostTraits
     }
 };
 
-using VCardOperatingCost = VCard_Base<OperatingCostTraits>;
+using VCardOperatingCost = EconomyVariableCard<OperatingCostTraits>;
 
-using OperatingCost = Economy_Base<OperatingCostTraits>;
+using OperatingCost = EconomyVariableBase<OperatingCostTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

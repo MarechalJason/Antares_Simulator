@@ -70,13 +70,13 @@ struct VCardRowBalance
 /*!
 ** \brief Marginal RowBalance
 */
-class RowBalance: public Variable::IVariable<RowBalance, void, VCardRowBalance>
+class RowBalance: public Variable::IVariable<RowBalance, VCardRowBalance>
 {
 public:
     //! VCard
     typedef VCardRowBalance VCardType;
     //! Ancestor
-    typedef Variable::IVariable<RowBalance, void, VCardType> AncestorType;
+    typedef Variable::IVariable<RowBalance, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

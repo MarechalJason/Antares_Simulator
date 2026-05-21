@@ -69,13 +69,13 @@ struct VCardPSP
 /*!
 ** \brief Marginal PSP
 */
-class PSP: public Variable::IVariable<PSP, void, VCardPSP>
+class PSP: public Variable::IVariable<PSP, VCardPSP>
 {
 public:
     //! VCard
     typedef VCardPSP VCardType;
     //! Ancestor
-    typedef Variable::IVariable<PSP, void, VCardType> AncestorType;
+    typedef Variable::IVariable<PSP, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

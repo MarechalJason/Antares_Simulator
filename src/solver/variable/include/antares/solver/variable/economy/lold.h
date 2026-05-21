@@ -35,8 +35,8 @@ struct LOLDTraits: public LOLD_Base_Traits
     }
 };
 
-using VCardLOLD = VCard_Base<LOLDTraits>;
+using VCardLOLD = EconomyVariableCard<LOLDTraits>;
 
-using LOLD = Economy_Base<LOLDTraits>;
+using LOLD = EconomyVariableBase<LOLDTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

@@ -68,12 +68,12 @@ struct OverallCostTraits
     }
 };
 
-using VCardOverallCost = VCard_Base<OverallCostTraits>;
+using VCardOverallCost = EconomyVariableCard<OverallCostTraits>;
 
 /*!
 ** \brief Overall cost over all MC years
 */
-using OverallCost = Economy_Base<OverallCostTraits>;
+using OverallCost = EconomyVariableBase<OverallCostTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

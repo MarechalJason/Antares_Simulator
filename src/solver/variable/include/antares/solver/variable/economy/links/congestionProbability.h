@@ -90,13 +90,13 @@ struct VCardCongestionProbability
 ** \brief Marginal CongestionProbability
 */
 class CongestionProbability
-    : public Variable::IVariable<CongestionProbability, void, VCardCongestionProbability>
+    : public Variable::IVariable<CongestionProbability, VCardCongestionProbability>
 {
 public:
     //! VCard
     typedef VCardCongestionProbability VCardType;
     //! Ancestor
-    typedef Variable::IVariable<CongestionProbability, void, VCardType> AncestorType;
+    typedef Variable::IVariable<CongestionProbability, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;
@@ -151,7 +151,7 @@ public:
     {
     }
 
-    void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
     }
 

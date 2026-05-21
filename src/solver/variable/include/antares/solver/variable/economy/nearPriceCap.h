@@ -58,11 +58,11 @@ struct NearPriceCapTraits
     }
 };
 
-using VCardNearPriceCap = VCard_Base<NearPriceCapTraits>;
+using VCardNearPriceCap = EconomyVariableCard<NearPriceCapTraits>;
 
 /*!
 ** \brief
 */
-using NearPriceCap = Economy_Base<NearPriceCapTraits>;
+using NearPriceCap = EconomyVariableBase<NearPriceCapTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

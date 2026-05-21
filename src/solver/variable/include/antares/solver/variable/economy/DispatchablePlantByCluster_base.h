@@ -15,21 +15,21 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : typedef for results template
+**   - \c ResultsType : type alias for results template
 **
 ** - Optional hooks (dispatched via \c if constexpr):
-**   - \c AuxiliaryDataType : typedef
-**   - \c initializeAuxiliaryData(AuxiliaryDataType&, Data::Study*, unsigned int, size_t) -> void
-**   - \c yearBegin(AuxiliaryDataType&, unsigned int, unsigned int, size_t) -> void
-**   - \c setHourlyValue(std::vector<IntermediateValues>&, AuxiliaryDataType&, State&, unsigned int)
+**   - \c AuxiliaryDataType : type alias
+**   - \c initializeAuxiliaryData(AuxiliaryDataType&, Data::Study*, uint, size_t) -> void
+**   - \c yearBegin(AuxiliaryDataType&, uint, uint, size_t) -> void
+**   - \c setHourlyValue(std::vector<IntermediateValues>&, AuxiliaryDataType&, State&, uint)
 *-> void
-**   - Fallback: \c setHourlyValue(std::vector<IntermediateValues>&, State&, unsigned int) -> void
+**   - Fallback: \c setHourlyValue(std::vector<IntermediateValues>&, State&, uint) -> void
 **   - Fallback: \c setHourlyValue(std::vector<IntermediateValues>&, State&) -> void
 **   - \c
 *yearEndBuildPrepareDataForEachThermalCluster(std::vector<std::vector<IntermediateValues>>&,
-*AuxiliaryDataType&, State&, unsigned int, unsigned int) -> void
+*AuxiliaryDataType&, State&, uint, uint) -> void
 **   - \c yearEndBuildForEachThermalCluster(std::vector<std::vector<IntermediateValues>>&, State&,
-*unsigned int, unsigned int) -> void
+*uint, uint) -> void
 */
 
 #include <type_traits>
@@ -60,13 +60,13 @@ struct VCardDispatchablePlantByClusterBase
         return Traits::Description();
     }
 
-    //! The expecte results
-    typedef Results<R::AllYears::Average< // The average values throughout all years
+    //! The expected results
+    using ResultsType = Results<R::AllYears::Average< // The average values throughout all years
       >>
-      ResultsType;
+      ;
 
     //! The VCard to look for for calculating spatial aggregates
-    typedef VCardDispatchablePlantByClusterBase VCardForSpatialAggregate;
+    using VCardForSpatialAggregate = VCardDispatchablePlantByClusterBase;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::area;
@@ -90,40 +90,36 @@ struct VCardDispatchablePlantByClusterBase
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesDeepType;
-    typedef std::vector<IntermediateValues> IntermediateValuesBaseType;
-    typedef std::vector<IntermediateValuesBaseType> IntermediateValuesType;
+    using IntermediateValuesDeepType = IntermediateValues;
+    using IntermediateValuesBaseType = std::vector<IntermediateValues>;
+    using IntermediateValuesType = std::vector<IntermediateValuesBaseType>;
 
 }; // class VCardDispatchablePlantByClusterBase
 
 template<class Traits>
 class DispatchablePlantByClusterBase
     : public Variable::IVariable<DispatchablePlantByClusterBase<Traits>,
-                                 void,
                                  VCardDispatchablePlantByClusterBase<Traits>>
 {
 public:
-    typedef VCardDispatchablePlantByClusterBase<Traits> VCardType;
-    typedef Variable::IVariable<DispatchablePlantByClusterBase<Traits>, void, VCardType>
-      AncestorType;
+    using VCardType = VCardDispatchablePlantByClusterBase<Traits>;
+    using AncestorType = Variable::IVariable<DispatchablePlantByClusterBase<Traits>, VCardType>;
 
-    typedef typename VCardType::ResultsType ResultsType;
+    using ResultsType = typename VCardType::ResultsType;
 
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
     static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
-                                      && VCardType::categoryFileLevel & CFile)
-                                      ? VCardType::columnCount * ResultsType::count
-                                      : 0);
+        static constexpr int count =
+          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
-    void initializeFromStudy(Data::Study& study)
+    void initializeFromStudy([[maybe_unused]] Data::Study& study)
     {
     }
 
@@ -137,20 +133,20 @@ public:
         {
             AncestorType::pResults.resize(pSize);
 
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
                 pValuesForTheCurrentYear[numSpace].resize(pSize);
             }
 
-            for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+            for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
             {
-                for (unsigned int i = 0; i != pSize; ++i)
+                for (uint i = 0; i != pSize; ++i)
                 {
                     pValuesForTheCurrentYear[numSpace][i].initializeFromStudy(*study);
                 }
             }
 
-            for (unsigned int i = 0; i != pSize; ++i)
+            for (uint i = 0; i != pSize; ++i)
             {
                 AncestorType::pResults[i].initializeFromStudy(*study);
                 AncestorType::pResults[i].reset();
@@ -169,7 +165,8 @@ public:
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink([[maybe_unused]] Data::Study* study,
+                            [[maybe_unused]] Data::AreaLink* link)
     {
     }
 
@@ -181,9 +178,9 @@ public:
     {
     }
 
-    void yearBegin(unsigned int year, unsigned int numSpace)
+    void yearBegin(uint year, uint numSpace)
     {
-        for (unsigned int i = 0; i != pSize; ++i)
+        for (uint i = 0; i != pSize; ++i)
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
@@ -191,13 +188,15 @@ public:
         yearBeginIfSupported(auxiliaryData_, year, numSpace, pSize);
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild([[maybe_unused]] State& state,
+                      [[maybe_unused]] uint year,
+                      [[maybe_unused]] uint numSpace)
     {
     }
 
     void yearEndBuildPrepareDataForEachThermalCluster(State& state,
                                                       uint year,
-                                                      unsigned int numSpace)
+                                                      uint numSpace)
     {
         yearEndBuildPrepareDataForEachThermalClusterIfSupported(pValuesForTheCurrentYear,
                                                                 auxiliaryData_,
@@ -206,7 +205,7 @@ public:
                                                                 numSpace);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state, uint year, unsigned int numSpace)
+    void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace)
     {
         yearEndBuildForEachThermalClusterIfSupported(pValuesForTheCurrentYear,
                                                      state,
@@ -214,27 +213,27 @@ public:
                                                      numSpace);
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd([[maybe_unused]] uint year, uint numSpace)
     {
-        for (unsigned int i = 0; i < pSize; ++i)
+        for (uint i = 0; i < pSize; ++i)
         {
             pValuesForTheCurrentYear[numSpace][i].computeStatisticsForTheCurrentYear();
         }
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
-        for (unsigned int i = 0; i < pSize; ++i)
+        for (uint i = 0; i < pSize; ++i)
         {
             AncestorType::pResults[i].merge(year, pValuesForTheCurrentYear[numSpace][i]);
         }
     }
 
-    void hourBegin(unsigned int hourInTheYear)
+    void hourBegin([[maybe_unused]] uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea(State& state, uint numSpace)
     {
         setHourlyValueIfSupported(pValuesForTheCurrentYear[numSpace],
                                   auxiliaryData_,
@@ -243,8 +242,8 @@ public:
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int column,
-      unsigned int numSpace) const
+      uint column,
+      uint numSpace) const
     {
         if constexpr (requires {
                           Traits::retrieveRawHourlyValuesForCurrentYear(pValuesForTheCurrentYear,
@@ -263,7 +262,7 @@ public:
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
@@ -288,7 +287,7 @@ protected:
     static void setHourlyValueIfSupported(std::vector<IntermediateValues>& clusterValues,
                                           AuxiliaryDataType& auxiliaryData,
                                           State& state,
-                                          unsigned int numSpace)
+                                          uint numSpace)
     {
         if constexpr (requires {
                           Traits::setHourlyValue(clusterValues, auxiliaryData, state, numSpace);
@@ -304,7 +303,7 @@ protected:
 
     static void initializeAuxiliaryDataIfSupported(AuxiliaryDataType& auxiliaryData,
                                                    Data::Study* study,
-                                                   unsigned int nbYearsParallel,
+                                                   uint nbYearsParallel,
                                                    size_t nbClusters)
     {
         if constexpr (requires {
@@ -319,8 +318,8 @@ protected:
     }
 
     static void yearBeginIfSupported(AuxiliaryDataType& auxiliaryData,
-                                     unsigned int year,
-                                     unsigned int numSpace,
+                                     uint year,
+                                     uint numSpace,
                                      size_t nbClusters)
     {
         if constexpr (requires { Traits::yearBegin(auxiliaryData, year, numSpace, nbClusters); })
@@ -334,7 +333,7 @@ protected:
       AuxiliaryDataType& auxiliaryData,
       State& state,
       uint year,
-      unsigned int numSpace)
+      uint numSpace)
     {
         if constexpr (requires {
                           Traits::yearEndBuildPrepareDataForEachThermalCluster(yearlyValues,
@@ -368,7 +367,7 @@ protected:
       std::vector<std::vector<IntermediateValues>>& yearlyValues,
       State& state,
       uint year,
-      unsigned int numSpace)
+      uint numSpace)
     {
         if constexpr (requires {
                           Traits::yearEndBuildForEachThermalCluster(yearlyValues,
@@ -385,7 +384,7 @@ protected:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
     AuxiliaryDataType auxiliaryData_;
     size_t pSize = 0;
-    unsigned int pNbYearsParallel = 0;
+    uint pNbYearsParallel = 0;
 
 }; // class DispatchablePlantByClusterBase
 

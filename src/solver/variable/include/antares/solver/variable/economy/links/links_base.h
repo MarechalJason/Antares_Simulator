@@ -15,7 +15,7 @@
 **   - \c Caption() -> std::string
 **   - \c Unit() -> std::string
 **   - \c Description() -> std::string
-**   - \c ResultsType : typedef for results template
+**   - \c ResultsType : type alias for results template
 **   - \c decimal : uint8_t
 **   - \c spatialAggregate : uint8_t
 **   - \c computeStats(IntermediateValues&) -> void
@@ -35,7 +35,7 @@
 ** - buildDigest() / localBuildAnnualSurveyReport()
 */
 
-#include <antares/solver/variable/variable.h>
+#include <antares/solver/variable/economy/economy_base.h>
 
 namespace Antares::Solver::Variable::Economy
 {
@@ -61,10 +61,10 @@ struct VCard_LinkBase
         return Traits::Description();
     }
 
-    //! The expecte results
-    typedef typename Traits::ResultsType ResultsType;
+    //! The expected results
+    using ResultsType = typename Traits::ResultsType;
 
-    typedef VCard_LinkBase VCardForSpatialAggregate;
+    using VCardForSpatialAggregate = VCard_LinkBase;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;
@@ -89,41 +89,33 @@ struct VCard_LinkBase
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
-    typedef IntermediateValues IntermediateValuesBaseType;
-    typedef std::vector<IntermediateValues> IntermediateValuesType;
+    using IntermediateValuesBaseType = IntermediateValues;
+    using IntermediateValuesType = std::vector<IntermediateValues>;
 
 }; // class VCard
 
 template<class Traits>
 class EconomyLink_Base
-    : public Variable::IVariable<EconomyLink_Base<Traits>, void, VCard_LinkBase<Traits>>
+    : public Variable::IVariable<EconomyLink_Base<Traits>, VCard_LinkBase<Traits>>
 {
 public:
     //! VCard
-    typedef VCard_LinkBase<Traits> VCardType;
+    using VCardType = VCard_LinkBase<Traits>;
     //! Ancestor
-    typedef Variable::IVariable<EconomyLink_Base<Traits>, void, VCardType> AncestorType;
+    using AncestorType = Variable::IVariable<EconomyLink_Base<Traits>, VCardType>;
 
     //! List of expected results
-    typedef typename VCardType::ResultsType ResultsType;
+    using ResultsType = typename VCardType::ResultsType;
 
-    typedef VariableAccessor<ResultsType, VCardType::columnCount> VariableAccessorType;
+    using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
-    enum
-    {
-        count = 1,
-    };
+    static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        enum
-        {
-            count = ((VCardType::categoryDataLevel & CDataLevel
-                      && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
-        };
+        static constexpr int count =
+          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -135,23 +127,24 @@ public:
         AncestorType::pResults.reset();
 
         pValuesForTheCurrentYear.resize(pNbYearsParallel);
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].initializeFromStudy(study);
         }
     }
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
+    void initializeFromArea([[maybe_unused]] Data::Study* study, [[maybe_unused]] Data::Area* area)
     {
     }
 
-    void initializeFromAreaLink(Data::Study* study, Data::AreaLink* link)
+    void initializeFromLink([[maybe_unused]] Data::Study* study,
+                            [[maybe_unused]] Data::AreaLink* link)
     {
     }
 
     void simulationBegin()
     {
-        for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
+        for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].reset();
         }
@@ -161,36 +154,38 @@ public:
     {
     }
 
-    void yearBegin(uint year, unsigned int numSpace)
+    void yearBegin([[maybe_unused]] uint year, uint numSpace)
     {
         pValuesForTheCurrentYear[numSpace].reset();
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void yearEndBuild([[maybe_unused]] State& state,
+                      [[maybe_unused]] uint year,
+                      [[maybe_unused]] uint numSpace)
     {
     }
 
-    void yearEnd(unsigned int year, unsigned int numSpace)
+    void yearEnd([[maybe_unused]] uint year, uint numSpace)
     {
         Traits::computeStats(pValuesForTheCurrentYear[numSpace]);
     }
 
-    void computeSummary(unsigned int year, unsigned int numSpace)
+    void computeSummary(uint year, uint numSpace)
     {
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
     }
 
-    void hourBegin(uint hourInTheYear)
+    void hourBegin([[maybe_unused]] uint hourInTheYear)
     {
     }
 
-    void hourForEachArea(State& state, unsigned int numSpace)
+    void hourForEachArea([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
     {
     }
 
-    void hourForEachLink(State& state, unsigned int numSpace)
+    void hourForEachLink(State& state, uint numSpace)
     {
-if constexpr (requires {
+        if constexpr (requires {
                           Traits::hourForEachLink(pValuesForTheCurrentYear[numSpace], state);
                       })
         {
@@ -218,7 +213,7 @@ if constexpr (requires {
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
-if constexpr (requires {
+        if constexpr (requires {
                           Traits::buildDigest(results,
                                               digestLevel,
                                               dataLevel,
@@ -230,8 +225,8 @@ if constexpr (requires {
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
-      unsigned int,
-      unsigned int numSpace) const
+      uint,
+      uint numSpace) const
     {
         return pValuesForTheCurrentYear[numSpace].hour;
     }
@@ -239,7 +234,7 @@ if constexpr (requires {
     void localBuildAnnualSurveyReport(SurveyResults& results,
                                       int fileLevel,
                                       int precision,
-                                      unsigned int numSpace) const
+                                      uint numSpace) const
     {
         results.isCurrentVarNA = AncestorType::isNonApplicable;
 
@@ -254,7 +249,7 @@ if constexpr (requires {
 
 private:
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
-    unsigned int pNbYearsParallel;
+    uint pNbYearsParallel;
 
 }; // class EconomyLink_Base
 

@@ -48,12 +48,12 @@ struct WaterValueTraits
     }
 };
 
-using VCardWaterValue = VCard_Base<WaterValueTraits>;
+using VCardWaterValue = EconomyVariableCard<WaterValueTraits>;
 
 /*!
 ** \brief Water values
 */
-using WaterValue = Economy_Base<WaterValueTraits>;
+using WaterValue = EconomyVariableBase<WaterValueTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

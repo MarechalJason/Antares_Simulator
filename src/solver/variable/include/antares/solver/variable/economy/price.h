@@ -54,8 +54,8 @@ struct PriceTraits
     }
 };
 
-using VCardPrice = VCard_Base<PriceTraits>;
+using VCardPrice = EconomyVariableCard<PriceTraits>;
 
-using Price = Economy_Base<PriceTraits>;
+using Price = EconomyVariableBase<PriceTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

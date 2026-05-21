@@ -58,8 +58,8 @@ struct HydroCostTraits
     }
 };
 
-using VCardHydroCost = VCard_Base<HydroCostTraits>;
+using VCardHydroCost = EconomyVariableCard<HydroCostTraits>;
 
-using HydroCost = Economy_Base<HydroCostTraits>;
+using HydroCost = EconomyVariableBase<HydroCostTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

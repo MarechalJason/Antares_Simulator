@@ -70,13 +70,13 @@ struct VCardMiscGenMinusRowPSP
 ** \brief Marginal MiscGenMinusRowPSP
 */
 class MiscGenMinusRowPSP
-    : public Variable::IVariable<MiscGenMinusRowPSP, void, VCardMiscGenMinusRowPSP>
+    : public Variable::IVariable<MiscGenMinusRowPSP, VCardMiscGenMinusRowPSP>
 {
 public:
     //! VCard
     typedef VCardMiscGenMinusRowPSP VCardType;
     //! Ancestor
-    typedef Variable::IVariable<MiscGenMinusRowPSP, void, VCardType> AncestorType;
+    typedef Variable::IVariable<MiscGenMinusRowPSP, VCardType> AncestorType;
 
     //! List of expected results
     typedef typename VCardType::ResultsType ResultsType;

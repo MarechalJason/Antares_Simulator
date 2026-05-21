@@ -60,8 +60,8 @@ struct BalanceTraits
     }
 };
 
-using VCardBalance = VCard_Base<BalanceTraits>;
+using VCardBalance = EconomyVariableCard<BalanceTraits>;
 
-using Balance = Economy_Base<BalanceTraits>;
+using Balance = EconomyVariableBase<BalanceTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

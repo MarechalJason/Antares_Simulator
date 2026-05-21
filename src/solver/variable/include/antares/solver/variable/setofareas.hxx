@@ -72,7 +72,7 @@ inline void SetsOfAreas<NextT>::initializeFromArea(Data::Study*, Data::Area*)
 }
 
 template<class NextT>
-inline void SetsOfAreas<NextT>::initializeFromAreaLink(Data::Study*, Data::AreaLink*)
+inline void SetsOfAreas<NextT>::initializeFromLink(Data::Study*, Data::AreaLink*)
 {
     // Nothing to do here
 }

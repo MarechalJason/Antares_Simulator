@@ -100,7 +100,7 @@ public:
     void initializeFromStudy(Data::Study& study);
     void initializeFromArea(Data::Study*, Data::Area*);
     void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*);
-    void initializeFromAreaLink(Data::Study*, Data::AreaLink*);
+    void initializeFromLink(Data::Study*, Data::AreaLink*);
 
     void simulationBegin();
     void simulationEnd();

@@ -70,8 +70,8 @@ struct OverallCostCsrTraits
     }
 };
 
-using VCardOverallCostCsr = VCard_Base<OverallCostCsrTraits>;
+using VCardOverallCostCsr = EconomyVariableCard<OverallCostCsrTraits>;
 
-using OverallCostCsr = Economy_Base<OverallCostCsrTraits>;
+using OverallCostCsr = EconomyVariableBase<OverallCostCsrTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

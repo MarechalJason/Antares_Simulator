@@ -11,8 +11,8 @@
 namespace Antares::Solver::Variable
 {
 
-template<class ChildT, class NextT, class VCardT>
-inline IVariable<ChildT, NextT, VCardT>::IVariable()
+template<class ChildT, class VCardT>
+inline IVariable<ChildT, VCardT>::IVariable()
 {
     // Initialization
     // You should prefer the methods initializeFromStudy() or similiar
@@ -35,274 +35,164 @@ inline IVariable<ChildT, NextT, VCardT>::IVariable()
     }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline IVariable<ChildT, NextT, VCardT>::~IVariable()
+template<class ChildT, class VCardT>
+inline IVariable<ChildT, VCardT>::~IVariable()
 {
     delete[] isNonApplicable;
     delete[] isPrinted;
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::initializeFromStudy(Data::Study& study)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::initializeFromStudy(Data::Study&)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::initializeFromStudy(study);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class R>
-inline void IVariable<ChildT, NextT, VCardT>::InitializeResultsFromStudy(R& results,
-                                                                         Data::Study& study)
+inline void IVariable<ChildT, VCardT>::InitializeResultsFromStudy(R& results, Data::Study& study)
 {
     VariableAccessorType::InitializeAndReset(results, study);
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::initializeFromArea(Data::Study* study,
-                                                                 Data::Area* area)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::initializeFromArea(Data::Study*, Data::Area*)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
+}
+
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::initializeFromLink(Data::Study*, Data::AreaLink*)
+{
+}
+
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::initializeFromThermalCluster(Data::Study*,
+                                                                    Data::Area*,
+                                                                    Data::ThermalCluster*)
+{
+}
+
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::broadcastNonApplicability(bool applyNonApplicable)
+{
+    const bool value = VCardType::isPossiblyNonApplicable != 0 && applyNonApplicable;
+    for (uint i = 0; i != pColumnCount; ++i)
     {
-        NextType::initializeFromArea(study, area);
+        isNonApplicable[i] = value;
     }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::initializeFromLink(Data::Study* study,
-                                                                 Data::AreaLink* link)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::simulationBegin()
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::initializeFromAreaLink(study, link);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::initializeFromThermalCluster(
-  Data::Study* study,
-  Data::Area* area,
-  Data::ThermalCluster* cluster)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::simulationEnd()
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::initializeFromThermalCluster(study, area, cluster);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::broadcastNonApplicability(bool applyNonApplicable)
-{
-    if (VCardType::isPossiblyNonApplicable != 0 && applyNonApplicable)
-    {
-        for (uint i = 0; i != pColumnCount; ++i)
-        {
-            isNonApplicable[i] = true;
-        }
-    }
-    else
-    {
-        for (uint i = 0; i != pColumnCount; ++i)
-        {
-            isNonApplicable[i] = false;
-        }
-    }
-
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::broadcastNonApplicability(applyNonApplicable);
-    }
-}
-
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::simulationBegin()
-{
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::simulationBegin();
-    }
-}
-
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::simulationEnd()
-{
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::simulationEnd();
-    }
-}
-
-template<class ChildT, class NextT, class VCardT>
-size_t IVariable<ChildT, NextT, VCardT>::getMaxNumberColumns() const
+template<class ChildT, class VCardT>
+size_t IVariable<ChildT, VCardT>::getMaxNumberColumns() const
 {
     return VCardT::ResultsType::count;
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::yearBegin(uint year)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::yearBegin(uint)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::yearBegin(year);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::yearEnd(uint year)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::yearEndBuild(State&, uint)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::yearEnd(year);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::yearEnd(uint)
+{
+}
+
+template<class ChildT, class VCardT>
 template<class V>
-inline void IVariable<ChildT, NextT, VCardT>::yearEndSpatialAggregates(V& allVars,
-                                                                       uint year,
-                                                                       unsigned int numSpace)
+inline void IVariable<ChildT, VCardT>::yearEndSpatialAggregates(V&, uint, unsigned int)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::yearEndSpatialAggregates(allVars, year, numSpace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class V, class SetT>
-inline void IVariable<ChildT, NextT, VCardT>::yearEndSpatialAggregates(V& allVars,
-                                                                       uint year,
-                                                                       const SetT& set)
+inline void IVariable<ChildT, VCardT>::yearEndSpatialAggregates(V&, uint, const SetT&)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::yearEndSpatialAggregates(allVars, year, set);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::yearEndBuildPrepareDataForEachThermalCluster(
-  State& state,
-  uint year,
-  uint numSpace)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::yearEndBuildPrepareDataForEachThermalCluster(State&, uint, uint)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::yearEndBuildPrepareDataForEachThermalCluster(state, year, numSpace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::yearEndBuildForEachThermalCluster(State&,
+                                                                          unsigned int,
+                                                                          unsigned int)
+{
+}
+
+template<class ChildT, class VCardT>
 template<class V>
-inline void IVariable<ChildT, NextT, VCardT>::simulationEndSpatialAggregates(V& allVars)
+inline void IVariable<ChildT, VCardT>::simulationEndSpatialAggregates(V&)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::simulationEndSpatialAggregates(allVars);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class V, class SetT>
-inline void IVariable<ChildT, NextT, VCardT>::simulationEndSpatialAggregates(V& allVars,
-                                                                             const SetT& set)
+inline void IVariable<ChildT, VCardT>::simulationEndSpatialAggregates(V&, const SetT&)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::simulationEndSpatialAggregates(allVars, set);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::weekBegin(State& state)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::weekBegin(State&)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::weekBegin(state);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::weekForEachArea(State& state, unsigned int numSpace)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::weekForEachArea(State&, unsigned int)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::weekForEachArea(state, numSpace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::hourBegin(uint hourInTheYear)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::hourBegin(uint)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::hourBegin(hourInTheYear);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::hourForEachArea(State& state)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::hourForEachArea(State&)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::hourForEachArea(state);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::hourForEachArea(State& state, unsigned int numSpace)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::hourForEachArea(State&, unsigned int)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::hourForEachArea(state, numSpace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::yearEndBuildForEachThermalCluster(
-  State& state,
-  unsigned int year,
-  unsigned int numSpace)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::hourForEachLink(State&, unsigned int)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::yearEndBuildForEachThermalCluster(state, year, numSpace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::hourForEachLink(State& state, unsigned int numSpace)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::hourEnd(State&, uint)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::hourForEachLink(state, numSpace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::hourEnd(State& state, uint hourInTheYear)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::weekEnd(State&)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::hourEnd(state, hourInTheYear);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::weekEnd(State& state)
-{
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::weekEnd(state);
-    }
-}
-
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::buildSurveyReport(SurveyResults& results,
-                                                               int dataLevel,
-                                                               int fileLevel,
-                                                               int precision) const
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::buildSurveyReport(SurveyResults& results,
+                                                          int dataLevel,
+                                                          int fileLevel,
+                                                          int precision) const
 {
     // Generating value for the area
     // Only if there are some results to export...
@@ -323,21 +213,14 @@ inline void IVariable<ChildT, NextT, VCardT>::buildSurveyReport(SurveyResults& r
                                                                         precision);
         }
     }
-
-    // Ask to the next item in the static list to export
-    // its results as well
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::buildSurveyReport(results, dataLevel, fileLevel, precision);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::buildAnnualSurveyReport(SurveyResults& results,
-                                                                      int dataLevel,
-                                                                      int fileLevel,
-                                                                      int precision,
-                                                                      uint numSpace) const
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::buildAnnualSurveyReport(SurveyResults& results,
+                                                                int dataLevel,
+                                                                int fileLevel,
+                                                                int precision,
+                                                                uint numSpace) const
 {
     // Generating value for the area
     // Only if there are some results to export...
@@ -354,24 +237,17 @@ inline void IVariable<ChildT, NextT, VCardT>::buildAnnualSurveyReport(SurveyResu
                                                                            numSpace);
         }
     }
-
-    // Ask to the next item in the static list to export
-    // its results as well
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::buildAnnualSurveyReport(results, dataLevel, fileLevel, precision, numSpace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline bool IVariable<ChildT, NextT, VCardT>::hasColumn() const
+template<class ChildT, class VCardT>
+inline bool IVariable<ChildT, VCardT>::hasColumn() const
 {
     // Leverage the fact that dynamicType has columnCount = -1
     return VCardType::columnCount > 0;
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::buildDigest(SurveyResults& results,
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::buildDigest(SurveyResults& results,
                                                           int digestLevel,
                                                           int dataLevel) const
 {
@@ -390,53 +266,33 @@ inline void IVariable<ChildT, NextT, VCardT>::buildDigest(SurveyResults& results
                                                            digestLevel,
                                                            dataLevel);
     }
-    // Ask to build the digest to the next variable
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::buildDigest(results, digestLevel, dataLevel);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::beforeYearByYearExport(uint year, uint numspace)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::beforeYearByYearExport(uint, uint)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::beforeYearByYearExport(year, numspace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class I>
-inline void IVariable<ChildT, NextT, VCardT>::provideInformations(I& infos)
+inline void IVariable<ChildT, VCardT>::provideInformations(I& infos)
 {
     // Begining of the node
     if (VCardType::nodeDepthForGUI)
     {
         infos.template beginNode<VCardType>();
-        // Next variable in the list
-        if constexpr (!std::is_same_v<NextT, void>)
-        {
-            NextType::template provideInformations<I>(infos);
-        }
-        // End of the node
         infos.endNode();
     }
     else
     {
         // Giving our VCard
         infos.template addVCard<VCardType>();
-        // Next variable in the list
-        if constexpr (!std::is_same_v<NextT, void>)
-        {
-            NextType::template provideInformations<I>(infos);
-        }
     }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class SearchVCardT, class O>
-inline void IVariable<ChildT, NextT, VCardT>::computeSpatialAggregateWith(O& out, uint numSpace)
+inline void IVariable<ChildT, VCardT>::computeSpatialAggregateWith(O& out, uint numSpace)
 {
     // if this variable has the vcard we are looking for,
     // then we will add our results
@@ -451,25 +307,15 @@ inline void IVariable<ChildT, NextT, VCardT>::computeSpatialAggregateWith(O& out
           >::Perform(out, *(static_cast<ChildT*>(this)), numSpace);
         return;
     }
-    // Otherwise we keep looking
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::template computeSpatialAggregateWith<SearchVCardT, O>(out, numSpace);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class SearchVCardT, class O>
-inline void IVariable<ChildT, NextT, VCardT>::computeSpatialAggregateWith(O& out,
-                                                                          const Data::Area* area)
+inline void IVariable<ChildT, VCardT>::computeSpatialAggregateWith(O&, const Data::Area*)
 {
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::template computeSpatialAggregateWith<SearchVCardT, O>(out, area);
-    }
 }
 
-namespace // anonymous
+namespace
 {
 template<int Match>
 struct RetrieveResultsAssignment
@@ -497,16 +343,14 @@ struct RetrieveResultsAssignment<0>
     template<class ResultsT, class O>
     static void Do(ResultsT&, O**)
     {
-        // Do nothing
     }
 };
 
 } // namespace
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class VCardToFindT>
-inline const double* IVariable<ChildT, NextT, VCardT>::retrieveHourlyResultsForCurrentYear(
-  uint numSpace) const
+inline const double* IVariable<ChildT, VCardT>::retrieveHourlyResultsForCurrentYear(uint) const
 {
     using AssignT = RetrieveResultsAssignment<
       Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
@@ -514,62 +358,46 @@ inline const double* IVariable<ChildT, NextT, VCardT>::retrieveHourlyResultsForC
     {
         return nullptr;
     }
-    else if constexpr (!std::is_same_v<NextT, void>)
-    {
-        return NextType::template retrieveHourlyResultsForCurrentYear<VCardToFindT>(numSpace);
-    }
     else
     {
         return nullptr;
     }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class VCardToFindT>
-inline void IVariable<ChildT, NextT, VCardT>::retrieveResultsForArea(
+inline void IVariable<ChildT, VCardT>::retrieveResultsForArea(
   typename Storage<VCardToFindT>::ResultsType** result,
-  const Data::Area* area)
+  const Data::Area*)
 {
     using AssignT = RetrieveResultsAssignment<
       Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
     AssignT::Do(pResults, result);
-    if constexpr (!AssignT::Yes && !std::is_same_v<NextT, void>)
-    {
-        NextType::template retrieveResultsForArea<VCardToFindT>(result, area);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class VCardToFindT>
-inline void IVariable<ChildT, NextT, VCardT>::retrieveResultsForThermalCluster(
+inline void IVariable<ChildT, VCardT>::retrieveResultsForThermalCluster(
   typename Storage<VCardToFindT>::ResultsType** result,
-  const Data::ThermalCluster* cluster)
+  const Data::ThermalCluster*)
 {
     using AssignT = RetrieveResultsAssignment<
       Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
     AssignT::Do(pResults, result);
-    if constexpr (!AssignT::Yes && !std::is_same_v<NextT, void>)
-    {
-        NextType::template retrieveResultsForThermalCluster<VCardToFindT>(result, cluster);
-    }
 }
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class VCardToFindT>
-inline void IVariable<ChildT, NextT, VCardT>::retrieveResultsForLink(
+inline void IVariable<ChildT, VCardT>::retrieveResultsForLink(
   typename Storage<VCardToFindT>::ResultsType** result,
-  const Data::AreaLink* link)
+  const Data::AreaLink*)
 {
     using AssignT = RetrieveResultsAssignment<
       Yuni::Static::Type::StrictlyEqual<VCardT, VCardToFindT>::Yes>;
     AssignT::Do(pResults, result);
-    if constexpr (!AssignT::Yes && !std::is_same_v<NextT, void>)
-    {
-        NextType::template retrieveResultsForLink<VCardToFindT>(result, link);
-    }
 }
 
-namespace // anonymous
+namespace
 {
 template<int ColumnT>
 struct HourlyResultsForCurrentYear
@@ -603,29 +431,20 @@ struct HourlyResultsForCurrentYear<Category::noColumn>
 
 } // anonymous namespace
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 inline Antares::Memory::Stored<double>::ConstReturnType
-IVariable<ChildT, NextT, VCardT>::retrieveRawHourlyValuesForCurrentYear(uint column,
-                                                                        uint /* numSpace */) const
+IVariable<ChildT, VCardT>::retrieveRawHourlyValuesForCurrentYear(uint column, uint) const
 {
     return HourlyResultsForCurrentYear<VCardType::columnCount>::Get(pResults, column);
 }
 
-template<class ChildT, class NextT, class VCardT>
-inline const typename Storage<VCardT>::ResultsType& IVariable<ChildT, NextT, VCardT>::results()
-  const
+template<class ChildT, class VCardT>
+inline const typename Storage<VCardT>::ResultsType& IVariable<ChildT, VCardT>::results() const
 {
     return pResults;
 }
 
-// ===================================================================
-// Each output variable gets registered in the print info collector
-// ===================================================================
-
-// class RetrieveVariableListHelper goes with function RetrieveVariableList(...).
-// This class is used to make a different Do(...) treatment depending on current
-// VCardType::columnCount. Recall that a variable can be single, dynamic or multiple.
-namespace // anonymous
+namespace
 {
 template<int ColumnT, class VCardT, class ChildT>
 class RetrieveVariableListHelper
@@ -696,27 +515,15 @@ public:
 
 } // anonymous namespace
 
-template<class ChildT, class NextT, class VCardT>
+template<class ChildT, class VCardT>
 template<class PredicateT>
-void IVariable<ChildT, NextT, VCardT>::RetrieveVariableList(PredicateT& predicate)
+void IVariable<ChildT, VCardT>::RetrieveVariableList(PredicateT& predicate)
 {
     RetrieveVariableListHelper<VCardType::columnCount, VCardType, ChildT>::Do(predicate);
-    // Go to the next variable
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::RetrieveVariableList(predicate);
-    }
 }
 
-// =============================================================================
-// Each output variable gets its print status from the study parameters
-// =============================================================================
-
-// The class GetPrintStatusHelper is used to make a different Do(...) treatment depending on current
-// VCardType::columnCount. Recall that a variable can be single, dynamic or multiple.
-namespace // anonymous
+namespace
 {
-// Case : the variable is multiple
 template<int ColumnT, class VCardT>
 class GetPrintStatusHelper
 {
@@ -727,13 +534,11 @@ public:
         {
             // Shifting inside the variables print info collection until reaching the print info
             // associated with the current name, and then getting its print status.
-            isPrinted[i] = study.parameters.variablesPrintInfo.isPrinted(
-              VCardT::Multiple::Caption(i));
+            isPrinted[i] = study.parameters.variablesPrintInfo.isPrinted(VCardT::Multiple::Caption(i));
         }
     }
 };
 
-// Case : the variable is single
 template<class VCardT>
 class GetPrintStatusHelper<Category::singleColumn, VCardT>
 {
@@ -746,7 +551,6 @@ public:
     }
 };
 
-// Case : the variable is dynamic
 template<class VCardT>
 class GetPrintStatusHelper<Category::dynamicColumns, VCardT>
 {
@@ -760,27 +564,14 @@ public:
 };
 } // namespace
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::getPrintStatusFromStudy(Data::Study& study)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::getPrintStatusFromStudy(Data::Study& study)
 {
     GetPrintStatusHelper<VCardType::columnCount, VCardType>::Do(study, isPrinted);
-    // Go to the next variable
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::getPrintStatusFromStudy(study);
-    }
 }
 
-// =======================================================================
-// Each output variable supplies the maximum number of columns it takes
-// in an ouptut report to the variable print info instance
-// =======================================================================
-
-// The class SupplyMaxNbColumnsHelper is used to make a different Do(...) treatment depending on
-// current VCardType::columnCount : recall that a variable can be single, dynamic or multiple.
-namespace // anonymous
+namespace
 {
-// Case : the variable is multiple
 template<int ColumnT, class VCardT>
 class SupplyMaxNbColumnsHelper
 {
@@ -795,7 +586,6 @@ public:
     }
 };
 
-// Case : the variable is single
 template<class VCardT>
 class SupplyMaxNbColumnsHelper<Category::singleColumn, VCardT>
 {
@@ -806,7 +596,6 @@ public:
     }
 };
 
-// Case : the variable is dynamic
 template<class VCardT>
 class SupplyMaxNbColumnsHelper<Category::dynamicColumns, VCardT>
 {
@@ -818,19 +607,16 @@ public:
 };
 } // namespace
 
-template<class ChildT, class NextT, class VCardT>
-inline void IVariable<ChildT, NextT, VCardT>::supplyMaxNumberOfColumns(Data::Study& study)
+template<class ChildT, class VCardT>
+inline void IVariable<ChildT, VCardT>::supplyMaxNumberOfColumns(Data::Study& study)
 {
-    auto max_columns = static_cast<const ChildT*>(this)->getMaxNumberColumns();
+    auto maxColumns = static_cast<const ChildT*>(this)->getMaxNumberColumns();
     SupplyMaxNbColumnsHelper<VCardType::columnCount, VCardType>::Do(study,
-                                                                    static_cast<uint>(max_columns));
-    // Go to the next variable
-    if constexpr (!std::is_same_v<NextT, void>)
-    {
-        NextType::supplyMaxNumberOfColumns(study);
-    }
+                                                                     static_cast<uint>(maxColumns));
 }
 
 } // namespace Antares::Solver::Variable
 
 #endif // __SOLVER_VARIABLE_VARIABLE_HXX__
+
+
