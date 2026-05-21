@@ -248,8 +248,8 @@ inline bool IVariable<ChildT, VCardT>::hasColumn() const
 
 template<class ChildT, class VCardT>
 inline void IVariable<ChildT, VCardT>::buildDigest(SurveyResults& results,
-                                                          int digestLevel,
-                                                          int dataLevel) const
+                                                    int digestLevel,
+                                                    int dataLevel) const
 {
     // Generate the Digest for the local results (areas part)
     if (hasColumn()
