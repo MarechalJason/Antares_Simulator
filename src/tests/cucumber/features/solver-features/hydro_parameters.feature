@@ -1,10 +1,18 @@
 Feature: hydro parameters loading (hydro.ini / PartHydro::LoadIniFile)
 
-  # Each study below is a copy of valid-v920/final-levels with [follow load] = true
-  # and exactly one hydro.ini parameter set to a distinct non-default value.
-  # These scenarios verify that every parameter read by PartHydro::LoadIniFile is
-  # correctly loaded and propagated to the simulation.
+  # Each study below is a copy of valid-v920/final-levels with [follow load] = true,
+  # a monthly-stepped load profile, and a single 500 MW / 50 €/MWh thermal cluster.
+  # Exactly one hydro.ini parameter is set to a distinct non-default value per study.
   # Reference values were produced by running antares-solver once on each study.
+  #
+  # Note: parameters that participate only in soft hydro heuristics (the four
+  # breakdown / modulation parameters, follow-load, hard-bounds, leeway-low/up,
+  # power-to-level, overflow-spilled-cost-difference) do not change the simulation
+  # output in this study setup because the final-levels feature pins start/end
+  # reservoir levels and the optimizer has enough slack to ignore the soft targets.
+  # The dedicated unit test in test-hydro-common.cpp covers loader regressions for
+  # *every* section; the scenarios below verify end-to-end propagation where it
+  # is observable.
 
   @fast @short
   Scenario Outline: hydro parameter "<param>" is loaded and the simulation is stable
@@ -19,21 +27,21 @@ Feature: hydro parameters loading (hydro.ini / PartHydro::LoadIniFile)
     And in area "area", during year 2, total hydro pumping is <pump2> MWh
 
     Examples:
-      | param                            | exp_cost   | prod1  | prod2  | pump1 | pump2 |
-      | inter-daily-breakdown            | 6302470000 | 99792  | 9485   | 0     | 0     |
-      | intra-daily-modulation           | 6302470000 | 99792  | 9485   | 0     | 0     |
-      | inter-monthly-breakdown          | 6302470000 | 99792  | 9485   | 0     | 0     |
-      | reservoir                        | 6557460000 | 0      | 109200 | 0     | 0     |
-      | follow-load                      | 6302470000 | 99792  | 9485   | 0     | 0     |
-      | use-water                        | 6557460000 | 0      | 109190 | 0     | 0     |
-      | hard-bounds                      | 6302470000 | 99792  | 9485   | 0     | 0     |
-      | use-heuristic                    | 6052000000 | 199920 | 0      | 0     | 0     |
-      | power-to-level                   | 6302470000 | 99792  | 9485   | 0     | 0     |
-      | use-leeway                       | 6302000000 | 99792  | 9485   | 0     | 9485  |
-      | leeway-low                       | 6302470000 | 99792  | 9485   | 0     | 0     |
-      | leeway-up                        | 6302470000 | 99792  | 9485   | 0     | 0     |
-      | pumping-efficiency               | 6302000000 | 99792  | 37898  | 0     | 37898 |
-      | overflow-spilled-cost-difference | 6302470000 | 99792  | 9485   | 0     | 0     |
+      | param                            | exp_cost  | prod1  | prod2  | pump1 | pump2 |
+      | inter-daily-breakdown            | 106823000 | 138751 | 45158  | 38750 | 35670 |
+      | intra-daily-modulation           | 106823000 | 138751 | 45158  | 38750 | 35670 |
+      | inter-monthly-breakdown          | 106823000 | 138751 | 45158  | 38750 | 35670 |
+      | reservoir                        | 106830000 | 0      | 109200 | 0     | 0     |
+      | follow-load                      | 106823000 | 138751 | 45158  | 38750 | 35670 |
+      | use-water                        | 106827000 | 0      | 114196 | 0     | 4881  |
+      | hard-bounds                      | 106823000 | 138751 | 45158  | 38750 | 35670 |
+      | use-heuristic                    | 100830000 | 236100 | 155026 | 36100 | 5850  |
+      | power-to-level                   | 106823000 | 138751 | 45158  | 38750 | 35670 |
+      | use-leeway                       | 106823000 | 100001 | 9488   | 0     | 0     |
+      | leeway-low                       | 106823000 | 138751 | 45158  | 38750 | 35670 |
+      | leeway-up                        | 106823000 | 138751 | 45158  | 38750 | 35670 |
+      | pumping-efficiency               | 106823000 | 100001 | 9488   | 0     | 0     |
+      | overflow-spilled-cost-difference | 106823000 | 138751 | 45158  | 38750 | 35670 |
 
   # The two parameters below are constrained by the final-levels feature of the
   # base study: any non-default value is incompatible with the reservoir final
