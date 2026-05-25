@@ -180,7 +180,6 @@ struct VCardTimeSeriesBase: public TimeSeriesTraits<TraitsType>
  * @brief Internal helpers for template metaprogramming
  */
 
-
 /**
  * @brief Base implementation for time series variables using CRTP pattern
  * * This class provides the common functionality for all time series variables.
@@ -234,9 +233,9 @@ public:
     struct Statistics
     {
         static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
-                                      && VCardType::categoryFileLevel & CFile)
-                                      ? VCardType::columnCount * ResultsType::count
-                                      : 0);
+                                       && VCardType::categoryFileLevel & CFile)
+                                        ? VCardType::columnCount * ResultsType::count
+                                        : 0);
     };
 
     void initializeFromStudy(Data::Study& study)

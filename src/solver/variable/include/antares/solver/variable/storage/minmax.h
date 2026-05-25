@@ -102,7 +102,7 @@ private:
     template<uint Size, class VCardT>
     void InternalExportIndices(SurveyResults& report,
                                 const uint16_t* indices,
-                                int fileLevel) const;
+                               int fileLevel) const;
 
     template<uint Size, class VCardT>
     void InternalExportValues(SurveyResults& report, const double* values) const;

@@ -113,8 +113,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
+                       ? VCardType::columnCount * ResultsType::count
+                       : 0),
         };
     };
 

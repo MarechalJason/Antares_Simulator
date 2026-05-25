@@ -163,10 +163,9 @@ using VariablesPerSetOfAreas = Common::SpatialAggregateAll<OverallCost,
 
 using VariablesPerBindingConstraints = BindingConstMarginCost;
 
-using ItemList = Variable::JoinAll<
-    Variable::Areas<VariablesPerArea>,
-    Variable::SetsOfAreas<VariablesPerSetOfAreas>,
-    Variable::BindingConstraints<VariablesPerBindingConstraints>>;
+using ItemList = Variable::JoinAll<Variable::Areas<VariablesPerArea>,
+                                   Variable::SetsOfAreas<VariablesPerSetOfAreas>,
+                                   Variable::BindingConstraints<VariablesPerBindingConstraints>>;
 
 /*!
 ** \brief All variables for a simulation (economy)

@@ -24,17 +24,17 @@ inline void Areas<VariableList>::initializeFromLink(Data::Study*, Data::AreaLink
 
 template<class VariableList>
 inline void Areas<VariableList>::initializeFromThermalCluster(Data::Study*,
-                                                       Data::Area*,
-                                                       Data::ThermalCluster*)
+                                                              Data::Area*,
+                                                              Data::ThermalCluster*)
 {
     // This method should not be called at this point
 }
 
 template<class VariableList>
 void Areas<VariableList>::buildSurveyReport(SurveyResults& results,
-                                     int dataLevel,
-                                     int fileLevel,
-                                     int precision) const
+                                            int dataLevel,
+                                            int fileLevel,
+                                            int precision) const
 {
     int count_int = count;
     bool linkDataLevel = dataLevel & Category::DataLevel::link;
@@ -93,10 +93,10 @@ void Areas<VariableList>::buildSurveyReport(SurveyResults& results,
 
 template<class VariableList>
 void Areas<VariableList>::buildAnnualSurveyReport(SurveyResults& results,
-                                           int dataLevel,
-                                           int fileLevel,
-                                           int precision,
-                                           uint numSpace) const
+                                                  int dataLevel,
+                                                  int fileLevel,
+                                                  int precision,
+                                                  uint numSpace) const
 {
     int count_int = count;
     bool linkDataLevel = dataLevel & Category::DataLevel::link;
@@ -225,7 +225,9 @@ inline void Areas<VariableList>::computeSpatialAggregateWith(O&)
 
 template<class VariableList>
 template<class SearchVCardT, class O>
-inline void Areas<VariableList>::computeSpatialAggregateWith(O& out, const Data::Area* area, uint numSpace)
+inline void Areas<VariableList>::computeSpatialAggregateWith(O& out,
+                                                             const Data::Area* area,
+                                                             uint numSpace)
 {
     assert(NULL != area);
     pAreas[area->index].template computeSpatialAggregateWith<SearchVCardT, O>(out, numSpace);

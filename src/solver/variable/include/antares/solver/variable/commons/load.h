@@ -64,8 +64,7 @@ class TimeSeriesValuesLoad
     : public TimeSeriesValuesBase<TimeSeriesValuesLoad, VCardTimeSeriesValuesLoad>
 {
 public:
-    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesLoad,
-                                          VCardTimeSeriesValuesLoad>;
+    using BaseType = TimeSeriesValuesBase<TimeSeriesValuesLoad, VCardTimeSeriesValuesLoad>;
 
     /// @}
 

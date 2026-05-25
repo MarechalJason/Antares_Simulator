@@ -11,11 +11,10 @@
 #include <antares/study/study.h>
 
 #include "../categories.h"
-#include "fwd.h"
-#include "intermediate.h"
-
 #include "average.h"
 #include "empty.h"
+#include "fwd.h"
+#include "intermediate.h"
 #include "minmax.h"
 #include "raw.h"
 #include "stdDeviation.h"
@@ -29,15 +28,15 @@ template<class T, class Tuple>
 struct TupleContains;
 
 template<class T>
-struct TupleContains<T, std::tuple<>> : std::false_type
+struct TupleContains<T, std::tuple<>>: std::false_type
 {
 };
 
 template<class T, class Head, class... Tail>
 struct TupleContains<T, std::tuple<Head, Tail...>>
-  : std::conditional_t<std::is_same_v<T, Head>,
-                       std::true_type,
-                       TupleContains<T, std::tuple<Tail...>>>
+    : std::conditional_t<std::is_same_v<T, Head>,
+                         std::true_type,
+                         TupleContains<T, std::tuple<Tail...>>>
 {
 };
 
@@ -114,10 +113,9 @@ public:
     template<class VCardT>
     void buildDigest(SurveyResults& report, int digestLevel, int dataLevel) const
     {
-        std::apply(
-          [&](const auto&... d)
-          { (d.template buildDigest<VCardT>(report, digestLevel, dataLevel), ...); },
-          decorators_);
+        std::apply([&](const auto&... d)
+                   { (d.template buildDigest<VCardT>(report, digestLevel, dataLevel), ...); },
+                   decorators_);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType hourlyValuesForSpatialAggregate() const

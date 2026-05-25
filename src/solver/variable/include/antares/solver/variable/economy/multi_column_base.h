@@ -91,9 +91,8 @@ struct VCardMultiColumn
 };
 
 template<class Traits, int ColCount>
-class MultiColumnBase
-    : public Variable::IVariable<MultiColumnBase<Traits, ColCount>,
-                                 VCardMultiColumn<Traits, ColCount>>
+class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCount>,
+                                                  VCardMultiColumn<Traits, ColCount>>
 {
 public:
     using VCardType = VCardMultiColumn<Traits, ColCount>;
@@ -108,8 +107,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:

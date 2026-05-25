@@ -67,8 +67,7 @@ struct VCardMiscGenMinusRowPSP
 /*!
 ** \brief Marginal MiscGenMinusRowPSP
 */
-class MiscGenMinusRowPSP
-    : public Variable::IVariable<MiscGenMinusRowPSP, VCardMiscGenMinusRowPSP>
+class MiscGenMinusRowPSP: public Variable::IVariable<MiscGenMinusRowPSP, VCardMiscGenMinusRowPSP>
 {
 public:
     //! VCard
@@ -93,8 +92,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
+                       ? VCardType::columnCount * ResultsType::count
+                       : 0),
         };
     };
 

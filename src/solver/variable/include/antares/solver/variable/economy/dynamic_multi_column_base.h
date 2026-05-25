@@ -82,8 +82,7 @@ struct VCardDynamicMultiColumn
 
     struct Multiple
     {
-        static std::string Caption(uint indx,
-                                   const std::vector<ColumnDescriptor>& descriptors)
+        static std::string Caption(uint indx, const std::vector<ColumnDescriptor>& descriptors)
         {
             return indx < descriptors.size() ? descriptors[indx].caption : "<unknown>";
         }
@@ -112,8 +111,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:

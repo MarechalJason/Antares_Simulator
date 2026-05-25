@@ -72,8 +72,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count
-          = (0 + ... + Vars::template Statistics<CDataLevel, CFile>::count);
+        static constexpr int count = (0 + ...
+                                      + Vars::template Statistics<CDataLevel, CFile>::count);
     };
 
     // ------------------------------------------------------------------
@@ -100,8 +100,7 @@ public:
                                       Data::Area* area,
                                       Data::ThermalCluster* cluster)
     {
-        std::apply([&](auto&... v)
-                   { (v.initializeFromThermalCluster(study, area, cluster), ...); },
+        std::apply([&](auto&... v) { (v.initializeFromThermalCluster(study, area, cluster), ...); },
                    vars_);
     }
 
@@ -156,13 +155,11 @@ public:
           vars_);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state,
-                                           unsigned int year,
-                                           unsigned int numSpace)
+    void yearEndBuildForEachThermalCluster(State& state, unsigned int year, unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v) { (v.yearEndBuildForEachThermalCluster(state, year, numSpace), ...); },
-          vars_);
+        std::apply([&](auto&... v)
+                   { (v.yearEndBuildForEachThermalCluster(state, year, numSpace), ...); },
+                   vars_);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
@@ -212,12 +209,14 @@ public:
 
     // Reports — each leaf filters internally on (dataLevel, fileLevel, precision)
     // so the tuple just broadcasts.
-    void buildSurveyReport(SurveyResults& results, int dataLevel, int fileLevel, int precision) const
+    void buildSurveyReport(SurveyResults& results,
+                           int dataLevel,
+                           int fileLevel,
+                           int precision) const
     {
-        std::apply(
-          [&](const auto&... v)
-          { (v.buildSurveyReport(results, dataLevel, fileLevel, precision), ...); },
-          vars_);
+        std::apply([&](const auto&... v)
+                   { (v.buildSurveyReport(results, dataLevel, fileLevel, precision), ...); },
+                   vars_);
     }
 
     void buildAnnualSurveyReport(SurveyResults& results,
@@ -234,9 +233,8 @@ public:
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
-        std::apply(
-          [&](const auto&... v) { (v.buildDigest(results, digestLevel, dataLevel), ...); },
-          vars_);
+        std::apply([&](const auto&... v) { (v.buildDigest(results, digestLevel, dataLevel), ...); },
+                   vars_);
     }
 
     // ------------------------------------------------------------------
@@ -246,12 +244,8 @@ public:
     template<class SearchVCardT, class O>
     void computeSpatialAggregateWith(O& out, unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v)
-          {
-              ((tryAggregate<SearchVCardT>(v, out, numSpace)) || ...);
-          },
-          vars_);
+        std::apply([&](auto&... v) { ((tryAggregate<SearchVCardT>(v, out, numSpace)) || ...); },
+                   vars_);
     }
 
     template<class SearchVCardT, class O>
@@ -266,16 +260,12 @@ public:
     template<class VCardToFindT>
     const double* retrieveHourlyResultsForCurrentYear(unsigned int /*numSpace*/) const
     {
-        // Walk tuple, return nullptr on first match; otherwise keep walking and return nullptr at the end.
+        // Walk tuple, return nullptr on first match; otherwise keep walking and return nullptr at
+        // the end.
         const double* r = nullptr;
-        std::apply(
-          [&](const auto&... v)
-          {
-              ((isMatchRetrieve<VCardToFindT>(v) ? (r = nullptr, true)
-                                                 : false)
-               || ...);
-          },
-          vars_);
+        std::apply([&](const auto&... v)
+                   { ((isMatchRetrieve<VCardToFindT>(v) ? (r = nullptr, true) : false) || ...); },
+                   vars_);
         return r;
     }
 
@@ -283,30 +273,25 @@ public:
     void retrieveResultsForArea(typename Storage<VCardToFindT>::ResultsType** result,
                                 const Data::Area* area)
     {
-        std::apply(
-          [&](auto&... v)
-          { ((tryAssignArea<VCardToFindT>(v, result, area)) || ...); },
-          vars_);
+        std::apply([&](auto&... v) { ((tryAssignArea<VCardToFindT>(v, result, area)) || ...); },
+                   vars_);
     }
 
     template<class VCardToFindT>
     void retrieveResultsForThermalCluster(typename Storage<VCardToFindT>::ResultsType** result,
                                           const Data::ThermalCluster* cluster)
     {
-        std::apply(
-          [&](auto&... v)
-          { ((tryAssignCluster<VCardToFindT>(v, result, cluster)) || ...); },
-          vars_);
+        std::apply([&](auto&... v)
+                   { ((tryAssignCluster<VCardToFindT>(v, result, cluster)) || ...); },
+                   vars_);
     }
 
     template<class VCardToFindT>
     void retrieveResultsForLink(typename Storage<VCardToFindT>::ResultsType** result,
                                 const Data::AreaLink* link)
     {
-        std::apply(
-          [&](auto&... v)
-          { ((tryAssignLink<VCardToFindT>(v, result, link)) || ...); },
-          vars_);
+        std::apply([&](auto&... v) { ((tryAssignLink<VCardToFindT>(v, result, link)) || ...); },
+                   vars_);
     }
 
     // ------------------------------------------------------------------
@@ -328,9 +313,8 @@ public:
     template<class V>
     void yearEndSpatialAggregates(V& allVars, unsigned int year, unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v) { (v.yearEndSpatialAggregates(allVars, year, numSpace), ...); },
-          vars_);
+        std::apply([&](auto&... v) { (v.yearEndSpatialAggregates(allVars, year, numSpace), ...); },
+                   vars_);
     }
 
     template<class V, class SetT>
@@ -343,22 +327,23 @@ public:
     // 4-arg variant — only SpatialAggregate leaves expose it. setofareas.hxx:269
     // dispatches through the tuple of SpatialAggregate wrappers.
     template<class V, class SetT>
-    void yearEndSpatialAggregates(V& allVars, unsigned int year, const SetT& set,
+    void yearEndSpatialAggregates(V& allVars,
+                                  unsigned int year,
+                                  const SetT& set,
                                   unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v)
-          { (v.yearEndSpatialAggregates(allVars, year, set, numSpace), ...); },
-          vars_);
+        std::apply([&](auto&... v)
+                   { (v.yearEndSpatialAggregates(allVars, year, set, numSpace), ...); },
+                   vars_);
     }
 
     // 3-arg SpatialAggregate summary — not on the regular IVariable chain.
     template<class V>
     void computeSpatialAggregatesSummary(V& allVars, unsigned int year, unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v) { (v.computeSpatialAggregatesSummary(allVars, year, numSpace), ...); },
-          vars_);
+        std::apply([&](auto&... v)
+                   { (v.computeSpatialAggregatesSummary(allVars, year, numSpace), ...); },
+                   vars_);
     }
 
     template<class V>
@@ -392,9 +377,10 @@ private:
         using VCard = typename V::VCardType;
         if constexpr (detail::isSameVCard<VCard, Search>)
         {
-            Variable::SpatialAggregateOperation<true, VCard::spatialAggregate, VCard>::Perform(out,
-                                                                                               v,
-                                                                                               numSpace);
+            Variable::SpatialAggregateOperation<true, VCard::spatialAggregate, VCard>::Perform(
+              out,
+              v,
+              numSpace);
             return true;
         }
         else

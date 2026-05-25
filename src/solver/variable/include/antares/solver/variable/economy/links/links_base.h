@@ -95,8 +95,7 @@ struct VCard_LinkBase
 }; // class VCard
 
 template<class Traits>
-class EconomyLink_Base
-    : public Variable::IVariable<EconomyLink_Base<Traits>, VCard_LinkBase<Traits>>
+class EconomyLink_Base: public Variable::IVariable<EconomyLink_Base<Traits>, VCard_LinkBase<Traits>>
 {
 public:
     //! VCard
@@ -114,8 +113,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -202,8 +201,8 @@ public:
                                            ->ResultatsHoraires[state.link->from->index]
                                            .CoutsMarginauxHoraires[state.hourInTheWeek];
             const double downstreamPrice = state.problemeHebdo
-                                            ->ResultatsHoraires[state.link->with->index]
-                                            .CoutsMarginauxHoraires[state.hourInTheWeek];
+                                             ->ResultatsHoraires[state.link->with->index]
+                                             .CoutsMarginauxHoraires[state.hourInTheWeek];
             pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = Traits::hourValue(
               state,
               upstreamPrice,

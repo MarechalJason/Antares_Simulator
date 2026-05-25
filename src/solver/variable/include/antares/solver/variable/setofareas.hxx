@@ -79,8 +79,8 @@ inline void SetsOfAreas<VariableList>::initializeFromLink(Data::Study*, Data::Ar
 
 template<class VariableList>
 inline void SetsOfAreas<VariableList>::initializeFromThermalCluster(Data::Study*,
-                                                             Data::Area*,
-                                                             Data::ThermalCluster*)
+                                                                    Data::Area*,
+                                                                    Data::ThermalCluster*)
 {
     // This method should not be called at this stage
 }
@@ -104,7 +104,9 @@ inline void SetsOfAreas<VariableList>::yearBegin(uint /*year*/, uint /* numSpace
 }
 
 template<class VariableList>
-inline void SetsOfAreas<VariableList>::yearEndBuild(State& /*state*/, uint /*year*/, uint /*numSpace*/)
+inline void SetsOfAreas<VariableList>::yearEndBuild(State& /*state*/,
+                                                    uint /*year*/,
+                                                    uint /*numSpace*/)
 {
     // Nothing to do here
 }
@@ -116,7 +118,8 @@ inline void SetsOfAreas<VariableList>::yearEnd(uint /*year*/, uint /*numSpace*/)
 }
 
 template<class VariableList>
-inline void SetsOfAreas<VariableList>::computeSummary(unsigned int /* year */, unsigned int /* numSpace */)
+inline void SetsOfAreas<VariableList>::computeSummary(unsigned int /* year */,
+                                                      unsigned int /* numSpace */)
 {
     // Nothing to do here
 }
@@ -166,9 +169,9 @@ inline void SetsOfAreas<VariableList>::hourEnd(State& state, uint hourInTheYear)
 
 template<class VariableList>
 inline void SetsOfAreas<VariableList>::buildSurveyReport(SurveyResults& results,
-                                                  int dataLevel,
-                                                  int fileLevel,
-                                                  int precision) const
+                                                         int dataLevel,
+                                                         int fileLevel,
+                                                         int precision) const
 {
     int count_int = count;
     bool setOfAreasDataLevel = dataLevel & Category::DataLevel::setOfAreas;
@@ -183,10 +186,10 @@ inline void SetsOfAreas<VariableList>::buildSurveyReport(SurveyResults& results,
 
 template<class VariableList>
 inline void SetsOfAreas<VariableList>::buildAnnualSurveyReport(SurveyResults& results,
-                                                        int dataLevel,
-                                                        int fileLevel,
-                                                        int precision,
-                                                        uint numSpace) const
+                                                               int dataLevel,
+                                                               int fileLevel,
+                                                               int precision,
+                                                               uint numSpace) const
 {
     int count_int = count;
     bool setOfAreasDataLevel = dataLevel & Category::DataLevel::setOfAreas;
@@ -214,7 +217,9 @@ const VariableList* SetsOfAreas<VariableList>::findSetById(
 }
 
 template<class VariableList>
-void SetsOfAreas<VariableList>::buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
+void SetsOfAreas<VariableList>::buildDigest(SurveyResults& results,
+                                            int digestLevel,
+                                            int dataLevel) const
 {
     int count_int = count;
     bool setOfAreasDataLevel = dataLevel & Category::DataLevel::setOfAreas;
@@ -276,8 +281,8 @@ void SetsOfAreas<VariableList>::yearEndSpatialAggregates(V& allVars, uint year, 
 template<class VariableList>
 template<class V>
 void SetsOfAreas<VariableList>::computeSpatialAggregatesSummary(V& allVars,
-                                                         unsigned int year,
-                                                         unsigned int numSpace)
+                                                                unsigned int year,
+                                                                unsigned int numSpace)
 {
     for (uint setindex = 0; setindex != pSetsOfAreas.size(); ++setindex)
     {
@@ -315,8 +320,8 @@ inline void SetsOfAreas<VariableList>::computeSpatialAggregateWith(O&)
 template<class VariableList>
 template<class SearchVCardT, class O>
 inline void SetsOfAreas<VariableList>::computeSpatialAggregateWith(O& out,
-                                                            const Data::Area* area,
-                                                            uint numSpace)
+                                                                   const Data::Area* area,
+                                                                   uint numSpace)
 {
     (void)out;
     (void)area;

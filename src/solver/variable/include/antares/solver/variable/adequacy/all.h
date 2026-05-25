@@ -61,42 +61,42 @@ namespace Antares::Solver::Variable::Adequacy
 ** \brief All variables for a single area (economy)
 */
 using VariablesPerArea = Common::ComposeAll<Variable::Adequacy::OverallCost,
-                                             Variable::Economy::OperatingCost,
-                                             Variable::Economy::Price,
-                                             Variable::Economy::ThermalAirPollutantEmissions,
-                                             Variable::Economy::ProductionByDispatchablePlant,
-                                             Variable::Economy::ProductionByRenewablePlant,
-                                             Variable::Economy::Balance,
-                                             Variable::Economy::RowBalance,
-                                             Variable::Economy::PSP,
-                                             Variable::Economy::MiscGenMinusRowPSP,
-                                             Variable::Economy::TimeSeriesValuesLoad,
-                                             Variable::Economy::TimeSeriesValuesHydro,
-                                             Variable::Economy::TimeSeriesValuesWind,
-                                             Variable::Economy::TimeSeriesValuesSolar,
-                                             Variable::Economy::DispatchableGeneration,
-                                             Variable::Economy::RenewableGeneration,
-                                             Variable::Economy::HydroStorage,
-                                             Variable::Economy::Pumping,
-                                             Variable::Economy::ReservoirLevel,
-                                             Variable::Economy::Inflows,
-                                             Variable::Economy::Overflows,
-                                             Variable::Economy::WaterValue,
-                                             Variable::Economy::HydroCost,
-                                             Variable::Economy::STSbyGroup,
-                                             Variable::Economy::STstorageInjectionByCluster,
-                                             Variable::Economy::STstorageWithdrawalByCluster,
-                                             Variable::Economy::STstorageLevelsByCluster,
-                                             Variable::Economy::UnsupliedEnergy,
-                                             Variable::Adequacy::SpilledEnergy,
-                                             Variable::Economy::LOLD,
-                                             Variable::Economy::LOLP,
-                                             Variable::Economy::AvailableDispatchGen,
-                                             Variable::Economy::DispatchableGenMargin,
-                                             Variable::Economy::Marge,
-                                             Variable::Economy::ProfitByPlant,
-                                             Variable::Economy::ResidualLoad,
-                                             Variable::Adequacy::Links>::type;
+                                            Variable::Economy::OperatingCost,
+                                            Variable::Economy::Price,
+                                            Variable::Economy::ThermalAirPollutantEmissions,
+                                            Variable::Economy::ProductionByDispatchablePlant,
+                                            Variable::Economy::ProductionByRenewablePlant,
+                                            Variable::Economy::Balance,
+                                            Variable::Economy::RowBalance,
+                                            Variable::Economy::PSP,
+                                            Variable::Economy::MiscGenMinusRowPSP,
+                                            Variable::Economy::TimeSeriesValuesLoad,
+                                            Variable::Economy::TimeSeriesValuesHydro,
+                                            Variable::Economy::TimeSeriesValuesWind,
+                                            Variable::Economy::TimeSeriesValuesSolar,
+                                            Variable::Economy::DispatchableGeneration,
+                                            Variable::Economy::RenewableGeneration,
+                                            Variable::Economy::HydroStorage,
+                                            Variable::Economy::Pumping,
+                                            Variable::Economy::ReservoirLevel,
+                                            Variable::Economy::Inflows,
+                                            Variable::Economy::Overflows,
+                                            Variable::Economy::WaterValue,
+                                            Variable::Economy::HydroCost,
+                                            Variable::Economy::STSbyGroup,
+                                            Variable::Economy::STstorageInjectionByCluster,
+                                            Variable::Economy::STstorageWithdrawalByCluster,
+                                            Variable::Economy::STstorageLevelsByCluster,
+                                            Variable::Economy::UnsupliedEnergy,
+                                            Variable::Adequacy::SpilledEnergy,
+                                            Variable::Economy::LOLD,
+                                            Variable::Economy::LOLP,
+                                            Variable::Economy::AvailableDispatchGen,
+                                            Variable::Economy::DispatchableGenMargin,
+                                            Variable::Economy::Marge,
+                                            Variable::Economy::ProfitByPlant,
+                                            Variable::Economy::ResidualLoad,
+                                            Variable::Adequacy::Links>::type;
 
 /*!
 ** \brief All variables for a single set of areas (economy)
@@ -131,10 +131,9 @@ using VariablesPerSetOfAreas = Common::SpatialAggregateAll<
 
 using VariablesPerBindingConstraints = Variable::Economy::BindingConstMarginCost;
 
-using ItemList = Variable::JoinAll<
-    Variable::Areas<VariablesPerArea>,
-    Variable::SetsOfAreas<VariablesPerSetOfAreas>,
-    Variable::BindingConstraints<VariablesPerBindingConstraints>>;
+using ItemList = Variable::JoinAll<Variable::Areas<VariablesPerArea>,
+                                   Variable::SetsOfAreas<VariablesPerSetOfAreas>,
+                                   Variable::BindingConstraints<VariablesPerBindingConstraints>>;
 
 /*!
 ** \brief All variables for a simulation (economy)

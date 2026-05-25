@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include "antares/solver/variable/tuple_variable_list.h"
 #include "antares/solver/variable/variable.h"
-
-#include <type_traits>
 
 // #include <antares/logs/logs.h>	// In case it is needed
 
@@ -19,8 +19,9 @@ struct VCardForSpatialAggregateSelector
 };
 
 template<class VCardOriginT>
-struct VCardForSpatialAggregateSelector<VCardOriginT,
-                                        std::void_t<typename VCardOriginT::VCardForSpatialAggregate>>
+struct VCardForSpatialAggregateSelector<
+  VCardOriginT,
+  std::void_t<typename VCardOriginT::VCardForSpatialAggregate>>
 {
     using type = typename VCardOriginT::VCardForSpatialAggregate;
 };
@@ -108,13 +109,12 @@ struct VCardProxy
     //! The expecte results
     using ResultsType = typename VCardOrigin::ResultsType;
     //! The VCard to look for for calculating spatial aggregates
-    using VCardForSpatialAggregate =
-      typename VCardForSpatialAggregateSelector<VCardOrigin>::type;
+    using VCardForSpatialAggregate = typename VCardForSpatialAggregateSelector<VCardOrigin>::type;
 
     using IntermediateValuesType = typename VCardOrigin::IntermediateValuesType;
     using IntermediateValuesBaseType = typename VCardOrigin::IntermediateValuesBaseType;
-    using IntermediateValuesTypeForSpatialAg =
-      typename VCardOrigin::IntermediateValuesTypeForSpatialAg;
+    using IntermediateValuesTypeForSpatialAg = typename VCardOrigin::
+      IntermediateValuesTypeForSpatialAg;
 
     //! Data Level
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::setOfAreas;
@@ -154,8 +154,7 @@ struct VCardProxy
 }; // class VCard
 
 template<class VarT>
-class SpatialAggregate
-    : public Variable::IVariable<SpatialAggregate<VarT>, VCardProxy<VarT>>
+class SpatialAggregate: public Variable::IVariable<SpatialAggregate<VarT>, VCardProxy<VarT>>
 {
 public:
     //! VCard
@@ -180,8 +179,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
+                       ? VCardType::columnCount * ResultsType::count
+                       : 0),
         };
     };
 

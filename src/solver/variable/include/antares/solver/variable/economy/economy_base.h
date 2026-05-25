@@ -105,7 +105,9 @@ void yearEndBuildIfSupported(IV& iv, Aux& aux, State& state, uint year, uint num
 template<class Traits, class IV, class State>
 void yearEndBuildForEachIfSupported(IV& iv, State& state, uint year, uint numSpace)
 {
-    if constexpr (requires { Traits::yearEndBuildForEachThermalCluster(iv, state, year, numSpace); })
+    if constexpr (requires {
+                      Traits::yearEndBuildForEachThermalCluster(iv, state, year, numSpace);
+                  })
     {
         Traits::yearEndBuildForEachThermalCluster(iv, state, year, numSpace);
     }
@@ -178,10 +180,10 @@ struct AuxiliaryDataType<TraitsT, std::void_t<typename TraitsT::AuxiliaryDataTyp
 };
 
 template<class VCardType, class ResultsType, int CDataLevel, int CFile>
-inline constexpr int statisticsCount =
-  ((VCardType::categoryDataLevel & CDataLevel && VCardType::categoryFileLevel & CFile)
-   ? VCardType::columnCount * ResultsType::count
-   : 0);
+inline constexpr int statisticsCount = ((VCardType::categoryDataLevel & CDataLevel
+                                         && VCardType::categoryFileLevel & CFile)
+                                          ? VCardType::columnCount * ResultsType::count
+                                          : 0);
 } // namespace detail
 
 template<class Traits>
@@ -286,8 +288,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -339,30 +341,27 @@ public:
         // Reset the values for the current year
         pValuesForTheCurrentYear[numSpace].reset();
 
-        Hooks_::yearBeginIfSupported<Traits>(
-          pValuesForTheCurrentYear[numSpace],
-          auxiliaryData_,
-          year,
-          numSpace);
+        Hooks_::yearBeginIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+                                             auxiliaryData_,
+                                             year,
+                                             numSpace);
     }
 
     void yearEndBuild(State& state, uint year, uint numSpace)
     {
-        Hooks_::yearEndBuildIfSupported<Traits>(
-          pValuesForTheCurrentYear[numSpace],
-          auxiliaryData_,
-          state,
-          year,
-          numSpace);
+        Hooks_::yearEndBuildIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+                                                auxiliaryData_,
+                                                state,
+                                                year,
+                                                numSpace);
     }
 
     void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace)
     {
-        Hooks_::yearEndBuildForEachIfSupported<Traits>(
-          pValuesForTheCurrentYear[numSpace],
-          state,
-          year,
-          numSpace);
+        Hooks_::yearEndBuildForEachIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+                                                       state,
+                                                       year,
+                                                       numSpace);
     }
 
     void yearEnd(uint /*year*/, uint numSpace)
@@ -383,19 +382,17 @@ public:
 
     void hourForEachArea(State& state, uint numSpace)
     {
-        Hooks_::setHourlyValueIfSupported<Traits>(
-          pValuesForTheCurrentYear[numSpace],
-          auxiliaryData_,
-          state,
-          numSpace);
+        Hooks_::setHourlyValueIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+                                                  auxiliaryData_,
+                                                  state,
+                                                  numSpace);
     }
 
     void weekForEachArea(State& state, uint numSpace)
     {
-        Hooks_::weekForEachAreaIfSupported<Traits>(
-          pValuesForTheCurrentYear[numSpace],
-          state,
-          numSpace);
+        Hooks_::weekForEachAreaIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+                                                   state,
+                                                   numSpace);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(
@@ -423,7 +420,6 @@ public:
         }
     }
 
-
 private:
     //! Intermediate values for each year
     typename VCardType::IntermediateValuesType pValuesForTheCurrentYear;
@@ -431,6 +427,5 @@ private:
     uint pNbYearsParallel = 0;
 
 }; // class EconomyVariableBase
-
 
 } // namespace Antares::Solver::Variable::Economy

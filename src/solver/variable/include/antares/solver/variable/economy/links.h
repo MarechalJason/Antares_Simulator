@@ -14,8 +14,8 @@
 #include "antares/solver/variable/economy/links/loopFlow.h"
 #include "antares/solver/variable/economy/links/marginalCost.h"
 
-#include "../commons/links/links.h"
 #include "../commons/compose-all.h"
+#include "../commons/links/links.h"
 
 namespace Antares::Solver::Variable::Economy
 {

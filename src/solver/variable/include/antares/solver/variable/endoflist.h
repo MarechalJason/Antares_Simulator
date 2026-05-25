@@ -9,6 +9,7 @@
 // for empty variable aggregations.
 
 #include <antares/study/study.h>
+
 #include "state.h"
 #include "surveyresults.h"
 
@@ -37,15 +38,19 @@ public:
     static void initializeFromStudy([[maybe_unused]] Data::Study& study)
     {
     }
+
     static void initializeFromArea(Data::Study*, Data::Area*)
     {
     }
+
     static void initializeFromAreaLink(Data::Study*, Data::AreaLink*)
     {
     }
+
     static void initializeFromLink(Data::Study*, Data::AreaLink*)
     {
     }
+
     static void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*)
     {
     }
@@ -53,9 +58,11 @@ public:
     void broadcastNonApplicability(bool)
     {
     }
+
     void getPrintStatusFromStudy([[maybe_unused]] Data::Study& study)
     {
     }
+
     void supplyMaxNumberOfColumns([[maybe_unused]] Data::Study& study)
     {
     }
@@ -64,24 +71,31 @@ public:
     static void simulationBegin()
     {
     }
+
     static void simulationEnd()
     {
     }
+
     static void yearBegin(unsigned int, unsigned int)
     {
     }
+
     static void yearEndBuildPrepareDataForEachThermalCluster(State&, uint, uint)
     {
     }
+
     static void yearEndBuildForEachThermalCluster(State&, uint, uint)
     {
     }
+
     static void yearEndBuild(State&, unsigned int, unsigned int)
     {
     }
+
     static void yearEnd(unsigned int, unsigned int)
     {
     }
+
     static void computeSummary(unsigned int, unsigned int)
     {
     }
@@ -90,6 +104,7 @@ public:
     void yearEndSpatialAggregates(V&, unsigned int, uint)
     {
     }
+
     template<class V, class SetT>
     void yearEndSpatialAggregates(V&, unsigned int, const SetT&, uint)
     {
@@ -99,10 +114,12 @@ public:
     static void computeSpatialAggregatesSummary(V&, unsigned int, unsigned int)
     {
     }
+
     template<class V>
     static void simulationEndSpatialAggregates(V&)
     {
     }
+
     template<class V, class SetT>
     void simulationEndSpatialAggregates(V&, const SetT&)
     {
@@ -111,9 +128,11 @@ public:
     static void weekBegin(State&)
     {
     }
+
     static void weekForEachArea(State&, uint)
     {
     }
+
     static void weekEnd(State&)
     {
     }
@@ -121,12 +140,15 @@ public:
     static void hourBegin(unsigned int)
     {
     }
+
     static void hourForEachArea(State&, uint)
     {
     }
+
     static void hourForEachLink(State&, uint)
     {
     }
+
     static void hourEnd(State&, unsigned int)
     {
     }
@@ -135,12 +157,15 @@ public:
     static void buildSurveyReport(SurveyResults&, int, int, int)
     {
     }
+
     static void buildAnnualSurveyReport(SurveyResults&, int, int, int, uint)
     {
     }
+
     static void buildDigest(SurveyResults&, int, int)
     {
     }
+
     static void beforeYearByYearExport(uint, uint)
     {
     }
@@ -156,11 +181,13 @@ public:
     {
         assert(false);
     }
+
     template<class SearchVCardT, class O>
     static void computeSpatialAggregateWith(O&, const Data::Area*)
     {
         assert(false);
     }
+
     template<class SearchVCardT, class O>
     static void computeSpatialAggregateWith(O&, const Data::Area*, uint)
     {
@@ -172,14 +199,17 @@ public:
     {
         return nullptr;
     }
+
     template<class VCardToFindT, class O>
     static void retrieveResultsForArea(O**, const Data::Area*)
     {
     }
+
     template<class VCardToFindT, class O>
     static void retrieveResultsForThermalCluster(O**, const Data::ThermalCluster*)
     {
     }
+
     template<class VCardToFindT, class O>
     static void retrieveResultsForLink(O**, const Data::AreaLink*)
     {

@@ -86,9 +86,8 @@ struct VCardSTStorageByClusterBase
 }; // class VCardSTStorageByClusterBase
 
 template<class Traits>
-class STStorageByClusterBase
-    : public Variable::IVariable<STStorageByClusterBase<Traits>,
-                                 VCardSTStorageByClusterBase<Traits>>
+class STStorageByClusterBase: public Variable::IVariable<STStorageByClusterBase<Traits>,
+                                                         VCardSTStorageByClusterBase<Traits>>
 {
 public:
     using VCardType = VCardSTStorageByClusterBase<Traits>;
@@ -103,8 +102,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:

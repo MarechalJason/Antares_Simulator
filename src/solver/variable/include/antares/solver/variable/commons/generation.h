@@ -310,7 +310,8 @@ private:
  * TimeSeriesValuesWind wind;
  * ```
  */
-// Note: This legacy wrapper is deprecated. Use TimeSeriesValuesSolar or TimeSeriesValuesWind directly.
+// Note: This legacy wrapper is deprecated. Use TimeSeriesValuesSolar or TimeSeriesValuesWind
+// directly.
 
 /**
  * @brief Solar generation time series variable

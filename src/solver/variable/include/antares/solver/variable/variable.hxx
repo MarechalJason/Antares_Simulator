@@ -20,7 +20,7 @@ inline IVariable<ChildT, VCardT>::IVariable()
     isNonApplicable = new bool[pColumnCount];
     isPrinted = new bool[pColumnCount];
 
-for (uint i = 0; i < pColumnCount; i++)
+    for (uint i = 0; i < pColumnCount; i++)
     {
         isPrinted[i] = true;
     }
@@ -116,14 +116,16 @@ inline void IVariable<ChildT, VCardT>::yearEndSpatialAggregates(V&, uint, const 
 }
 
 template<class ChildT, class VCardT>
-inline void IVariable<ChildT, VCardT>::yearEndBuildPrepareDataForEachThermalCluster(State&, uint, uint)
+inline void IVariable<ChildT, VCardT>::yearEndBuildPrepareDataForEachThermalCluster(State&,
+                                                                                    uint,
+                                                                                    uint)
 {
 }
 
 template<class ChildT, class VCardT>
 inline void IVariable<ChildT, VCardT>::yearEndBuildForEachThermalCluster(State&,
-                                                                          unsigned int,
-                                                                          unsigned int)
+                                                                         unsigned int,
+                                                                         unsigned int)
 {
 }
 
@@ -181,9 +183,9 @@ inline void IVariable<ChildT, VCardT>::weekEnd(State&)
 
 template<class ChildT, class VCardT>
 inline void IVariable<ChildT, VCardT>::buildSurveyReport(SurveyResults& results,
-                                                          int dataLevel,
-                                                          int fileLevel,
-                                                          int precision) const
+                                                         int dataLevel,
+                                                         int fileLevel,
+                                                         int precision) const
 {
     // Generating value for the area
     // Only if there are some results to export...
@@ -208,10 +210,10 @@ inline void IVariable<ChildT, VCardT>::buildSurveyReport(SurveyResults& results,
 
 template<class ChildT, class VCardT>
 inline void IVariable<ChildT, VCardT>::buildAnnualSurveyReport(SurveyResults& results,
-                                                                int dataLevel,
-                                                                int fileLevel,
-                                                                int precision,
-                                                                uint numSpace) const
+                                                               int dataLevel,
+                                                               int fileLevel,
+                                                               int precision,
+                                                               uint numSpace) const
 {
     // Generating value for the area
     // Only if there are some results to export...
@@ -239,8 +241,8 @@ inline bool IVariable<ChildT, VCardT>::hasColumn() const
 
 template<class ChildT, class VCardT>
 inline void IVariable<ChildT, VCardT>::buildDigest(SurveyResults& results,
-                                                    int digestLevel,
-                                                    int dataLevel) const
+                                                   int digestLevel,
+                                                   int dataLevel) const
 {
     // Generate the Digest for the local results (areas part)
     if (hasColumn()
@@ -291,11 +293,11 @@ inline void IVariable<ChildT, VCardT>::computeSpatialAggregateWith(O& out, uint 
 
     if constexpr (std::is_same_v<VCardT, SearchVCardT>)
     {
-        SpatialAggregateOperation<
-          std::is_same_v<VCardT, SearchVCardT>, // To avoid instanciation
-          VCardT::spatialAggregate, // The spatial cluster operation to perform
-          VCardType                 // The VCard
-          >::Perform(out, *(static_cast<ChildT*>(this)), numSpace);
+        SpatialAggregateOperation<std::is_same_v<VCardT, SearchVCardT>, // To avoid instanciation
+                                  VCardT::spatialAggregate, // The spatial cluster operation to
+                                                            // perform
+                                  VCardType                 // The VCard
+                                  >::Perform(out, *(static_cast<ChildT*>(this)), numSpace);
         return;
     }
 }
@@ -475,7 +477,8 @@ public:
         {
             // Shifting inside the variables print info collection until reaching the print info
             // associated with the current name, and then getting its print status.
-            isPrinted[i] = study.parameters.variablesPrintInfo.isPrinted(VCardT::Multiple::Caption(i));
+            isPrinted[i] = study.parameters.variablesPrintInfo.isPrinted(
+              VCardT::Multiple::Caption(i));
         }
     }
 };
@@ -553,11 +556,9 @@ inline void IVariable<ChildT, VCardT>::supplyMaxNumberOfColumns(Data::Study& stu
 {
     auto maxColumns = static_cast<const ChildT*>(this)->getMaxNumberColumns();
     SupplyMaxNbColumnsHelper<VCardType::columnCount, VCardType>::Do(study,
-                                                                     static_cast<uint>(maxColumns));
+                                                                    static_cast<uint>(maxColumns));
 }
 
 } // namespace Antares::Solver::Variable
 
 #endif // __SOLVER_VARIABLE_VARIABLE_HXX__
-
-
