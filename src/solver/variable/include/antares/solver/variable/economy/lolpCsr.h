@@ -44,10 +44,7 @@ struct LOLP_CSRTraits: public LOLP_Base_Traits
         return "LOLP for CSR";
     }
 
-    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
-
     static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
                                const State& state,
                                unsigned int)
     {

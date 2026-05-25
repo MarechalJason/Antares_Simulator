@@ -21,10 +21,7 @@ struct LOLDTraits: public LOLD_Base_Traits
         return "LOLD";
     }
 
-    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
-
     static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
                                const State& state,
                                unsigned int)
     {

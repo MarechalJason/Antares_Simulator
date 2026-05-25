@@ -32,15 +32,12 @@ struct PriceTraits
     static constexpr uint8_t spatialAggregatePostProcessing = Category::
       spatialAggregatePostProcessingPrice;
 
-    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
-
     static double value(const State& state)
     {
         return -state.hourlyResults->CoutsMarginauxHoraires[state.hourInTheWeek];
     }
 
     static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
                                const State& state,
                                unsigned int)
     {

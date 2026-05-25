@@ -29,8 +29,6 @@ struct SpilledEnergyTraits
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
-    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
-
     static double value(const State& state)
     {
         assert(state.hourlyResults && "Invalid pointer to simplex results");
@@ -38,7 +36,6 @@ struct SpilledEnergyTraits
     }
 
     static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
                                const State& state,
                                unsigned int)
     {

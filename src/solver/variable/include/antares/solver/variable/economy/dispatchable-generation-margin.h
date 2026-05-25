@@ -33,7 +33,6 @@ struct DispatchableGenMarginTraits
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
     static void setHourlyValue(IntermediateValues& yearlyValues,
-                               detail::EmptyAuxiliaryData&,
                                const State& state,
                                unsigned int)
     {

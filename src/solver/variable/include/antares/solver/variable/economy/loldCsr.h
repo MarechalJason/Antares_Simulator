@@ -44,10 +44,7 @@ struct LOLD_CSRTraits: public LOLD_Base_Traits
         return "LOLD for CSR";
     }
 
-    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
-
     static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
                                const State& state,
                                unsigned int)
     {

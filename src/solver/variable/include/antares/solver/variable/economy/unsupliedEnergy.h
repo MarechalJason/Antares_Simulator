@@ -30,15 +30,12 @@ struct UnsuppliedEnergyTrait
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
-    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
-
     static double value(const State& state)
     {
         return state.hourlyResults->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek];
     }
 
     static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
                                const State& state,
                                unsigned int)
     {
@@ -69,7 +66,6 @@ struct UnsuppliedEnergyCSRTrait: UnsuppliedEnergyTrait
     }
 
     static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
                                const State& state,
                                unsigned int)
     {
