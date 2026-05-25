@@ -49,6 +49,12 @@ def change_transmission_capacities(context, link, value):
     context.sih.set_value(variable="transmission-capacities", value=value, file_path=file_path)
 
 
+@given('in input "{input_file}" section "{section}" variable "{variable}" is set to "{value}"')
+def set_input_section_variable(context, input_file, section, variable, value):
+    context.sih.set_input(input_file=input_file, section=section,
+                          variable=variable, value=value)
+
+
 @given('the linear solver is {solver_name}')
 def set_linear_solver(context, solver_name):
     context.config.userdata["linear-solver"] = solver_name
