@@ -65,8 +65,7 @@ public:
             switch (precision)
             {
             case Category::hourly:
-                InternalExportValues<HOURS_PER_YEAR, VCardT>(report,
-                                                             minmax.hourly.values.data());
+                InternalExportValues<HOURS_PER_YEAR, VCardT>(report, minmax.hourly.values.data());
                 break;
             case Category::daily:
                 InternalExportValues<DAYS_PER_YEAR, VCardT>(report, minmax.daily.values.data());
@@ -100,9 +99,7 @@ protected:
 
 private:
     template<uint Size, class VCardT>
-    void InternalExportIndices(SurveyResults& report,
-                                const uint16_t* indices,
-                               int fileLevel) const;
+    void InternalExportIndices(SurveyResults& report, const uint16_t* indices, int fileLevel) const;
 
     template<uint Size, class VCardT>
     void InternalExportValues(SurveyResults& report, const double* values) const;

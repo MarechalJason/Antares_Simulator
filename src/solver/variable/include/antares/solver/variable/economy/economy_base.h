@@ -122,11 +122,12 @@ void weekForEachAreaIfSupported(IV& iv, State& state, uint numSpace)
     }
 }
 
-namespace detail {
+namespace detail
+{
 // Triggers static_assert only when a template fallback branch is actually instantiated.
 template<class>
 inline constexpr bool always_false_v = false;
-}
+} // namespace detail
 
 template<class Traits, class IV, class Aux, class State>
 void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numSpace)

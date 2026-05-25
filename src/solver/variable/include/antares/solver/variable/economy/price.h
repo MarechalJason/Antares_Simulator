@@ -29,8 +29,8 @@ struct PriceTraits
 
     static constexpr uint8_t decimal = 4;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateAverage;
-    static constexpr uint8_t spatialAggregatePostProcessing
-      = Category::spatialAggregatePostProcessingPrice;
+    static constexpr uint8_t spatialAggregatePostProcessing = Category::
+      spatialAggregatePostProcessingPrice;
 
     using AuxiliaryDataType = detail::EmptyAuxiliaryData;
 
