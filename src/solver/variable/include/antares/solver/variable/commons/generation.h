@@ -162,15 +162,6 @@ struct GenerationTraits<WindTag>: public WindTraits
 {
 };
 
-/**
- * @brief Legacy VCard template using tag-based traits
- * * Provides backward compatibility for code using the old tag-based approach.
- * New code should use VCardTimeSeriesValuesSolar/Wind directly.
- * * @tparam Tag Generation tag type (SolarTag or WindTag)
- */
-template<class Tag>
-using VCardTimeSeriesValuesGeneration = VCardTimeSeriesBase<GenerationTraits<Tag>>;
-
 /// @}
 
 /// @name Implementation Classes

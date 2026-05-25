@@ -75,9 +75,6 @@ struct STstorageCashFlowByClusterTraits
     }
 };
 
-using VCardSTstorageCashFlowByCluster = VCardSTStorageByClusterBase<
-  STstorageCashFlowByClusterTraits>;
-
 /*!
 ** \brief Cash flow by short term storage clusters
 */

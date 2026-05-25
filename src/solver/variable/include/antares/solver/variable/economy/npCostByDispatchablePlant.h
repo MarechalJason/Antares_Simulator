@@ -48,9 +48,6 @@ struct NonProportionalCostByDispatchablePlantTraits
     }
 };
 
-using VCardNonProportionalCostByDispatchablePlant = VCardDispatchablePlantByClusterBase<
-  NonProportionalCostByDispatchablePlantTraits>;
-
 /*!
 ** \brief NP cost expected from all the thermal dispatchable clusters
 */
