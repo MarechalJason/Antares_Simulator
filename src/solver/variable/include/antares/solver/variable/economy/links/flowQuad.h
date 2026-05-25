@@ -89,11 +89,6 @@ struct FlowQuadTraits
     }
 };
 
-using VCardFlowQuad = VCardStaticLinkBase<FlowQuadTraits>;
-
-/*!
-** \brief Flow (quad.)
-*/
 using FlowQuad = StaticLinkBase<FlowQuadTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

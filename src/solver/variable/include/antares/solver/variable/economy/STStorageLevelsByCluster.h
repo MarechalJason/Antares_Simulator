@@ -69,8 +69,6 @@ struct STStorageLevelsByClusterTraits
     }
 };
 
-using VCardSTstorageLevelsByCluster = VCardSTStorageByClusterBase<STStorageLevelsByClusterTraits>;
-
 using STstorageLevelsByCluster = STStorageByClusterBase<STStorageLevelsByClusterTraits>;
 
 } // End namespace Antares::Solver::Variable::Economy

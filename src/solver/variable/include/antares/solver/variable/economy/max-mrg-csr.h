@@ -65,8 +65,6 @@ struct MaxMargeCsrTraits
     }
 };
 
-using VCardMAX_MRG_CSR = EconomyVariableCard<MaxMargeCsrTraits>;
-
 using MaxMrgCsr = EconomyVariableBase<MaxMargeCsrTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

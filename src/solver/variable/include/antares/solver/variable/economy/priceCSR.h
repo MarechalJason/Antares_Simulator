@@ -53,8 +53,6 @@ struct PriceCSRTraits
     }
 };
 
-using VCardPriceCSR = EconomyVariableCard<PriceCSRTraits>;
-
 using PriceCSR = EconomyVariableBase<PriceCSRTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

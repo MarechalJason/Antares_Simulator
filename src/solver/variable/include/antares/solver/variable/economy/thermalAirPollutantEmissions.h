@@ -60,10 +60,6 @@ struct ThermalAirPollutantEmissionsTraits
     }
 };
 
-using VCardThermalAirPollutantEmissions = VCardMultiColumn<
-  ThermalAirPollutantEmissionsTraits,
-  ThermalAirPollutantEmissionsTraits::columnCount>;
-
 using ThermalAirPollutantEmissions = MultiColumnBase<
   ThermalAirPollutantEmissionsTraits,
   ThermalAirPollutantEmissionsTraits::columnCount>;

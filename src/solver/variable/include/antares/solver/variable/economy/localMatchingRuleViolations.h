@@ -51,8 +51,6 @@ struct LMRViolationsTraits
     }
 };
 
-using VCardLMRViolations = EconomyVariableCard<LMRViolationsTraits>;
-
 using LMRViolations = EconomyVariableBase<LMRViolationsTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
