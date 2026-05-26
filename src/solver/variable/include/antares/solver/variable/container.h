@@ -14,7 +14,6 @@
 #include <antares/solver/variable/dynamicAggregation/dynamicAggregation.h>
 
 #include "categories.h"
-#include "endoflist.h"
 #include "info.h"
 #include "surveyresults.h"
 
@@ -27,7 +26,7 @@ namespace Antares::Solver::Variable::Container
 ** and forwards every hook to it. Adds dynamic-aggregation bookkeeping that
 ** isn't part of the inner aggregator's responsibilities.
 */
-template<class Inner = Container::EndOfList>
+template<class Inner>
 class List
 {
 public:

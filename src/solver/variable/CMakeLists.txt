@@ -6,7 +6,6 @@ set(SRC_VARIABLE
         include/antares/solver/variable/info.h
         include/antares/solver/variable/container.h
         include/antares/solver/variable/container.hxx
-        include/antares/solver/variable/endoflist.h
         include/antares/solver/variable/state.h
         state.cpp
         include/antares/solver/variable/state.hxx

@@ -14,7 +14,6 @@
 
 #include "categories.h"
 #include "container.h"
-#include "endoflist.h"
 #include "info.h"
 #include "storage/intermediate.h"
 #include "storage/results.h"

@@ -21,7 +21,6 @@
 
 #include <antares/study/study.h>
 
-#include "endoflist.h"
 #include "info.h" // for Variable::Storage<VCardT>
 #include "state.h"
 #include "surveyresults.h"
@@ -251,8 +250,7 @@ public:
     template<class SearchVCardT, class O>
     void computeSpatialAggregateWith(O& out, const Data::Area* area)
     {
-        // EndOfList terminates without asserting in this overload path.
-        // We preserve that no-op-at-leaf semantic: nothing to do in the tuple.
+        // No-op-at-leaf semantic: nothing to do in the tuple.
         (void)out;
         (void)area;
     }
