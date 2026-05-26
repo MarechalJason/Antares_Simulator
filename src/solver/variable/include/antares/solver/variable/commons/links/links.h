@@ -38,7 +38,6 @@ struct VCardAllLinks
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile;
     static constexpr int columnCount = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
-    static constexpr uint8_t hasIntermediateValues = 0;
 
 }; // class VCard
 

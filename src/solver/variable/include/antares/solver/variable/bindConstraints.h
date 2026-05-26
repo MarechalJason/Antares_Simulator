@@ -39,8 +39,6 @@ struct VCardAllBindingConstraints
     static constexpr int columnCount = 0;
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Category::noSpatialAggregate;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 0;
 
 }; // class VCardAllBindingConstraints
 

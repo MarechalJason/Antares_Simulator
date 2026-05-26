@@ -179,8 +179,6 @@ struct EconomyVariableCard
             return uint8_t{0};
         }
     }();
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = []
     {

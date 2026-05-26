@@ -47,8 +47,6 @@ struct VCardJoin
     static constexpr uint8_t spatialAggregate = Category::noSpatialAggregate;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 0;
 
 }; // class VCard
 

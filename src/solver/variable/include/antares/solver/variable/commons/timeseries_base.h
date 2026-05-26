@@ -102,8 +102,6 @@ struct TimeSeriesTraits
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     /// Post-processing for spatial aggregation
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    /// Whether intermediate values are computed
-    static constexpr uint8_t hasIntermediateValues = 1;
     /// Whether variable can be non-applicable
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 

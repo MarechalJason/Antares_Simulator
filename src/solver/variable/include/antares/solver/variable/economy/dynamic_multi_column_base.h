@@ -70,7 +70,6 @@ struct VCardDynamicMultiColumn
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    static constexpr uint8_t hasIntermediateValues = 1;
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
     using IntermediateValuesDeepType = IntermediateValues;
