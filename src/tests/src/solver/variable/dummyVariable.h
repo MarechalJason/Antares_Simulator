@@ -41,8 +41,6 @@ struct VCardDummyVariable
                                                     | Category::FileLevel::va);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 0;
     //! Number of columns used by the variable (One ResultsType per column)

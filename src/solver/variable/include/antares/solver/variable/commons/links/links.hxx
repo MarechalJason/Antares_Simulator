@@ -290,21 +290,6 @@ inline void Links<VariablePerLinkList>::buildAnnualSurveyReport(SurveyResults& r
 }
 
 template<class VariablePerLinkList>
-template<class I>
-inline void Links<VariablePerLinkList>::provideInformations(I& infos)
-{
-    if (VCardType::nodeDepthForGUI)
-    {
-        infos.template beginNode<VCardType>();
-        infos.endNode();
-    }
-    else
-    {
-        infos.template addVCard<VCardType>();
-    }
-}
-
-template<class VariablePerLinkList>
 void Links<VariablePerLinkList>::initializeFromArea(Data::Study* study, Data::Area* area)
 {
     assert(study && "A study pointer must not be null");

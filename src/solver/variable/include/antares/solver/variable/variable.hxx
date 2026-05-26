@@ -267,23 +267,6 @@ inline void IVariable<ChildT, VCardT>::beforeYearByYearExport(uint, uint)
 }
 
 template<class ChildT, class VCardT>
-template<class I>
-inline void IVariable<ChildT, VCardT>::provideInformations(I& infos)
-{
-    // Begining of the node
-    if (VCardType::nodeDepthForGUI)
-    {
-        infos.template beginNode<VCardType>();
-        infos.endNode();
-    }
-    else
-    {
-        // Giving our VCard
-        infos.template addVCard<VCardType>();
-    }
-}
-
-template<class ChildT, class VCardT>
 template<class SearchVCardT, class O>
 inline void IVariable<ChildT, VCardT>::computeSpatialAggregateWith(O& out, uint numSpace)
 {

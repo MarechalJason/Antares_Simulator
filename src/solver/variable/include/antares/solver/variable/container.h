@@ -48,12 +48,6 @@ public:
         Inner::RetrieveVariableList(predicate);
     }
 
-    template<class I>
-    static void provideInformations(I& infos)
-    {
-        Inner::template provideInformations<I>(infos);
-    }
-
 public:
     //! \name Variable initialization
     //@{

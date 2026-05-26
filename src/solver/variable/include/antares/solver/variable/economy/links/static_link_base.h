@@ -48,7 +48,6 @@ struct VCardStaticLinkBase
                                                  & (Category::FileLevel::id
                                                     | Category::FileLevel::va);
     static constexpr uint8_t precision = Category::all;
-    static constexpr uint8_t nodeDepthForGUI = +0;
     static constexpr uint8_t decimal = 0;
     static constexpr int columnCount = 1;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

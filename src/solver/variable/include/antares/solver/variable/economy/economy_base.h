@@ -159,8 +159,6 @@ struct EconomyVariableCard
                                                     | Category::FileLevel::va);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = Traits::decimal;
     //! Number of columns used by the variable (one results profile per column)

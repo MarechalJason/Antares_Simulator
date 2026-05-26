@@ -195,28 +195,6 @@ inline void Areas<VariableList>::RetrieveVariableList(PredicateT& predicate)
 }
 
 template<class VariableList>
-template<class I>
-inline void Areas<VariableList>::provideInformations(I& infos)
-{
-    // Begining of the node
-    if (VCardType::nodeDepthForGUI)
-    {
-        infos.template beginNode<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-        // End of the node
-        infos.endNode();
-    }
-    else
-    {
-        // Giving our VCard
-        infos.template addVCard<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-    }
-}
-
-template<class VariableList>
 template<class SearchVCardT, class O>
 inline void Areas<VariableList>::computeSpatialAggregateWith(O&)
 {

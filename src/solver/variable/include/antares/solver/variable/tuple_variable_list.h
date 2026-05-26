@@ -302,12 +302,6 @@ public:
         (Vars::RetrieveVariableList(predicate), ...);
     }
 
-    template<class I>
-    static void provideInformations(I& infos)
-    {
-        (Vars::template provideInformations<I>(infos), ...);
-    }
-
     template<class V>
     void yearEndSpatialAggregates(V& allVars, unsigned int year, unsigned int numSpace)
     {

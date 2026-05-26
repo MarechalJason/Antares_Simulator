@@ -107,11 +107,6 @@ public:
     {
     }
 
-    template<class I>
-    static void provideInformations(I&)
-    {
-    }
-
 private:
     bool isPrinted_[1] = {true};
     bool isNonApplicable_[1] = {false};

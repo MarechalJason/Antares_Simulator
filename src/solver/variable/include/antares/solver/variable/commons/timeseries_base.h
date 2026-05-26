@@ -92,7 +92,6 @@ struct TimeSeriesTraits
     /// Precision settings for output
     static constexpr uint8_t precision = Category::all;
     /// GUI indentation level
-    static constexpr uint8_t nodeDepthForGUI = 0;
     /// Decimal precision for display
     static constexpr uint8_t decimal = 0;
     /// Number of columns in output (typically 1 for time series)

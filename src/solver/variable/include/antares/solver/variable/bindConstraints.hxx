@@ -60,28 +60,6 @@ inline void BindingConstraints<VariableList>::RetrieveVariableList(PredicateT& p
 }
 
 template<class VariableList>
-template<class I>
-inline void BindingConstraints<VariableList>::provideInformations(I& infos)
-{
-    // Begining of the node
-    if (VCardType::nodeDepthForGUI)
-    {
-        infos.template beginNode<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-        // End of the node
-        infos.endNode();
-    }
-    else
-    {
-        // Giving our VCard
-        infos.template addVCard<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-    }
-}
-
-template<class VariableList>
 void BindingConstraints<VariableList>::simulationBegin()
 {
     for (auto& bc: pBindConstraints)

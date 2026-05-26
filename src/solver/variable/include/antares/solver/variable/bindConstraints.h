@@ -35,8 +35,6 @@ struct VCardAllBindingConstraints
     //! File level (provided by the type of the results)
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
                                                  & Category::FileLevel::bc;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +1;
     //! Number of columns used by the variable (one results configuration per column)
     static constexpr int columnCount = 0;
     //! The Spatial aggregation
@@ -133,9 +131,6 @@ public:
     {
         // do nothing
     }
-
-    template<class I>
-    static void provideInformations(I& infos);
 
     template<class VCardToFindT>
     void retrieveResultsForArea(typename Storage<VCardToFindT>::ResultsType** result,

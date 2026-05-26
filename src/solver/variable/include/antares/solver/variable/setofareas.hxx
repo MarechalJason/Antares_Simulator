@@ -243,28 +243,6 @@ void SetsOfAreas<VariableList>::buildDigest(SurveyResults& results,
 }
 
 template<class VariableList>
-template<class I>
-inline void SetsOfAreas<VariableList>::provideInformations(I& infos)
-{
-    // Begining of the node
-    if (VCardType::nodeDepthForGUI)
-    {
-        infos.template beginNode<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-        // End of the node
-        infos.endNode();
-    }
-    else
-    {
-        // Giving our VCard
-        infos.template addVCard<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-    }
-}
-
-template<class VariableList>
 template<class V>
 void SetsOfAreas<VariableList>::yearEndSpatialAggregates(V& allVars, uint year, uint numSpace)
 {

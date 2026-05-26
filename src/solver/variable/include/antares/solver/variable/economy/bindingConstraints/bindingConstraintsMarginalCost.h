@@ -39,8 +39,6 @@ struct VCardBindingConstMarginCost
                                                  & (Category::FileLevel::bc);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 2;
     //! Number of columns used by the variable

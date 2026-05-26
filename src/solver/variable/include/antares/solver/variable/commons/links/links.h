@@ -36,7 +36,6 @@ struct VCardAllLinks
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile;
-    static constexpr uint8_t nodeDepthForGUI = +1;
     static constexpr int columnCount = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t hasIntermediateValues = 0;
@@ -114,9 +113,6 @@ public:
     void beforeYearByYearExport(uint year, uint numSpace);
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const;
-
-    template<class I>
-    static void provideInformations(I& infos);
 
     template<class VCardToFindT>
     inline const double* retrieveHourlyResultsForCurrentYear(uint) const

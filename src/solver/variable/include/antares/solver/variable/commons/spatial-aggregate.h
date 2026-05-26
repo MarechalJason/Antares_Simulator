@@ -122,8 +122,6 @@ struct VCardProxy
     static constexpr uint8_t categoryFileLevel = VCardOrigin::categoryFileLevel;
     //! Precision (views)
     static constexpr uint8_t precision = VCardOrigin::precision;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = VCardOrigin::decimal;
     //! Number of columns used by the variable (One ResultsType per column)

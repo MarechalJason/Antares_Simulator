@@ -65,7 +65,6 @@ struct VCardDynamicMultiColumn
                                                  & (Category::FileLevel::id
                                                     | Category::FileLevel::va);
     static constexpr uint8_t precision = Category::all;
-    static constexpr uint8_t nodeDepthForGUI = +0;
     static constexpr uint8_t decimal = Traits::decimal;
     static constexpr int columnCount = Category::dynamicColumns;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;

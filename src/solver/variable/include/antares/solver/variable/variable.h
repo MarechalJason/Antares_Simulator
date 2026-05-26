@@ -249,12 +249,6 @@ public:
     //@}
 
     /*!
-    ** \brief "Print" informations about the variable tree
-    */
-    template<class I>
-    static void provideInformations(I& infos);
-
-    /*!
     ** \brief Compute the spatial cluster with the results of a single variable
     **
     ** \code
