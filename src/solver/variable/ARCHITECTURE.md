@@ -14,7 +14,7 @@ adequacy variants follow the same pattern with their own base templates
 ## Files
 
 - `economy_base.h` — `EconomyVariableCard<Traits>` + `EconomyVariableBase<Traits>`
-  templates and the hook dispatchers (`Hooks_::*IfSupported`).
+  templates and the hook dispatchers (`detail::*IfSupported`).
 - `economy/<variable>.h` — one Traits struct per variable, plus a
   `using <Variable> = EconomyVariableBase<XxxTraits>;` alias.
 - `economy/all.h`, `adequacy/all.h` — assemble the full `Container::List<…>`
@@ -38,7 +38,7 @@ A valid Economy variable Traits struct must provide:
 
 ### Optional hooks (methods)
 
-Dispatched via `if constexpr (requires { ... })` in `Hooks_`; absent → no-op.
+Dispatched via `if constexpr (requires { ... })` in `detail::*IfSupported`; absent → no-op.
 
 | Hook | Signature | Phase |
 |---|---|---|
@@ -92,12 +92,15 @@ computeSummary                       → merge year buffer into global results
 simulationEnd                        → no-op
 ```
 
-## Namespaces
+## `detail` namespace
 
-- `Hooks_` — SFINAE dispatchers (`*IfSupported`) that call optional traits
-  methods only when present.
-- `detail` — implementation helpers (`AuxiliaryDataType` traits,
-  `EmptyAuxiliaryData`, `statisticsCount`). Not public API.
+All implementation helpers live in `Antares::Solver::Variable::Economy::detail`
+and are not public API. It contains:
+
+- SFINAE dispatchers (`*IfSupported`) that call optional Traits methods only
+  when defined.
+- `AuxiliaryDataType` traits, `EmptyAuxiliaryData` placeholder.
+- `statisticsCount`, `always_false_v`.
 
 ## Future direction
 

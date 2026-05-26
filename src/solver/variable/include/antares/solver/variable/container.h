@@ -15,6 +15,7 @@
 
 #include "categories.h"
 #include "info.h"
+#include "state.h"
 #include "surveyresults.h"
 
 namespace Antares::Solver::Variable::Container

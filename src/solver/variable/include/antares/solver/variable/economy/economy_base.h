@@ -25,8 +25,15 @@
 namespace Antares::Solver::Variable::Economy
 {
 
-namespace Hooks_
+// Implementation helpers (SFINAE dispatchers, auxiliary-data fallback,
+// statistics count). Not public API.
+namespace detail
 {
+
+// Triggers static_assert only when a template fallback branch is actually instantiated.
+template<class>
+inline constexpr bool always_false_v = false;
+
 template<class Traits, class AuxData>
 void initializeFromAreaIfSupported(AuxData& aux, Data::Study* study, Data::Area* area)
 {
@@ -74,13 +81,6 @@ void weekForEachAreaIfSupported(IV& iv, State& state, uint numSpace)
     }
 }
 
-namespace detail
-{
-// Triggers static_assert only when a template fallback branch is actually instantiated.
-template<class>
-inline constexpr bool always_false_v = false;
-} // namespace detail
-
 template<class Traits, class IV, class Aux, class State>
 void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numSpace)
 {
@@ -94,7 +94,7 @@ void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numS
     }
     else
     {
-        static_assert(detail::always_false_v<Traits>,
+        static_assert(always_false_v<Traits>,
                       "Traits must provide either "
                       "setHourlyValue(IntermediateValues&, AuxiliaryDataType&, "
                       "const State&, unsigned int) or "
@@ -102,11 +102,6 @@ void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numS
     }
 }
 
-} // namespace Hooks_
-
-// Implementation helpers (auxiliary-data fallback, statistics count). Not public API.
-namespace detail
-{
 struct EmptyAuxiliaryData
 {
 };
@@ -128,6 +123,7 @@ inline constexpr int statisticsCount = ((VCardType::categoryDataLevel & CDataLev
                                          && VCardType::categoryFileLevel & CFile)
                                           ? VCardType::columnCount * ResultsType::count
                                           : 0);
+
 } // namespace detail
 
 template<class Traits>
@@ -261,7 +257,7 @@ public:
 
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
-        Hooks_::initializeFromAreaIfSupported<Traits>(auxiliaryData_, study, area);
+        detail::initializeFromAreaIfSupported<Traits>(auxiliaryData_, study, area);
     }
 
     void initializeFromLink(Data::Study* /*study*/, Data::AreaLink* /*link*/)
@@ -285,7 +281,7 @@ public:
         // Reset the values for the current year
         pValuesForTheCurrentYear[numSpace].reset();
 
-        Hooks_::yearBeginIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+        detail::yearBeginIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
                                              auxiliaryData_,
                                              year,
                                              numSpace);
@@ -293,7 +289,7 @@ public:
 
     void yearEndBuild(State& state, uint year, uint numSpace)
     {
-        Hooks_::yearEndBuildIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+        detail::yearEndBuildIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
                                                 auxiliaryData_,
                                                 state,
                                                 year,
@@ -302,7 +298,7 @@ public:
 
     void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace)
     {
-        Hooks_::yearEndBuildForEachIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+        detail::yearEndBuildForEachIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
                                                        state,
                                                        year,
                                                        numSpace);
@@ -326,7 +322,7 @@ public:
 
     void hourForEachArea(State& state, uint numSpace)
     {
-        Hooks_::setHourlyValueIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+        detail::setHourlyValueIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
                                                   auxiliaryData_,
                                                   state,
                                                   numSpace);
@@ -334,7 +330,7 @@ public:
 
     void weekForEachArea(State& state, uint numSpace)
     {
-        Hooks_::weekForEachAreaIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
+        detail::weekForEachAreaIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
                                                    state,
                                                    numSpace);
     }
