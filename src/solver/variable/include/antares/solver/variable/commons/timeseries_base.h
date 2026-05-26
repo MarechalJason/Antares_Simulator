@@ -260,17 +260,9 @@ public:
         areaPtr = area;
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
         std::for_each(yearlyValues.begin(), yearlyValues.end(), [](auto& value) { value.reset(); });
-    }
-
-    void simulationEnd()
-    {
     }
 
     void yearBegin(unsigned int year, unsigned int space)
@@ -292,17 +284,9 @@ public:
         AncestorType::pResults.merge(year, yearlyValues[space]);
     }
 
-    void hourBegin(unsigned int hourInTheYear)
-    {
-    }
-
     void hourForEachArea(State& state, unsigned int space)
     {
         static_cast<Derived*>(this)->hourForEachAreaImpl(state, space);
-    }
-
-    void hourEnd(State& state, unsigned int hourInTheYear)
-    {
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(

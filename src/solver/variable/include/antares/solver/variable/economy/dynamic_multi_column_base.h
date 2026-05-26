@@ -177,10 +177,6 @@ public:
         }
     }
 
-    void simulationEnd()
-    {
-    }
-
     void yearBegin(uint year, uint numSpace)
     {
         for (size_t i = 0; i < nbColumns_; ++i)
@@ -217,10 +213,6 @@ public:
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
-    }
-
-    void hourBegin(uint hourInTheYear)
-    {
     }
 
     void hourForEachArea(State& state, uint numSpace)

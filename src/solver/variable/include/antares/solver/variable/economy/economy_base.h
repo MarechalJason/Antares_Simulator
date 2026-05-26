@@ -256,20 +256,12 @@ public:
         detail::initializeFromAreaIfSupported<Traits>(auxiliaryData_, study, area);
     }
 
-    void initializeFromLink(Data::Study* /*study*/, Data::AreaLink* /*link*/)
-    {
-    }
-
     void simulationBegin()
     {
         for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].reset();
         }
-    }
-
-    void simulationEnd()
-    {
     }
 
     void yearBegin(uint year, uint numSpace)
@@ -310,10 +302,6 @@ public:
     {
         // Merge all those values with the global results
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-    }
-
-    void hourBegin(uint /*hourInTheYear*/)
-    {
     }
 
     void hourForEachArea(State& state, uint numSpace)

@@ -128,25 +128,12 @@ public:
         }
     }
 
-    void initializeFromArea([[maybe_unused]] Data::Study* study, [[maybe_unused]] Data::Area* area)
-    {
-    }
-
-    void initializeFromLink([[maybe_unused]] Data::Study* study,
-                            [[maybe_unused]] Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
         for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
         {
             pValuesForTheCurrentYear[numSpace].reset();
         }
-    }
-
-    void simulationEnd()
-    {
     }
 
     void yearBegin([[maybe_unused]] uint year, uint numSpace)
@@ -168,14 +155,6 @@ public:
     void computeSummary(uint year, uint numSpace)
     {
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-    }
-
-    void hourBegin([[maybe_unused]] uint hourInTheYear)
-    {
-    }
-
-    void hourForEachArea([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
-    {
     }
 
     void hourForEachLink(State& state, uint numSpace)

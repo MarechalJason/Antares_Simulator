@@ -113,10 +113,6 @@ public:
     };
 
 public:
-    void initializeFromStudy([[maybe_unused]] Data::Study& study)
-    {
-    }
-
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -161,14 +157,6 @@ public:
 
     void initializeFromLink([[maybe_unused]] Data::Study* study,
                             [[maybe_unused]] Data::AreaLink* link)
-    {
-    }
-
-    void simulationBegin()
-    {
-    }
-
-    void simulationEnd()
     {
     }
 
@@ -219,10 +207,6 @@ public:
         {
             AncestorType::pResults[i].merge(year, pValuesForTheCurrentYear[numSpace][i]);
         }
-    }
-
-    void hourBegin([[maybe_unused]] uint hourInTheYear)
-    {
     }
 
     void hourForEachArea(State& state, uint numSpace)

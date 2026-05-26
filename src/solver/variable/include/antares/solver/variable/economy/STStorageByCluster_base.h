@@ -168,10 +168,6 @@ public:
         }
     }
 
-    void hourBegin(uint hourInTheYear)
-    {
-    }
-
     void hourForEachArea(State& state, uint numSpace)
     {
         if constexpr (requires {

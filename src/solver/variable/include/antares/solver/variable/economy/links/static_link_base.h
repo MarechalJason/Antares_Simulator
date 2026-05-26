@@ -95,10 +95,6 @@ public:
         }
     }
 
-    void initializeFromArea([[maybe_unused]] Data::Study* study, [[maybe_unused]] Data::Area* area)
-    {
-    }
-
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
         if constexpr (requires {
@@ -147,18 +143,6 @@ public:
     }
 
     void computeSummary([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
-    {
-    }
-
-    void hourBegin([[maybe_unused]] uint hourInTheYear)
-    {
-    }
-
-    void hourForEachArea([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
-    {
-    }
-
-    void hourForEachLink([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
     {
     }
 
