@@ -3,58 +3,10 @@
 
 #pragma once
 
-/*!
-** \file economy_base.h
-**
-** \brief Base class for area-level economy variables
-**
-** ## Traits Contract
-**
-** A valid Economy variable Traits must provide:
-** - Required static methods:
-**   - \c Caption() -> std::string
-**   - \c Unit() -> std::string
-**   - \c Description() -> std::string
-**   - \c ResultsProfile : type alias for results template
-**   - \c decimal : uint8_t
-**   - \c spatialAggregate : uint8_t
-**   - \c computeStats(IntermediateValues&) -> void
-**
-** - Optional hooks (dispatched via \c if constexpr (requires { ... })):
-**   - \c AuxiliaryDataType : type alias (enables auxiliary data support)
-**   - \c isPossiblyNonApplicable : uint8_t (0 or 1)
-**   - \c initializeFromArea(AuxiliaryDataType&, Data::Study*, Data::Area*) -> void
-*(InitializationPolicy)
-**   - \c yearBegin(IntermediateValues&, AuxiliaryDataType&, uint year, uint
-*numSpace) -> void  (YearlyLifecyclePolicy)
-**   - \c yearEndBuild(IntermediateValues&, AuxiliaryDataType&, State&, uint year, unsigned
-*int numSpace) -> void  (YearlyLifecyclePolicy)
-**   - \c yearEndBuildForEachThermalCluster(IntermediateValues&, State&, uint year, unsigned
-*int numSpace) -> void  (ThermalClusterPolicy)
-**   - \c weekForEachArea(IntermediateValues&, State&, uint numSpace) -> void
-*(HourlyAggregationPolicy)
-**   - \c setHourlyValue(IntermediateValues&, AuxiliaryDataType&, State&, uint numSpace) ->
-*void  (HourlyComputationPolicy)
-**
-** ## Hook execution order
-** - initializeFromStudy() / initializeFromArea() / initializeFromLink()
-** - simulationBegin() / simulationEnd()
-** - yearBegin() -> [yearBegin hook] -> yearEndBuild() -> [yearEndBuild hook] -> yearEnd()
-** - computeSummary() / hourBegin() -> hourForEachArea() -> [setHourlyValue hook]
-** - weekForEachArea() (optional, called after hourForEachArea for weekly aggregation)
-**
-** ## Policy groupings proposal
-** The optional hooks can be grouped by lifecycle phase:
-**
-** - InitializationPolicy: initializeFromArea
-** - YearlyLifecyclePolicy: yearBegin, yearEndBuild
-** - ThermalClusterPolicy: yearEndBuildForEachThermalCluster
-** - HourlyAggregationPolicy: weekForEachArea
-** - HourlyComputationPolicy: setHourlyValue
-**
-** Future refactoring: Use tag dispatch to dispatch to policy classes rather than if constexpr
-*cascades.
-*/
+//! \file economy_base.h
+//! EconomyVariableCard / EconomyVariableBase templates for area-level Economy variables.
+//! See src/solver/variable/ARCHITECTURE.md for the Traits contract, hook lifecycle,
+//! and the auxiliary-data mechanism.
 
 #include <type_traits>
 
@@ -152,16 +104,7 @@ void setHourlyValueIfSupported(IV& iv, Aux& aux, State& state, unsigned int numS
 
 } // namespace Hooks_
 
-// The `detail` namespace contains implementation details and helper
-// utilities for the Economy variable system. Symbols placed in this
-// namespace are internal implementation artifacts (traits, fallbacks,
-// SFINAE helpers) and are not part of the public API. Using a dedicated
-// `detail` namespace makes the intent explicit: these types help detect
-// optional nested types or member functions in `Traits` (for example
-// `AuxiliaryDataType`) and provide safe defaults when those optional
-// members are absent. This enables generic code to compile whether or
-// not a particular `Traits` class provides extra auxiliary data.
-
+// Implementation helpers (auxiliary-data fallback, statistics count). Not public API.
 namespace detail
 {
 struct EmptyAuxiliaryData
