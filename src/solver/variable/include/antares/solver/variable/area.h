@@ -93,7 +93,7 @@ public:
     //	void yearEndBuildPrepareDataForEachThermalCluster(State& state, uint year);
     //	void yearEndBuildForEachThermalCluster(State& state, uint year);
 
-    void yearEndBuild(State& state, uint year, uint numSpace);
+    void buildThermalClusterYearEndResults(State& state, uint year, uint numSpace);
 
     void yearEnd(uint year, uint numSpace);
 

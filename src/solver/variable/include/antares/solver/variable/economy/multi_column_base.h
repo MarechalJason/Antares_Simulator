@@ -179,12 +179,6 @@ public:
         }
     }
 
-    void yearEndBuild([[maybe_unused]] State& state,
-                      [[maybe_unused]] uint year,
-                      [[maybe_unused]] uint numSpace)
-    {
-    }
-
     void yearEnd([[maybe_unused]] uint year, uint numSpace)
     {
         VariableAccessorType::template ComputeStatistics<VCardType>(

@@ -150,16 +150,6 @@ public:
     void yearBegin(uint year);
 
     /*!
-    ** \brief Notify to all variables that the year is close to end
-    **
-    ** All variables that have specific updates after a whole year calculation
-    ** can now get their results
-    ** \param state The current thermal cluster
-    ** \param year The current year
-    */
-    void yearEndBuild(State& state, uint year);
-
-    /*!
     ** \brief Notify to all variables to prepare data for the close to year end calculations for
     *each thermal cluster
     **

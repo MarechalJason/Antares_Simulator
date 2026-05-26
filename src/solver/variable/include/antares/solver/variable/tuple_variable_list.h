@@ -139,11 +139,6 @@ public:
         std::apply([&](auto&... v) { (v.yearEnd(year, numSpace), ...); }, vars_);
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
-    {
-        std::apply([&](auto&... v) { (v.yearEndBuild(state, year, numSpace), ...); }, vars_);
-    }
-
     void yearEndBuildPrepareDataForEachThermalCluster(State& state,
                                                       unsigned int year,
                                                       unsigned int numSpace)

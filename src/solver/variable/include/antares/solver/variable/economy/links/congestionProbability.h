@@ -172,10 +172,6 @@ public:
         pValuesForYearLocalReport[numSpace][1].reset();
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
-    {
-    }
-
     void yearEnd(uint year, uint numSpace)
     {
         for (uint i = 0; i != VCardType::columnCount; ++i)

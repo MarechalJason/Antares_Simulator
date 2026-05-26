@@ -102,7 +102,7 @@ public:
 
     void yearBegin(unsigned int year, unsigned int numSpace);
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace);
+    void buildThermalClusterYearEndResults(State& state, unsigned int year, unsigned int numSpace);
 
     void yearEnd(unsigned int year, unsigned int numSpace);
 

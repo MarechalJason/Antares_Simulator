@@ -94,11 +94,6 @@ inline void IVariable<ChildT, VCardT>::yearBegin(uint)
 }
 
 template<class ChildT, class VCardT>
-inline void IVariable<ChildT, VCardT>::yearEndBuild(State&, uint)
-{
-}
-
-template<class ChildT, class VCardT>
 inline void IVariable<ChildT, VCardT>::yearEnd(uint)
 {
 }

@@ -65,9 +65,11 @@ inline void List<Inner>::yearBegin(unsigned int year, unsigned int numSpace)
 }
 
 template<class Inner>
-inline void List<Inner>::yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+inline void List<Inner>::buildThermalClusterYearEndResults(State& state,
+                                                           unsigned int year,
+                                                           unsigned int numSpace)
 {
-    next_.yearEndBuild(state, year, numSpace);
+    next_.buildThermalClusterYearEndResults(state, year, numSpace);
 }
 
 template<class Inner>

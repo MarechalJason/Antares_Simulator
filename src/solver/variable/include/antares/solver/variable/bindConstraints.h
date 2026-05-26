@@ -103,7 +103,7 @@ public:
     void yearBegin(uint year, uint numSpace);
     void yearEnd(uint year, uint numSpace);
 
-    void yearEndBuild(State& state, uint year, uint numSpace);
+    void buildThermalClusterYearEndResults(State& state, uint year, uint numSpace);
 
     void weekBegin(State& state);
     void weekEnd(State& state);

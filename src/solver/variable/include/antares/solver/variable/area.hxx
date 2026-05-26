@@ -373,7 +373,7 @@ void Areas<VariableList>::yearBegin(uint year, uint numSpace)
 }
 
 template<class VariableList>
-void Areas<VariableList>::yearEndBuild(State& state, uint year, uint numSpace)
+void Areas<VariableList>::buildThermalClusterYearEndResults(State& state, uint year, uint numSpace)
 {
     // For each area...
     state.study.areas.each(

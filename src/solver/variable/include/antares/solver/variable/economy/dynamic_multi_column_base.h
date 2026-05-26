@@ -185,10 +185,6 @@ public:
         }
     }
 
-    void yearEndBuild(State& state, uint year, uint numSpace)
-    {
-    }
-
     void yearEnd(uint year, uint numSpace)
     {
         for (size_t column = 0; column < nbColumns_; ++column)

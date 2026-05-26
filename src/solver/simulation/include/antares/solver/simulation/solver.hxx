@@ -166,7 +166,7 @@ public:
         // Log failing weeks
         logFailedWeek(y, study, failedWeekList);
 
-        simulation_->variables.yearEndBuild(state, y, numSpace);
+        simulation_->variables.buildThermalClusterYearEndResults(state, y, numSpace);
 
         // 7 - End of the year, this is the last stade where the variables can retrieve
         // their data for this year.

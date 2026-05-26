@@ -52,15 +52,6 @@ void yearBeginIfSupported(IV& iv, Aux& aux, uint year, uint numSpace)
     }
 }
 
-template<class Traits, class IV, class Aux, class State>
-void yearEndBuildIfSupported(IV& iv, Aux& aux, State& state, uint year, uint numSpace)
-{
-    if constexpr (requires { Traits::yearEndBuild(iv, aux, state, year, numSpace); })
-    {
-        Traits::yearEndBuild(iv, aux, state, year, numSpace);
-    }
-}
-
 template<class Traits, class IV, class State>
 void yearEndBuildForEachIfSupported(IV& iv, State& state, uint year, uint numSpace)
 {
@@ -273,15 +264,6 @@ public:
                                              auxiliaryData_,
                                              year,
                                              numSpace);
-    }
-
-    void yearEndBuild(State& state, uint year, uint numSpace)
-    {
-        detail::yearEndBuildIfSupported<Traits>(pValuesForTheCurrentYear[numSpace],
-                                                auxiliaryData_,
-                                                state,
-                                                year,
-                                                numSpace);
     }
 
     void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace)

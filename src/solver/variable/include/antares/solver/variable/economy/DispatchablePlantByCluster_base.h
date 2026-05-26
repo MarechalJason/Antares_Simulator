@@ -170,12 +170,6 @@ public:
         yearBeginIfSupported(auxiliaryData_, year, numSpace, pSize);
     }
 
-    void yearEndBuild([[maybe_unused]] State& state,
-                      [[maybe_unused]] uint year,
-                      [[maybe_unused]] uint numSpace)
-    {
-    }
-
     void yearEndBuildPrepareDataForEachThermalCluster(State& state, uint year, uint numSpace)
     {
         yearEndBuildPrepareDataForEachThermalClusterIfSupported(pValuesForTheCurrentYear,

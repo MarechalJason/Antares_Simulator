@@ -270,10 +270,6 @@ public:
         static_cast<Derived*>(this)->yearBeginImpl(year, space);
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int space)
-    {
-    }
-
     void yearEnd(unsigned int year, unsigned int space)
     {
         yearlyValues[space].computeStatisticsForTheCurrentYear();

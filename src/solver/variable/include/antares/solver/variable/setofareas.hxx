@@ -104,9 +104,9 @@ inline void SetsOfAreas<VariableList>::yearBegin(uint /*year*/, uint /* numSpace
 }
 
 template<class VariableList>
-inline void SetsOfAreas<VariableList>::yearEndBuild(State& /*state*/,
-                                                    uint /*year*/,
-                                                    uint /*numSpace*/)
+inline void SetsOfAreas<VariableList>::buildThermalClusterYearEndResults(State& /*state*/,
+                                                                         uint /*year*/,
+                                                                         uint /*numSpace*/)
 {
     // Nothing to do here
 }

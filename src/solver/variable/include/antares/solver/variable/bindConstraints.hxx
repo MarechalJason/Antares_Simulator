@@ -78,9 +78,9 @@ void BindingConstraints<VariableList>::simulationEnd()
 }
 
 template<class VariableList>
-void BindingConstraints<VariableList>::yearEndBuild(State& /*state*/,
-                                                    uint /*year*/,
-                                                    uint /*numSpace*/)
+void BindingConstraints<VariableList>::buildThermalClusterYearEndResults(State& /*state*/,
+                                                                         uint /*year*/,
+                                                                         uint /*numSpace*/)
 {
 }
 

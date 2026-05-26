@@ -86,12 +86,10 @@ inline void Links<VariablePerLinkList>::yearEndBuildForEachThermalCluster(State&
 }
 
 template<class VariablePerLinkList>
-inline void Links<VariablePerLinkList>::yearEndBuild(State& state, uint year)
+inline void Links<VariablePerLinkList>::buildThermalClusterYearEndResults(State& /*state*/,
+                                                                          uint /*year*/,
+                                                                          uint /*numSpace*/)
 {
-    for (uint i = 0; i != pLinks.size(); ++i)
-    {
-        pLinks[i].yearEndBuild(state, year);
-    }
 }
 
 template<class VariablePerLinkList>

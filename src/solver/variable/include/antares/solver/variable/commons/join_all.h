@@ -87,9 +87,11 @@ public:
                    wrappers_);
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void buildThermalClusterYearEndResults(State& state, unsigned int year, unsigned int numSpace)
     {
-        std::apply([&](auto&... w) { (w.yearEndBuild(state, year, numSpace), ...); }, wrappers_);
+        std::apply([&](auto&... w)
+                   { (w.buildThermalClusterYearEndResults(state, year, numSpace), ...); },
+                   wrappers_);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
