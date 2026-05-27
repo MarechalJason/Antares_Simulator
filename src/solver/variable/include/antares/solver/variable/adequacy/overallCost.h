@@ -83,8 +83,6 @@ struct OverallCostTraits
     }
 };
 
-using VCardOverallCost = Economy::EconomyVariableCard<OverallCostTraits>;
-
 /*!
 ** \brief Overall cost over all MC years (adequacy)
 */
