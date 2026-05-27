@@ -41,7 +41,7 @@ struct TupleContains<T, std::tuple<Head, Tail...>>
 };
 
 template<class T, class Tuple>
-inline constexpr bool tuple_contains_v = TupleContains<T, Tuple>::value;
+inline constexpr bool tuple_can_contain_type_v = TupleContains<T, Tuple>::value;
 
 } // namespace detail
 
@@ -120,7 +120,7 @@ public:
 
     Antares::Memory::Stored<double>::ConstReturnType hourlyValuesForSpatialAggregate() const
     {
-        if constexpr (detail::tuple_contains_v<SpatialAggT, DecoratorTuple>)
+        if constexpr (detail::tuple_can_contain_type_v<SpatialAggT, DecoratorTuple>)
         {
             const auto& d = std::get<SpatialAggT>(decorators_);
             if constexpr (requires { d.hourlyForSpatialAggregate(); })
@@ -140,28 +140,28 @@ public:
 
     auto& avgdata()
     {
-        static_assert(detail::tuple_contains_v<R::AllYears::Average, DecoratorTuple>,
+        static_assert(detail::tuple_can_contain_type_v<R::AllYears::Average, DecoratorTuple>,
                       "avgdata() requires an R::AllYears::Average decorator");
         return std::get<R::AllYears::Average>(decorators_).avgdata;
     }
 
     const auto& avgdata() const
     {
-        static_assert(detail::tuple_contains_v<R::AllYears::Average, DecoratorTuple>,
+        static_assert(detail::tuple_can_contain_type_v<R::AllYears::Average, DecoratorTuple>,
                       "avgdata() requires an R::AllYears::Average decorator");
         return std::get<R::AllYears::Average>(decorators_).avgdata;
     }
 
     auto& rawdata()
     {
-        static_assert(detail::tuple_contains_v<R::AllYears::Raw, DecoratorTuple>,
+        static_assert(detail::tuple_can_contain_type_v<R::AllYears::Raw, DecoratorTuple>,
                       "rawdata() requires an R::AllYears::Raw decorator");
         return std::get<R::AllYears::Raw>(decorators_).rawdata;
     }
 
     const auto& rawdata() const
     {
-        static_assert(detail::tuple_contains_v<R::AllYears::Raw, DecoratorTuple>,
+        static_assert(detail::tuple_can_contain_type_v<R::AllYears::Raw, DecoratorTuple>,
                       "rawdata() requires an R::AllYears::Raw decorator");
         return std::get<R::AllYears::Raw>(decorators_).rawdata;
     }
