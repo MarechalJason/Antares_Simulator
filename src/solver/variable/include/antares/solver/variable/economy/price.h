@@ -37,9 +37,7 @@ struct PriceTraits
         return -state.hourlyResults->CoutsMarginauxHoraires[state.hourInTheWeek];
     }
 
-    static void setHourlyValue(IntermediateValues& iv,
-                               const State& state,
-                               unsigned int)
+    static void setHourlyValue(IntermediateValues& iv, const State& state, unsigned int)
     {
         iv[state.hourInTheYear] = value(state);
     }

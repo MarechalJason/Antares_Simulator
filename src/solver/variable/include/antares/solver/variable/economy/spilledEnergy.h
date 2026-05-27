@@ -35,9 +35,7 @@ struct SpilledEnergyTraits
         return state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek];
     }
 
-    static void setHourlyValue(IntermediateValues& iv,
-                               const State& state,
-                               unsigned int)
+    static void setHourlyValue(IntermediateValues& iv, const State& state, unsigned int)
     {
         iv[state.hourInTheYear] = value(state);
     }

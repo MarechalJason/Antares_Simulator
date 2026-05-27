@@ -22,9 +22,7 @@ struct LOLPTraits: public LOLP_Base_Traits
         return "LOLP";
     }
 
-    static void setHourlyValue(IntermediateValues& iv,
-                               const State& state,
-                               unsigned int)
+    static void setHourlyValue(IntermediateValues& iv, const State& state, unsigned int)
     {
         if (state.hourlyResults->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek] > 0.)
         {

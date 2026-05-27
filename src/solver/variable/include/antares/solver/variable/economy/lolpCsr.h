@@ -44,9 +44,7 @@ struct LOLP_CSRTraits: public LOLP_Base_Traits
         return "LOLP for CSR";
     }
 
-    static void setHourlyValue(IntermediateValues& iv,
-                               const State& state,
-                               unsigned int)
+    static void setHourlyValue(IntermediateValues& iv, const State& state, unsigned int)
     {
         if (state.hourlyResults->ValeursHorairesDeDefaillancePositiveCSR[state.hourInTheWeek] > 0.0)
         {
