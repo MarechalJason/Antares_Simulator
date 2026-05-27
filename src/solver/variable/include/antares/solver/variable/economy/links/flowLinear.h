@@ -65,7 +65,6 @@ struct FlowLinearTraits
 */
 using FlowLinear = EconomyLink_Base<FlowLinearTraits>;
 
-using VCardFlowLinear = VCard_LinkBase<FlowLinearTraits>;
 
 } // namespace Antares::Solver::Variable::Economy
 

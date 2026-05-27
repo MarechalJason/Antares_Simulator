@@ -237,7 +237,7 @@ averageResults OutputRetriever::flow(AreaLink* link)
     //    We should be able to run each year independently, which is not possible now.
     //    A workaround is to retrieve syntheses, and that's what we do here.
 
-    auto result = retrieveLinkResults<Variable::Economy::VCardFlowLinear>(link);
+    auto result = retrieveLinkResults<Variable::Economy::FlowLinear::VCardType>(link);
     return averageResults(result->avgdata());
 }
 
