@@ -21,16 +21,13 @@ void requireSize(const Node& node, std::size_t expected, const char* typeName)
 {
     if (node.size() != expected)
     {
-        throw InputError(std::string("Expected ") + std::to_string(expected)
-                                              + " field(s) for '" + typeName + "', got "
-                                              + std::to_string(node.size()));
+        throw InputError(std::string("Expected ") + std::to_string(expected) + " field(s) for '"
+                         + typeName + "', got " + std::to_string(node.size()));
     }
 }
 } // namespace
 
-bool convert<YmlSystem::Parameter>::decode(
-  const Node& node,
-  YmlSystem::Parameter& rhs)
+bool convert<YmlSystem::Parameter>::decode(const Node& node, YmlSystem::Parameter& rhs)
 {
     if (!YmlUtils::requireMap(node, "parameter"))
     {
@@ -43,9 +40,7 @@ bool convert<YmlSystem::Parameter>::decode(
     return true;
 }
 
-bool convert<YmlSystem::Component>::decode(
-  const Node& node,
-  YmlSystem::Component& rhs)
+bool convert<YmlSystem::Component>::decode(const Node& node, YmlSystem::Component& rhs)
 {
     if (!YmlUtils::requireMap(node, "component"))
     {
@@ -54,14 +49,11 @@ bool convert<YmlSystem::Component>::decode(
     rhs.id = node["id"].as<std::string>();
     rhs.model = node["model"].as<std::string>();
     rhs.scenarioGroup = node["scenario-group"].as<std::string>("");
-    rhs.parameters = as_fallback_default<std::vector<YmlSystem::Parameter>>(
-      node["parameters"]);
+    rhs.parameters = as_fallback_default<std::vector<YmlSystem::Parameter>>(node["parameters"]);
     return true;
 }
 
-bool convert<YmlSystem::Connection>::decode(
-  const Node& node,
-  YmlSystem::Connection& rhs)
+bool convert<YmlSystem::Connection>::decode(const Node& node, YmlSystem::Connection& rhs)
 {
     if (!YmlUtils::requireMap(node, "connection"))
     {
@@ -76,9 +68,7 @@ bool convert<YmlSystem::Connection>::decode(
     return true;
 }
 
-bool convert<YmlSystem::AreaConnection>::decode(
-  const Node& node,
-  YmlSystem::AreaConnection& rhs)
+bool convert<YmlSystem::AreaConnection>::decode(const Node& node, YmlSystem::AreaConnection& rhs)
 {
     if (!YmlUtils::requireMap(node, "area-connection"))
     {
@@ -91,9 +81,8 @@ bool convert<YmlSystem::AreaConnection>::decode(
     return true;
 }
 
-bool convert<YmlSystem::ThermalComponent>::decode(
-  const Node& node,
-  YmlSystem::ThermalComponent& rhs)
+bool convert<YmlSystem::ThermalComponent>::decode(const Node& node,
+                                                  YmlSystem::ThermalComponent& rhs)
 {
     if (!YmlUtils::requireMap(node, "thermal-component"))
     {
@@ -125,14 +114,11 @@ bool convert<YmlSystem::ThermalCapacityConnection>::decode(
                       displayer.baseTree(),
                       displayer.buildMarkedTree({"thermal-component"}, {})));
     }
-    rhs.thermalComponent
-      = thermalComponentNode.as<YmlSystem::ThermalComponent>();
+    rhs.thermalComponent = thermalComponentNode.as<YmlSystem::ThermalComponent>();
     return true;
 }
 
-bool convert<YmlSystem::System>::decode(
-  const Node& node,
-  YmlSystem::System& rhs)
+bool convert<YmlSystem::System>::decode(const Node& node, YmlSystem::System& rhs)
 {
     if (!node.IsMap())
     {
@@ -140,15 +126,12 @@ bool convert<YmlSystem::System>::decode(
     }
     rhs.id = node["id"].as<std::string>();
     rhs.libraries = as_fallback_default<std::vector<std::string>>(node["model-libraries"]);
-    rhs.components = as_fallback_default<std::vector<YmlSystem::Component>>(
-      node["components"]);
-    rhs.connections = as_fallback_default<std::vector<YmlSystem::Connection>>(
-      node["connections"]);
-    rhs.areaConnections = as_fallback_default<
-      std::vector<YmlSystem::AreaConnection>>(node["area-connections"]);
+    rhs.components = as_fallback_default<std::vector<YmlSystem::Component>>(node["components"]);
+    rhs.connections = as_fallback_default<std::vector<YmlSystem::Connection>>(node["connections"]);
+    rhs.areaConnections = as_fallback_default<std::vector<YmlSystem::AreaConnection>>(
+      node["area-connections"]);
     rhs.thermalCapacityConnections = as_fallback_default<
-      std::vector<YmlSystem::ThermalCapacityConnection>>(
-      node["thermal-capacity-connections"]);
+      std::vector<YmlSystem::ThermalCapacityConnection>>(node["thermal-capacity-connections"]);
     return true;
 }
 

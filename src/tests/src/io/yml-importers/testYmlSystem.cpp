@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(thermal_component_with_wrong_field_count_throws_input_error
     BOOST_CHECK_THROW(parser.parse(system, ""), InputError);
 }
 
-                                                                BOOST_AUTO_TEST_CASE(thermal_component_null_throws_input_error)
+BOOST_AUTO_TEST_CASE(thermal_component_null_throws_input_error)
 {
     YmlSystem::Parser parser;
     const auto system = R"(
