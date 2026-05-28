@@ -3,46 +3,36 @@
 
 #include "antares/io/inputs/yml-system/decoders.h"
 
+#include <fmt/format.h>
+
 #include <antares/io/inputs/InputError.h>
+#include <antares/io/inputs/yml-utils/YmlTreeDisplayer.h>
+
+using namespace Antares::IO::Inputs;
 
 namespace YAML
 {
 
 namespace
 {
-/// Throws InputError if the node is present but is not a YAML map.
-/// Returns false silently when the node is absent or null (permitting as_fallback_default).
-bool requireMap(const Node& node, const char* typeName)
-{
-    if (node.IsMap())
-    {
-        return true;
-    }
-    if (node.IsDefined() && !node.IsNull())
-    {
-        throw Antares::IO::Inputs::InputError(std::string("Expected a YAML mapping for '")
-                                              + typeName + "'");
-    }
-    return false;
-}
 
 /// Throws InputError if the map does not have the expected number of fields.
 void requireSize(const Node& node, std::size_t expected, const char* typeName)
 {
     if (node.size() != expected)
     {
-        throw Antares::IO::Inputs::InputError(std::string("Expected ") + std::to_string(expected)
+        throw InputError(std::string("Expected ") + std::to_string(expected)
                                               + " field(s) for '" + typeName + "', got "
                                               + std::to_string(node.size()));
     }
 }
 } // namespace
 
-bool convert<Antares::IO::Inputs::YmlSystem::Parameter>::decode(
+bool convert<YmlSystem::Parameter>::decode(
   const Node& node,
-  Antares::IO::Inputs::YmlSystem::Parameter& rhs)
+  YmlSystem::Parameter& rhs)
 {
-    if (!requireMap(node, "parameter"))
+    if (!YmlUtils::requireMap(node, "parameter"))
     {
         return false;
     }
@@ -53,27 +43,27 @@ bool convert<Antares::IO::Inputs::YmlSystem::Parameter>::decode(
     return true;
 }
 
-bool convert<Antares::IO::Inputs::YmlSystem::Component>::decode(
+bool convert<YmlSystem::Component>::decode(
   const Node& node,
-  Antares::IO::Inputs::YmlSystem::Component& rhs)
+  YmlSystem::Component& rhs)
 {
-    if (!requireMap(node, "component"))
+    if (!YmlUtils::requireMap(node, "component"))
     {
         return false;
     }
     rhs.id = node["id"].as<std::string>();
     rhs.model = node["model"].as<std::string>();
     rhs.scenarioGroup = node["scenario-group"].as<std::string>("");
-    rhs.parameters = as_fallback_default<std::vector<Antares::IO::Inputs::YmlSystem::Parameter>>(
+    rhs.parameters = as_fallback_default<std::vector<YmlSystem::Parameter>>(
       node["parameters"]);
     return true;
 }
 
-bool convert<Antares::IO::Inputs::YmlSystem::Connection>::decode(
+bool convert<YmlSystem::Connection>::decode(
   const Node& node,
-  Antares::IO::Inputs::YmlSystem::Connection& rhs)
+  YmlSystem::Connection& rhs)
 {
-    if (!requireMap(node, "connection"))
+    if (!YmlUtils::requireMap(node, "connection"))
     {
         return false;
     }
@@ -86,11 +76,11 @@ bool convert<Antares::IO::Inputs::YmlSystem::Connection>::decode(
     return true;
 }
 
-bool convert<Antares::IO::Inputs::YmlSystem::AreaConnection>::decode(
+bool convert<YmlSystem::AreaConnection>::decode(
   const Node& node,
-  Antares::IO::Inputs::YmlSystem::AreaConnection& rhs)
+  YmlSystem::AreaConnection& rhs)
 {
-    if (!requireMap(node, "area-connection"))
+    if (!YmlUtils::requireMap(node, "area-connection"))
     {
         return false;
     }
@@ -101,11 +91,11 @@ bool convert<Antares::IO::Inputs::YmlSystem::AreaConnection>::decode(
     return true;
 }
 
-bool convert<Antares::IO::Inputs::YmlSystem::ThermalComponent>::decode(
+bool convert<YmlSystem::ThermalComponent>::decode(
   const Node& node,
-  Antares::IO::Inputs::YmlSystem::ThermalComponent& rhs)
+  YmlSystem::ThermalComponent& rhs)
 {
-    if (!requireMap(node, "thermal-component"))
+    if (!YmlUtils::requireMap(node, "thermal-component"))
     {
         return false;
     }
@@ -115,40 +105,49 @@ bool convert<Antares::IO::Inputs::YmlSystem::ThermalComponent>::decode(
     return true;
 }
 
-bool convert<Antares::IO::Inputs::YmlSystem::ThermalCapacityConnection>::decode(
+bool convert<YmlSystem::ThermalCapacityConnection>::decode(
   const Node& node,
-  Antares::IO::Inputs::YmlSystem::ThermalCapacityConnection& rhs)
+  YmlSystem::ThermalCapacityConnection& rhs)
 {
-    if (!requireMap(node, "thermal-capacity-connection"))
+    if (!YmlUtils::requireMap(node, "thermal-capacity-connection"))
     {
         return false;
     }
     requireSize(node, 3, "thermal-capacity-connection (component, port, thermal-component)");
     rhs.componentId = node["component"].as<std::string>();
     rhs.portId = node["port"].as<std::string>();
-    rhs.thermalComponent = as_fallback_default<Antares::IO::Inputs::YmlSystem::ThermalComponent>(
-      node["thermal-component"]);
+    const Node thermalComponentNode = node["thermal-component"];
+    if (!thermalComponentNode.IsDefined() || thermalComponentNode.IsNull())
+    {
+        YmlTreeDisplayer displayer(node);
+        throw InputError(
+          fmt::format("Expected a YAML mapping for 'thermal-component' (got null).\n{}{}",
+                      displayer.baseTree(),
+                      displayer.buildMarkedTree({"thermal-component"}, {})));
+    }
+    rhs.thermalComponent
+      = thermalComponentNode.as<YmlSystem::ThermalComponent>();
     return true;
 }
 
-bool convert<Antares::IO::Inputs::YmlSystem::System>::decode(
+bool convert<YmlSystem::System>::decode(
   const Node& node,
-  Antares::IO::Inputs::YmlSystem::System& rhs)
+  YmlSystem::System& rhs)
 {
     if (!node.IsMap())
     {
-        throw Antares::IO::Inputs::InputError("Expected a YAML mapping for 'system'");
+        throw InputError("Expected a YAML mapping for 'system'");
     }
     rhs.id = node["id"].as<std::string>();
     rhs.libraries = as_fallback_default<std::vector<std::string>>(node["model-libraries"]);
-    rhs.components = as_fallback_default<std::vector<Antares::IO::Inputs::YmlSystem::Component>>(
+    rhs.components = as_fallback_default<std::vector<YmlSystem::Component>>(
       node["components"]);
-    rhs.connections = as_fallback_default<std::vector<Antares::IO::Inputs::YmlSystem::Connection>>(
+    rhs.connections = as_fallback_default<std::vector<YmlSystem::Connection>>(
       node["connections"]);
     rhs.areaConnections = as_fallback_default<
-      std::vector<Antares::IO::Inputs::YmlSystem::AreaConnection>>(node["area-connections"]);
+      std::vector<YmlSystem::AreaConnection>>(node["area-connections"]);
     rhs.thermalCapacityConnections = as_fallback_default<
-      std::vector<Antares::IO::Inputs::YmlSystem::ThermalCapacityConnection>>(
+      std::vector<YmlSystem::ThermalCapacityConnection>>(
       node["thermal-capacity-connections"]);
     return true;
 }
