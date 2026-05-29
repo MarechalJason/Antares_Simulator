@@ -42,12 +42,11 @@ struct OperatingCostTraits
                                const State& /*state*/,
                                unsigned int /*numSpace*/)
     {
-        [[maybe_unused]] static const bool logged = []
-        {
-            Antares::logs.info() << "Variable '" << Caption()
-                                 << "' has no hourly value (computed at year end)";
-            return true;
-        }();
+        pValuesForTheCurrentYear[numSpace][state.hourInTheYear]
+  += state.reserveData ? state.reserveData.value()
+                           .at(state.area->index)
+                           .reserveParticipationCostForYear[state.hourInTheYear]
+                       : 0;
     }
 
     static void yearEndBuildForEachThermalCluster(IntermediateValues& values,
