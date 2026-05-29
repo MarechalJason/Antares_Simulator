@@ -127,7 +127,6 @@ set(SRC_VARIABLE_ECONOMY
 
         # Reserves
         include/antares/solver/variable/economy/reserves/reserveParticipationBase.h
-        include/antares/solver/variable/economy/reserves/reserveParticipationBase.hpp
         include/antares/solver/variable/economy/reserves/reserveParticipationByDispatchableOffUnitsPlant.h
         include/antares/solver/variable/economy/reserves/reserveParticipationByDispatchableOnUnitsPlant.h
         include/antares/solver/variable/economy/reserves/reserveParticipationByHydro.h

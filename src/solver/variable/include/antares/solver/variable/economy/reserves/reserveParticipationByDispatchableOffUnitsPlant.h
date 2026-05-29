@@ -1,5 +1,5 @@
 /*
-** Copyright 2007-2023 RTE
+** Copyright 2007-2025 RTE
 ** Authors: Antares_Simulator Team
 **
 ** This file is part of Antares_Simulator.
@@ -27,6 +27,7 @@
 #pragma once
 
 #include "reserveParticipationTemplate.h"
+#include "vCardReserveParticipationByDispatchableOffUnitsPlant.h"
 
 namespace Antares::Solver::Variable::Economy::Reserves
 {
@@ -34,22 +35,14 @@ namespace Antares::Solver::Variable::Economy::Reserves
 /*!
 ** \brief Reserve Participation from off units in thermal clusters
 */
-template<class NextT = Container::EndOfList>
 class ReserveParticipationByDispatchableOffUnitsPlant
-    : public ReserveParticipationTemplate<ReserveParticipationByDispatchableOffUnitsPlant<NextT>,
-                                          VCardReserveParticipationByDispatchableOffUnitsPlant,
-                                          NextT>
+    : public ReserveParticipationTemplate<ReserveParticipationByDispatchableOffUnitsPlant,
+                                          VCardReserveParticipationByDispatchableOffUnitsPlant>
 {
 public:
-    //! Type of the next static variable
-    typedef NextT NextType;
-    //! VCard
-    typedef VCardReserveParticipationByDispatchableOffUnitsPlant VCardType;
-    //! Ancestor
-    typedef ReserveParticipationTemplate<ReserveParticipationByDispatchableOffUnitsPlant<NextT>,
-                                         VCardType,
-                                         NextT>
-      AncestorType;
+    using VCardType = VCardReserveParticipationByDispatchableOffUnitsPlant;
+    using AncestorType = ReserveParticipationTemplate<ReserveParticipationByDispatchableOffUnitsPlant,
+                                                      VCardType>;
 
     using AncestorType::pNbYearsParallel;
     using AncestorType::pSize;
@@ -57,14 +50,14 @@ public:
 
     ReserveParticipationByDispatchableOffUnitsPlant() = default;
 
-    size_t getSizeFromArea(Study* /*study*/, Area* area)
+    size_t getSizeFromArea(Data::Study* /*study*/, Data::Area* area)
     {
         return area->thermal.list.reserveParticipationsCount();
     }
 
     void populateHourlyValues(State& state, unsigned int numSpace);
 
-    bool hasIndexMapping(const Study& study, const Area* area) const
+    bool hasIndexMapping(const Data::Study& study, const Data::Area* area) const
     {
         return study.parameters.include.reserves
                && !study.runtime.reserveParticipationIndexMaps.value()
@@ -91,9 +84,8 @@ public:
 
 }; // class ReserveParticipationByDispatchableOffUnitsPlant
 
-template<class NextT>
-void ReserveParticipationByDispatchableOffUnitsPlant<NextT>::populateHourlyValues(
-  /*non const*/ State& state,
+inline void ReserveParticipationByDispatchableOffUnitsPlant::populateHourlyValues(
+  State& state,
   unsigned int numSpace)
 {
     if (hasIndexMapping(state.study, state.area))
