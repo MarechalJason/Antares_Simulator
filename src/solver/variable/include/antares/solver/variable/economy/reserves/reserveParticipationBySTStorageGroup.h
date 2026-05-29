@@ -27,6 +27,7 @@
 #pragma once
 
 #include "antares/solver/variable/variable.h"
+
 #include "vCardReserveParticipationBySTStorageGroup.h"
 
 namespace Antares::Solver::Variable::Economy::Reserves
@@ -52,12 +53,11 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count
-          = ((VCardType::categoryDataLevel & CDataLevel
-              && VCardType::categoryFileLevel & CFile)
-               ? static_cast<int>(VCardType::columnCount)
-                   * static_cast<int>(ResultsType::count)
-               : 0);
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                       && VCardType::categoryFileLevel & CFile)
+                                        ? static_cast<int>(VCardType::columnCount)
+                                            * static_cast<int>(ResultsType::count)
+                                        : 0);
     };
 
     ReserveParticipationBySTStorageGroup() = default;

@@ -41,8 +41,7 @@ struct OverallCostTraits
         const auto hourInWeek = state.hourInTheWeek;
         const auto& thermal = state.area->thermal;
 
-        const double unsuppliedCost = hourlyResults
-                                        .ValeursHorairesDeDefaillancePositive[hourInWeek]
+        const double unsuppliedCost = hourlyResults.ValeursHorairesDeDefaillancePositive[hourInWeek]
                                       * thermal.unsuppliedEnergyCost;
 
         const double spilledCost = hourlyResults.ValeursHorairesDeDefaillanceNegative[hourInWeek]
@@ -65,13 +64,13 @@ struct OverallCostTraits
 
         for (const auto& reserve: reserves.areaCapacityReservations)
         {
-            const double unsatisfiedCost
-              = hourlyReserves.ValeursHorairesInternalUnsatisfied[reserve.areaReserveIndex]
-                * reserve.unsuppliedCost;
+            const double unsatisfiedCost = hourlyReserves.ValeursHorairesInternalUnsatisfied
+                                             [reserve.areaReserveIndex]
+                                           * reserve.unsuppliedCost;
 
-            const double excessCost
-              = hourlyReserves.ValeursHorairesInternalExcessReserve[reserve.areaReserveIndex]
-                * reserve.spillageCost;
+            const double excessCost = hourlyReserves.ValeursHorairesInternalExcessReserve
+                                        [reserve.areaReserveIndex]
+                                      * reserve.spillageCost;
 
             totalReservesCost += unsatisfiedCost + excessCost;
         }

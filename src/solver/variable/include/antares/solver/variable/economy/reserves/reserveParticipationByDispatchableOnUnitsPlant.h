@@ -41,8 +41,9 @@ class ReserveParticipationByDispatchableOnUnitsPlant
 {
 public:
     using VCardType = VCardReserveParticipationByDispatchableOnUnitsPlant;
-    using AncestorType = ReserveParticipationTemplate<ReserveParticipationByDispatchableOnUnitsPlant,
-                                                      VCardType>;
+    using AncestorType = ReserveParticipationTemplate<
+      ReserveParticipationByDispatchableOnUnitsPlant,
+      VCardType>;
 
     using AncestorType::pSize;
     using AncestorType::pValuesForTheCurrentYear;

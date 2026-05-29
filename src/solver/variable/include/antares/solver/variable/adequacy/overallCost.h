@@ -42,8 +42,7 @@ struct OverallCostTraits
         const auto hourInWeek = state.hourInTheWeek;
         const auto& hourlyResults = *state.hourlyResults;
 
-        const double unsuppliedCost = hourlyResults
-                                        .ValeursHorairesDeDefaillancePositive[hourInWeek]
+        const double unsuppliedCost = hourlyResults.ValeursHorairesDeDefaillancePositive[hourInWeek]
                                       * state.area->thermal.unsuppliedEnergyCost;
 
         const double spilledCost = (hourlyResults.ValeursHorairesDeDefaillanceNegative[hourInWeek]
@@ -65,19 +64,18 @@ struct OverallCostTraits
                                          - state.area->hydro.pumpingEfficiency
                                              * hourlyResults.PompageHoraire[hourInWeek]);
 
-        const double storageReserveCost
-          = state.reserveData ? state.reserveData.value()
-                                  .at(state.area->index)
-                                  .STStorageClusterReserveParticipationCostForYear
-                                    [state.hourInTheYear]
-                              : 0.0;
+        const double storageReserveCost = state.reserveData
+                                            ? state.reserveData.value()
+                                                .at(state.area->index)
+                                                .STStorageClusterReserveParticipationCostForYear
+                                                  [state.hourInTheYear]
+                                            : 0.0;
 
-        const double hydroReserveCost = state.reserveData
-                                          ? state.reserveData.value()
-                                              .at(state.area->index)
-                                              .HydroReserveParticipationCostForYear
-                                                [state.hourInTheYear]
-                                          : 0.0;
+        const double hydroReserveCost = state.reserveData ? state.reserveData.value()
+                                                              .at(state.area->index)
+                                                              .HydroReserveParticipationCostForYear
+                                                                [state.hourInTheYear]
+                                                          : 0.0;
 
         return waterValueCost + storageReserveCost + hydroReserveCost;
     }

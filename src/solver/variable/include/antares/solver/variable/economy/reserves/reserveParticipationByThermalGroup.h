@@ -27,6 +27,7 @@
 #pragma once
 
 #include "antares/solver/variable/variable.h"
+
 #include "vCardReserveParticipationByThermalGroup.h"
 
 namespace Antares::Solver::Variable::Economy::Reserves
@@ -51,12 +52,11 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count
-          = ((VCardType::categoryDataLevel & CDataLevel
-              && VCardType::categoryFileLevel & CFile)
-               ? static_cast<int>(VCardType::columnCount)
-                   * static_cast<int>(ResultsType::count)
-               : 0);
+        static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
+                                       && VCardType::categoryFileLevel & CFile)
+                                        ? static_cast<int>(VCardType::columnCount)
+                                            * static_cast<int>(ResultsType::count)
+                                        : 0);
     };
 
     ReserveParticipationByThermalGroup() = default;
@@ -68,8 +68,7 @@ public:
 
         if (study->parameters.include.reserves)
         {
-            for (auto& [resName, setGroups]:
-                 area->allCapacityReservations->reserveGroupPartThermal)
+            for (auto& [resName, setGroups]: area->allCapacityReservations->reserveGroupPartThermal)
             {
                 pSize += setGroups.size();
             }
@@ -179,8 +178,9 @@ public:
                 if (results.data.area->allCapacityReservations->reserveGroupPartThermal.contains(
                       reserveID))
                 {
-                    for (const auto& group: results.data.area->allCapacityReservations
-                                              ->reserveGroupPartThermal.at(reserveID))
+                    for (const auto& group:
+                         results.data.area->allCapacityReservations->reserveGroupPartThermal.at(
+                           reserveID))
                     {
                         Yuni::String caption = results.data.study.runtime.reserveIDToName.value()
                                                  .at(reserveID);
