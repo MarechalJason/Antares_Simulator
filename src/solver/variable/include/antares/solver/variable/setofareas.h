@@ -6,6 +6,7 @@
 
 #include <antares/study/study.h>
 
+#include "container-scope-defaults.h"
 #include "state.h"
 #include "variable.h"
 
@@ -47,7 +48,7 @@ struct VCardAllSetsOfAreas
 }; // class VCard
 
 template<class VariableList>
-class SetsOfAreas
+class SetsOfAreas: public ContainerScopeDefaults
 {
 public:
     //! VCard
@@ -93,28 +94,6 @@ public:
     //@}
 
     void initializeFromStudy(Data::Study& study);
-    void initializeFromArea(Data::Study*, Data::Area*);
-    void initializeFromLink(Data::Study*, Data::AreaLink*);
-
-    void simulationBegin();
-    void simulationEnd();
-
-    void yearBegin(unsigned int year, unsigned int numSpace);
-
-    void buildThermalClusterYearEndResults(State& state, unsigned int year, unsigned int numSpace);
-
-    void yearEnd(unsigned int year, unsigned int numSpace);
-
-    void computeSummary(unsigned int year, unsigned int numSpace);
-
-    void hourBegin(unsigned int hourInTheYear);
-    void hourForEachArea(State& state, unsigned int numSpace);
-    void hourForEachLink(State& state);
-    void hourEnd(State& state, unsigned int hourInTheYear);
-
-    void weekBegin(State&);
-    void weekForEachArea(State&, unsigned int numSpace);
-    void weekEnd(State&);
 
     void buildSurveyReport(SurveyResults& results,
                            int dataLevel,
