@@ -196,46 +196,6 @@ public:
         }
     }
 
-    void simulationBegin()
-    {
-    }
-
-    void simulationEnd()
-    {
-    }
-
-    void yearBegin(uint year)
-    {
-    }
-
-    void yearEndBuildPrepareDataForEachThermalCluster(State& state, uint year)
-    {
-    }
-
-    void yearEndBuildForEachThermalCluster(State& state, uint year)
-    {
-    }
-
-    void yearEnd(uint year)
-    {
-    }
-
-    void weekBegin(State& state)
-    {
-    }
-
-    void weekEnd(State& state)
-    {
-    }
-
-    void hourBegin(uint hourInTheYear)
-    {
-    }
-
-    void hourForEachArea(State& state, unsigned int numSpace)
-    {
-    }
-
     template<class V, class SetT>
     void yearEndSpatialAggregates(V& allVars, uint year, const SetT& set, uint numSpace)
     {
