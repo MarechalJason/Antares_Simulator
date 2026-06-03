@@ -322,7 +322,7 @@ void Areas<VariableList>::hourForEachArea(State& state, uint numSpace)
               state.initFromThermalClusterIndex(cluster->enabledIndex);
           }
 
-          for (int i = 0; i < area.shortTermStorage.storagesByIndex.size(); i++)
+          for (std::size_t i = 0; i < area.shortTermStorage.storagesByIndex.size(); i++)
           {
               // Intiializing the state for the current short term storage cluster
               state.initFromShortTermStorageClusterIndex(i);
