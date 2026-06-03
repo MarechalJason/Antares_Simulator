@@ -18,8 +18,6 @@ template<class... Wrappers>
 class JoinAll
 {
 public:
-    using VCardType = VCardJoin;
-
     static constexpr std::size_t count = (0 + ... + Wrappers::count);
 
     template<int CDataLevel, int CFile>
