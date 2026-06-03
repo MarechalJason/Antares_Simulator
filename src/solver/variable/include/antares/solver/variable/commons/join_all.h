@@ -5,11 +5,6 @@
 #define __SOLVER_VARIABLE_JOIN_ALL_H__
 
 #include <tuple>
-#include <utility>
-
-#include "antares/solver/variable/variable.h"
-
-#include "join.h"
 
 namespace Antares::Solver::Variable
 {
