@@ -108,8 +108,6 @@ public:
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
-    using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
-
     static constexpr std::size_t count = 1;
 
     template<int CDataLevel, int CFile>
