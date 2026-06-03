@@ -11,7 +11,6 @@
 #include "../bindConstraints.h"
 #include "../commons/compose-all.h"
 #include "../commons/hydro.h"
-#include "../commons/join.h"
 #include "../commons/join_all.h"
 #include "../commons/load.h"
 #include "../commons/miscGenMinusRowPSP.h"
