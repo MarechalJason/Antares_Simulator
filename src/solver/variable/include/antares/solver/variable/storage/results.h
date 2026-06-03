@@ -66,10 +66,10 @@ private:
     template<class Tup>
     struct CategoryFileFold;
 
-    template<class... Ds>
-    struct CategoryFileFold<std::tuple<Ds...>>
+    template<class... Decorators>
+    struct CategoryFileFold<std::tuple<Decorators...>>
     {
-        static constexpr int value = (0 | ... | Ds::categoryFile);
+        static constexpr int value = (0 | ... | Decorators::categoryFile);
     };
 
 public:
