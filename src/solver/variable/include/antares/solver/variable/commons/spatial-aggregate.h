@@ -196,10 +196,6 @@ public:
         }
     }
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
-    {
-    }
-
     void simulationBegin()
     {
     }

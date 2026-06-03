@@ -141,10 +141,6 @@ public:
         }
     }
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
-    {
-    }
-
     void simulationBegin()
     {
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
