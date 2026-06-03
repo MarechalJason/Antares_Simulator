@@ -20,7 +20,7 @@
 **   - \c buildColumnDescriptors(Data::Area*) -> std::vector<ColumnDescriptor>
 **
 ** - Optional hooks:
-**   - \c onSimulationBegin(IntermediateValuesBaseType&, uint) -> void
+**   - \c onSimulationBegin(IntermediateValuesType&, uint) -> void
 **   - \c perColumnComputeStats(IntermediateValues&, size_t columnIndex) -> void
 **   - \c setHourlyValue(IntermediateValuesBaseType&, State&, uint, const
 *std::vector<ColumnDescriptor>&) -> void
