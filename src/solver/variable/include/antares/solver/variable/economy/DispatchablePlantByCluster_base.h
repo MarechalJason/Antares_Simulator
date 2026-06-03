@@ -155,11 +155,6 @@ public:
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink([[maybe_unused]] Data::Study* study,
-                            [[maybe_unused]] Data::AreaLink* link)
-    {
-    }
-
     void yearBegin(uint year, uint numSpace)
     {
         for (uint i = 0; i != pSize; ++i)

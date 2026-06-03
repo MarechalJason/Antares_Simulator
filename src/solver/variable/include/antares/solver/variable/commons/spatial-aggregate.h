@@ -200,10 +200,6 @@ public:
     {
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
     }

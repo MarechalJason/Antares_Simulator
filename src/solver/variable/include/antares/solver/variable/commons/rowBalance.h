@@ -137,10 +137,6 @@ public:
         AncestorType::pResults.merge(0, pValuesForTheCurrentYear);
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
     }

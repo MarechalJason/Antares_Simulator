@@ -145,10 +145,6 @@ public:
     {
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)

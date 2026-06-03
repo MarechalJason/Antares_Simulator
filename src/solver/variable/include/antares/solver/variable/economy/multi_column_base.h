@@ -155,11 +155,6 @@ public:
         }
     }
 
-    void initializeFromLink([[maybe_unused]] Data::Study* study,
-                            [[maybe_unused]] Data::AreaLink* link)
-    {
-    }
-
     void yearBegin([[maybe_unused]] uint year, uint numSpace)
     {
         for (int i = 0; i < ColCount; ++i)

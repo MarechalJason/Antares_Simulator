@@ -133,10 +133,6 @@ public:
         }
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     template<class R>
     static void InitializeResultsFromStudy(R& results, Data::Study& study)
     {
