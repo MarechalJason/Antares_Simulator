@@ -78,14 +78,6 @@ inline void SetsOfAreas<VariableList>::initializeFromLink(Data::Study*, Data::Ar
 }
 
 template<class VariableList>
-inline void SetsOfAreas<VariableList>::initializeFromThermalCluster(Data::Study*,
-                                                                    Data::Area*,
-                                                                    Data::ThermalCluster*)
-{
-    // This method should not be called at this stage
-}
-
-template<class VariableList>
 inline void SetsOfAreas<VariableList>::simulationBegin()
 {
     // Nothing to do here

@@ -20,13 +20,6 @@ inline void Links<VariablePerLinkList>::initializeFromLink(Data::Study*, Data::A
 }
 
 template<class VariablePerLinkList>
-inline void Links<VariablePerLinkList>::initializeFromThermalCluster(Data::Study*,
-                                                                     Data::Area*,
-                                                                     Data::ThermalCluster*)
-{
-}
-
-template<class VariablePerLinkList>
 inline void Links<VariablePerLinkList>::broadcastNonApplicability(bool applyNonApplicable)
 {
     for (uint i = 0; i != pLinks.size(); ++i)

@@ -38,14 +38,6 @@ inline void List<Inner>::initializeFromLink(Data::Study* study, Data::AreaLink* 
 }
 
 template<class Inner>
-inline void List<Inner>::initializeFromThermalCluster(Data::Study* study,
-                                                      Data::Area* area,
-                                                      Data::ThermalCluster* cluster)
-{
-    next_.initializeFromThermalCluster(study, area, cluster);
-}
-
-template<class Inner>
 inline void List<Inner>::simulationBegin()
 {
     next_.simulationBegin();

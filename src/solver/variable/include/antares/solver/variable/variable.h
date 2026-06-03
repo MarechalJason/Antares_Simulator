@@ -112,17 +112,6 @@ public:
     ** \param link The link
     */
     void initializeFromLink(Data::Study* study, Data::AreaLink* link);
-
-    /*!
-    ** \brief Initialize the variable with a specific thermal cluster
-    **
-    ** \param study The attached study
-    ** \param area The area
-    ** \param cluster The thermal cluster
-    */
-    void initializeFromThermalCluster(Data::Study* study,
-                                      Data::Area* area,
-                                      Data::ThermalCluster* cluster);
     //@}
 
     void broadcastNonApplicability(bool applyNonApplicable);

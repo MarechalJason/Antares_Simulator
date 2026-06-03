@@ -95,14 +95,6 @@ public:
                    vars_);
     }
 
-    void initializeFromThermalCluster(Data::Study* study,
-                                      Data::Area* area,
-                                      Data::ThermalCluster* cluster)
-    {
-        std::apply([&](auto&... v) { (v.initializeFromThermalCluster(study, area, cluster), ...); },
-                   vars_);
-    }
-
     void broadcastNonApplicability(bool applyNonApplicable)
     {
         std::apply([&](auto&... v) { (v.broadcastNonApplicability(applyNonApplicable), ...); },

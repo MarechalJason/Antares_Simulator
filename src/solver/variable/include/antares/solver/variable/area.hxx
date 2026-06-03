@@ -23,14 +23,6 @@ inline void Areas<VariableList>::initializeFromLink(Data::Study*, Data::AreaLink
 }
 
 template<class VariableList>
-inline void Areas<VariableList>::initializeFromThermalCluster(Data::Study*,
-                                                              Data::Area*,
-                                                              Data::ThermalCluster*)
-{
-    // This method should not be called at this point
-}
-
-template<class VariableList>
 void Areas<VariableList>::buildSurveyReport(SurveyResults& results,
                                             int dataLevel,
                                             int fileLevel,

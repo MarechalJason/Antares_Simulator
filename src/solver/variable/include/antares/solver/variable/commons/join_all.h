@@ -51,14 +51,6 @@ public:
         std::apply([&](auto&... w) { (w.initializeFromLink(study, link), ...); }, wrappers_);
     }
 
-    void initializeFromThermalCluster(Data::Study* study,
-                                      Data::Area* area,
-                                      Data::ThermalCluster* cluster)
-    {
-        std::apply([&](auto&... w) { (w.initializeFromThermalCluster(study, area, cluster), ...); },
-                   wrappers_);
-    }
-
     void simulationBegin()
     {
         std::apply([](auto&... w) { (w.simulationBegin(), ...); }, wrappers_);

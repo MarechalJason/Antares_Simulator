@@ -56,13 +56,6 @@ inline void IVariable<ChildT, VCardT>::initializeFromLink(Data::Study*, Data::Ar
 }
 
 template<class ChildT, class VCardT>
-inline void IVariable<ChildT, VCardT>::initializeFromThermalCluster(Data::Study*,
-                                                                    Data::Area*,
-                                                                    Data::ThermalCluster*)
-{
-}
-
-template<class ChildT, class VCardT>
 inline void IVariable<ChildT, VCardT>::broadcastNonApplicability(bool applyNonApplicable)
 {
     const bool value = VCardType::isPossiblyNonApplicable != 0 && applyNonApplicable;

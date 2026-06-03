@@ -54,9 +54,6 @@ public:
     void initializeFromStudy(Data::Study& study);
     void initializeFromArea(Data::Study* study, Data::Area* area);
     void initializeFromLink(Data::Study* study, Data::AreaLink* link);
-    void initializeFromThermalCluster(Data::Study* study,
-                                      Data::Area* area,
-                                      Data::ThermalCluster* cluster);
     //@}
 
     //! \name Simulation events
