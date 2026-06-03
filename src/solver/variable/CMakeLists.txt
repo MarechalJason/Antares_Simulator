@@ -53,7 +53,6 @@ source_group("variable\\storage" FILES ${SRC_VARIABLE_STORAGE})
 
 set(SRC_VARIABLE_COMMON
         # Commons
-        include/antares/solver/variable/commons/join.h
         include/antares/solver/variable/commons/join_all.h
         include/antares/solver/variable/commons/compose-all.h
         include/antares/solver/variable/commons/load.h
