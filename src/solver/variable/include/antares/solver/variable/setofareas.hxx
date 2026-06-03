@@ -309,13 +309,6 @@ inline void SetsOfAreas<VariableList>::computeSpatialAggregateWith(O& out,
 
 template<class VariableList>
 template<class VCardToFindT>
-inline const double* SetsOfAreas<VariableList>::retrieveHourlyResultsForCurrentYear() const
-{
-    return nullptr;
-}
-
-template<class VariableList>
-template<class VCardToFindT>
 inline void SetsOfAreas<VariableList>::retrieveResultsForArea(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::Area* area)

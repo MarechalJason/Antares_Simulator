@@ -148,9 +148,6 @@ public:
     void computeSpatialAggregateWith(O& out, const Data::Area* area, uint numSpace);
 
     template<class VCardToFindT>
-    const double* retrieveHourlyResultsForCurrentYear() const;
-
-    template<class VCardToFindT>
     void retrieveResultsForArea(typename Storage<VCardToFindT>::ResultsType** result,
                                 const Data::Area* area);
 

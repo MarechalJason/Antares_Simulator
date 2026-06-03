@@ -288,13 +288,6 @@ inline void IVariable<ChildT, VCardT>::computeSpatialAggregateWith(O&, const Dat
 
 template<class ChildT, class VCardT>
 template<class VCardToFindT>
-inline const double* IVariable<ChildT, VCardT>::retrieveHourlyResultsForCurrentYear(uint) const
-{
-    return nullptr;
-}
-
-template<class ChildT, class VCardT>
-template<class VCardToFindT>
 inline void IVariable<ChildT, VCardT>::retrieveResultsForArea(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::Area*)

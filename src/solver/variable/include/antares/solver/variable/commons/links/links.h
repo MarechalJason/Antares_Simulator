@@ -114,12 +114,6 @@ public:
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const;
 
     template<class VCardToFindT>
-    inline const double* retrieveHourlyResultsForCurrentYear(uint) const
-    {
-        return nullptr;
-    }
-
-    template<class VCardToFindT>
     void retrieveResultsForArea(Storage<VCardToFindT>::ResultsType** result, const Data::Area*)
     {
         *result = NULL;

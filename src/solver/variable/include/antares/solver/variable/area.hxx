@@ -213,13 +213,6 @@ inline void Areas<VariableList>::computeSpatialAggregateWith(O& out,
 
 template<class VariableList>
 template<class VCardToFindT>
-const double* Areas<VariableList>::retrieveHourlyResultsForCurrentYear() const
-{
-    return nullptr;
-}
-
-template<class VariableList>
-template<class VCardToFindT>
 inline void Areas<VariableList>::retrieveResultsForArea(
   typename Storage<VCardToFindT>::ResultsType** result,
   const Data::Area* area)
@@ -359,10 +352,6 @@ void Areas<VariableList>::weekForEachArea(State& state, uint numSpace)
           state.initFromAreaIndex(area.index, numSpace);
 
           auto& variablesForArea = pAreas[area.index];
-
-          // DTG MRG
-          state.dispatchableMargin = variablesForArea.template retrieveHourlyResultsForCurrentYear<
-            Economy::VCardDispatchableGenMargin>(numSpace);
 
           variablesForArea.weekForEachArea(state, numSpace);
 

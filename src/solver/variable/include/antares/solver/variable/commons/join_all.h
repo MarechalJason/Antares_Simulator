@@ -218,17 +218,6 @@ public:
     }
 
     template<class VCardToFindT>
-    const double* retrieveHourlyResultsForCurrentYear() const
-    {
-        const double* r = nullptr;
-        std::apply(
-          [&](const auto&... w)
-          { ((r = r ? r : w.template retrieveHourlyResultsForCurrentYear<VCardToFindT>()), ...); },
-          wrappers_);
-        return r;
-    }
-
-    template<class VCardToFindT>
     void retrieveResultsForArea(typename Variable::Storage<VCardToFindT>::ResultsType** result,
                                 const Data::Area* area)
     {

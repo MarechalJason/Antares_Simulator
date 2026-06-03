@@ -251,18 +251,6 @@ public:
     }
 
     template<class VCardToFindT>
-    const double* retrieveHourlyResultsForCurrentYear(unsigned int /*numSpace*/) const
-    {
-        // Walk tuple, return nullptr on first match; otherwise keep walking and return nullptr at
-        // the end.
-        const double* r = nullptr;
-        std::apply([&](const auto&... v)
-                   { ((isMatchRetrieve<VCardToFindT>(v) ? (r = nullptr, true) : false) || ...); },
-                   vars_);
-        return r;
-    }
-
-    template<class VCardToFindT>
     void retrieveResultsForArea(typename Storage<VCardToFindT>::ResultsType** result,
                                 const Data::Area* area)
     {
@@ -374,12 +362,6 @@ private:
         {
             return false;
         }
-    }
-
-    template<class Target, class V>
-    static bool isMatchRetrieve(const V&)
-    {
-        return detail::isSameVCard<typename V::VCardType, Target>;
     }
 
     template<class Target, class V, class R>
