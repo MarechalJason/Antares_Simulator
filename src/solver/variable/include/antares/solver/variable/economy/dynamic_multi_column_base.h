@@ -77,19 +77,26 @@ struct VCardDynamicMultiColumn
     using IntermediateValuesType = std::vector<IntermediateValuesBaseType>;
 
     using IntermediateValuesTypeForSpatialAg = std::unique_ptr<IntermediateValuesDeepType[]>;
+};
 
-    struct Multiple
+//! Resolves per-column caption and unit from the runtime descriptor list.
+//!
+//! Kept out of VCardDynamicMultiColumn: it is used only internally by
+//! DynamicMultiColumnBase and is not part of the generic multi-column VCard
+//! interface (its signatures take the runtime descriptors, unlike the
+//! single-index VCard::Multiple convention used elsewhere).
+template<class Traits>
+struct DynamicMultiColumnCaption
+{
+    static std::string Caption(uint indx, const std::vector<ColumnDescriptor>& descriptors)
     {
-        static std::string Caption(uint indx, const std::vector<ColumnDescriptor>& descriptors)
-        {
-            return indx < descriptors.size() ? descriptors[indx].caption : "<unknown>";
-        }
+        return indx < descriptors.size() ? descriptors[indx].caption : "<unknown>";
+    }
 
-        static std::string Unit(uint indx, const std::vector<ColumnDescriptor>& descriptors)
-        {
-            return indx < descriptors.size() ? descriptors[indx].unit : Traits::Unit();
-        }
-    };
+    static std::string Unit(uint indx, const std::vector<ColumnDescriptor>& descriptors)
+    {
+        return indx < descriptors.size() ? descriptors[indx].unit : Traits::Unit();
+    }
 };
 
 template<class Traits>
@@ -241,8 +248,9 @@ public:
 
         for (size_t column = 0; column < nbColumns_; ++column)
         {
-            results.variableCaption = VCardType::Multiple::Caption(column, descriptors_);
-            results.variableUnit = VCardType::Multiple::Unit(column, descriptors_);
+            results.variableCaption = DynamicMultiColumnCaption<Traits>::Caption(column,
+                                                                                descriptors_);
+            results.variableUnit = DynamicMultiColumnCaption<Traits>::Unit(column, descriptors_);
             pValuesForTheCurrentYear[numSpace][column]
               .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
         }
