@@ -20,7 +20,6 @@
 **   - \c buildColumnDescriptors(Data::Area*) -> std::vector<ColumnDescriptor>
 **
 ** - Optional hooks:
-**   - \c onSimulationBegin(IntermediateValuesType&, uint) -> void
 **   - \c perColumnComputeStats(IntermediateValues&, size_t columnIndex) -> void
 **   - \c setHourlyValue(IntermediateValuesBaseType&, State&, uint, const
 *std::vector<ColumnDescriptor>&) -> void
@@ -172,16 +171,6 @@ public:
     size_t getMaxNumberColumns() const
     {
         return nbColumns_ * ResultsType::count;
-    }
-
-    void simulationBegin()
-    {
-        if constexpr (requires {
-                          Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
-                      })
-        {
-            Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
-        }
     }
 
     void yearBegin(uint year, uint numSpace)

@@ -25,7 +25,6 @@
 ** - Optional hooks:
 **   - \c onInitializeFromStudy(Data::Study&) -> void
 **   - \c onInitializeFromArea(Data::Area*, Data::Study*) -> void
-**   - \c onSimulationBegin(IntermediateValuesBaseType*, uint) -> void
 **   - \c setHourlyValue(IntermediateValues(&)[ColCount], State&, uint numSpace) -> void
 */
 
@@ -159,16 +158,6 @@ public:
     void initializeFromLink([[maybe_unused]] Data::Study* study,
                             [[maybe_unused]] Data::AreaLink* link)
     {
-    }
-
-    void simulationBegin()
-    {
-        if constexpr (requires {
-                          Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
-                      })
-        {
-            Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
-        }
     }
 
     void yearBegin([[maybe_unused]] uint year, uint numSpace)
