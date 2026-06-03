@@ -236,7 +236,7 @@ public:
         for (size_t column = 0; column < nbColumns_; ++column)
         {
             results.variableCaption = DynamicMultiColumnCaption<Traits>::Caption(column,
-                                                                                descriptors_);
+                                                                                 descriptors_);
             results.variableUnit = DynamicMultiColumnCaption<Traits>::Unit(column, descriptors_);
             pValuesForTheCurrentYear[numSpace][column]
               .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
