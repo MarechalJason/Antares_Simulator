@@ -6,6 +6,7 @@
 
 #include <antares/study/study.h>
 
+#include "container-scope-defaults.h"
 #include "state.h"
 #include "variable.h"
 
@@ -39,19 +40,15 @@ struct VCardAllSetsOfAreas
     //! File level (provided by the type of the results)
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile
                                                  & Category::FileLevel::de;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +1;
     //! Number of columns used by the variable (one results configuration per column)
     static constexpr int columnCount = 0;
     //! The Spatial aggregation
     static constexpr uint8_t spatialAggregate = Category::noSpatialAggregate;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 0;
 
 }; // class VCard
 
 template<class VariableList>
-class SetsOfAreas
+class SetsOfAreas: public ContainerScopeDefaults
 {
 public:
     //! VCard
@@ -97,29 +94,6 @@ public:
     //@}
 
     void initializeFromStudy(Data::Study& study);
-    void initializeFromArea(Data::Study*, Data::Area*);
-    void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*);
-    void initializeFromLink(Data::Study*, Data::AreaLink*);
-
-    void simulationBegin();
-    void simulationEnd();
-
-    void yearBegin(unsigned int year, unsigned int numSpace);
-
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace);
-
-    void yearEnd(unsigned int year, unsigned int numSpace);
-
-    void computeSummary(unsigned int year, unsigned int numSpace);
-
-    void hourBegin(unsigned int hourInTheYear);
-    void hourForEachArea(State& state, unsigned int numSpace);
-    void hourForEachLink(State& state);
-    void hourEnd(State& state, unsigned int hourInTheYear);
-
-    void weekBegin(State&);
-    void weekForEachArea(State&, unsigned int numSpace);
-    void weekEnd(State&);
 
     void buildSurveyReport(SurveyResults& results,
                            int dataLevel,
@@ -136,9 +110,6 @@ public:
 
     void beforeYearByYearExport(uint year, uint numSpace);
 
-    template<class I>
-    static void provideInformations(I& infos);
-
     template<class V>
     void yearEndSpatialAggregates(V& allVars, unsigned int year, unsigned int numSpace);
 
@@ -153,9 +124,6 @@ public:
 
     template<class VCardSearchT, class O>
     void computeSpatialAggregateWith(O& out, const Data::Area* area, uint numSpace);
-
-    template<class VCardToFindT>
-    const double* retrieveHourlyResultsForCurrentYear() const;
 
     template<class VCardToFindT>
     void retrieveResultsForArea(typename Storage<VCardToFindT>::ResultsType** result,

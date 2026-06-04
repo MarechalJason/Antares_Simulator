@@ -15,9 +15,9 @@ namespace Antares::Solver::Variable
 {
 template<class VariableList>
 void BindingConstraints<VariableList>::buildSurveyReport(SurveyResults& results,
-                                                  int dataLevel,
-                                                  int fileLevel,
-                                                  int precision) const
+                                                         int dataLevel,
+                                                         int fileLevel,
+                                                         int precision) const
 {
     if (bool bcDataLevel = dataLevel & Category::DataLevel::bindingConstraint; !bcDataLevel)
     {
@@ -34,10 +34,10 @@ void BindingConstraints<VariableList>::buildSurveyReport(SurveyResults& results,
 
 template<class VariableList>
 void BindingConstraints<VariableList>::buildAnnualSurveyReport(SurveyResults& results,
-                                                        int dataLevel,
-                                                        int fileLevel,
-                                                        int precision,
-                                                        uint numSpace) const
+                                                               int dataLevel,
+                                                               int fileLevel,
+                                                               int precision,
+                                                               uint numSpace) const
 {
     if (bool bcDataLevel = dataLevel & Category::DataLevel::bindingConstraint; !bcDataLevel)
     {
@@ -60,28 +60,6 @@ inline void BindingConstraints<VariableList>::RetrieveVariableList(PredicateT& p
 }
 
 template<class VariableList>
-template<class I>
-inline void BindingConstraints<VariableList>::provideInformations(I& infos)
-{
-    // Begining of the node
-    if (VCardType::nodeDepthForGUI)
-    {
-        infos.template beginNode<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-        // End of the node
-        infos.endNode();
-    }
-    else
-    {
-        // Giving our VCard
-        infos.template addVCard<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-    }
-}
-
-template<class VariableList>
 void BindingConstraints<VariableList>::simulationBegin()
 {
     for (auto& bc: pBindConstraints)
@@ -100,7 +78,9 @@ void BindingConstraints<VariableList>::simulationEnd()
 }
 
 template<class VariableList>
-void BindingConstraints<VariableList>::yearEndBuild(State& /*state*/, uint /*year*/, uint /*numSpace*/)
+void BindingConstraints<VariableList>::buildThermalClusterYearEndResults(State& /*state*/,
+                                                                         uint /*year*/,
+                                                                         uint /*numSpace*/)
 {
 }
 
@@ -245,8 +225,8 @@ inline void BindingConstraints<VariableList>::retrieveResultsForArea(
 
 template<class VariableList>
 void BindingConstraints<VariableList>::buildDigest(SurveyResults& results,
-                                            int digestLevel,
-                                            int dataLevel) const
+                                                   int digestLevel,
+                                                   int dataLevel) const
 {
     for (uint i = 0; i != pBCcount; ++i)
     {
@@ -264,8 +244,8 @@ void BindingConstraints<VariableList>::simulationEndSpatialAggregates(V& allVars
 template<class VariableList>
 template<class V>
 void BindingConstraints<VariableList>::computeSpatialAggregatesSummary(V& allVars,
-                                                                unsigned int year,
-                                                                unsigned int numSpace)
+                                                                       unsigned int year,
+                                                                       unsigned int numSpace)
 {
     VariableList::template computeSpatialAggregatesSummary<V>(allVars, year, numSpace);
 }
@@ -282,8 +262,8 @@ void BindingConstraints<VariableList>::beforeYearByYearExport(uint year, uint nu
 template<class VariableList>
 template<class SearchVCardT, class O>
 inline void BindingConstraints<VariableList>::computeSpatialAggregateWith(O& out,
-                                                                   const Data::Area* area,
-                                                                   uint numSpace)
+                                                                          const Data::Area* area,
+                                                                          uint numSpace)
 {
     VariableList::template computeSpatialAggregateWith<SearchVCardT, O>(out, area, numSpace);
 }

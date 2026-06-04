@@ -11,11 +11,10 @@
 #include <antares/study/study.h>
 
 #include "../categories.h"
-#include "fwd.h"
-#include "intermediate.h"
-
 #include "average.h"
 #include "empty.h"
+#include "fwd.h"
+#include "intermediate.h"
 #include "minmax.h"
 #include "raw.h"
 #include "stdDeviation.h"
@@ -29,20 +28,20 @@ template<class T, class Tuple>
 struct TupleContains;
 
 template<class T>
-struct TupleContains<T, std::tuple<>> : std::false_type
+struct TupleContains<T, std::tuple<>>: std::false_type
 {
 };
 
 template<class T, class Head, class... Tail>
 struct TupleContains<T, std::tuple<Head, Tail...>>
-  : std::conditional_t<std::is_same_v<T, Head>,
-                       std::true_type,
-                       TupleContains<T, std::tuple<Tail...>>>
+    : std::conditional_t<std::is_same_v<T, Head>,
+                         std::true_type,
+                         TupleContains<T, std::tuple<Tail...>>>
 {
 };
 
 template<class T, class Tuple>
-inline constexpr bool tuple_contains_v = TupleContains<T, Tuple>::value;
+inline constexpr bool tuple_can_contain_type_v = TupleContains<T, Tuple>::value;
 
 } // namespace detail
 
@@ -67,10 +66,10 @@ private:
     template<class Tup>
     struct CategoryFileFold;
 
-    template<class... Ds>
-    struct CategoryFileFold<std::tuple<Ds...>>
+    template<class... Decorators>
+    struct CategoryFileFold<std::tuple<Decorators...>>
     {
-        static constexpr int value = (0 | ... | Ds::categoryFile);
+        static constexpr int value = (0 | ... | Decorators::categoryFile);
     };
 
 public:
@@ -114,15 +113,14 @@ public:
     template<class VCardT>
     void buildDigest(SurveyResults& report, int digestLevel, int dataLevel) const
     {
-        std::apply(
-          [&](const auto&... d)
-          { (d.template buildDigest<VCardT>(report, digestLevel, dataLevel), ...); },
-          decorators_);
+        std::apply([&](const auto&... d)
+                   { (d.template buildDigest<VCardT>(report, digestLevel, dataLevel), ...); },
+                   decorators_);
     }
 
     Antares::Memory::Stored<double>::ConstReturnType hourlyValuesForSpatialAggregate() const
     {
-        if constexpr (detail::tuple_contains_v<SpatialAggT, DecoratorTuple>)
+        if constexpr (detail::tuple_can_contain_type_v<SpatialAggT, DecoratorTuple>)
         {
             const auto& d = std::get<SpatialAggT>(decorators_);
             if constexpr (requires { d.hourlyForSpatialAggregate(); })
@@ -142,28 +140,28 @@ public:
 
     auto& avgdata()
     {
-        static_assert(detail::tuple_contains_v<R::AllYears::Average, DecoratorTuple>,
+        static_assert(detail::tuple_can_contain_type_v<R::AllYears::Average, DecoratorTuple>,
                       "avgdata() requires an R::AllYears::Average decorator");
         return std::get<R::AllYears::Average>(decorators_).avgdata;
     }
 
     const auto& avgdata() const
     {
-        static_assert(detail::tuple_contains_v<R::AllYears::Average, DecoratorTuple>,
+        static_assert(detail::tuple_can_contain_type_v<R::AllYears::Average, DecoratorTuple>,
                       "avgdata() requires an R::AllYears::Average decorator");
         return std::get<R::AllYears::Average>(decorators_).avgdata;
     }
 
     auto& rawdata()
     {
-        static_assert(detail::tuple_contains_v<R::AllYears::Raw, DecoratorTuple>,
+        static_assert(detail::tuple_can_contain_type_v<R::AllYears::Raw, DecoratorTuple>,
                       "rawdata() requires an R::AllYears::Raw decorator");
         return std::get<R::AllYears::Raw>(decorators_).rawdata;
     }
 
     const auto& rawdata() const
     {
-        static_assert(detail::tuple_contains_v<R::AllYears::Raw, DecoratorTuple>,
+        static_assert(detail::tuple_can_contain_type_v<R::AllYears::Raw, DecoratorTuple>,
                       "rawdata() requires an R::AllYears::Raw decorator");
         return std::get<R::AllYears::Raw>(decorators_).rawdata;
     }

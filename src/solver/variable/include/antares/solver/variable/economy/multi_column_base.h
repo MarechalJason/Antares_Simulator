@@ -25,7 +25,6 @@
 ** - Optional hooks:
 **   - \c onInitializeFromStudy(Data::Study&) -> void
 **   - \c onInitializeFromArea(Data::Area*, Data::Study*) -> void
-**   - \c onSimulationBegin(IntermediateValuesBaseType*, uint) -> void
 **   - \c setHourlyValue(IntermediateValues(&)[ColCount], State&, uint numSpace) -> void
 */
 
@@ -62,13 +61,11 @@ struct VCardMultiColumn
                                                  & (Category::FileLevel::id
                                                     | Category::FileLevel::va);
     static constexpr uint8_t precision = Category::all;
-    static constexpr uint8_t nodeDepthForGUI = +0;
     static constexpr uint8_t decimal = Traits::decimal;
     static constexpr int columnCount = ColCount;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    static constexpr uint8_t hasIntermediateValues = 1;
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
     using IntermediateValuesBaseType = IntermediateValues[columnCount];
@@ -91,9 +88,8 @@ struct VCardMultiColumn
 };
 
 template<class Traits, int ColCount>
-class MultiColumnBase
-    : public Variable::IVariable<MultiColumnBase<Traits, ColCount>,
-                                 VCardMultiColumn<Traits, ColCount>>
+class MultiColumnBase: public Variable::IVariable<MultiColumnBase<Traits, ColCount>,
+                                                  VCardMultiColumn<Traits, ColCount>>
 {
 public:
     using VCardType = VCardMultiColumn<Traits, ColCount>;
@@ -108,8 +104,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -159,37 +155,12 @@ public:
         }
     }
 
-    void initializeFromLink([[maybe_unused]] Data::Study* study,
-                            [[maybe_unused]] Data::AreaLink* link)
-    {
-    }
-
-    void simulationBegin()
-    {
-        if constexpr (requires {
-                          Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
-                      })
-        {
-            Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
-        }
-    }
-
-    void simulationEnd()
-    {
-    }
-
     void yearBegin([[maybe_unused]] uint year, uint numSpace)
     {
         for (int i = 0; i < ColCount; ++i)
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
-    }
-
-    void yearEndBuild([[maybe_unused]] State& state,
-                      [[maybe_unused]] uint year,
-                      [[maybe_unused]] uint numSpace)
-    {
     }
 
     void yearEnd([[maybe_unused]] uint year, uint numSpace)
@@ -203,10 +174,6 @@ public:
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
-    }
-
-    void hourBegin([[maybe_unused]] uint hourInTheYear)
-    {
     }
 
     void hourForEachArea(State& state, uint numSpace)

@@ -26,9 +26,14 @@ std::shared_ptr<ThermalCluster> addClusterToArea(Area* area, const std::string& 
 {
     auto cluster = std::make_shared<ThermalCluster>(area);
     cluster->setName(clusterName);
-    cluster->reset();
+
+    cluster->modulation.resize(thermalModulationMax, HOURS_PER_YEAR);
+    cluster->modulation.fill(1.);
+    cluster->modulation.fillColumn(thermalMinGenModulation, 0.);
+    cluster->series.timeSeries.reset(1, HOURS_PER_YEAR);
 
     area->thermal.list.addToCompleteList(cluster);
+    area->thermal.list.buildIndexes();
 
     return cluster;
 }
@@ -230,14 +235,12 @@ averageResults OutputRetriever::flow(AreaLink* link)
 {
     // There is a problem here :
     //    we cannot easly retrieve the hourly flow for a link and a year :
-    //    - Functions retrieveHourlyResultsForCurrentYear are not coded everywhere it should.
-    //    - Even if those functions were correctly implemented, there is another problem :
-    //      Each year results erase results of previous year, how can we retrieve results of year 1
-    //      if 2 year were run ?
+    //    Each year results erase results of previous year, how can we retrieve results of year 1
+    //    if 2 year were run ?
     //    We should be able to run each year independently, which is not possible now.
     //    A workaround is to retrieve syntheses, and that's what we do here.
 
-    auto result = retrieveLinkResults<Variable::Economy::VCardFlowLinear>(link);
+    auto result = retrieveLinkResults<Variable::Economy::FlowLinear::VCardType>(link);
     return averageResults(result->avgdata());
 }
 

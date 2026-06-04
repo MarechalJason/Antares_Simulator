@@ -58,11 +58,6 @@ struct ProfitByPlantTraits
     }
 };
 
-using VCardProfitByPlant = VCardDispatchablePlantByClusterBase<ProfitByPlantTraits>;
-
-/*!
-** \brief Profit by plant for thermal dispatchable clusters
-*/
 using ProfitByPlant = DispatchablePlantByClusterBase<ProfitByPlantTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

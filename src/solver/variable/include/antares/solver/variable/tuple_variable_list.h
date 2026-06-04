@@ -21,7 +21,6 @@
 
 #include <antares/study/study.h>
 
-#include "endoflist.h"
 #include "info.h" // for Variable::Storage<VCardT>
 #include "state.h"
 #include "surveyresults.h"
@@ -35,19 +34,6 @@ namespace detail
 // Yuni::Static::Type::StrictlyEqual<VCardT, Target>::Yes usage.
 template<class VCardT, class TargetT>
 inline constexpr bool isSameVCard = std::is_same_v<VCardT, TargetT>;
-
-template<class VarT>
-void initializeFromAreaLink(VarT& var, Data::Study* study, Data::AreaLink* link)
-{
-    if constexpr (requires { var.initializeFromAreaLink(study, link); })
-    {
-        var.initializeFromAreaLink(study, link);
-    }
-    else
-    {
-        var.initializeFromLink(study, link);
-    }
-}
 } // namespace detail
 
 /*!
@@ -60,21 +46,20 @@ template<class... Vars>
 class TupleVariableList
 {
 public:
-    //! Number of variables in this list (== chain length).
+    //! Number of variables in this list
     static constexpr std::size_t count = sizeof...(Vars);
 
     /*!
     ** \brief Compile-time column count filtered by (dataLevel, fileLevel).
     **
     ** Each Vi exposes `Statistics<CD, CF>::count` (nested struct). We fold over
-    ** the pack to sum — this replaces the current recursive definition in
-    ** IVariable that walks the chain.
+    ** the pack to sum.
     */
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count
-          = (0 + ... + Vars::template Statistics<CDataLevel, CFile>::count);
+        static constexpr int count = (0 + ...
+                                      + Vars::template Statistics<CDataLevel, CFile>::count);
     };
 
     // ------------------------------------------------------------------
@@ -93,17 +78,7 @@ public:
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
     {
-        std::apply([&](auto&... v) { (detail::initializeFromAreaLink(v, study, link), ...); },
-                   vars_);
-    }
-
-    void initializeFromThermalCluster(Data::Study* study,
-                                      Data::Area* area,
-                                      Data::ThermalCluster* cluster)
-    {
-        std::apply([&](auto&... v)
-                   { (v.initializeFromThermalCluster(study, area, cluster), ...); },
-                   vars_);
+        std::apply([&](auto&... v) { (v.initializeFromLink(study, link), ...); }, vars_);
     }
 
     void broadcastNonApplicability(bool applyNonApplicable)
@@ -132,9 +107,6 @@ public:
         std::apply([](auto&... v) { (v.simulationEnd(), ...); }, vars_);
     }
 
-    // Legacy chain uses the 2-arg (year, numSpace) signature in the leaf bases
-    // (economy_base.h:341) but the outermost IVariable exposes (year) only.
-    // We forward both to be safe during migration.
     void yearBegin(unsigned int year, unsigned int numSpace)
     {
         std::apply([&](auto&... v) { (v.yearBegin(year, numSpace), ...); }, vars_);
@@ -143,11 +115,6 @@ public:
     void yearEnd(unsigned int year, unsigned int numSpace)
     {
         std::apply([&](auto&... v) { (v.yearEnd(year, numSpace), ...); }, vars_);
-    }
-
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
-    {
-        std::apply([&](auto&... v) { (v.yearEndBuild(state, year, numSpace), ...); }, vars_);
     }
 
     void yearEndBuildPrepareDataForEachThermalCluster(State& state,
@@ -160,13 +127,11 @@ public:
           vars_);
     }
 
-    void yearEndBuildForEachThermalCluster(State& state,
-                                           unsigned int year,
-                                           unsigned int numSpace)
+    void yearEndBuildForEachThermalCluster(State& state, unsigned int year, unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v) { (v.yearEndBuildForEachThermalCluster(state, year, numSpace), ...); },
-          vars_);
+        std::apply([&](auto&... v)
+                   { (v.yearEndBuildForEachThermalCluster(state, year, numSpace), ...); },
+                   vars_);
     }
 
     void computeSummary(unsigned int year, unsigned int numSpace)
@@ -216,12 +181,14 @@ public:
 
     // Reports — each leaf filters internally on (dataLevel, fileLevel, precision)
     // so the tuple just broadcasts.
-    void buildSurveyReport(SurveyResults& results, int dataLevel, int fileLevel, int precision) const
+    void buildSurveyReport(SurveyResults& results,
+                           int dataLevel,
+                           int fileLevel,
+                           int precision) const
     {
-        std::apply(
-          [&](const auto&... v)
-          { (v.buildSurveyReport(results, dataLevel, fileLevel, precision), ...); },
-          vars_);
+        std::apply([&](const auto&... v)
+                   { (v.buildSurveyReport(results, dataLevel, fileLevel, precision), ...); },
+                   vars_);
     }
 
     void buildAnnualSurveyReport(SurveyResults& results,
@@ -238,9 +205,8 @@ public:
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
-        std::apply(
-          [&](const auto&... v) { (v.buildDigest(results, digestLevel, dataLevel), ...); },
-          vars_);
+        std::apply([&](const auto&... v) { (v.buildDigest(results, digestLevel, dataLevel), ...); },
+                   vars_);
     }
 
     // ------------------------------------------------------------------
@@ -250,70 +216,41 @@ public:
     template<class SearchVCardT, class O>
     void computeSpatialAggregateWith(O& out, unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v)
-          {
-              ((tryAggregate<SearchVCardT>(v, out, numSpace)) || ...);
-          },
-          vars_);
+        std::apply([&](auto&... v) { ((tryAggregate<SearchVCardT>(v, out, numSpace)) || ...); },
+                   vars_);
     }
 
     template<class SearchVCardT, class O>
     void computeSpatialAggregateWith(O& out, const Data::Area* area)
     {
-        // Legacy chain's non-numSpace overload only propagates (variable.hxx:390);
-        // EndOfList terminates without asserting in this overload path.
-        // We preserve that no-op-at-leaf semantic: nothing to do in the tuple.
+        // No-op-at-leaf semantic: nothing to do in the tuple.
         (void)out;
         (void)area;
-    }
-
-    template<class VCardToFindT>
-    const double* retrieveHourlyResultsForCurrentYear(unsigned int /*numSpace*/) const
-    {
-        // Legacy chain returns nullptr at the match point and only recurses when not
-        // matched (variable.hxx:434-436). We reproduce: walk tuple, return nullptr
-        // on first match; otherwise keep walking and return nullptr at the end.
-        const double* r = nullptr;
-        std::apply(
-          [&](const auto&... v)
-          {
-              ((isMatchRetrieve<VCardToFindT>(v) ? (r = nullptr, true)
-                                                 : false)
-               || ...);
-          },
-          vars_);
-        return r;
     }
 
     template<class VCardToFindT>
     void retrieveResultsForArea(typename Storage<VCardToFindT>::ResultsType** result,
                                 const Data::Area* area)
     {
-        std::apply(
-          [&](auto&... v)
-          { ((tryAssignArea<VCardToFindT>(v, result, area)) || ...); },
-          vars_);
+        std::apply([&](auto&... v) { ((tryAssignArea<VCardToFindT>(v, result, area)) || ...); },
+                   vars_);
     }
 
     template<class VCardToFindT>
     void retrieveResultsForThermalCluster(typename Storage<VCardToFindT>::ResultsType** result,
                                           const Data::ThermalCluster* cluster)
     {
-        std::apply(
-          [&](auto&... v)
-          { ((tryAssignCluster<VCardToFindT>(v, result, cluster)) || ...); },
-          vars_);
+        std::apply([&](auto&... v)
+                   { ((tryAssignCluster<VCardToFindT>(v, result, cluster)) || ...); },
+                   vars_);
     }
 
     template<class VCardToFindT>
     void retrieveResultsForLink(typename Storage<VCardToFindT>::ResultsType** result,
                                 const Data::AreaLink* link)
     {
-        std::apply(
-          [&](auto&... v)
-          { ((tryAssignLink<VCardToFindT>(v, result, link)) || ...); },
-          vars_);
+        std::apply([&](auto&... v) { ((tryAssignLink<VCardToFindT>(v, result, link)) || ...); },
+                   vars_);
     }
 
     // ------------------------------------------------------------------
@@ -326,20 +263,11 @@ public:
         (Vars::RetrieveVariableList(predicate), ...);
     }
 
-    template<class I>
-    static void provideInformations(I& infos)
-    {
-        (Vars::template provideInformations<I>(infos), ...);
-    }
-
-    // Spatial-aggregate templates: the legacy chain simply forwards these to the
-    // next variable (variable.hxx:142-185). In the tuple we broadcast.
     template<class V>
     void yearEndSpatialAggregates(V& allVars, unsigned int year, unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v) { (v.yearEndSpatialAggregates(allVars, year, numSpace), ...); },
-          vars_);
+        std::apply([&](auto&... v) { (v.yearEndSpatialAggregates(allVars, year, numSpace), ...); },
+                   vars_);
     }
 
     template<class V, class SetT>
@@ -352,22 +280,23 @@ public:
     // 4-arg variant — only SpatialAggregate leaves expose it. setofareas.hxx:269
     // dispatches through the tuple of SpatialAggregate wrappers.
     template<class V, class SetT>
-    void yearEndSpatialAggregates(V& allVars, unsigned int year, const SetT& set,
+    void yearEndSpatialAggregates(V& allVars,
+                                  unsigned int year,
+                                  const SetT& set,
                                   unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v)
-          { (v.yearEndSpatialAggregates(allVars, year, set, numSpace), ...); },
-          vars_);
+        std::apply([&](auto&... v)
+                   { (v.yearEndSpatialAggregates(allVars, year, set, numSpace), ...); },
+                   vars_);
     }
 
     // 3-arg SpatialAggregate summary — not on the regular IVariable chain.
     template<class V>
     void computeSpatialAggregatesSummary(V& allVars, unsigned int year, unsigned int numSpace)
     {
-        std::apply(
-          [&](auto&... v) { (v.computeSpatialAggregatesSummary(allVars, year, numSpace), ...); },
-          vars_);
+        std::apply([&](auto&... v)
+                   { (v.computeSpatialAggregatesSummary(allVars, year, numSpace), ...); },
+                   vars_);
     }
 
     template<class V>
@@ -401,21 +330,16 @@ private:
         using VCard = typename V::VCardType;
         if constexpr (detail::isSameVCard<VCard, Search>)
         {
-            Variable::SpatialAggregateOperation<true, VCard::spatialAggregate, VCard>::Perform(out,
-                                                                                               v,
-                                                                                               numSpace);
+            Variable::SpatialAggregateOperation<true, VCard::spatialAggregate, VCard>::Perform(
+              out,
+              v,
+              numSpace);
             return true;
         }
         else
         {
             return false;
         }
-    }
-
-    template<class Target, class V>
-    static bool isMatchRetrieve(const V&)
-    {
-        return detail::isSameVCard<typename V::VCardType, Target>;
     }
 
     template<class Target, class V, class R>

@@ -10,12 +10,6 @@
 namespace Antares::Solver::Variable
 {
 template<class VariableList>
-inline Areas<VariableList>::Areas()
-{
-    // Do nothing
-}
-
-template<class VariableList>
 inline void Areas<VariableList>::initializeFromArea(Data::Study*, Data::Area*)
 {
     // Nothing to do here
@@ -29,18 +23,10 @@ inline void Areas<VariableList>::initializeFromLink(Data::Study*, Data::AreaLink
 }
 
 template<class VariableList>
-inline void Areas<VariableList>::initializeFromThermalCluster(Data::Study*,
-                                                       Data::Area*,
-                                                       Data::ThermalCluster*)
-{
-    // This method should not be called at this point
-}
-
-template<class VariableList>
 void Areas<VariableList>::buildSurveyReport(SurveyResults& results,
-                                     int dataLevel,
-                                     int fileLevel,
-                                     int precision) const
+                                            int dataLevel,
+                                            int fileLevel,
+                                            int precision) const
 {
     int count_int = count;
     bool linkDataLevel = dataLevel & Category::DataLevel::link;
@@ -99,10 +85,10 @@ void Areas<VariableList>::buildSurveyReport(SurveyResults& results,
 
 template<class VariableList>
 void Areas<VariableList>::buildAnnualSurveyReport(SurveyResults& results,
-                                           int dataLevel,
-                                           int fileLevel,
-                                           int precision,
-                                           uint numSpace) const
+                                                  int dataLevel,
+                                                  int fileLevel,
+                                                  int precision,
+                                                  uint numSpace) const
 {
     int count_int = count;
     bool linkDataLevel = dataLevel & Category::DataLevel::link;
@@ -172,15 +158,14 @@ void Areas<VariableList>::buildDigest(SurveyResults& results, int digestLevel, i
     {
         if (dataLevel & Category::DataLevel::area)
         {
-            assert(pAreaCount == results.data.study.areas.size());
+            assert(pAreas.size() == results.data.study.areas.size());
 
             // Reset captions
             results.data.rowCaptions.clear();
-            results.data.rowCaptions.resize(pAreaCount);
+            results.data.rowCaptions.resize(pAreas.size());
 
             // For each area
-            // for (uint i = 0; i != results.data.study.areas.byIndex.size(); ++i)
-            for (uint i = 0; i != pAreaCount; ++i)
+            for (uint i = 0; i != pAreas.size(); ++i)
             {
                 results.data.area = results.data.study.areas[i];
                 uint index = results.data.area->index;
@@ -202,28 +187,6 @@ inline void Areas<VariableList>::RetrieveVariableList(PredicateT& predicate)
 }
 
 template<class VariableList>
-template<class I>
-inline void Areas<VariableList>::provideInformations(I& infos)
-{
-    // Begining of the node
-    if (VCardType::nodeDepthForGUI)
-    {
-        infos.template beginNode<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-        // End of the node
-        infos.endNode();
-    }
-    else
-    {
-        // Giving our VCard
-        infos.template addVCard<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-    }
-}
-
-template<class VariableList>
 template<class SearchVCardT, class O>
 inline void Areas<VariableList>::computeSpatialAggregateWith(O&)
 {
@@ -232,17 +195,12 @@ inline void Areas<VariableList>::computeSpatialAggregateWith(O&)
 
 template<class VariableList>
 template<class SearchVCardT, class O>
-inline void Areas<VariableList>::computeSpatialAggregateWith(O& out, const Data::Area* area, uint numSpace)
+inline void Areas<VariableList>::computeSpatialAggregateWith(O& out,
+                                                             const Data::Area* area,
+                                                             uint numSpace)
 {
     assert(NULL != area);
     pAreas[area->index].template computeSpatialAggregateWith<SearchVCardT, O>(out, numSpace);
-}
-
-template<class VariableList>
-template<class VCardToFindT>
-const double* Areas<VariableList>::retrieveHourlyResultsForCurrentYear() const
-{
-    return nullptr;
 }
 
 template<class VariableList>
@@ -274,27 +232,16 @@ inline void Areas<VariableList>::retrieveResultsForLink(
 }
 
 template<class VariableList>
-Areas<VariableList>::~Areas()
-{
-    // Releasing the memory occupied by the areas
-    delete[] pAreas;
-}
-
-template<class VariableList>
 void Areas<VariableList>::initializeFromStudy(Data::Study& study)
 {
-    // The total number of areas
-    pAreaCount = study.areas.size();
+    const uint pAreaCount = study.areas.size();
 
-    // Reserving the memory
-    pAreas = new VariableList[pAreaCount];
+    pAreas.resize(pAreaCount);
 
-    // For each area...
     uint tick = 6;
     uint oldPercent = 0;
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
-        // Instancing a new set of variables of the area
         auto* currentArea = study.areas.byIndex[i];
         if (!(--tick))
         {
@@ -304,7 +251,6 @@ void Areas<VariableList>::initializeFromStudy(Data::Study& study)
                 logs.info() << "Allocating resources " << ((i * 100u) / pAreaCount) << "%";
                 oldPercent = newPercent;
             }
-            // Reset the tick
             tick = 6;
         }
 
@@ -328,7 +274,7 @@ void Areas<VariableList>::initializeFromStudy(Data::Study& study)
 template<class VariableList>
 void Areas<VariableList>::simulationBegin()
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].simulationBegin();
     }
@@ -337,7 +283,7 @@ void Areas<VariableList>::simulationBegin()
 template<class VariableList>
 void Areas<VariableList>::simulationEnd()
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].simulationEnd();
     }
@@ -360,6 +306,15 @@ void Areas<VariableList>::hourForEachArea(State& state, uint numSpace)
               // Intiializing the state for the current thermal cluster
               state.initFromThermalClusterIndex(cluster->enabledIndex);
           }
+
+          for (std::size_t i = 0; i < area.shortTermStorage.storagesByIndex.size(); i++)
+          {
+              // Intiializing the state for the current short term storage cluster
+              state.initFromShortTermStorageClusterIndex(i);
+          }
+
+          // Ajout de l'initialisation pour l'hydro
+          state.initFromHydro();
 
           // Variables
           auto& variablesForArea = pAreas[area.index];
@@ -390,10 +345,6 @@ void Areas<VariableList>::weekForEachArea(State& state, uint numSpace)
 
           auto& variablesForArea = pAreas[area.index];
 
-          // DTG MRG
-          state.dispatchableMargin = variablesForArea.template retrieveHourlyResultsForCurrentYear<
-            Economy::VCardDispatchableGenMargin>(numSpace);
-
           variablesForArea.weekForEachArea(state, numSpace);
 
           // NOTE
@@ -405,14 +356,14 @@ void Areas<VariableList>::weekForEachArea(State& state, uint numSpace)
 template<class VariableList>
 void Areas<VariableList>::yearBegin(uint year, uint numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].yearBegin(year, numSpace);
     }
 }
 
 template<class VariableList>
-void Areas<VariableList>::yearEndBuild(State& state, uint year, uint numSpace)
+void Areas<VariableList>::buildThermalClusterYearEndResults(State& state, uint year, uint numSpace)
 {
     // For each area...
     state.study.areas.each(
@@ -440,13 +391,19 @@ void Areas<VariableList>::yearEndBuild(State& state, uint year, uint numSpace)
               // Variables
               variablesForArea.yearEndBuildForEachThermalCluster(state, year, numSpace);
           } // for each thermal cluster
+
+          // Calculation of reserve participation costs
+          if (state.study.parameters.reservesEnabled)
+          {
+              state.calculateReserveParticipationCosts();
+          }
       }); // for each area
 }
 
 template<class VariableList>
 void Areas<VariableList>::yearEnd(uint year, uint numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         // Broadcast to all areas
         pAreas[i].yearEnd(year, numSpace);
@@ -456,7 +413,7 @@ void Areas<VariableList>::yearEnd(uint year, uint numSpace)
 template<class VariableList>
 void Areas<VariableList>::computeSummary(unsigned int year, unsigned int numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         // Broadcast to all areas
         pAreas[i].computeSummary(year, numSpace);
@@ -466,7 +423,7 @@ void Areas<VariableList>::computeSummary(unsigned int year, unsigned int numSpac
 template<class VariableList>
 void Areas<VariableList>::weekBegin(State& state)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].weekBegin(state);
     }
@@ -475,7 +432,7 @@ void Areas<VariableList>::weekBegin(State& state)
 template<class VariableList>
 void Areas<VariableList>::weekEnd(State& state)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].weekEnd(state);
     }
@@ -484,7 +441,7 @@ void Areas<VariableList>::weekEnd(State& state)
 template<class VariableList>
 void Areas<VariableList>::hourBegin(uint hourInTheYear)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].hourBegin(hourInTheYear);
     }
@@ -493,7 +450,7 @@ void Areas<VariableList>::hourBegin(uint hourInTheYear)
 template<class VariableList>
 void Areas<VariableList>::hourForEachLink(State& state, uint numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].hourForEachLink(state, numSpace);
     }
@@ -502,7 +459,7 @@ void Areas<VariableList>::hourForEachLink(State& state, uint numSpace)
 template<class VariableList>
 void Areas<VariableList>::hourEnd(State& state, uint hourInTheYear)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].hourEnd(state, hourInTheYear);
     }
@@ -511,7 +468,7 @@ void Areas<VariableList>::hourEnd(State& state, uint hourInTheYear)
 template<class VariableList>
 void Areas<VariableList>::beforeYearByYearExport(uint year, uint numSpace)
 {
-    for (uint i = 0; i != pAreaCount; ++i)
+    for (uint i = 0; i != pAreas.size(); ++i)
     {
         pAreas[i].beforeYearByYearExport(year, numSpace);
     }

@@ -4,6 +4,8 @@
 #ifndef __SOLVER_VARIABLE_INC_LINK_H__
 #define __SOLVER_VARIABLE_INC_LINK_H__
 
+#include <vector>
+
 #include "antares/solver/variable/info.h"
 #include "antares/solver/variable/storage/results.h"
 #include "antares/solver/variable/tuple_variable_list.h"
@@ -34,10 +36,8 @@ struct VCardAllLinks
 
     static constexpr uint8_t categoryDataLevel = Category::DataLevel::link;
     static constexpr uint8_t categoryFileLevel = ResultsType::categoryFile;
-    static constexpr uint8_t nodeDepthForGUI = +1;
     static constexpr int columnCount = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
-    static constexpr uint8_t hasIntermediateValues = 0;
 
 }; // class VCard
 
@@ -64,12 +64,8 @@ public:
         VariablePerLink::RetrieveVariableList(predicate);
     }
 
-    Links();
-    ~Links();
-
     void initializeFromStudy(Data::Study& study);
     void initializeFromArea(Data::Study*, Data::Area*);
-    void initializeFromThermalCluster(Data::Study*, Data::Area*, Data::ThermalCluster*);
     void initializeFromLink(Data::Study*, Data::AreaLink*);
 
     void broadcastNonApplicability(bool applyNonApplicable);
@@ -84,7 +80,7 @@ public:
     void yearEndBuildPrepareDataForEachThermalCluster(State& state, uint year, uint numSpace);
     void yearEndBuildForEachThermalCluster(State& state, uint year, uint numSpace);
 
-    void yearEndBuild(State& state, uint year);
+    void buildThermalClusterYearEndResults(State& state, uint year, uint numSpace);
 
     void yearEnd(uint year, uint numSpace);
 
@@ -116,15 +112,6 @@ public:
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const;
 
-    template<class I>
-    static void provideInformations(I& infos);
-
-    template<class VCardToFindT>
-    inline const double* retrieveHourlyResultsForCurrentYear(uint) const
-    {
-        return nullptr;
-    }
-
     template<class VCardToFindT>
     void retrieveResultsForArea(Storage<VCardToFindT>::ResultsType** result, const Data::Area*)
     {
@@ -151,8 +138,7 @@ public:
     }
 
 public:
-    VariablePerLink* pLinks;
-    uint pLinkCount;
+    std::vector<VariablePerLink> pLinks;
 
 }; // class Links
 

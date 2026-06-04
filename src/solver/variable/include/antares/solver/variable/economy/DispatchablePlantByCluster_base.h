@@ -73,8 +73,6 @@ struct VCardDispatchablePlantByClusterBase
                                                  & (Category::FileLevel::de);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 0;
     //! Number of columns used by the variable
@@ -83,8 +81,6 @@ struct VCardDispatchablePlantByClusterBase
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
@@ -112,15 +108,11 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
-    void initializeFromStudy([[maybe_unused]] Data::Study& study)
-    {
-    }
-
     void initializeFromArea(Data::Study* study, Data::Area* area)
     {
         pNbYearsParallel = study->maxNbYearsInParallel;
@@ -163,19 +155,6 @@ public:
         return pSize * ResultsType::count;
     }
 
-    void initializeFromLink([[maybe_unused]] Data::Study* study,
-                            [[maybe_unused]] Data::AreaLink* link)
-    {
-    }
-
-    void simulationBegin()
-    {
-    }
-
-    void simulationEnd()
-    {
-    }
-
     void yearBegin(uint year, uint numSpace)
     {
         for (uint i = 0; i != pSize; ++i)
@@ -186,15 +165,7 @@ public:
         yearBeginIfSupported(auxiliaryData_, year, numSpace, pSize);
     }
 
-    void yearEndBuild([[maybe_unused]] State& state,
-                      [[maybe_unused]] uint year,
-                      [[maybe_unused]] uint numSpace)
-    {
-    }
-
-    void yearEndBuildPrepareDataForEachThermalCluster(State& state,
-                                                      uint year,
-                                                      uint numSpace)
+    void yearEndBuildPrepareDataForEachThermalCluster(State& state, uint year, uint numSpace)
     {
         yearEndBuildPrepareDataForEachThermalClusterIfSupported(pValuesForTheCurrentYear,
                                                                 auxiliaryData_,
@@ -225,10 +196,6 @@ public:
         {
             AncestorType::pResults[i].merge(year, pValuesForTheCurrentYear[numSpace][i]);
         }
-    }
-
-    void hourBegin([[maybe_unused]] uint hourInTheYear)
-    {
     }
 
     void hourForEachArea(State& state, uint numSpace)

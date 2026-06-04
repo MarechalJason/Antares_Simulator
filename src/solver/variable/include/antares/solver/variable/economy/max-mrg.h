@@ -65,8 +65,6 @@ struct MaxMargeTraits
     }
 };
 
-using VCardMARGE = EconomyVariableCard<MaxMargeTraits>;
-
 using Marge = EconomyVariableBase<MaxMargeTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

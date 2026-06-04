@@ -32,10 +32,7 @@ struct DispatchableGenMarginTraits
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
-    static void setHourlyValue(IntermediateValues& yearlyValues,
-                               detail::EmptyAuxiliaryData&,
-                               const State& state,
-                               unsigned int)
+    static void setHourlyValue(IntermediateValues& yearlyValues, const State& state, unsigned int)
     {
         yearlyValues[state.hourInTheYear] += state.scratchpad
                                                ->dispatchableGenerationMargin[state.hourInTheWeek];

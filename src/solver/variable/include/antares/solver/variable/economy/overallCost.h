@@ -35,18 +35,66 @@ struct OverallCostTraits
         iv.computeStatisticsForTheCurrentYear();
     }
 
+    static double calculateEnergyDeficitCost(const State& state)
+    {
+        const auto& hourlyResults = *state.hourlyResults;
+        const auto hourInWeek = state.hourInTheWeek;
+        const auto& thermal = state.area->thermal;
+
+        const double unsuppliedCost = hourlyResults.ValeursHorairesDeDefaillancePositive[hourInWeek]
+                                      * thermal.unsuppliedEnergyCost;
+
+        const double spilledCost = hourlyResults.ValeursHorairesDeDefaillanceNegative[hourInWeek]
+                                   * thermal.spilledEnergyCost;
+
+        return unsuppliedCost + spilledCost;
+    }
+
+    static double calculateReservesCost(const State& state)
+    {
+        if (!state.study.parameters.include.reserves)
+        {
+            return 0.0;
+        }
+
+        const auto& reserves = state.problemeHebdo->allReserves.value()[state.area->index];
+        const auto& hourlyReserves = state.hourlyResults->Reserves.value()[state.hourInTheWeek];
+
+        double totalReservesCost = 0.0;
+
+        for (const auto& reserve: reserves.areaCapacityReservations)
+        {
+            const double unsatisfiedCost = hourlyReserves.ValeursHorairesInternalUnsatisfied
+                                             [reserve.areaReserveIndex]
+                                           * reserve.unsuppliedCost;
+
+            const double excessCost = hourlyReserves.ValeursHorairesInternalExcessReserve
+                                        [reserve.areaReserveIndex]
+                                      * reserve.spillageCost;
+
+            totalReservesCost += unsatisfiedCost + excessCost;
+        }
+
+        return totalReservesCost;
+    }
+
+    static double getReserveParticipationCost(const State& state)
+    {
+        return state.reserveData ? state.reserveData.value()
+                                     .at(state.area->index)
+                                     .reserveParticipationCostForYear[state.hourInTheYear]
+                                 : 0.0;
+    }
+
     template<class Aux>
     static void setHourlyValue(IntermediateValues& iv, Aux&, const State& state, unsigned int)
     {
-        const double costForSpilledOrUnsuppliedEnergy
-          = (state.hourlyResults->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek]
-             * state.area->thermal.unsuppliedEnergyCost)
-            + (state.hourlyResults->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
-               * state.area->thermal.spilledEnergyCost);
+        const double totalCost = calculateEnergyDeficitCost(state) + calculateReservesCost(state)
+                                 + getReserveParticipationCost(state);
 
-        iv[state.hourInTheYear] += costForSpilledOrUnsuppliedEnergy;
+        iv[state.hourInTheYear] += totalCost;
         // state is logically non-const; annualSystemCost is a side-channel accumulator.
-        const_cast<State&>(state).annualSystemCost += costForSpilledOrUnsuppliedEnergy;
+        const_cast<State&>(state).annualSystemCost += totalCost;
     }
 
     static void yearEndBuildForEachThermalCluster(IntermediateValues& values,

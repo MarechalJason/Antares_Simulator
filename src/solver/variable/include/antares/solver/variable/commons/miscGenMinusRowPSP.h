@@ -43,8 +43,6 @@ struct VCardMiscGenMinusRowPSP
                                                     | Category::FileLevel::va);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 0;
     //! Number of columns used by the variable (One ResultsType per column)
@@ -53,8 +51,6 @@ struct VCardMiscGenMinusRowPSP
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
@@ -67,8 +63,7 @@ struct VCardMiscGenMinusRowPSP
 /*!
 ** \brief Marginal MiscGenMinusRowPSP
 */
-class MiscGenMinusRowPSP
-    : public Variable::IVariable<MiscGenMinusRowPSP, VCardMiscGenMinusRowPSP>
+class MiscGenMinusRowPSP: public Variable::IVariable<MiscGenMinusRowPSP, VCardMiscGenMinusRowPSP>
 {
 public:
     //! VCard
@@ -93,8 +88,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
+                       ? VCardType::columnCount * ResultsType::count
+                       : 0),
         };
     };
 
@@ -138,10 +133,6 @@ public:
         }
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     template<class R>
     static void InitializeResultsFromStudy(R& results, Data::Study& study)
     {
@@ -157,10 +148,6 @@ public:
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
-    {
-    }
-
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
     }
 

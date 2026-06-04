@@ -46,11 +46,6 @@ struct LoopFlowTraits
     }
 };
 
-using VCardLoopFlow = VCardStaticLinkBase<LoopFlowTraits>;
-
-/*!
-** \brief Loop flow
-*/
 using LoopFlow = StaticLinkBase<LoopFlowTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

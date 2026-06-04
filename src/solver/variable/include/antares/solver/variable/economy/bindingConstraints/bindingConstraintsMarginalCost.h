@@ -39,14 +39,10 @@ struct VCardBindingConstMarginCost
                                                  & (Category::FileLevel::bc);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 2;
     //! Number of columns used by the variable
     static constexpr int columnCount = 1;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 1;
 
@@ -88,8 +84,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
+                       ? VCardType::columnCount * ResultsType::count
+                       : 0),
         };
     };
 

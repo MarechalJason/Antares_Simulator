@@ -30,17 +30,12 @@ struct LMRViolationsTraits
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
-    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
-
     static double value(const State& state)
     {
         return state.hourlyResults->ValeursHorairesLmrViolations[state.hourInTheWeek];
     }
 
-    static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
-                               const State& state,
-                               unsigned int)
+    static void setHourlyValue(IntermediateValues& iv, const State& state, unsigned int)
     {
         iv[state.hourInTheYear] = value(state);
     }
@@ -50,8 +45,6 @@ struct LMRViolationsTraits
         intermediateValues.computeStatisticsForTheCurrentYear();
     }
 };
-
-using VCardLMRViolations = EconomyVariableCard<LMRViolationsTraits>;
 
 using LMRViolations = EconomyVariableBase<LMRViolationsTraits>;
 

@@ -1,6 +1,5 @@
 // Copyright 2007-2026, RTE (https://www.rte-france.com)
 // SPDX-License-Identifier: MPL-2.0
-
 #pragma once
 
 #include <antares/logs/logs.h>
@@ -64,8 +63,6 @@ struct MaxMargeCsrTraits
         intermediateValues.computeStatisticsForTheCurrentYear();
     }
 };
-
-using VCardMAX_MRG_CSR = EconomyVariableCard<MaxMargeCsrTraits>;
 
 using MaxMrgCsr = EconomyVariableBase<MaxMargeCsrTraits>;
 

@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <antares/logs/logs.h>
-
 #include "economy_base.h"
 
 namespace Antares::Solver::Variable::Economy
@@ -32,22 +30,20 @@ struct OperatingCostTraits
     static constexpr uint8_t decimal = 0;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
 
-    // This variable produces no hourly value: its results are accumulated at
-    // year end in yearEndBuildForEachThermalCluster. We still implement an
-    // explicit no-op setHourlyValue so the economy_base contract is satisfied
-    // intentionally (rather than by a silent fallback), and we log it once.
+    // Hourly contribution: reserve participation cost (when enabled).
+    // Thermal cluster operating cost is added at year end below.
     template<class AuxiliaryData>
-    static void setHourlyValue(IntermediateValues& /*values*/,
+    static void setHourlyValue(IntermediateValues& values,
                                AuxiliaryData& /*auxiliaryData*/,
-                               const State& /*state*/,
+                               const State& state,
                                unsigned int /*numSpace*/)
     {
-        [[maybe_unused]] static const bool logged = []
+        if (state.reserveData)
         {
-            Antares::logs.info() << "Variable '" << Caption()
-                                 << "' has no hourly value (computed at year end)";
-            return true;
-        }();
+            values[state.hourInTheYear] += state.reserveData.value()
+                                             .at(state.area->index)
+                                             .reserveParticipationCostForYear[state.hourInTheYear];
+        }
     }
 
     static void yearEndBuildForEachThermalCluster(IntermediateValues& values,
@@ -68,8 +64,6 @@ struct OperatingCostTraits
         intermediateValues.computeStatisticsForTheCurrentYear();
     }
 };
-
-using VCardOperatingCost = EconomyVariableCard<OperatingCostTraits>;
 
 using OperatingCost = EconomyVariableBase<OperatingCostTraits>;
 

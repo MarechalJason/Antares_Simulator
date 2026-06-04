@@ -43,8 +43,6 @@ struct VCardRowBalance
                                                     | Category::FileLevel::va);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 0;
     //! Number of columns used by the variable (One ResultsType per column)
@@ -53,8 +51,6 @@ struct VCardRowBalance
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateOnce;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
@@ -93,8 +89,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
+                       ? VCardType::columnCount * ResultsType::count
+                       : 0),
         };
     };
 
@@ -141,10 +137,6 @@ public:
         AncestorType::pResults.merge(0, pValuesForTheCurrentYear);
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
     }
@@ -154,10 +146,6 @@ public:
     }
 
     void yearBegin(unsigned int year, unsigned int numSpace)
-    {
-    }
-
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
     {
     }
 

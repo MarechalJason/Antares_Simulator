@@ -5,11 +5,6 @@
 #define __SOLVER_VARIABLE_JOIN_ALL_H__
 
 #include <tuple>
-#include <utility>
-
-#include "antares/solver/variable/variable.h"
-
-#include "join.h"
 
 namespace Antares::Solver::Variable
 {
@@ -18,15 +13,13 @@ template<class... Wrappers>
 class JoinAll
 {
 public:
-    using VCardType = VCardJoin;
-
     static constexpr std::size_t count = (0 + ... + Wrappers::count);
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count
-            = (0 + ... + Wrappers::template Statistics<CDataLevel, CFile>::count);
+        static constexpr int count = (0 + ...
+                                      + Wrappers::template Statistics<CDataLevel, CFile>::count);
     };
 
 public:
@@ -51,14 +44,6 @@ public:
         std::apply([&](auto&... w) { (w.initializeFromLink(study, link), ...); }, wrappers_);
     }
 
-    void initializeFromThermalCluster(Data::Study* study,
-                                   Data::Area* area,
-                                   Data::ThermalCluster* cluster)
-    {
-        std::apply([&](auto&... w) { (w.initializeFromThermalCluster(study, area, cluster), ...); },
-                   wrappers_);
-    }
-
     void simulationBegin()
     {
         std::apply([](auto&... w) { (w.simulationBegin(), ...); }, wrappers_);
@@ -76,7 +61,8 @@ public:
 
     void yearEndBuildPrepareDataForEachThermalCluster(State& state, uint year)
     {
-        std::apply([&](auto&... w) { (w.yearEndBuildPrepareDataForEachThermalCluster(state, year), ...); },
+        std::apply([&](auto&... w)
+                   { (w.yearEndBuildPrepareDataForEachThermalCluster(state, year), ...); },
                    wrappers_);
     }
 
@@ -86,9 +72,11 @@ public:
                    wrappers_);
     }
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
+    void buildThermalClusterYearEndResults(State& state, unsigned int year, unsigned int numSpace)
     {
-        std::apply([&](auto&... w) { (w.yearEndBuild(state, year, numSpace), ...); }, wrappers_);
+        std::apply([&](auto&... w)
+                   { (w.buildThermalClusterYearEndResults(state, year, numSpace), ...); },
+                   wrappers_);
     }
 
     void yearEnd(unsigned int year, unsigned int numSpace)
@@ -137,28 +125,31 @@ public:
     }
 
     void buildSurveyReport(SurveyResults& results,
-                         int dataLevel,
-                         int fileLevel,
-                         int precision) const
+                           int dataLevel,
+                           int fileLevel,
+                           int precision) const
     {
-        std::apply([&](const auto&... w) { (w.buildSurveyReport(results, dataLevel, fileLevel, precision), ...); },
-                    wrappers_);
+        std::apply([&](const auto&... w)
+                   { (w.buildSurveyReport(results, dataLevel, fileLevel, precision), ...); },
+                   wrappers_);
     }
 
     void buildAnnualSurveyReport(SurveyResults& results,
-                             int dataLevel,
-                             int fileLevel,
-                             int precision,
-                             uint numSpace) const
+                                 int dataLevel,
+                                 int fileLevel,
+                                 int precision,
+                                 uint numSpace) const
     {
-        std::apply([&](const auto&... w) { (w.buildAnnualSurveyReport(results, dataLevel, fileLevel, precision, numSpace), ...); },
-                    wrappers_);
+        std::apply(
+          [&](const auto&... w)
+          { (w.buildAnnualSurveyReport(results, dataLevel, fileLevel, precision, numSpace), ...); },
+          wrappers_);
     }
 
     void buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
     {
         std::apply([&](const auto&... w) { (w.buildDigest(results, digestLevel, dataLevel), ...); },
-                    wrappers_);
+                   wrappers_);
     }
 
     void beforeYearByYearExport(uint year, uint numSpace)
@@ -169,14 +160,18 @@ public:
     template<class SearchVCardT, class O>
     void computeSpatialAggregateWith(O& out)
     {
-        std::apply([&](auto&... w) { (w.template computeSpatialAggregateWith<SearchVCardT, O>(out), ...); }, wrappers_);
+        std::apply([&](auto&... w)
+                   { (w.template computeSpatialAggregateWith<SearchVCardT, O>(out), ...); },
+                   wrappers_);
     }
 
     template<class SearchVCardT, class O>
     void computeSpatialAggregateWith(O& out, const Data::Area* area, uint numSpace)
     {
-        std::apply([&](auto&... w) { (w.template computeSpatialAggregateWith<SearchVCardT, O>(out, area, numSpace), ...); },
-                   wrappers_);
+        std::apply(
+          [&](auto&... w)
+          { (w.template computeSpatialAggregateWith<SearchVCardT, O>(out, area, numSpace), ...); },
+          wrappers_);
     }
 
     template<class V>
@@ -189,14 +184,16 @@ public:
     template<class V>
     void computeSpatialAggregatesSummary(V& allVars, unsigned int year, unsigned int numSpace)
     {
-        std::apply([&](auto&... w) { (w.computeSpatialAggregatesSummary(allVars, year, numSpace), ...); },
+        std::apply([&](auto&... w)
+                   { (w.computeSpatialAggregatesSummary(allVars, year, numSpace), ...); },
                    wrappers_);
     }
 
     template<class V>
     void simulationEndSpatialAggregates(V& allVars)
     {
-        std::apply([&](auto&... w) { (w.simulationEndSpatialAggregates(allVars), ...); }, wrappers_);
+        std::apply([&](auto&... w) { (w.simulationEndSpatialAggregates(allVars), ...); },
+                   wrappers_);
     }
 
     template<class I>
@@ -206,44 +203,39 @@ public:
     }
 
     template<class VCardToFindT>
-    const double* retrieveHourlyResultsForCurrentYear() const
-    {
-        const double* r = nullptr;
-        std::apply([&](const auto&... w) {
-            ((r = r ? r : w.template retrieveHourlyResultsForCurrentYear<VCardToFindT>()), ...);
-        }, wrappers_);
-        return r;
-    }
-
-    template<class VCardToFindT>
     void retrieveResultsForArea(typename Variable::Storage<VCardToFindT>::ResultsType** result,
-                         const Data::Area* area)
+                                const Data::Area* area)
     {
-        std::apply([&](auto&... w) { (w.template retrieveResultsForArea<VCardToFindT>(result, area), ...); },
+        std::apply([&](auto&... w)
+                   { (w.template retrieveResultsForArea<VCardToFindT>(result, area), ...); },
                    wrappers_);
     }
 
     template<class VCardToFindT>
     void retrieveResultsForThermalCluster(
-        typename Variable::Storage<VCardToFindT>::ResultsType** result,
-        const Data::ThermalCluster* cluster)
+      typename Variable::Storage<VCardToFindT>::ResultsType** result,
+      const Data::ThermalCluster* cluster)
     {
-        std::apply([&](auto&... w) { (w.template retrieveResultsForThermalCluster<VCardToFindT>(result, cluster), ...); },
-                   wrappers_);
+        std::apply(
+          [&](auto&... w)
+          { (w.template retrieveResultsForThermalCluster<VCardToFindT>(result, cluster), ...); },
+          wrappers_);
     }
 
     template<class VCardToFindT>
     void retrieveResultsForLink(typename Variable::Storage<VCardToFindT>::ResultsType** result,
-                         const Data::AreaLink* link)
+                                const Data::AreaLink* link)
     {
-        std::apply([&](auto&... w) { (w.template retrieveResultsForLink<VCardToFindT>(result, link), ...); },
+        std::apply([&](auto&... w)
+                   { (w.template retrieveResultsForLink<VCardToFindT>(result, link), ...); },
                    wrappers_);
     }
 
     void localBuildAnnualSurveyReport(SurveyResults& results, int fileLevel, int precision) const
     {
-        std::apply([&](const auto&... w) { (w.localBuildAnnualSurveyReport(results, fileLevel, precision), ...); },
-                    wrappers_);
+        std::apply([&](const auto&... w)
+                   { (w.localBuildAnnualSurveyReport(results, fileLevel, precision), ...); },
+                   wrappers_);
     }
 
 private:

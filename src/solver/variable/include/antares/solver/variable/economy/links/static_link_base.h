@@ -48,13 +48,11 @@ struct VCardStaticLinkBase
                                                  & (Category::FileLevel::id
                                                     | Category::FileLevel::va);
     static constexpr uint8_t precision = Category::all;
-    static constexpr uint8_t nodeDepthForGUI = +0;
     static constexpr uint8_t decimal = 0;
     static constexpr int columnCount = 1;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    static constexpr uint8_t hasIntermediateValues = 1;
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
     using IntermediateValuesType = IntermediateValues;
@@ -78,8 +76,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -95,10 +93,6 @@ public:
         {
             Traits::onInitializeFromStudy(pValuesForTheCurrentYear, aux_, study);
         }
-    }
-
-    void initializeFromArea([[maybe_unused]] Data::Study* study, [[maybe_unused]] Data::Area* area)
-    {
     }
 
     void initializeFromLink(Data::Study* study, Data::AreaLink* link)
@@ -138,29 +132,11 @@ public:
     {
     }
 
-    void yearEndBuild([[maybe_unused]] State& state,
-                      [[maybe_unused]] uint year,
-                      [[maybe_unused]] uint numSpace)
-    {
-    }
-
     void yearEnd([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
     {
     }
 
     void computeSummary([[maybe_unused]] uint year, [[maybe_unused]] uint numSpace)
-    {
-    }
-
-    void hourBegin([[maybe_unused]] uint hourInTheYear)
-    {
-    }
-
-    void hourForEachArea([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
-    {
-    }
-
-    void hourForEachLink([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
     {
     }
 

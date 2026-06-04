@@ -37,38 +37,67 @@ struct OverallCostTraits
         iv.computeStatisticsForTheCurrentYear();
     }
 
+    static double calculateEnergyDeficitCosts(const State& state)
+    {
+        const auto hourInWeek = state.hourInTheWeek;
+        const auto& hourlyResults = *state.hourlyResults;
+
+        const double unsuppliedCost = hourlyResults.ValeursHorairesDeDefaillancePositive[hourInWeek]
+                                      * state.area->thermal.unsuppliedEnergyCost;
+
+        const double spilledCost = (hourlyResults.ValeursHorairesDeDefaillanceNegative[hourInWeek]
+                                    + state.resSpilled.entry[state.area->index][hourInWeek])
+                                   * state.area->thermal.spilledEnergyCost;
+
+        return unsuppliedCost + spilledCost;
+    }
+
+    static double calculateHydroCosts(const State& state)
+    {
+        const auto hourInWeek = state.hourInTheWeek;
+        const auto& hourlyResults = *state.hourlyResults;
+        const auto& hydroCharacteristics = state.problemeHebdo
+                                             ->CaracteristiquesHydrauliques[state.area->index];
+
+        const double waterValueCost = hydroCharacteristics.WeeklyWaterValueStateRegular
+                                      * (hourlyResults.TurbinageHoraire[hourInWeek]
+                                         - state.area->hydro.pumpingEfficiency
+                                             * hourlyResults.PompageHoraire[hourInWeek]);
+
+        const double storageReserveCost = state.reserveData
+                                            ? state.reserveData.value()
+                                                .at(state.area->index)
+                                                .STStorageClusterReserveParticipationCostForYear
+                                                  [state.hourInTheYear]
+                                            : 0.0;
+
+        const double hydroReserveCost = state.reserveData ? state.reserveData.value()
+                                                              .at(state.area->index)
+                                                              .HydroReserveParticipationCostForYear
+                                                                [state.hourInTheYear]
+                                                          : 0.0;
+
+        return waterValueCost + storageReserveCost + hydroReserveCost;
+    }
+
+    static double calculateThermalCosts(const State& state)
+    {
+        double totalCost = 0.0;
+
+        for (const auto& cluster: state.area->thermal.list.each_enabled())
+        {
+            totalCost += state.thermal[state.area->index]
+                           .thermalClustersOperatingCost[cluster->enabledIndex];
+        }
+
+        return totalCost;
+    }
+
     template<class Aux>
     static void setHourlyValue(IntermediateValues& iv, Aux&, const State& state, unsigned int)
     {
-        auto area = state.area;
-        // ThermalState::operator[] is non-const; cast is valid since State is always
-        // constructed non-const at call sites.
-        auto& thermal = const_cast<ThermalState&>(state.thermal);
-
-        iv[state.hourInTheYear] += (state.hourlyResults
-                                      ->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek]
-                                    * area->thermal.unsuppliedEnergyCost)
-                                   + ((state.hourlyResults
-                                         ->ValeursHorairesDeDefaillanceNegative[state.hourInTheWeek]
-                                       + state.resSpilled.entry[area->index][state.hourInTheWeek])
-                                      * area->thermal.spilledEnergyCost);
-
-        // Hydro costs : water value and pumping
-        iv.hour[state.hourInTheYear] += state.problemeHebdo
-                                          ->CaracteristiquesHydrauliques[state.area->index]
-                                          .WeeklyWaterValueStateRegular
-                                        * (state.hourlyResults
-                                             ->TurbinageHoraire[state.hourInTheWeek]
-                                           - area->hydro.pumpingEfficiency
-                                               * state.hourlyResults
-                                                   ->PompageHoraire[state.hourInTheWeek]);
-
-        // Thermal costs
-        for (auto& cluster: area->thermal.list.each_enabled())
-        {
-            iv[state.hourInTheYear] += thermal[area->index]
-                                         .thermalClustersOperatingCost[cluster->enabledIndex];
-        }
+        iv[state.hourInTheYear] += calculateEnergyDeficitCosts(state) + calculateHydroCosts(state)
+                                   + calculateThermalCosts(state);
     }
 
     static void yearEndBuildForEachThermalCluster(IntermediateValues& values,
@@ -82,8 +111,6 @@ struct OverallCostTraits
         }
     }
 };
-
-using VCardOverallCost = Economy::EconomyVariableCard<OverallCostTraits>;
 
 /*!
 ** \brief Overall cost over all MC years (adequacy)

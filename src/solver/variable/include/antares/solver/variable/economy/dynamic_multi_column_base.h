@@ -20,7 +20,6 @@
 **   - \c buildColumnDescriptors(Data::Area*) -> std::vector<ColumnDescriptor>
 **
 ** - Optional hooks:
-**   - \c onSimulationBegin(IntermediateValuesBaseType&, uint) -> void
 **   - \c perColumnComputeStats(IntermediateValues&, size_t columnIndex) -> void
 **   - \c setHourlyValue(IntermediateValuesBaseType&, State&, uint, const
 *std::vector<ColumnDescriptor>&) -> void
@@ -65,13 +64,11 @@ struct VCardDynamicMultiColumn
                                                  & (Category::FileLevel::id
                                                     | Category::FileLevel::va);
     static constexpr uint8_t precision = Category::all;
-    static constexpr uint8_t nodeDepthForGUI = +0;
     static constexpr uint8_t decimal = Traits::decimal;
     static constexpr int columnCount = Category::dynamicColumns;
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    static constexpr uint8_t hasIntermediateValues = 1;
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
     using IntermediateValuesDeepType = IntermediateValues;
@@ -79,20 +76,26 @@ struct VCardDynamicMultiColumn
     using IntermediateValuesType = std::vector<IntermediateValuesBaseType>;
 
     using IntermediateValuesTypeForSpatialAg = std::unique_ptr<IntermediateValuesDeepType[]>;
+};
 
-    struct Multiple
+//! Resolves per-column caption and unit from the runtime descriptor list.
+//!
+//! Kept out of VCardDynamicMultiColumn: it is used only internally by
+//! DynamicMultiColumnBase and is not part of the generic multi-column VCard
+//! interface (its signatures take the runtime descriptors, unlike the
+//! single-index VCard::Multiple convention used elsewhere).
+template<class Traits>
+struct DynamicMultiColumnCaption
+{
+    static std::string Caption(uint indx, const std::vector<ColumnDescriptor>& descriptors)
     {
-        static std::string Caption(uint indx,
-                                   const std::vector<ColumnDescriptor>& descriptors)
-        {
-            return indx < descriptors.size() ? descriptors[indx].caption : "<unknown>";
-        }
+        return indx < descriptors.size() ? descriptors[indx].caption : "<unknown>";
+    }
 
-        static std::string Unit(uint indx, const std::vector<ColumnDescriptor>& descriptors)
-        {
-            return indx < descriptors.size() ? descriptors[indx].unit : Traits::Unit();
-        }
-    };
+    static std::string Unit(uint indx, const std::vector<ColumnDescriptor>& descriptors)
+    {
+        return indx < descriptors.size() ? descriptors[indx].unit : Traits::Unit();
+    }
 };
 
 template<class Traits>
@@ -105,15 +108,11 @@ public:
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
-    using AuxiliaryDataType = typename detail::AuxiliaryDataType<Traits>::type;
-
-    static constexpr std::size_t count = 1;
-
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -170,30 +169,12 @@ public:
         return nbColumns_ * ResultsType::count;
     }
 
-    void simulationBegin()
-    {
-        if constexpr (requires {
-                          Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
-                      })
-        {
-            Traits::onSimulationBegin(pValuesForTheCurrentYear, pNbYearsParallel);
-        }
-    }
-
-    void simulationEnd()
-    {
-    }
-
     void yearBegin(uint year, uint numSpace)
     {
         for (size_t i = 0; i < nbColumns_; ++i)
         {
             pValuesForTheCurrentYear[numSpace][i].reset();
         }
-    }
-
-    void yearEndBuild(State& state, uint year, uint numSpace)
-    {
     }
 
     void yearEnd(uint year, uint numSpace)
@@ -220,10 +201,6 @@ public:
         VariableAccessorType::ComputeSummary(pValuesForTheCurrentYear[numSpace],
                                              AncestorType::pResults,
                                              year);
-    }
-
-    void hourBegin(uint hourInTheYear)
-    {
     }
 
     void hourForEachArea(State& state, uint numSpace)
@@ -256,8 +233,9 @@ public:
 
         for (size_t column = 0; column < nbColumns_; ++column)
         {
-            results.variableCaption = VCardType::Multiple::Caption(column, descriptors_);
-            results.variableUnit = VCardType::Multiple::Unit(column, descriptors_);
+            results.variableCaption = DynamicMultiColumnCaption<Traits>::Caption(column,
+                                                                                 descriptors_);
+            results.variableUnit = DynamicMultiColumnCaption<Traits>::Unit(column, descriptors_);
             pValuesForTheCurrentYear[numSpace][column]
               .template buildAnnualSurveyReport<VCardType>(results, fileLevel, precision);
         }

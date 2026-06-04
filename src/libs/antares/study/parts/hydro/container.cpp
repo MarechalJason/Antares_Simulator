@@ -6,11 +6,15 @@
 #include <boost/algorithm/string/case_conv.hpp>
 
 #include <antares/inifile/inifile.h>
+#include <antares/study/area/capacityReservation.h>
+#include <antares/study/parts/reserves/makeGroupsOfSymmetriesFromString.h>
 #include "antares/study/parts/hydro/hydromaxtimeseriesreader.h"
+#include "antares/study/parts/reserves/reservesParticipationsLoader.h"
 #include "antares/study/study.h"
 
 namespace fs = std::filesystem;
 
+using namespace Yuni;
 #define SEP Yuni::IO::Separator
 
 namespace Antares::Data
@@ -132,6 +136,12 @@ bool PartHydro::LoadIniFile(Study& study, const std::filesystem::path& folder)
     if (IniFile::Section* section = ini.find("intra-daily-modulation"))
     {
         ret = loadProperties(study, section->firstProperty, path, &PartHydro::intraDailyModulation)
+              && ret;
+    }
+
+    if (IniFile::Section* section = ini.find("inter-monthly-breakdown"))
+    {
+        ret = loadProperties(study, section->firstProperty, path, &PartHydro::intermonthlyBreakdown)
               && ret;
     }
 
@@ -671,6 +681,45 @@ bool PartHydro::CheckDailyMaxEnergy(const AnyString& areaName)
     }
 
     return ret;
+}
+
+bool PartHydro::loadReserveParticipations(Area& area, const std::filesystem::path& file)
+{
+    HydroReserveLoader loader;
+    return loader.load(area, file);
+}
+
+uint PartHydro::reserveParticipationsCount() const
+{
+    return reserveParticipationContainer
+             ? reserveParticipationContainer.value().reserveParticipationsCount()
+             : 0;
+}
+
+std::optional<ReserveID> PartHydro::reserveParticipationAt(const Area* area,
+                                                           unsigned int index) const
+{
+    int globalReserveParticipationIdx = 0;
+
+    for (const auto& reserveID:
+         area->allCapacityReservations.value().areaCapacityReservations | std::views::keys)
+    {
+        if (reserveParticipationContainer.value().isParticipatingInReserve(reserveID))
+        {
+            if (static_cast<unsigned int>(globalReserveParticipationIdx) == index)
+            {
+                return reserveID;
+            }
+            globalReserveParticipationIdx++;
+        }
+    }
+    return std::nullopt;
+}
+
+uint PartHydro::count() const
+{
+    // Retournez 1 si le stockage long terme est activé, 0 sinon
+    return series->TScount() ? 1 : 0;
 }
 
 double getWaterValue(const double& level /* format : in % of reservoir capacity */,

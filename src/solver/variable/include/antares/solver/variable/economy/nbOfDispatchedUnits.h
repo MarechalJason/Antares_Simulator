@@ -67,8 +67,6 @@ struct NbOfDispatchedUnitsTraits
     }
 };
 
-using VCardNbOfDispatchedUnits = EconomyVariableCard<NbOfDispatchedUnitsTraits>;
-
 /*!
 ** \brief Number of dispatched units over all thermal clusters
 */

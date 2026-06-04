@@ -43,8 +43,6 @@ struct VCardCongestionProbability
                                                  & (Category::FileLevel::va);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = 2;
     //! Number of columns used by the variable (one results configuration per column)
@@ -53,8 +51,6 @@ struct VCardCongestionProbability
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
@@ -113,8 +109,8 @@ public:
         {
             count = ((VCardType::categoryDataLevel & CDataLevel
                       && VCardType::categoryFileLevel & CFile)
-                     ? VCardType::columnCount * ResultsType::count
-                     : 0),
+                       ? VCardType::columnCount * ResultsType::count
+                       : 0),
         };
     };
 
@@ -145,14 +141,6 @@ public:
         }
     }
 
-    void initializeFromArea(Data::Study* study, Data::Area* area)
-    {
-    }
-
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
         for (unsigned int numSpace = 0; numSpace < pNbYearsParallel; ++numSpace)
@@ -174,10 +162,6 @@ public:
 
         pValuesForYearLocalReport[numSpace][0].reset();
         pValuesForYearLocalReport[numSpace][1].reset();
-    }
-
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace)
-    {
     }
 
     void yearEnd(uint year, uint numSpace)

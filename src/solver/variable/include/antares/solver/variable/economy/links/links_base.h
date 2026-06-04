@@ -74,8 +74,6 @@ struct VCard_LinkBase
                                                     | Category::FileLevel::va);
     //! Precision (views)
     static constexpr uint8_t precision = Category::all;
-    //! Indentation (GUI)
-    static constexpr uint8_t nodeDepthForGUI = +0;
     //! Decimal precision
     static constexpr uint8_t decimal = Traits::decimal;
     //! Number of columns used by the variable (one results profile per column)
@@ -84,8 +82,6 @@ struct VCard_LinkBase
     static constexpr uint8_t spatialAggregate = Category::spatialAggregateSum;
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    //! Intermediate values
-    static constexpr uint8_t hasIntermediateValues = 1;
     //! Can this variable be non applicable (0 : no, 1 : yes)
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
@@ -95,8 +91,7 @@ struct VCard_LinkBase
 }; // class VCard
 
 template<class Traits>
-class EconomyLink_Base
-    : public Variable::IVariable<EconomyLink_Base<Traits>, VCard_LinkBase<Traits>>
+class EconomyLink_Base: public Variable::IVariable<EconomyLink_Base<Traits>, VCard_LinkBase<Traits>>
 {
 public:
     //! VCard
@@ -114,8 +109,8 @@ public:
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count =
-          detail::statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
+        static constexpr int count = detail::
+          statisticsCount<VCardType, ResultsType, CDataLevel, CFile>;
     };
 
 public:
@@ -133,15 +128,6 @@ public:
         }
     }
 
-    void initializeFromArea([[maybe_unused]] Data::Study* study, [[maybe_unused]] Data::Area* area)
-    {
-    }
-
-    void initializeFromLink([[maybe_unused]] Data::Study* study,
-                            [[maybe_unused]] Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
         for (uint numSpace = 0; numSpace < pNbYearsParallel; numSpace++)
@@ -150,19 +136,9 @@ public:
         }
     }
 
-    void simulationEnd()
-    {
-    }
-
     void yearBegin([[maybe_unused]] uint year, uint numSpace)
     {
         pValuesForTheCurrentYear[numSpace].reset();
-    }
-
-    void yearEndBuild([[maybe_unused]] State& state,
-                      [[maybe_unused]] uint year,
-                      [[maybe_unused]] uint numSpace)
-    {
     }
 
     void yearEnd([[maybe_unused]] uint year, uint numSpace)
@@ -173,14 +149,6 @@ public:
     void computeSummary(uint year, uint numSpace)
     {
         AncestorType::pResults.merge(year, pValuesForTheCurrentYear[numSpace]);
-    }
-
-    void hourBegin([[maybe_unused]] uint hourInTheYear)
-    {
-    }
-
-    void hourForEachArea([[maybe_unused]] State& state, [[maybe_unused]] uint numSpace)
-    {
     }
 
     void hourForEachLink(State& state, uint numSpace)
@@ -202,8 +170,8 @@ public:
                                            ->ResultatsHoraires[state.link->from->index]
                                            .CoutsMarginauxHoraires[state.hourInTheWeek];
             const double downstreamPrice = state.problemeHebdo
-                                            ->ResultatsHoraires[state.link->with->index]
-                                            .CoutsMarginauxHoraires[state.hourInTheWeek];
+                                             ->ResultatsHoraires[state.link->with->index]
+                                             .CoutsMarginauxHoraires[state.hourInTheWeek];
             pValuesForTheCurrentYear[numSpace].hour[state.hourInTheYear] = Traits::hourValue(
               state,
               upstreamPrice,

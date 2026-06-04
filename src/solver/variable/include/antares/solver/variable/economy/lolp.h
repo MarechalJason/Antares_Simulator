@@ -22,12 +22,7 @@ struct LOLPTraits: public LOLP_Base_Traits
         return "LOLP";
     }
 
-    using AuxiliaryDataType = detail::EmptyAuxiliaryData;
-
-    static void setHourlyValue(IntermediateValues& iv,
-                               AuxiliaryDataType&,
-                               const State& state,
-                               unsigned int)
+    static void setHourlyValue(IntermediateValues& iv, const State& state, unsigned int)
     {
         if (state.hourlyResults->ValeursHorairesDeDefaillancePositive[state.hourInTheWeek] > 0.)
         {
@@ -35,8 +30,6 @@ struct LOLPTraits: public LOLP_Base_Traits
         }
     }
 };
-
-using VCardLOLP = EconomyVariableCard<LOLPTraits>;
 
 using LOLP = EconomyVariableBase<LOLPTraits>;
 

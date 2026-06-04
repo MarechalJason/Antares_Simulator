@@ -67,9 +67,6 @@ struct STStorageWithdrawalByClusterTraits
     }
 };
 
-using VCardSTstorageWithdrawalByCluster = VCardSTStorageByClusterBase<
-  STStorageWithdrawalByClusterTraits>;
-
 using STstorageWithdrawalByCluster = STStorageByClusterBase<STStorageWithdrawalByClusterTraits>;
 
 } // End namespace Antares::Solver::Variable::Economy

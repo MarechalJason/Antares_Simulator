@@ -14,8 +14,8 @@
 #include <antares/solver/variable/dynamicAggregation/dynamicAggregation.h>
 
 #include "categories.h"
-#include "endoflist.h"
 #include "info.h"
+#include "state.h"
 #include "surveyresults.h"
 
 namespace Antares::Solver::Variable::Container
@@ -27,31 +27,25 @@ namespace Antares::Solver::Variable::Container
 ** and forwards every hook to it. Adds dynamic-aggregation bookkeeping that
 ** isn't part of the inner aggregator's responsibilities.
 */
-template<class NextT = Container::EndOfList>
+template<class Inner>
 class List
 {
 public:
     //! The full type of the class
-    using ListType = List<NextT>;
+    using ListType = List<Inner>;
 
-    static constexpr std::size_t count = NextT::count;
+    static constexpr std::size_t count = Inner::count;
 
     template<int CDataLevel, int CFile>
     struct Statistics
     {
-        static constexpr int count = NextT::template Statistics<CDataLevel, CFile>::count;
+        static constexpr int count = Inner::template Statistics<CDataLevel, CFile>::count;
     };
 
     template<class PredicateT>
     static void RetrieveVariableList(PredicateT& predicate)
     {
-        NextT::RetrieveVariableList(predicate);
-    }
-
-    template<class I>
-    static void provideInformations(I& infos)
-    {
-        NextT::template provideInformations<I>(infos);
+        Inner::RetrieveVariableList(predicate);
     }
 
 public:
@@ -60,9 +54,6 @@ public:
     void initializeFromStudy(Data::Study& study);
     void initializeFromArea(Data::Study* study, Data::Area* area);
     void initializeFromLink(Data::Study* study, Data::AreaLink* link);
-    void initializeFromThermalCluster(Data::Study* study,
-                                      Data::Area* area,
-                                      Data::ThermalCluster* cluster);
     //@}
 
     //! \name Simulation events
@@ -75,7 +66,7 @@ public:
     //@{
     void yearBegin(unsigned int year, unsigned int numSpace);
 
-    void yearEndBuild(State& state, unsigned int year, unsigned int numSpace);
+    void buildThermalClusterYearEndResults(State& state, unsigned int year, unsigned int numSpace);
 
     void yearEnd(unsigned int year, unsigned int numSpace);
 
@@ -158,8 +149,8 @@ public:
     //@}
 
 private:
-    //! Inner aggregator (held by composition; replaces the legacy `: public NextT`).
-    NextT next_;
+    //! Inner aggregator (held by composition).
+    Inner next_;
 
     //! Pointer to the current study
     Data::Study* pStudy;

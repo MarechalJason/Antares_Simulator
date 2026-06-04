@@ -54,8 +54,6 @@ struct ReservoirLevelTraits
     }
 };
 
-using VCardReservoirLevel = EconomyVariableCard<ReservoirLevelTraits>;
-
 using ReservoirLevel = EconomyVariableBase<ReservoirLevelTraits>;
 
 } // namespace Antares::Solver::Variable::Economy

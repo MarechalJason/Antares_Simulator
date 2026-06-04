@@ -66,109 +66,10 @@ void SetsOfAreas<VariableList>::initializeFromStudy(Data::Study& study)
 }
 
 template<class VariableList>
-inline void SetsOfAreas<VariableList>::initializeFromArea(Data::Study*, Data::Area*)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::initializeFromLink(Data::Study*, Data::AreaLink*)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::initializeFromThermalCluster(Data::Study*,
-                                                             Data::Area*,
-                                                             Data::ThermalCluster*)
-{
-    // This method should not be called at this stage
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::simulationBegin()
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::simulationEnd()
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::yearBegin(uint /*year*/, uint /* numSpace */)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::yearEndBuild(State& /*state*/, uint /*year*/, uint /*numSpace*/)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::yearEnd(uint /*year*/, uint /*numSpace*/)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::computeSummary(unsigned int /* year */, unsigned int /* numSpace */)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::hourBegin(uint /*hourInTheYear*/)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::weekBegin(State&)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::weekForEachArea(State&, unsigned int /*numSpace*/)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::weekEnd(State&)
-{
-    // Nothing to do here
-}
-
-template<class VariableList>
-void SetsOfAreas<VariableList>::hourForEachArea(State& state, unsigned int)
-{
-    (void)state;
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::hourForEachLink(State& state)
-{
-    (void)state;
-}
-
-template<class VariableList>
-inline void SetsOfAreas<VariableList>::hourEnd(State& state, uint hourInTheYear)
-{
-    (void)state;
-    (void)hourInTheYear;
-}
-
-template<class VariableList>
 inline void SetsOfAreas<VariableList>::buildSurveyReport(SurveyResults& results,
-                                                  int dataLevel,
-                                                  int fileLevel,
-                                                  int precision) const
+                                                         int dataLevel,
+                                                         int fileLevel,
+                                                         int precision) const
 {
     int count_int = count;
     bool setOfAreasDataLevel = dataLevel & Category::DataLevel::setOfAreas;
@@ -183,10 +84,10 @@ inline void SetsOfAreas<VariableList>::buildSurveyReport(SurveyResults& results,
 
 template<class VariableList>
 inline void SetsOfAreas<VariableList>::buildAnnualSurveyReport(SurveyResults& results,
-                                                        int dataLevel,
-                                                        int fileLevel,
-                                                        int precision,
-                                                        uint numSpace) const
+                                                               int dataLevel,
+                                                               int fileLevel,
+                                                               int precision,
+                                                               uint numSpace) const
 {
     int count_int = count;
     bool setOfAreasDataLevel = dataLevel & Category::DataLevel::setOfAreas;
@@ -214,7 +115,9 @@ const VariableList* SetsOfAreas<VariableList>::findSetById(
 }
 
 template<class VariableList>
-void SetsOfAreas<VariableList>::buildDigest(SurveyResults& results, int digestLevel, int dataLevel) const
+void SetsOfAreas<VariableList>::buildDigest(SurveyResults& results,
+                                            int digestLevel,
+                                            int dataLevel) const
 {
     int count_int = count;
     bool setOfAreasDataLevel = dataLevel & Category::DataLevel::setOfAreas;
@@ -238,28 +141,6 @@ void SetsOfAreas<VariableList>::buildDigest(SurveyResults& results, int digestLe
 }
 
 template<class VariableList>
-template<class I>
-inline void SetsOfAreas<VariableList>::provideInformations(I& infos)
-{
-    // Begining of the node
-    if (VCardType::nodeDepthForGUI)
-    {
-        infos.template beginNode<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-        // End of the node
-        infos.endNode();
-    }
-    else
-    {
-        // Giving our VCard
-        infos.template addVCard<VCardType>();
-        // Next variable in the list
-        VariableList::template provideInformations<I>(infos);
-    }
-}
-
-template<class VariableList>
 template<class V>
 void SetsOfAreas<VariableList>::yearEndSpatialAggregates(V& allVars, uint year, uint numSpace)
 {
@@ -276,8 +157,8 @@ void SetsOfAreas<VariableList>::yearEndSpatialAggregates(V& allVars, uint year, 
 template<class VariableList>
 template<class V>
 void SetsOfAreas<VariableList>::computeSpatialAggregatesSummary(V& allVars,
-                                                         unsigned int year,
-                                                         unsigned int numSpace)
+                                                                unsigned int year,
+                                                                unsigned int numSpace)
 {
     for (uint setindex = 0; setindex != pSetsOfAreas.size(); ++setindex)
     {
@@ -315,20 +196,13 @@ inline void SetsOfAreas<VariableList>::computeSpatialAggregateWith(O&)
 template<class VariableList>
 template<class SearchVCardT, class O>
 inline void SetsOfAreas<VariableList>::computeSpatialAggregateWith(O& out,
-                                                            const Data::Area* area,
-                                                            uint numSpace)
+                                                                   const Data::Area* area,
+                                                                   uint numSpace)
 {
     (void)out;
     (void)area;
     (void)numSpace;
     // pSetsOfAreas[area->index]->computeSpatialAggregateWith<SearchVCardT,O>(out);
-}
-
-template<class VariableList>
-template<class VCardToFindT>
-inline const double* SetsOfAreas<VariableList>::retrieveHourlyResultsForCurrentYear() const
-{
-    return nullptr;
 }
 
 template<class VariableList>

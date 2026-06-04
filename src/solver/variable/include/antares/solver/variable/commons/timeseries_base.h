@@ -92,7 +92,6 @@ struct TimeSeriesTraits
     /// Precision settings for output
     static constexpr uint8_t precision = Category::all;
     /// GUI indentation level
-    static constexpr uint8_t nodeDepthForGUI = 0;
     /// Decimal precision for display
     static constexpr uint8_t decimal = 0;
     /// Number of columns in output (typically 1 for time series)
@@ -103,8 +102,6 @@ struct TimeSeriesTraits
     static constexpr uint8_t spatialAggregateMode = Category::spatialAggregateEachYear;
     /// Post-processing for spatial aggregation
     static constexpr uint8_t spatialAggregatePostProcessing = 0;
-    /// Whether intermediate values are computed
-    static constexpr uint8_t hasIntermediateValues = 1;
     /// Whether variable can be non-applicable
     static constexpr uint8_t isPossiblyNonApplicable = 0;
 
@@ -180,7 +177,6 @@ struct VCardTimeSeriesBase: public TimeSeriesTraits<TraitsType>
  * @brief Internal helpers for template metaprogramming
  */
 
-
 /**
  * @brief Base implementation for time series variables using CRTP pattern
  * * This class provides the common functionality for all time series variables.
@@ -234,9 +230,9 @@ public:
     struct Statistics
     {
         static constexpr int count = ((VCardType::categoryDataLevel & CDataLevel
-                                      && VCardType::categoryFileLevel & CFile)
-                                      ? VCardType::columnCount * ResultsType::count
-                                      : 0);
+                                       && VCardType::categoryFileLevel & CFile)
+                                        ? VCardType::columnCount * ResultsType::count
+                                        : 0);
     };
 
     void initializeFromStudy(Data::Study& study)
@@ -264,26 +260,14 @@ public:
         areaPtr = area;
     }
 
-    void initializeFromLink(Data::Study* study, Data::AreaLink* link)
-    {
-    }
-
     void simulationBegin()
     {
         std::for_each(yearlyValues.begin(), yearlyValues.end(), [](auto& value) { value.reset(); });
     }
 
-    void simulationEnd()
-    {
-    }
-
     void yearBegin(unsigned int year, unsigned int space)
     {
         static_cast<Derived*>(this)->yearBeginImpl(year, space);
-    }
-
-    void yearEndBuild(State& state, unsigned int year, unsigned int space)
-    {
     }
 
     void yearEnd(unsigned int year, unsigned int space)
@@ -296,17 +280,9 @@ public:
         AncestorType::pResults.merge(year, yearlyValues[space]);
     }
 
-    void hourBegin(unsigned int hourInTheYear)
-    {
-    }
-
     void hourForEachArea(State& state, unsigned int space)
     {
         static_cast<Derived*>(this)->hourForEachAreaImpl(state, space);
-    }
-
-    void hourEnd(State& state, unsigned int hourInTheYear)
-    {
     }
 
     Antares::Memory::Stored<double>::ConstReturnType retrieveRawHourlyValuesForCurrentYear(

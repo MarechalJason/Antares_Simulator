@@ -43,8 +43,6 @@ struct WaterValueTraits
     }
 };
 
-using VCardWaterValue = EconomyVariableCard<WaterValueTraits>;
-
 /*!
 ** \brief Water values
 */

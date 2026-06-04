@@ -14,7 +14,6 @@
 
 #include "categories.h"
 #include "container.h"
-#include "endoflist.h"
 #include "info.h"
 #include "storage/intermediate.h"
 #include "storage/results.h"
@@ -113,17 +112,6 @@ public:
     ** \param link The link
     */
     void initializeFromLink(Data::Study* study, Data::AreaLink* link);
-
-    /*!
-    ** \brief Initialize the variable with a specific thermal cluster
-    **
-    ** \param study The attached study
-    ** \param area The area
-    ** \param cluster The thermal cluster
-    */
-    void initializeFromThermalCluster(Data::Study* study,
-                                      Data::Area* area,
-                                      Data::ThermalCluster* cluster);
     //@}
 
     void broadcastNonApplicability(bool applyNonApplicable);
@@ -149,16 +137,6 @@ public:
     ** \param year The current year
     */
     void yearBegin(uint year);
-
-    /*!
-    ** \brief Notify to all variables that the year is close to end
-    **
-    ** All variables that have specific updates after a whole year calculation
-    ** can now get their results
-    ** \param state The current thermal cluster
-    ** \param year The current year
-    */
-    void yearEndBuild(State& state, uint year);
 
     /*!
     ** \brief Notify to all variables to prepare data for the close to year end calculations for
@@ -250,12 +228,6 @@ public:
     //@}
 
     /*!
-    ** \brief "Print" informations about the variable tree
-    */
-    template<class I>
-    static void provideInformations(I& infos);
-
-    /*!
     ** \brief Compute the spatial cluster with the results of a single variable
     **
     ** \code
@@ -274,9 +246,6 @@ public:
     */
     template<class VCardSearchT, class O>
     void computeSpatialAggregateWith(O& out, const Data::Area* area);
-
-    template<class VCardToFindT>
-    const double* retrieveHourlyResultsForCurrentYear(uint numSpace) const;
 
     template<class VCardToFindT>
     void retrieveResultsForArea(typename Storage<VCardToFindT>::ResultsType** result,
