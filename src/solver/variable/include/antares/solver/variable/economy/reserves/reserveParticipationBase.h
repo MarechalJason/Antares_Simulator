@@ -171,8 +171,6 @@ struct VCardReserveParticipationBase
         categoryFileLevel = ResultsType::categoryFile & TraitsType::kCategoryFileLevel,
         //! Precision (views)
         precision = Category::all,
-        //! Indentation (GUI)
-        nodeDepthForGUI = +0,
         //! Decimal precision
         decimal = TraitsType::kDecimal,
         //! Number of columns used by the variable

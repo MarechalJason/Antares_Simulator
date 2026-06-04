@@ -108,8 +108,6 @@ public:
     using ResultsType = typename VCardType::ResultsType;
     using VariableAccessorType = VariableAccessor<ResultsType, VCardType::columnCount>;
 
-    static constexpr std::size_t count = 1;
-
     template<int CDataLevel, int CFile>
     struct Statistics
     {
