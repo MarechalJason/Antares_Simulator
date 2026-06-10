@@ -439,8 +439,10 @@ jobs:
     # from the default branch's scope, so they still get cache hits without each
     # saving their own redundant copy (which churned the repo cache quota and
     # evicted the vcpkg caches, forcing full rebuilds during Configure).
+    # Restricted to a single matrix job (isUploadTarget): both jobs build
+    # identical vcpkg deps, so the other would only race for the same key and skip.
     - name: Cache vcpkg binary dir
-      if: ${{ always() && github.ref == 'refs/heads/develop' }}
+      if: ${{ always() && github.ref == 'refs/heads/develop' && matrix.isUploadTarget }}
       id: save-cache-vcpkg-binary
       uses: actions/cache/save@v5
       with:
