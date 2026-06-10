@@ -172,8 +172,12 @@ jobs:
         mv _build/antares-*-OracleServer-8.10.rpm _build/antares-cd-OracleServer-8.10.rpm
         gh release upload --clobber continuous-delivery _build/*.tar.gz _build/*.rpm
 
+    # Only the default branch (develop) saves the vcpkg binary cache, to keep a
+    # single canonical copy warm. Feature branches still restore from the default
+    # branch's scope, without each saving a redundant copy that churns the repo
+    # cache quota and evicts the vcpkg caches.
     - name: Cache vcpkg binary dir
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() && github.ref == 'refs/heads/develop' }}
       id: save-cache-vcpkg-binary
       uses: actions/cache/save@v5
       with:

@@ -434,8 +434,13 @@ jobs:
         #update continuous delivery tag to point to the latest develop commit
         gh api repos/${{ github.repository }}/git/refs/tags/continuous-delivery -X PATCH -f sha=$(git rev-parse HEAD)
 
+    # Only the default branch (develop) saves the vcpkg binary cache, to keep a
+    # single canonical copy warm. Feature branches are always allowed to restore
+    # from the default branch's scope, so they still get cache hits without each
+    # saving their own redundant copy (which churned the repo cache quota and
+    # evicted the vcpkg caches, forcing full rebuilds during Configure).
     - name: Cache vcpkg binary dir
-      if: always()
+      if: ${{ always() && github.ref == 'refs/heads/develop' }}
       id: save-cache-vcpkg-binary
       uses: actions/cache/save@v5
       with:

@@ -249,8 +249,13 @@ jobs:
       if: ${{ !success() }}
       run: exit 1
 
+    # Only the default branch (develop) saves the vcpkg binary cache, to keep a
+    # single canonical copy warm. Feature branches still restore from the default
+    # branch's scope, without each saving a redundant copy that churns the repo
+    # cache quota and evicts the vcpkg caches. Shares the vcpkg-cache-ubuntu-* key
+    # with ubuntu.yml.
     - name: Cache vcpkg binary dir
-      if: always()
+      if: ${{ always() && github.ref == 'refs/heads/develop' }}
       id: save-cache-vcpkg-binary
       uses: actions/cache/save@v5
       with:

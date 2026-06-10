@@ -426,8 +426,12 @@ jobs:
         mv _build/antares-*-win64.zip _build/antares-cd-win64.zip
         gh release upload --clobber continuous-delivery _build/*.zip _build/*.exe
 
+    # Only the default branch (develop) saves the vcpkg binary cache, to keep a
+    # single canonical copy warm. Feature branches still restore from the default
+    # branch's scope, without each saving a redundant copy that churns the repo
+    # cache quota and evicts the vcpkg caches.
     - name: Cache vcpkg binary dir
-      if: always()
+      if: ${{ always() && github.ref == 'refs/heads/develop' }}
       id: save-cache-vcpkg-binary
       uses: actions/cache/save@v5
       with:
