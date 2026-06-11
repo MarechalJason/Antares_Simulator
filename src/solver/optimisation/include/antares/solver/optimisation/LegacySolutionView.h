@@ -16,8 +16,9 @@ namespace Antares::Optimization
 // Lookup of the legacy weekly solution by structured variable identity
 // (output name, component, time index), built from the LegacyVariableInfo
 // recorded by VariableNamer. Meant to be rebuilt for each simulation-table
-// fill: the weekly problem is renamed and re-solved in place, so a persistent
-// index would go stale.
+// fill: every weekly problem has the same variables at the same indices, but
+// the recorded time index is the absolute hour of the year, so the keys
+// change from week to week.
 //
 // Components are looked up by the recorded string as-is; for thermal clusters
 // it is the cluster name without the area, so identically-named clusters of

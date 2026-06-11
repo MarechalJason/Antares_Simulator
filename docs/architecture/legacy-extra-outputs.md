@@ -48,8 +48,8 @@ Design points:
 
 - **Lookups use legacy names** (`"Spillage"`, not `"spilled_energy"`). The view indexes what was recorded; `LegacyNameMapper` is an output-formatting concern applied only when rows are written.
 - **Key encoding.** The map key is the three parts joined with the ASCII unit separator `'\x1F'`, a character that cannot occur in variable or component names, so distinct triples can never produce the same key (component names may contain spaces and the `::` used by problem naming).
-- **Transient by design.** The view holds references to the problem's vectors and is rebuilt on every fill. `PROBLEME_ANTARES_A_RESOUDRE` is renamed and re-solved in place from week to week, so caching a view across weeks would silently serve stale indices.
-- **Cost.** One O(#variables) pass to build, O(1) average per lookup, one heap-allocated map per week. The map only contains recorded variables, a small subset of the problem.
+- **Transient by design.** The view holds references to the problem's vectors and is rebuilt on every fill. Every weekly problem has the same variables and constraints at the same indices — `PROBLEME_ANTARES_A_RESOUDRE` is re-filled and re-solved in place — but the recorded `timeIndex` is the **absolute hour of the year** (`weekInTheYear * 168 + pdt`, see `opt_construction_variables_optimisees_lineaire.cpp`), so the keys differ from week to week and the map cannot be reused as-is.
+- **Cost.** One O(#variables) pass to build, O(1) average per lookup, one heap-allocated map per week. The map only contains recorded variables, a small subset of the problem. Because the variable layout is identical across weeks, keying on the week-relative hour instead of the absolute one would allow building the map once per simulation; this trade-off has not been needed so far.
 
 ## 4. LegacyExtraOutputs
 
