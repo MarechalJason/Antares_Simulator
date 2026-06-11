@@ -38,6 +38,10 @@ Feature: Legacy variables in simulation table
     #     + spilled_energy_cost * spilled_energy = 10000 * 52 + 0 * 0 = 520000
     #   - is_loss_of_load = 1 since unsupplied energy (52) exceeds the 0.5 MW
     #     threshold
+    #   - price = -dual(balance) = 10000: with unsupplied energy strictly
+    #     between its bounds, the marginal MW is served at the unsupplied
+    #     energy cost
+    #   - is_near_loss_of_load = 1 since price (10000) > 10000 - 5
     Given the solver study path is "Antares_Simulator_Tests_NR/hybrid/002 Thermal fleet - Base"
     When I run antares simulator
     Then the simulation succeeds
@@ -48,3 +52,5 @@ Feature: Legacy variables in simulation table
       | 1     | peak      | prop_cost      | 34       | 0        | 64000  |
       | 1     | area      | imbalance_cost | 34       | 0        | 520000 |
       | 1     | area      | is_loss_of_load | 34      | 0        | 1      |
+      | 1     | area      | price          | 34       | 0        | 10000  |
+      | 1     | area      | is_near_loss_of_load | 34  | 0        | 1      |

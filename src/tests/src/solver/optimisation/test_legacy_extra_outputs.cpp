@@ -96,6 +96,24 @@ struct Fixture
     std::vector<std::optional<LegacyVariableInfo>> info;
     std::vector<double> values = {3600., 52., 7., 13., -1., 2.3, -120., 0., 120., 10., 0.2};
     std::vector<double> costs = {35., 10000., 4., 20000., -1., 100., 0., 0.5, 0.7, 0.5, 9000.};
+
+    // Constraints: balance constraints for "area1" (at loss of load: the
+    // stored dual is minus the price), "area2" (cheap marginal unit) and
+    // "area4" (no UnsuppliedEnergy variable recorded), one unrelated
+    // constraint and one unnamed slot.
+    Fixture& withConstraints()
+    {
+        constraintsInfo.resize(5);
+        constraintsInfo[0] = LegacyVariableInfo{"AreaBalance", "area1", 168};
+        constraintsInfo[1] = LegacyVariableInfo{"AreaBalance", "area2", 168};
+        constraintsInfo[2] = LegacyVariableInfo{"AreaBalance", "area4", 168};
+        constraintsInfo[3] = LegacyVariableInfo{"FlowDissociation", "area1$$area2", 168};
+        duals = {-10000., -50., -75., 3., -1.};
+        return *this;
+    }
+
+    std::vector<std::optional<LegacyVariableInfo>> constraintsInfo;
+    std::vector<double> duals;
     // Block covering timesteps [168, 335], year 2.
     FillContext fillContext{0, 167, 168, 335, 2};
     unsigned currentBlock = 1;
@@ -103,7 +121,14 @@ struct Fixture
 
     void fill()
     {
-        AddLegacyExtraOutputs(table, info, values, costs, fillContext, currentBlock);
+        AddLegacyExtraOutputs(table,
+                              info,
+                              values,
+                              costs,
+                              constraintsInfo,
+                              duals,
+                              fillContext,
+                              currentBlock);
     }
 };
 } // namespace
@@ -206,6 +231,45 @@ BOOST_AUTO_TEST_CASE(no_other_rows_are_emitted)
     // 2 prop_cost (cluster1, link) + 1 imbalance_cost + 3 is_loss_of_load
     // + 1 actual_num_units_on + 1 abs_flow
     BOOST_CHECK_EQUAL(table.rowCount(), 8);
+}
+
+BOOST_AUTO_TEST_CASE(price_is_minus_the_area_balance_dual)
+{
+    withConstraints().fill();
+
+    const auto rows = RowsForOutput(table, "price");
+    BOOST_REQUIRE_EQUAL(rows.size(), 3);
+    BOOST_CHECK_EQUAL(FindRow(table, "price", "area1")->value, 10000.);
+    BOOST_CHECK_EQUAL(FindRow(table, "price", "area2")->value, 50.);
+    BOOST_CHECK_EQUAL(FindRow(table, "price", "area4")->value, 75.);
+}
+
+BOOST_AUTO_TEST_CASE(is_near_loss_of_load_compares_price_to_unsupplied_cost)
+{
+    withConstraints().fill();
+
+    // area1: price 10000 > 10000 - 5; area2: price 50 <= 20000 - 5.
+    BOOST_CHECK_EQUAL(FindRow(table, "is_near_loss_of_load", "area1")->value, 1.);
+    BOOST_CHECK_EQUAL(FindRow(table, "is_near_loss_of_load", "area2")->value, 0.);
+}
+
+BOOST_AUTO_TEST_CASE(is_near_loss_of_load_is_skipped_without_unsupplied_variable)
+{
+    withConstraints().fill();
+
+    // "area4" has a balance constraint but no UnsuppliedEnergy variable, so
+    // its unsupplied energy cost is unknown: price only, no nearness flag.
+    BOOST_CHECK_EQUAL(RowsForOutput(table, "is_near_loss_of_load").size(), 2);
+    BOOST_CHECK(!FindRow(table, "is_near_loss_of_load", "area4").has_value());
+}
+
+BOOST_AUTO_TEST_CASE(other_constraints_produce_no_extra_output)
+{
+    withConstraints().fill();
+
+    // 8 variable-driven rows + 3 price + 2 is_near_loss_of_load; the
+    // FlowDissociation constraint and the unnamed slot add nothing.
+    BOOST_CHECK_EQUAL(table.rowCount(), 13);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

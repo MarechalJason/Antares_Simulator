@@ -25,12 +25,19 @@ namespace Antares::Optimization
 //  - link `abs_flow`: absolute value of the (signed) flow;
 //  - link `prop_cost`: hurdle costs times positive direct/indirect flows,
 //    the hurdle costs being the objective coefficients on those variables
-//    (only emitted for links managed with hurdle costs).
+//    (only emitted for links managed with hurdle costs);
+//  - area `price`: minus the dual of the area balance constraint (the stored
+//    dual is the negative of the marginal price, see how the legacy outputs
+//    print -CoutsMarginauxHoraires);
+//  - area `is_near_loss_of_load`: 1 when the price is within 5 of the area's
+//    unsupplied energy cost, else 0.
 void AddLegacyExtraOutputs(
   Antares::IO::Outputs::SimulationTable& simulationTable,
   const std::vector<std::optional<LegacyVariableInfo>>& variablesInfo,
   const std::vector<double>& solutionValues,
   const std::vector<double>& linearCosts,
+  const std::vector<std::optional<LegacyVariableInfo>>& constraintsInfo,
+  const std::vector<double>& constraintDuals,
   const Antares::Optimisation::LinearProblemApi::FillContext& fillContext,
   unsigned currentBlock);
 

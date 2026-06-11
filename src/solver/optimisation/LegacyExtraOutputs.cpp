@@ -165,12 +165,60 @@ void AddLinkPropCost(SimulationTable& simulationTable,
                          + *indirectCost * *indirect;
     AddExtraOutputEntry(simulationTable, "prop_cost", info, value, fillContext, currentBlock);
 }
+
+// price = -dual(area balance constraint): the stored dual is the negative of
+// the marginal price (the legacy outputs print -CoutsMarginauxHoraires).
+void AddAreaPrice(SimulationTable& simulationTable,
+                  const LegacyVariableInfo& info,
+                  std::size_t index,
+                  const std::vector<double>& constraintDuals,
+                  const FillContext& fillContext,
+                  unsigned currentBlock)
+{
+    AddExtraOutputEntry(simulationTable,
+                        "price",
+                        info,
+                        -constraintDuals[index],
+                        fillContext,
+                        currentBlock);
+}
+
+// is_near_loss_of_load = 1 when the area price approaches the unsupplied
+// energy cost (within 5), 0 otherwise. The unsupplied energy cost is the
+// linear objective coefficient on the area's UnsuppliedEnergy variable, found
+// through the solution view; skipped if that variable is not recorded.
+void AddAreaIsNearLossOfLoad(SimulationTable& simulationTable,
+                             const LegacyVariableInfo& info,
+                             std::size_t index,
+                             const std::vector<double>& constraintDuals,
+                             const LegacySolutionView& solution,
+                             const FillContext& fillContext,
+                             unsigned currentBlock)
+{
+    const auto unsuppliedCost = solution.linearCost("UnsuppliedEnergy",
+                                                    info.component,
+                                                    info.timeIndex);
+    if (!unsuppliedCost)
+    {
+        return;
+    }
+
+    const double price = -constraintDuals[index];
+    AddExtraOutputEntry(simulationTable,
+                        "is_near_loss_of_load",
+                        info,
+                        price > *unsuppliedCost - 5. ? 1. : 0.,
+                        fillContext,
+                        currentBlock);
+}
 } // namespace
 
 void AddLegacyExtraOutputs(SimulationTable& simulationTable,
                            const std::vector<std::optional<LegacyVariableInfo>>& variablesInfo,
                            const std::vector<double>& solutionValues,
                            const std::vector<double>& linearCosts,
+                           const std::vector<std::optional<LegacyVariableInfo>>& constraintsInfo,
+                           const std::vector<double>& constraintDuals,
                            const FillContext& fillContext,
                            unsigned currentBlock)
 {
@@ -239,6 +287,32 @@ void AddLegacyExtraOutputs(SimulationTable& simulationTable,
                             solution,
                             fillContext,
                             currentBlock);
+        }
+    }
+
+    for (std::size_t index = 0; index < constraintsInfo.size(); ++index)
+    {
+        const auto& info = constraintsInfo[index];
+        if (!info)
+        {
+            continue;
+        }
+
+        if (info->name == "AreaBalance")
+        {
+            AddAreaPrice(simulationTable,
+                         *info,
+                         index,
+                         constraintDuals,
+                         fillContext,
+                         currentBlock);
+            AddAreaIsNearLossOfLoad(simulationTable,
+                                    *info,
+                                    index,
+                                    constraintDuals,
+                                    solution,
+                                    fillContext,
+                                    currentBlock);
         }
     }
 }

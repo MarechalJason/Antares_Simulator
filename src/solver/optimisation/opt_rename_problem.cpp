@@ -89,6 +89,16 @@ void VariableNamer::RecordLegacyVariableInfo(unsigned index,
     legacyInfo_[index] = {output, component, timeStep()};
 }
 
+void ConstraintNamer::RecordLegacyVariableInfo(unsigned index,
+                                               const std::string& output,
+                                               const std::string& component)
+{
+    if (legacyInfo_ != nullptr)
+    {
+        (*legacyInfo_)[index] = {output, component, timeStep()};
+    }
+}
+
 void Namer::SetLinkElementName(unsigned elementIndex, const std::string& elementType)
 {
     std::string location = linkLocation();
