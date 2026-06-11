@@ -36,6 +36,8 @@ Feature: Legacy variables in simulation table
     #       peak:      80 * (8 * 100) =  64000
     #   - imbalance_cost = unsupplied_energy_cost * unsupplied_energy
     #     + spilled_energy_cost * spilled_energy = 10000 * 52 + 0 * 0 = 520000
+    #   - is_loss_of_load = 1 since unsupplied energy (52) exceeds the 0.5 MW
+    #     threshold
     Given the solver study path is "Antares_Simulator_Tests_NR/hybrid/002 Thermal fleet - Base"
     When I run antares simulator
     Then the simulation succeeds
@@ -45,3 +47,4 @@ Feature: Legacy variables in simulation table
       | 1     | semi base | prop_cost      | 34       | 0        | 75000  |
       | 1     | peak      | prop_cost      | 34       | 0        | 64000  |
       | 1     | area      | imbalance_cost | 34       | 0        | 520000 |
+      | 1     | area      | is_loss_of_load | 34      | 0        | 1      |

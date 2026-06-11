@@ -3,6 +3,8 @@
 
 #include "antares/solver/optimisation/LegacyExtraOutputs.h"
 
+#include <cmath>
+
 #include "antares/solver/optimisation/LegacySolutionView.h"
 
 using Antares::IO::Outputs::SimulationTable;
@@ -82,6 +84,87 @@ void AddAreaImbalanceCost(SimulationTable& simulationTable,
     const double value = *spillageCost * *spilled + linearCosts[index] * solutionValues[index];
     AddExtraOutputEntry(simulationTable, "imbalance_cost", info, value, fillContext, currentBlock);
 }
+
+// is_loss_of_load = 1 when the area has unsupplied energy (above the 0.5 MW
+// solver-noise threshold), 0 otherwise.
+void AddAreaIsLossOfLoad(SimulationTable& simulationTable,
+                         const LegacyVariableInfo& info,
+                         std::size_t index,
+                         const std::vector<double>& solutionValues,
+                         const FillContext& fillContext,
+                         unsigned currentBlock)
+{
+    AddExtraOutputEntry(simulationTable,
+                        "is_loss_of_load",
+                        info,
+                        solutionValues[index] > 0.5 ? 1. : 0.,
+                        fillContext,
+                        currentBlock);
+}
+
+// actual_num_units_on = ceil(num_units_on): the NODU variable may be
+// fractional when the unit-commitment problem is relaxed.
+void AddThermalActualNumUnitsOn(SimulationTable& simulationTable,
+                                const LegacyVariableInfo& info,
+                                std::size_t index,
+                                const std::vector<double>& solutionValues,
+                                const FillContext& fillContext,
+                                unsigned currentBlock)
+{
+    AddExtraOutputEntry(simulationTable,
+                        "actual_num_units_on",
+                        info,
+                        std::ceil(solutionValues[index]),
+                        fillContext,
+                        currentBlock);
+}
+
+// abs_flow = |flow|: the DirectFlow variable is signed (negative when the
+// link is used from destination to origin).
+void AddLinkAbsFlow(SimulationTable& simulationTable,
+                    const LegacyVariableInfo& info,
+                    std::size_t index,
+                    const std::vector<double>& solutionValues,
+                    const FillContext& fillContext,
+                    unsigned currentBlock)
+{
+    AddExtraOutputEntry(simulationTable,
+                        "abs_flow",
+                        info,
+                        std::abs(solutionValues[index]),
+                        fillContext,
+                        currentBlock);
+}
+
+// prop_cost (link) = direct_hurdle_cost * positive_direct_flow
+//                    + indirect_hurdle_cost * positive_indirect_flow
+// The hurdle costs are the linear objective coefficients on the flow
+// decomposition variables (opt_gestion_des_couts_cas_lineaire.cpp), which
+// only exist for links managed with hurdle costs. Driven by the link's
+// PositiveDirectFlow variable; the PositiveIndirectFlow variable of the same
+// link and timestep is found through the solution view.
+void AddLinkPropCost(SimulationTable& simulationTable,
+                     const LegacyVariableInfo& info,
+                     std::size_t index,
+                     const std::vector<double>& solutionValues,
+                     const std::vector<double>& linearCosts,
+                     const LegacySolutionView& solution,
+                     const FillContext& fillContext,
+                     unsigned currentBlock)
+{
+    const auto indirect = solution.value("PositiveIndirectFlow", info.component, info.timeIndex);
+    const auto indirectCost = solution.linearCost("PositiveIndirectFlow",
+                                                  info.component,
+                                                  info.timeIndex);
+    if (!indirect || !indirectCost)
+    {
+        return;
+    }
+
+    const double value = linearCosts[index] * solutionValues[index]
+                         + *indirectCost * *indirect;
+    AddExtraOutputEntry(simulationTable, "prop_cost", info, value, fillContext, currentBlock);
+}
 } // namespace
 
 void AddLegacyExtraOutputs(SimulationTable& simulationTable,
@@ -121,6 +204,41 @@ void AddLegacyExtraOutputs(SimulationTable& simulationTable,
                                  solution,
                                  fillContext,
                                  currentBlock);
+            AddAreaIsLossOfLoad(simulationTable,
+                                *info,
+                                index,
+                                solutionValues,
+                                fillContext,
+                                currentBlock);
+        }
+        else if (info->name == "NODU")
+        {
+            AddThermalActualNumUnitsOn(simulationTable,
+                                       *info,
+                                       index,
+                                       solutionValues,
+                                       fillContext,
+                                       currentBlock);
+        }
+        else if (info->name == "DirectFlow")
+        {
+            AddLinkAbsFlow(simulationTable,
+                           *info,
+                           index,
+                           solutionValues,
+                           fillContext,
+                           currentBlock);
+        }
+        else if (info->name == "PositiveDirectFlow")
+        {
+            AddLinkPropCost(simulationTable,
+                            *info,
+                            index,
+                            solutionValues,
+                            linearCosts,
+                            solution,
+                            fillContext,
+                            currentBlock);
         }
     }
 }

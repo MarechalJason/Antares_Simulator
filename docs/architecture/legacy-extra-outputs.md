@@ -60,7 +60,13 @@ Outputs implemented so far:
 | Output | Driven by | Formula | How operands are read |
 |--------|-----------|---------|-----------------------|
 | `prop_cost` (thermal cluster) | each `DispatchableProduction` variable | `CoutLineaire[i] × X[i]` | by index |
+| `actual_num_units_on` (thermal cluster) | each `NODU` variable | `ceil(X[i])` | by index |
 | `imbalance_cost` (area) | each `UnsuppliedEnergy` variable | `unsCost × uns + spillCost × spilled` | unsupplied part by index; `Spillage` of the same component and time through the view |
+| `is_loss_of_load` (area) | each `UnsuppliedEnergy` variable | `X[i] > 0.5 ? 1 : 0` | by index |
+| `abs_flow` (link) | each `DirectFlow` variable | `abs(X[i])` | by index |
+| `prop_cost` (link) | each `PositiveDirectFlow` variable | `directHurdle × posDirect + indirectHurdle × posIndirect` | direct part by index; `PositiveIndirectFlow` of the same link and time through the view |
+
+The hurdle costs in the link `prop_cost` formula are the objective coefficients on the flow decomposition variables (`opt_gestion_des_couts_cas_lineaire.cpp` sets them straight from the link's `fhlHurdlesCostDirect`/`fhlHurdlesCostIndirect` series); those variables only carry legacy info for links managed with hurdle costs, so the output is naturally restricted to them. Link components are recorded as `origin$$destination`, a unique key safe for view lookups.
 
 The "driven by" column matters: each derived row is anchored on one recorded variable, which supplies the component and time index of the emitted row. When a required companion variable is missing from the view (e.g. no `Spillage` recorded for the area), the output is skipped for that anchor rather than emitting a partial value.
 
@@ -94,4 +100,6 @@ The full extra-output specification (area prices, thermal non-proportional costs
 
 - `src/tests/src/solver/optimisation/test_legacy_solution_view.cpp` — unit tests of the index: hits, disambiguation by component, misses, unrecorded slots.
 - `src/tests/src/solver/optimisation/test_legacy_extra_outputs.cpp` — unit tests of the derived rows: formulas, row metadata conventions, skip-on-missing-companion, and that unrelated variables emit nothing. Both run in the `unit-tests-for-solver-optimisation` Boost test target, which compiles the two `.cpp` files directly and links `Antares::simulation-table`.
-- `src/tests/cucumber/features/solver-features/legacy_simulation_table.feature` — end-to-end scenario on the "002 Thermal fleet - Base" study at a loss-of-load hour where every cluster is provably at maximum, giving closed-form expected values for `prop_cost` and `imbalance_cost`.
+- `src/tests/cucumber/features/solver-features/legacy_simulation_table.feature` — end-to-end scenario on the "002 Thermal fleet - Base" study at a loss-of-load hour where every cluster is provably at maximum, giving closed-form expected values for `prop_cost`, `imbalance_cost` and `is_loss_of_load`.
+
+Three outputs currently have unit-test coverage only, because no fast test study exercises them: `actual_num_units_on` needs an accurate unit-commitment study (all `hybrid/` studies use `unit-commitment-mode = fast`, where NODU variables do not exist), and `abs_flow` / link `prop_cost` need a study with a configured link (with hurdle costs for the latter); no `hybrid/` study has one. Adding a small two-area study with a hurdle-cost link would close the gap.
