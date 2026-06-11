@@ -25,3 +25,23 @@ Feature: Legacy variables in simulation table
     And the modeler outputs contain the following entries
       | block | component  | output            | timestep | scenario | value |
       | 1     | area | unsupplied_energy | 34       | 0        | 52    |
+
+  @fast @short
+  Scenario: Extra outputs prop_cost and imbalance_cost are derived from the legacy solution
+    # Same study, same shortfall hour (absolute hour 34, block 1). With 52 MW
+    # of unsupplied energy every thermal cluster is at its maximum, so:
+    #   - prop_cost = marginal_cost * generated_power per cluster:
+    #       base:      35 * (4 * 900) = 126000
+    #       semi base: 50 * (5 * 300) =  75000
+    #       peak:      80 * (8 * 100) =  64000
+    #   - imbalance_cost = unsupplied_energy_cost * unsupplied_energy
+    #     + spilled_energy_cost * spilled_energy = 10000 * 52 + 0 * 0 = 520000
+    Given the solver study path is "Antares_Simulator_Tests_NR/hybrid/002 Thermal fleet - Base"
+    When I run antares simulator
+    Then the simulation succeeds
+    And the modeler outputs contain the following entries
+      | block | component | output         | timestep | scenario | value  |
+      | 1     | base      | prop_cost      | 34       | 0        | 126000 |
+      | 1     | semi base | prop_cost      | 34       | 0        | 75000  |
+      | 1     | peak      | prop_cost      | 34       | 0        | 64000  |
+      | 1     | area      | imbalance_cost | 34       | 0        | 520000 |
