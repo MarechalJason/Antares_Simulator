@@ -30,7 +30,13 @@ namespace Antares::Optimization
 //    dual is the negative of the marginal price, see how the legacy outputs
 //    print -CoutsMarginauxHoraires);
 //  - area `is_near_loss_of_load`: 1 when the price is within 5 of the area's
-//    unsupplied energy cost, else 0.
+//    unsupplied energy cost, else 0;
+//  - link `alg_congestion_fee` / `abs_congestion_fee`: flow times the price
+//    difference between the link's areas (signed / in absolute value);
+//  - link `capacity_shadow_price`: absolute dual of the flow dissociation
+//    constraint (links managed with hurdle costs only);
+//  - hydro `hydro_shadow_price`: dual of the final stock expression
+//    constraint (accurate water value mode only).
 void AddLegacyExtraOutputs(
   Antares::IO::Outputs::SimulationTable& simulationTable,
   const std::vector<std::optional<LegacyVariableInfo>>& variablesInfo,

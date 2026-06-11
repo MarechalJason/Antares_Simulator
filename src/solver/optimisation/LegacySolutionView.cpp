@@ -14,6 +14,20 @@ std::string MakeKey(const std::string& name, const std::string& component, unsig
 {
     return name + '\x1F' + component + '\x1F' + std::to_string(timeIndex);
 }
+
+std::unordered_map<std::string, std::size_t> BuildIndex(
+  const std::vector<std::optional<LegacyVariableInfo>>& infos)
+{
+    std::unordered_map<std::string, std::size_t> indexByKey;
+    for (std::size_t index = 0; index < infos.size(); ++index)
+    {
+        if (const auto& info = infos[index])
+        {
+            indexByKey.emplace(MakeKey(info->name, info->component, info->timeIndex), index);
+        }
+    }
+    return indexByKey;
+}
 } // namespace
 
 LegacySolutionView::LegacySolutionView(
@@ -21,15 +35,9 @@ LegacySolutionView::LegacySolutionView(
   const std::vector<double>& solutionValues,
   const std::vector<double>& linearCosts):
     solutionValues_(solutionValues),
-    linearCosts_(linearCosts)
+    linearCosts_(linearCosts),
+    indexByKey_(BuildIndex(variablesInfo))
 {
-    for (std::size_t index = 0; index < variablesInfo.size(); ++index)
-    {
-        if (const auto& info = variablesInfo[index])
-        {
-            indexByKey_.emplace(MakeKey(info->name, info->component, info->timeIndex), index);
-        }
-    }
 }
 
 std::optional<std::size_t> LegacySolutionView::indexOf(const std::string& name,
@@ -64,6 +72,26 @@ std::optional<double> LegacySolutionView::linearCost(const std::string& name,
     if (index && *index < linearCosts_.size())
     {
         return linearCosts_[*index];
+    }
+    return std::nullopt;
+}
+
+LegacyDualsView::LegacyDualsView(
+  const std::vector<std::optional<LegacyVariableInfo>>& constraintsInfo,
+  const std::vector<double>& dualValues):
+    dualValues_(dualValues),
+    indexByKey_(BuildIndex(constraintsInfo))
+{
+}
+
+std::optional<double> LegacyDualsView::dual(const std::string& name,
+                                            const std::string& component,
+                                            unsigned timeIndex) const
+{
+    if (const auto it = indexByKey_.find(MakeKey(name, component, timeIndex));
+        it != indexByKey_.end() && it->second < dualValues_.size())
+    {
+        return dualValues_[it->second];
     }
     return std::nullopt;
 }
